@@ -1,0 +1,25 @@
+/* 互動體驗遊戲引擎的樣式（cardgame.js）── 單元三、單元五、單元六共用 */
+  .lvcard{text-align:left;cursor:pointer;border-top:6px solid var(--u3);font:inherit;color:inherit}
+  .lvcard:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+  .lvcard{transition:transform .15s,box-shadow .15s}
+  .learn ul{margin:.5rem 0 0;padding-left:1.2rem}
+  .learn li{margin:.25rem 0}
+  .hud{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+  .combo{font-weight:900;color:#ea580c;min-width:6rem}
+  .qcard{text-align:center;padding:1.6rem 1rem;border:3px dashed #d8b4fe;border-radius:1.2rem;background:#faf5ff}
+  .qcard .big{font-size:3.2rem;line-height:1.1}
+  .qcard .txt{font-size:clamp(1.15rem,2.6vw,1.5rem);font-weight:900;margin-top:.4rem}
+  .buckets{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,8.5rem),1fr))}
+  .bucket{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-align:center;padding:.8rem .5rem}
+  .bucket .ic{font-size:1.8rem}
+  .order-grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))}
+  .order-btn{position:relative;text-align:center;padding:1rem .6rem}
+  .order-btn .n{position:absolute;top:-.6rem;left:-.6rem;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--ok);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center}
+  .slot{margin-top:1rem}
+  .slot .opts{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));margin-top:.4rem}
+  .price{font-size:.8rem;color:var(--ink-soft);font-weight:700}
+  .total{font-size:1.2rem;font-weight:900}
+  .over{color:var(--bad)}
+  .fb{min-height:3.2rem}
+  .scene{font-weight:900;color:var(--u3)}
+  .end-star{font-size:3.5rem;letter-spacing:.12em}

@@ -1,0 +1,13 @@
+{
+  "name": "course-116-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node leak_scan.mjs && node test_python.mjs && node test_platform.mjs && node test_5016b.mjs && node test_digital.mjs && node test_pyui.mjs && node test_errors.mjs && node test_11602.mjs && node test_11602b.mjs && node test_mobile.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0",
+    "pyodide": "0.26.4",
+    "@tailwindcss/browser": "^4.0.0"
+  }
+}

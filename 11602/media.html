@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多媒體專題：畢經之路 · 116-2</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/cardgame.css">
+<script src="config.js"></script>
+<script src="../shared/store.js"></script>
+<script src="../shared/ui.js"></script>
+<script src="../shared/seal.js"></script>
+<script src="../shared/cardgame.js"></script>
+<script src="../shared/labkit.js"></script>
+<script src="content/media.js"></script>
+<style>
+  .mtabs{display:flex;gap:.5rem;margin-bottom:1rem}
+  .mtab{border:2px solid var(--line);background:#fff;border-radius:999px;padding:.5rem 1rem;font-weight:900;cursor:pointer;color:var(--ink)}
+  .mtab.on{border-color:var(--u1);background:var(--u1-bg);color:#1e40af}
+  .steps{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr))}
+  .step{border:2px solid var(--line);background:#fff;border-radius:.9rem;padding:.6rem .7rem;cursor:pointer;text-align:left;font:inherit;color:inherit}
+  .step.on{border-color:var(--u1);background:#eff6ff}
+  .step .st{font-size:.75rem;font-weight:800;color:var(--ink-soft)}
+  .step.done .st{color:var(--ok)}
+  .shot{border:1px solid var(--line);border-radius:.9rem;padding:.8rem;background:var(--soft)}
+  .shot .grid{gap:.6rem}
+  .shot textarea{min-height:3.6rem;resize:vertical}
+  .chk{display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border:1px solid var(--line);border-radius:.7rem;background:#fff;cursor:pointer}
+  .chk input{width:1.2rem;height:1.2rem;margin-top:.15rem;accent-color:var(--ok)}
+  .files{background:#0f172a;color:#e2e8f0;border-radius:.7rem;padding:.7rem .9rem;font:14px/1.7 ui-monospace,Consolas,monospace;white-space:pre-wrap}
+  .rub td,.rub th{text-align:center}
+  .rub td:first-child,.rub th:first-child{text-align:left}
+  #card-canvas{max-width:100%;border-radius:.8rem;box-shadow:var(--shadow)}
+  @media print{
+    body *{visibility:hidden}
+    #print-area,#print-area *{visibility:visible}
+    #print-area{position:absolute;left:0;top:0;width:100%}
+    #print-area input,#print-area textarea,#print-area select{border:0;padding:0;resize:none}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header id="topbar"></header>
+  <nav class="mtabs" aria-label="切換">
+    <button class="mtab on" data-t="games">🎮 概念闖關</button>
+    <button class="mtab" data-t="studio">🎬 專題工作站</button>
+  </nav>
+  <div id="games"></div>
+  <div id="studio" class="hidden"></div>
+</main>
+<script>
+(function () {
+  var esc = UI.esc, MOD = 'media', STEPS = window.MEDIA_STEPS;
+  UI.topbar('#topbar', { title: '🎬 多媒體專題：畢經之路', kicker: '單元四 · 3下 第 1 章' });
+  CARDGAME.mount({ app: '#games', levels: MEDIA_LEVELS, mod: MOD, headline: '先看懂影片規格，再動手剪自己的畢業影片' });
+
+  /* ── 分頁 ─────────────────────────────────── */
+  function tab(t) {
+    document.querySelectorAll('.mtab').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
+    document.getElementById('games').classList.toggle('hidden', t !== 'games');
+    document.getElementById('studio').classList.toggle('hidden', t !== 'studio');
+    if (t === 'studio') studio();
+  }
+  document.querySelectorAll('.mtab').forEach(function (b) { b.onclick = function () { tab(b.dataset.t); }; });
+
+  /* ── 專題工作站 ───────────────────────────── */
+  var cur = 0;
+  function rec(id) { return STORE.level(MOD, id) || {}; }
+  function done(id) { return !!rec(id).done; }
+  function extra(id) { return rec(id).extra || {}; }
+  function save(id, ex, isDone) {
+    var r = STORE.saveLevel(MOD, id, { done: !!isDone, extra: ex });
+    if (isDone && r.improved) UI.toast('✅ ' + STEPS.filter(function (s) { return s.id === id; })[0].title + ' 完成！');
+    return r;
+  }
+
+  function studio() {
+    var box = document.getElementById('studio');
+    var n = STEPS.filter(function (s) { return done(s.id); }).length;
+    box.innerHTML = '<section class="card pop"><div class="tape"></div><div class="row between"><div><p class="kicker">專題工作站 · 不計星 · 記錄完成</p>' +
+      '<h2 class="black" style="font-size:1.35rem">做一支自己的畢業紀念影片</h2>' +
+      '<p class="small soft mt1">影片在電腦上用 <b>Shotcut</b> 剪；這裡幫你規劃、檢查、記錄進度。</p></div>' +
+      '<div class="center"><div class="black" style="font-size:1.8rem">' + n + ' / ' + STEPS.length + '</div><div class="tiny soft bold">步驟完成</div></div></div>' +
+      '<div class="steps mt2">' + STEPS.map(function (s, i) {
+        return '<button class="step' + (i === cur ? ' on' : '') + (done(s.id) ? ' done' : '') + '" data-i="' + i + '"><div style="font-size:1.4rem">' + s.icon + '</div>' +
+          '<div class="bold">' + (i + 1) + '. ' + esc(s.title) + '</div><div class="st">' + (done(s.id) ? '✅ 完成' : '尚未完成') + '</div></button>';
+      }).join('') + '</div></section><section class="card mt2" id="panel"></section>';
+    box.querySelectorAll('.step').forEach(function (b) { b.onclick = function () { cur = +b.dataset.i; studio(); }; });
+    var s = STEPS[cur], panel = document.getElementById('panel');
+    panel.innerHTML = '<h3 class="black" style="font-size:1.2rem">' + s.icon + ' ' + esc(s.title) + '</h3><p class="small soft mt1">' + esc(s.desc) + '</p><div id="body" class="mt2"></div>';
+    var body = document.getElementById('body');
+    if (s.id === 'W1') storyboard(body);
+    else if (s.id === 'W2') filesStep(body, s);
+    else if (s.id === 'W5') exportStep(body);
+    else checklist(body, s);
+  }
+
+  /* W1 分鏡腳本 */
+  var TRANS = ['（無）', '淡入淡出', '溶解', '推移', '縮放'];
+  function scenes() {
+    var d = null; try { d = JSON.parse(STORE.draft('media-scenes') || 'null'); } catch (e) {}
+    return d || extra('W1').scenes || [1, 2, 3, 4].map(function () { return { desc: '', file: '', sec: 10, trans: TRANS[1], extra: '' }; });
+  }
+  function totalSec(sc) { return sc.reduce(function (a, s) { return a + (+s.sec || 0); }, 0); }
+  function mmss(t) { return Math.floor(t / 60) + ' 分 ' + (t % 60) + ' 秒'; }
+  function storyboard(body) {
+    var sc = scenes();
+    function draw() {
+      var tot = totalSec(sc);
+      body.innerHTML = '<div id="print-area"><p class="bold">畢經之路 · 分鏡腳本　<span class="small soft">' + esc((STORE.me() || {}).cls || '') + ' 班 ' + esc((STORE.me() || {}).seat || '') + ' 號 ' + esc((STORE.me() || {}).name || '') + '</span></p>' +
+        '<div class="stack mt1">' + sc.map(function (s, i) {
+          return '<div class="shot"><div class="row between"><b>第 ' + (i + 1) + ' 幕</b>' + (sc.length > 1 ? '<button class="btn sm no-print" data-del="' + i + '">刪除</button>' : '') + '</div>' +
+            '<div class="grid g2 mt1"><label class="field">畫面描述<textarea class="input" data-k="desc" data-i="' + i + '" placeholder="例：七年級新生訓練的大合照，慢慢放大">' + esc(s.desc) + '</textarea></label>' +
+            '<div class="stack"><label class="field">素材檔名<input class="input" data-k="file" data-i="' + i + '" value="' + esc(s.file) + '" placeholder="例：' + String(i + 1).padStart(2, '0') + '_新生訓練.jpg"></label>' +
+            '<div class="grid" style="grid-template-columns:1fr 1fr;gap:.5rem"><label class="field">秒數<input class="input" type="number" min="1" max="60" data-k="sec" data-i="' + i + '" value="' + esc(s.sec) + '"></label>' +
+            '<label class="field">轉場<select class="input" data-k="trans" data-i="' + i + '">' + TRANS.map(function (t) { return '<option' + (t === s.trans ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label></div></div></div>' +
+            '<label class="field mt1">文字／配樂<input class="input" data-k="extra" data-i="' + i + '" value="' + esc(s.extra) + '" placeholder="例：字幕「我們相遇的那一天」、配樂開始"></label></div>';
+        }).join('') + '</div></div>' +
+        '<div class="row mt2 no-print"><button class="btn" id="add">＋ 新增一幕</button><span class="bold">總長度：<span id="tot"' + (tot < 60 || tot > 180 ? ' style="color:var(--bad)"' : '') + '>' + mmss(tot) + '</span></span>' +
+        '<span class="tiny soft">（建議 1～3 分鐘）</span></div>' +
+        '<div class="row mt2 no-print"><button class="btn go" id="sv">💾 儲存腳本</button><button class="btn" id="pr">🖨️ 列印／存成 PDF</button></div><div id="msg" class="mt1"></div>';
+      body.querySelectorAll('[data-k]').forEach(function (el) {
+        el.oninput = function () {
+          sc[+el.dataset.i][el.dataset.k] = el.dataset.k === 'sec' ? (+el.value || 0) : el.value;
+          STORE.draft('media-scenes', JSON.stringify(sc));
+          var t = totalSec(sc), te = document.getElementById('tot'); te.textContent = mmss(t); te.style.color = (t < 60 || t > 180) ? 'var(--bad)' : '';
+        };
+      });
+      body.querySelectorAll('[data-del]').forEach(function (b) { b.onclick = function () { sc.splice(+b.dataset.del, 1); STORE.draft('media-scenes', JSON.stringify(sc)); draw(); }; });
+      document.getElementById('add').onclick = function () { sc.push({ desc: '', file: '', sec: 10, trans: TRANS[1], extra: '' }); draw(); };
+      document.getElementById('pr').onclick = function () { window.print(); };
+      document.getElementById('sv').onclick = function () {
+        var filled = sc.filter(function (s) { return s.desc.trim().length >= 4 && (+s.sec) > 0; }).length, t = totalSec(sc), msg = [];
+        if (filled < 4) msg.push('至少要有 4 幕寫了畫面描述（目前 ' + filled + ' 幕）');
+        if (t < 60 || t > 180) msg.push('總長度要在 1～3 分鐘之間（目前 ' + mmss(t) + '）');
+        var ok = !msg.length;
+        save('W1', { scenes: sc }, ok);
+        document.getElementById('msg').innerHTML = ok ? '<div class="note ok small">✅ 腳本已儲存！下一步：照腳本整理素材。</div>' :
+          '<div class="note warn small">已暫存，但還不算完成：' + msg.map(esc).join('；') + '</div>';
+        if (ok) setTimeout(studio, 800);
+      };
+    }
+    draw();
+  }
+
+  /* W2 素材整理：依腳本產生建議檔名 */
+  function filesStep(body, s) {
+    var sc = scenes();
+    var names = sc.map(function (x, i) {
+      var base = (x.desc || '素材').replace(/[\\/:*?"<>|，。、！？\s]/g, '').slice(0, 6) || '素材';
+      var ext = /\.(\w+)$/.test(x.file) ? x.file.match(/\.(\w+)$/)[0] : '.jpg';
+      return String(i + 1).padStart(2, '0') + '_' + base + ext;
+    });
+    body.innerHTML = '<p class="bold small">📋 依你的分鏡腳本，建議的檔名：</p><div class="files mt1">' + esc(names.join('\n')) + '</div>' +
+      '<p class="tiny soft mt1">編號放最前面，匯入 Shotcut 時就會依出場順序排好。還沒寫腳本的話，先回到步驟 1。</p><div id="cl" class="mt2"></div>';
+    checklist(document.getElementById('cl'), s);
+  }
+
+  /* 通用檢核表（W2～W4）：全部打勾才完成 */
+  function checklist(body, s) {
+    var st = extra(s.id).checks || [];
+    body.innerHTML = '<div class="stack">' + s.checks.map(function (c, i) {
+      return '<label class="chk"><input type="checkbox" data-i="' + i + '"' + (st[i] ? ' checked' : '') + '><span>' + esc(c) + '</span></label>';
+    }).join('') + '</div><div id="cmsg" class="mt2"></div>';
+    body.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+      cb.onchange = function () {
+        st[+cb.dataset.i] = cb.checked;
+        var need = s.checks.filter(function (c) { return !/^（挑戰）/.test(c); }).length;
+        var got = s.checks.filter(function (c, i) { return st[i] && !/^（挑戰）/.test(c); }).length;
+        var ok = got >= need;
+        save(s.id, { checks: st }, ok);
+        document.getElementById('cmsg').innerHTML = ok ? '<div class="note ok small">✅ 這一步完成了！</div>' : '<p class="tiny soft">還有 ' + (need - got) + ' 項（「挑戰」那項可以不做）</p>';
+        if (ok) setTimeout(studio, 900);
+      };
+    });
+  }
+
+  /* W5 匯出設定＋自評＋作品說明卡 */
+  function exportStep(body) {
+    var ex = extra('W5'), me = STORE.me() || {};
+    var RUB = ['故事完整：有開頭、過程、結尾', '畫面品質：清楚、沒有黑畫面或跳動', '後製效果：轉場、文字、配樂恰當', '著作權：素材都有合法來源'];
+    function sel(id, opts, v) { return '<select class="input" id="' + id + '">' + opts.map(function (o) { return '<option' + (o === v ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select>'; }
+    body.innerHTML = '<p class="bold">① Shotcut 匯出設定（你選了哪些？）</p><div class="grid g4 mt1">' +
+      '<label class="field">解析度' + sel('e-res', ['480p', '720p', '1080p', '2160p'], ex.res || '1080p') + '</label>' +
+      '<label class="field">每秒影格數' + sel('e-fps', ['24', '30', '60'], ex.fps || '30') + '</label>' +
+      '<label class="field">容器（副檔名）' + sel('e-box', ['.mp4', '.mov', '.wmv'], ex.box || '.mp4') + '</label>' +
+      '<label class="field">編碼' + sel('e-codec', ['H.264', 'MPEG-4'], ex.codec || 'H.264') + '</label></div>' +
+      '<div id="e-tip" class="mt1"></div>' +
+      '<p class="bold mt3">② 自我評量（1 待加強、2 還不錯、3 很滿意）</p><div class="scroll-x"><table class="t rub mt1"><tr><th>項目</th><th>1</th><th>2</th><th>3</th></tr>' +
+      RUB.map(function (r, i) { return '<tr><td>' + esc(r) + '</td>' + [1, 2, 3].map(function (v) { return '<td><input type="radio" name="rub' + i + '" value="' + v + '"' + ((ex.rub || [])[i] == v ? ' checked' : '') + ' aria-label="' + esc(r) + ' ' + v + ' 分"></td>'; }).join('') + '</tr>'; }).join('') + '</table></div>' +
+      '<p class="bold mt3">③ 三句話介紹你的影片</p>' +
+      '<label class="field">影片名稱<input class="input" id="e-name" maxlength="14" value="' + esc(ex.name || '') + '" placeholder="例：我們的畢經之路"></label>' +
+      '<label class="field mt1">這支影片想說什麼？<input class="input" id="e-s1" maxlength="30" value="' + esc(ex.s1 || '') + '"></label>' +
+      '<label class="field mt1">我最滿意的一個剪輯技巧<input class="input" id="e-s2" maxlength="30" value="' + esc(ex.s2 || '') + '"></label>' +
+      '<label class="field mt1">想對國中三年說的一句話<input class="input" id="e-s3" maxlength="30" value="' + esc(ex.s3 || '') + '"></label>' +
+      '<div class="row mt2"><button class="btn go" id="e-make">🎨 產生作品說明卡</button></div><p id="e-err" class="small bold mt1" style="color:var(--bad)"></p><div id="e-out" class="center mt2"></div>';
+    function tip() {
+      var res = document.getElementById('e-res').value, box = document.getElementById('e-box').value, codec = document.getElementById('e-codec').value, t = [];
+      if (res === '480p') t.push('480p 只是 SD 畫質，投影出來會糊，建議至少 720p。');
+      if (res === '2160p') t.push('4K 檔案很大、學校電腦匯出會很久；素材本身不是 4K 的話，選 4K 也不會更清楚。');
+      if (box !== '.mp4') t.push(box + ' 不是每台裝置都能播，上傳和分享建議用 .mp4。');
+      if (codec !== 'H.264') t.push('H.264 是目前相容性最好的編碼。');
+      document.getElementById('e-tip').innerHTML = t.length ? '<div class="note warn small">' + t.map(esc).join('<br>') + '</div>' : '<div class="note ok small">👍 1080p／.mp4／H.264 是分享畢業影片最穩的組合。</div>';
+      return !(res === '480p' || box !== '.mp4' || codec !== 'H.264');
+    }
+    ['e-res', 'e-fps', 'e-box', 'e-codec'].forEach(function (id) { document.getElementById(id).onchange = tip; });
+    tip();
+    document.getElementById('e-make').onclick = function () {
+      var v = { res: val('e-res'), fps: val('e-fps'), box: val('e-box'), codec: val('e-codec'), name: val('e-name'), s1: val('e-s1'), s2: val('e-s2'), s3: val('e-s3'),
+        rub: RUB.map(function (_, i) { var r = document.querySelector('input[name=rub' + i + ']:checked'); return r ? +r.value : 0; }) };
+      var miss = [];
+      if (!tip()) miss.push('匯出設定（看上面的黃色提醒）');
+      if (v.rub.some(function (x) { return !x; })) miss.push('自我評量每一項都要選');
+      if (!v.name) miss.push('影片名稱');
+      ['s1', 's2', 's3'].forEach(function (k, i) { if (v[k].length < 4) miss.push('第 ' + (i + 1) + ' 句（至少 4 個字）'); });
+      document.getElementById('e-err').textContent = miss.length ? '還差：' + miss.join('、') : '';
+      if (miss.length) { save('W5', v, false); return; }
+      var sc = scenes(), tot = totalSec(sc);
+      LABKIT.showCard(document.getElementById('e-out'), LABKIT.drawCard({
+        title: v.name, banner: '畢經之路 · 畢業紀念影片', me: me,
+        rule: 'Shotcut · ' + v.res + ' ' + v.fps + 'fps · ' + v.box + '（' + v.codec + '）· ' + sc.length + ' 幕 · ' + mmss(tot),
+        boxes: [['解析度', v.res], ['影格率', v.fps + ' fps'], ['自評', v.rub.reduce(function (a, b) { return a + b; }, 0) + ' / 12'], ['長度', mmss(tot)]],
+        lines: [v.s1, v.s2, v.s3] }), me);
+      var a = document.querySelector('#e-out a'); if (a) a.download = '作品說明卡-' + me.cls + '_' + me.seat + '_' + me.name + '.png';
+      save('W5', v, true);
+    };
+  }
+  function val(id) { return document.getElementById(id).value.trim(); }
+
+  if (/^#W/.test(location.hash)) { var wi = STEPS.findIndex(function (s) { return '#' + s.id === location.hash; }); if (wi >= 0) cur = wi; tab('studio'); }
+})();
+</script>
+</body>
+</html>
