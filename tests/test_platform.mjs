@@ -1,4 +1,4 @@
-import { launch, login, BASE, SHOTS, priv } from './harness.mjs';
+import { launch, login, BASE, SHOTS, priv, passCool } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 const mobile = process.argv[2] === 'mobile';
 const { browser, context } = await launch({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 } });
@@ -28,6 +28,7 @@ async function playLevel(i, mistakes = 0) {
           await page.click(`.bucket[data-b="${rd.buckets.find(x => x.id !== it.a).id}"]`);
           await page.waitForSelector('#fb .note');
           if (await page.$('#nx')) { await page.click('#nx'); return 'over'; }
+          await passCool(page);
         }
         await page.click(`.bucket[data-b="${it.a}"]`);
         await page.click('#nx');

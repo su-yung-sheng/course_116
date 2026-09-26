@@ -39,3 +39,12 @@ export function priv(rel) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), ctx);
   return ctx.window;
 }
+
+/** 🧊 冷靜一下：答錯太快或連錯時會跳出 5 秒倒數，等它倒數完按「我準備好了」 */
+export async function passCool(page) {
+  await page.waitForTimeout(150);
+  if (!(await page.$('#cool-box'))) return false;
+  await page.waitForSelector('#cool-ok:not([disabled])', { timeout: 9000 });
+  await page.click('#cool-ok');
+  return true;
+}

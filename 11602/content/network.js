@@ -529,6 +529,28 @@ window.NET_LEVELS = [
       "gen": "ipValid",
       "n": 5,
       "prompt": "合法的 IPv4 嗎？"
+     },
+     {
+      "type": "type",
+      "prompt": "觀念確認（自己打答案）",
+      "items": [
+       {
+        "t": "IPv4 位址由幾組數字組成？",
+        "icon": "🔢",
+        "s": "3d1ad26309973f70",
+        "e": [
+         "u3FaTpBBpYqiYpcdSPeNhsbLRS8Y2yJ3jjoNh5jKLNhECqd8F+5Dcy86GyEOcCBEP7YkyskUMkGmxBYaR45hGBFSQqNr9XIFDfLz"
+        ]
+       },
+       {
+        "t": "IPv4 每一組最大是多少？",
+        "icon": "🔝",
+        "s": "a704688f5ff7c754",
+        "e": [
+         "ZSThTDC9+LtW8gZbRUqc/P0cHxnY8O3sODQn/dBaqn7yVdwli1qG64kUPEoum0yCVB6gkr5b+dUJr2WhIpHbPr4P0FSQ180NpdwND8p3RWlHlv6YtFVNE6ZbL4Nw"
+        ]
+       }
+      ]
      }
     ]
    },
@@ -692,6 +714,28 @@ window.NET_LEVELS = [
         "icon": "✂️",
         "s": "a7c3af03cd772338",
         "e": "cVWEe+vam2yZkZFkRMteJOWZFCJmgObm7pBX3tBkVEWSkBySVG2gFnltYHW3C9Hrioov8VSk60WkwqGDEa3r2Z174ZtrTnW9LiEZdKObsrC93sL3ouMvwo4zNoaKAaEZY+OaGIJq7HnLOg=="
+       }
+      ]
+     },
+     {
+      "type": "type",
+      "prompt": "觀念確認（自己打答案）",
+      "items": [
+       {
+        "t": "IPv6 位址由幾個位元組成？",
+        "icon": "6️⃣",
+        "s": "4e50e07acecfc41f",
+        "e": [
+         "WH0SesKt1UXoCVPTTM1D08RqMIQbl9xev8/PS+kYB1dW2SiFN///14VgxHxDjPtX4Ud/YEF2628vTlkidhHgEZaNfdIvhiANlrGYCMie4xnUKVF2u7ADkiqrLE85y75NhU4H"
+        ]
+       },
+       {
+        "t": "IPv6 寫成幾組十六進位數字？",
+        "icon": "➗",
+        "s": "263090d2d351e2b4",
+        "e": [
+         "xlXBT+vbG2D7gHQY/dtBvS31WDvODUh+wmo6FXUorsrAebUMotzI3zdWzEOEtSpaV8t9NT5z1vIkWIxH3d0CVOmggKkJT7tVddASZrn7MwRoSTM2/AkUMFk="
+        ]
        }
       ]
      }
@@ -935,6 +979,12 @@ window.NET_LEVELS = [
       "gen": "urlRead",
       "n": 4,
       "prompt": "這是誰的網站？"
+     },
+     {
+      "type": "gen",
+      "gen": "urlSlots",
+      "n": 1,
+      "prompt": "網址拆解"
      }
     ]
    }
@@ -1263,7 +1313,7 @@ window.NET_LEVELS = [
      {
       "type": "sort",
       "prompt": "這個情況用哪一個頻段比較好？",
-      "pick": 3,
+      "pick": 4,
       "buckets": [
        {
         "id": "g5",
@@ -1300,13 +1350,25 @@ window.NET_LEVELS = [
         "icon": "📷",
         "s": "37670e6094b6287a",
         "e": "mPwc9caMAMwT3zXYGmu3XbaLLG0Y/pd7kn3OkyOxkPmfXOLQK5hi/nvzJ8jowiQO1WLa0sMroJv1NTVy2SceYw=="
+       },
+       {
+        "t": "樓上房間要連樓下客廳的基地臺",
+        "icon": "🏠",
+        "s": "ea0790b2b2a624d6",
+        "e": "D//z5kvAkVkeLtkn151S1D/sZlqZEtFbzv1kLkDIp3VqY4OWKD/O4olJzUmRIowIJoyztsrFPDa9XAh1GWh9efX+93uuWhhXnmlHNmfFfShTX/hZ/DhSF/MpGnyLWfA="
+       },
+       {
+        "t": "就在電腦旁邊，要最快的下載速度",
+        "icon": "💨",
+        "s": "6de11567b939fe88",
+        "e": "fTkmtC9S/Oii93QeT75cr3kAmGiP/93tRHwPXfDqScW8BX8qTpdO0CVDdkiIGZDbMp6zVVcj0k+OwlJfQ75OxKX3fgXBlDA="
        }
       ]
      },
      {
       "type": "sort",
       "prompt": "這句話對不對？",
-      "pick": 4,
+      "pick": 5,
       "buckets": [
        {
         "id": "ok",
@@ -1349,6 +1411,40 @@ window.NET_LEVELS = [
         "icon": "📄",
         "s": "e8e2517a3d68010d",
         "e": "4wmFpS948mo9uZb0TlwnpTkXpENrTA2JG3AIuzrrO6Z/jHlFhGi3DnckbO+UuCVqv9MPZgdDsw/ul1F4dEVn7b+DtvJi1mKU3Gy9rjYacqKdFDak"
+       },
+       {
+        "t": "網路速度 100 Mbps，代表每秒最多下載 100 MB",
+        "icon": "❓",
+        "s": "08b6b2d58121a42e",
+        "e": "Q7N6SpdwYwfy5pTviilfuAWy4GQYfzyit7J/MC2j/AiBH4moVeVP1n3ERJD6AB/MdXOuHtVkfO5IOKPYQzE2s2ZIWg+thKd515c/IflwiW1YBddxZGrWpnZycek="
+       },
+       {
+        "t": "2.4GHz 和 5GHz 是 Wi-Fi 的兩個頻段",
+        "icon": "📶",
+        "s": "2995332eecc8d50e",
+        "e": "aLmY+6LgW6TMf8Ar3x90wmY/KYiW9rj+7FxVd7iYUBs97MmiduUS5LthZyU6XuvsBSfRalJTfsfop9U2mbSXOa0UbeLnpCvAixvj1AdIS5itHBVt7z8/yyo="
+       }
+      ]
+     },
+     {
+      "type": "type",
+      "prompt": "觀念確認（自己打答案）",
+      "items": [
+       {
+        "t": "1 Byte（位元組）等於幾 bit（位元）？",
+        "icon": "🔢",
+        "s": "e1887e7f89588be7",
+        "e": [
+         "JTB4WRzNvZVbpFOncFRPnBVrBGEpOBtM9k/mqVztq449V0jmjAw4LVMcxDBBs2qHJ6ZfIFW2+DAOq2GCBEdA1Yp0Y1QAyA/4WByI0XgFXnt6hjtnXS0o0BXM"
+        ]
+       },
+       {
+        "t": "Wi-Fi 6 的標準是 IEEE 802.11 後面加哪兩個字母？",
+        "icon": "📄",
+        "s": "093ddd96d49f6dbc",
+        "e": [
+         "RRQ2Jl3tIhm2ZZNmBWBkVA8Cwp7ANe9lCr70WRyGhK4d+zJQ41EmnjP29SykU0GYubxBevHx613XFP8KfazOp3aT9uVMmC+wGhor1yBd3B9P9t1fHJFvq9xFkXIrLbCYYQuKp+sLSw=="
+        ]
        }
       ]
      }

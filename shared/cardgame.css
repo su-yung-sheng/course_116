@@ -51,3 +51,9 @@
 .gopt.on{border-color:var(--unit);background:var(--unit-soft)}
 .barcode{display:inline-flex;height:4.5rem;border:2px solid var(--ink);padding:.3rem;background:#fff;gap:0}
 .barcode i{display:block;width:1.4rem;height:100%}.barcode i.k{background:#0f172a}.barcode i.w{background:#fff}
+
+/* 🧊 冷靜一下、📖 小卡：蓋在畫面上的對話框 */
+.cg-over{position:fixed;inset:0;z-index:2000;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:1rem}
+.cg-box{max-width:34rem;width:100%;max-height:88vh;overflow:auto}
+.cool-n{font-size:3rem;line-height:1;color:var(--unit)}
+.repair-chip{background:var(--ok-bg);color:var(--ok);border-color:transparent}

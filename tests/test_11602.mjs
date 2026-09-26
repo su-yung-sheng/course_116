@@ -1,7 +1,7 @@
 // 116-2 下學期：網路世界、資料偵探（遊戲）、試算表、密碼特務（🎲 隨機出題）
 import { launch, login, BASE, SHOTS } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
-import { priv } from './harness.mjs';
+import { priv, passCool } from './harness.mjs';
 import { solve as netSolve, answer as netAnswer } from './net_solver.mjs';
 
 const { browser, context } = await launch();
@@ -22,16 +22,22 @@ async function playGen() {
     const head = await page.textContent('#app .card > p.small');
     const [k, n] = (head.match(/（(\d+) \/ (\d+)）/) || []).slice(1).map(Number);
     const sol = await netSolve(page);
+    let use = sol;
     if (k === 1 && !genWrongTried) {
       genWrongTried = true;
       await netAnswer(page, sol, true);
       await page.waitForSelector('#fb .note');
-      ok((await page.textContent('#fb')).includes('不對'), '🎲 答錯會扣心、可以重答', sol.kind);
+      ok((await page.textContent('#fb')).includes('不對'), '🎲 答錯會扣心', sol.kind);
+      const cooled = await passCool(page);
+      ok(cooled, '🧊 答錯太快 → 冷靜一下 5 秒');
+      if (sol.kind === 'choice') {   // 三星三階的選擇題：答錯換一題（不能翻牌）
+        ok(!!(await page.$('#swap')), '🎲 選擇題答錯 → 換一題');
+        await page.click('#swap'); use = await netSolve(page);
+      }
       if (sol.kind === 'bits') for (let i = 0; i < 8; i++) if (await page.$(`.gbit[data-j="${i}"].on`)) await page.click(`.gbit[data-j="${i}"]`);
       if (sol.kind === 'order') await page.click('#reset').catch(() => {});
-      if (sol.kind === 'choice') {}
     }
-    await netAnswer(page, sol, false);
+    await netAnswer(page, use, false);
     await page.waitForSelector('#nx', { timeout: 5000 }).catch(async () => { throw new Error('🎲 答不對：' + (await page.textContent('.qcard')) + ' → ' + JSON.stringify(sol) + ' ' + (await page.textContent('#fb'))); });
     await page.click('#nx');
     if (k === n) return;
@@ -104,6 +110,49 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
   }
   for (let i = 0; i < levels.length; i++) { const s = await playCard(levels, i); ok(s.startsWith('3'), file, levels[i].id, s); }
 }
+/* ── 防亂猜與強化：📖 小卡、🧊 冷靜一下（離開畫面重算）、🩹 修復站 ── */
+{
+  await page.goto(`${BASE}/11602/network.html?r=9#N4`); await page.click('.stage[data-s="0"]');
+  await page.waitForSelector('.gopt');
+  await page.click('#peek'); await page.waitForSelector('#peek-box');
+  ok((await page.textContent('#peek-box')).includes('IPv4'), '📖 小卡：不離開關卡就能看概念');
+  await page.click('#peek-x');
+  // 第 1 次答錯（答太快）→ 冷靜一下；中途離開畫面 → 秒數重算
+  let sol = await netSolve(page); await netAnswer(page, sol, true);
+  await page.waitForSelector('#cool-box');
+  ok(await page.$eval('#cool-ok', b => b.disabled), '🧊 冷靜一下：倒數完之前不能繼續');
+  await page.waitForTimeout(2300);
+  const mid = +(await page.textContent('#cool-n'));
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  const afterBlur = +(await page.textContent('#cool-n')), msg = await page.textContent('#cool-msg');
+  ok(mid < 5 && afterBlur === 5 && msg.includes('重算'), '🧊 離開畫面 → 秒數重算', mid, '→', afterBlur);
+  await page.waitForTimeout(1500);
+  ok(+(await page.textContent('#cool-n')) === 5, '🧊 離開畫面期間不倒數');
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await page.waitForSelector('#cool-ok:not([disabled])', { timeout: 8000 }); await page.click('#cool-ok');
+  await page.click('#swap');
+  // 再錯兩次 → ❤️ 用完 → 修復站
+  for (let t = 0; t < 2; t++) {
+    sol = await netSolve(page); await netAnswer(page, sol, true);
+    await page.waitForSelector('#fb .note');
+    if (await page.$('#swap')) { await passCool(page); await page.click('#swap'); }
+  }
+  await page.waitForSelector('#nx'); await page.click('#nx');
+  await page.waitForSelector('#repair-go');
+  ok((await page.textContent('#app')).includes('修復站'), '🩹 愛心用完 → 先進修復站');
+  await page.click('#repair-go');
+  ok((await page.textContent('.hud')).includes('修復站') && !(await page.$('.hud .hearts')) && (await page.textContent('#app')).includes('💡 提示'), '🩹 修復站：不扣心、題目上方先給提示');
+  for (let q = 0; q < 2; q++) {
+    sol = await netSolve(page);
+    if (q === 0) { await netAnswer(page, sol, true); await page.waitForSelector('#fb .note'); ok(!(await page.$('#cool-box')) && !(await page.$('#swap')), '🩹 修復站答錯：不冷靜、不換題，可以再試'); }
+    await netAnswer(page, { ...sol, follow: null }, false);
+    await page.waitForSelector('#nx'); await page.click('#nx');
+  }
+  await page.waitForSelector('#retry');
+  ok((await page.textContent('#app')).includes('修復完成'), '🩹 修復完成 → 可以重新挑戰');
+  await page.screenshot({ path: SHOTS + 'net-repair.png' });
+}
+
 // 凱薩轉盤與位元計算機截圖
 await page.goto(`${BASE}/11602/data.html?r=1#D4`); await page.click('#go');
 await page.click('[data-d="1"]'); await page.click('[data-d="1"]'); await page.click('[data-d="1"]');
@@ -111,6 +160,7 @@ await page.screenshot({ path: SHOTS + 'data-caesar.png', fullPage: true });
 await page.fill('#ans', 'XXX'); await page.press('#ans', 'Enter');
 await page.waitForFunction(() => document.getElementById('fb').textContent.trim().length > 0);
 ok((await page.textContent('#fb')).includes('不對'), 'type 答錯會提示並可重答');
+await passCool(page);
 
 /* ── 試算表 ─────────────────────────────── */
 await page.goto(`${BASE}/11602/sheet.html`);
@@ -201,7 +251,7 @@ for (let i = 0; i < CL.length; i++) {
     await page.waitForSelector('#ans:not([disabled])');
     if (!wrongDone) {          // K3 先故意答錯一次：扣心、不公布答案
       await page.fill('#ans', 'ZZZZZZ'); await page.press('#ans', 'Enter');
-      const fb = await page.textContent('#fb'); ok(fb.includes('不對') && !/→/.test(fb), '密碼特務答錯：扣心、不給答案'); wrongDone = true;
+      const fb = await page.textContent('#fb'); ok(fb.includes('不對') && !/→/.test(fb), '密碼特務答錯：扣心、不給答案'); wrongDone = true; await passCool(page);
     }
     const a = await solve();
     await page.fill('#ans', a); await page.press('#ans', 'Enter');

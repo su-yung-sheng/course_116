@@ -18,6 +18,11 @@
      · ⭐ 三星三階（lv.stages：[基礎, 操作, 挑戰]）：每一階各有 3 顆 ❤️，過了第幾階就拿幾顆 ⭐
          ⭐ 基礎：觀念（題庫隨機抽）　⭐⭐ 操作：動手做（🎲 參數隨機）　⭐⭐⭐ 挑戰：🎲 更難的隨機題
        上一階過了才開下一階；❤️ 用完只要重來那一階。星星代表「做到多難」，不是「錯幾次」。
+   防亂猜與強化（全部關卡）：
+     · 🧊 冷靜一下：連續答錯 2 次，或答錯時作答不到 1.5 秒 → 暫停 5 秒看概念重點；離開畫面（切分頁、切視窗）秒數重算
+     · 💡 分層提示：同一題錯第 1 次給方向（it.hint），第 2 次給步驟（it.hint2）；📖 小卡隨時可以叫出來
+     · 🩹 修復站：❤️ 用完先針對卡住的那一回合練 2 題（不扣心、先給提示、答完看解說），才能重新挑戰
+     · 三星三階的關卡：選項 ≤ 3 個的題目答錯就「換一題」（不能翻牌猜）；it.follow 追問「為什麼」
    gen 回合的題目可以是好幾種「動手」題型（it.kind）：
      input（預設，打答案）、choice（按選項）、order（依序點）、slots（每一格選一個）、bits（點位元湊出數字）
    ⚠️ 內容檔是 tools/build.mjs 從 private/ 產生的「封存版」：答案與解說都要用學生的答案試開（shared/seal.js）。
@@ -35,6 +40,7 @@ window.CARDGAME = { mount: function (opts) {
   /* ── 關卡選單 ─────────────────────────────── */
   function menu() {
     G = null;
+    var cb = document.getElementById('cool-box'); if (cb) cb.remove(); app.inert = false;
     var total = L.reduce(function (s, lv) { return s + best(lv.id); }, 0);
     app.innerHTML =
       '<section class="card pop"><div class="tape"></div><div class="row between"><div>' +
@@ -101,12 +107,60 @@ window.CARDGAME = { mount: function (opts) {
 
   function hud() {
     var lv = G.lv;
+    G.qt = Date.now();   // 這一題開始的時間（答太快的判斷用）
     return '<div class="hud"><button class="btn sm" id="quit">✕ 離開</button>' +
-      '<b>' + lv.icon + ' ' + esc(lv.title) + '</b>' + (G.st != null ? '<span class="chip stage-chip">' + '⭐'.repeat(G.st + 1) + ' ' + STAGE[G.st].n + '</span>' : '') +
-      '<span class="chip">回合 ' + (G.r + 1) + ' / ' + G.rounds.length + '</span>' +
-      '<span style="margin-left:auto" class="combo">' + (G.combo >= 2 ? '🔥 連對 ' + G.combo : '') + '</span>' + UI.hearts(G.hearts, HEARTS) + '</div>';
+      '<b>' + lv.icon + ' ' + esc(lv.title) + '</b>' +
+      (G.practice ? '<span class="chip repair-chip">🩹 修復站 · 不扣心</span>' : (G.st != null ? '<span class="chip stage-chip">' + '⭐'.repeat(G.st + 1) + ' ' + STAGE[G.st].n + '</span>' : '') +
+      '<span class="chip">回合 ' + (G.r + 1) + ' / ' + G.rounds.length + '</span>') +
+      '<button class="btn sm" id="peek" type="button">📖 小卡</button>' +
+      '<span style="margin-left:auto" class="combo">' + (G.combo >= 2 ? '🔥 連對 ' + G.combo : '') + '</span>' + (G.practice ? '' : UI.hearts(G.hearts, HEARTS)) + '</div>';
   }
-  function bindQuit() { var q = document.getElementById('quit'); if (q) q.onclick = function () { if (confirm('離開這一關？這次的進度不會保留。')) menu(); }; }
+  function bindQuit() {
+    var q = document.getElementById('quit'); if (q) q.onclick = function () { if (confirm('離開這一關？這次的進度不會保留。')) menu(); };
+    var p = document.getElementById('peek'); if (p) p.onclick = peek;
+  }
+  /* 📖 小卡：不離開關卡，直接看概念小卡 */
+  function peek() {
+    var o = document.createElement('div'); o.className = 'cg-over'; o.id = 'peek-box';
+    o.innerHTML = '<div class="card pop cg-box" role="dialog" aria-label="概念小卡"><div class="row between"><b>📖 ' + esc(G.lv.title) + '・概念小卡</b><button class="btn sm" id="peek-x" type="button">關閉 ✕</button></div>' +
+      '<div class="note mt1 learn">' + G.lv.learn + '</div></div>';
+    document.body.appendChild(o);
+    function close() { o.remove(); }
+    o.onclick = function (e) { if (e.target === o) close(); };
+    document.getElementById('peek-x').onclick = close;
+    document.getElementById('peek-x').focus();
+  }
+
+  /* 🧊 冷靜一下：暫停 5 秒看重點；離開畫面（切分頁、切視窗、縮小）秒數重算 */
+  var COOL = 5;
+  function cooldown(reason) {
+    if (document.getElementById('cool-box')) return;
+    var o = document.createElement('div'); o.className = 'cg-over'; o.id = 'cool-box';
+    var tip = G.lv.learn.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    o.innerHTML = '<div class="card pop cg-box center" role="alertdialog" aria-label="冷靜一下"><p style="font-size:2.4rem">🧊</p><h3 class="black">冷靜一下</h3>' +
+      '<p class="small mt1">' + (reason === 'fast' ? '答得太快又答錯了 —— 先看清楚題目再作答。' : '連續答錯了 —— 用猜的過不了關，先看一下重點。') + '</p>' +
+      '<div class="note small mt2" style="text-align:left">📖 ' + esc(tip.length > 220 ? tip.slice(0, 220) + '…' : tip) + '</div>' +
+      '<div class="cool-n black mt2" id="cool-n">' + COOL + '</div><p class="tiny soft" id="cool-msg">看著這個畫面，秒數倒數完才能繼續（離開畫面會重算）</p>' +
+      '<button class="btn go mt1" id="cool-ok" type="button" disabled>我準備好了</button></div>';
+    document.body.appendChild(o);
+    app.inert = true;
+    var left = COOL, away = false, msg = document.getElementById('cool-msg'), n = document.getElementById('cool-n');
+    function reset(why) { left = COOL; n.textContent = left; msg.textContent = why; msg.className = 'tiny bold mt1'; msg.style.color = 'var(--bad)'; }
+    function onBlur() { away = true; reset('⚠️ 你離開了畫面，秒數重算！'); }
+    function onFocus() { away = false; }
+    function onVis() { if (document.hidden) onBlur(); else onFocus(); }
+    window.addEventListener('blur', onBlur); window.addEventListener('focus', onFocus); document.addEventListener('visibilitychange', onVis);
+    var tm = setInterval(function () {
+      if (away || document.hidden) return;
+      left--; n.textContent = Math.max(0, left);
+      if (left <= 0) {
+        clearInterval(tm);
+        window.removeEventListener('blur', onBlur); window.removeEventListener('focus', onFocus); document.removeEventListener('visibilitychange', onVis);
+        var ok = document.getElementById('cool-ok'); ok.disabled = false; ok.focus();
+        ok.onclick = function () { o.remove(); app.inert = false; if (G) G.streak = 0; };
+      }
+    }, 1000);
+  }
 
   function round() {
     var rd = G.rounds[G.r];
@@ -118,11 +172,17 @@ window.CARDGAME = { mount: function (opts) {
   }
 
   function hit(ok) {
+    var fast = Date.now() - (G.qt || 0) < 1500;
+    if (G.practice) return true;   // 修復站不扣心
     G.total++;
-    if (ok) { G.right++; G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo); }
-    else { G.combo = 0; G.hearts--; }
+    if (ok) { G.right++; G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo); G.streak = 0; }
+    else {
+      G.combo = 0; G.hearts--; G.streak = (G.streak || 0) + 1;
+      if (G.hearts > 0 && (G.streak >= 2 || fast)) { var why = G.streak >= 2 ? 'streak' : 'fast', g0 = G; setTimeout(function () { if (G && G === g0) cooldown(why); }, 60); }
+    }
     return G.hearts > 0;
   }
+  var swapStage = function () { return G.st != null && !G.practice; };   // 三星三階才「答錯換一題」
 
   function nextRound() {
     G.r++;
@@ -135,6 +195,7 @@ window.CARDGAME = { mount: function (opts) {
   var busy = false;
   function lock(b) { busy = b; app.classList.toggle('busy', b); }
   function outOfHearts(fb, disableSel) {
+    G.deadRd = G.rounds[G.r];   // 修復站要練的就是這一回合
     app.querySelectorAll(disableSel).forEach(function (x) { x.disabled = true; });
     fb.innerHTML = '<div class="note bad pop"><b>💔 愛心用完了</b> 回去看看概念小卡，再挑戰一次。</div><div class="row mt2"><button class="btn primary" id="nx">看結果</button></div>';
     document.getElementById('nx').onclick = gameOver;
@@ -143,8 +204,7 @@ window.CARDGAME = { mount: function (opts) {
 
   /* sort：一張一張出卡 */
   function playSort(rd) {
-    var items = rd.ordered ? rd.items.slice() : shuffle(rd.items);
-    if (rd.pick) items = items.slice(0, rd.pick);
+    var all = rd.ordered ? rd.items.slice() : shuffle(rd.items), items = rd.pick ? all.slice(0, rd.pick) : all.slice(), used = items.slice();
     var k = 0;
     function card() {
       var it = items[k];
@@ -175,6 +235,16 @@ window.CARDGAME = { mount: function (opts) {
               btn.classList.add('wrong'); btn.disabled = true;
               if (!alive) return outOfHearts(fb, '.bucket');
               var lab = rd.buckets.filter(function (b) { return b.id === btn.dataset.b; })[0];
+              if (swapStage() && rd.buckets.length <= 3) {   // 選項少：答錯就換一張，不能翻牌猜
+                app.querySelectorAll('.bucket').forEach(function (x) { x.disabled = true; });
+                fb.innerHTML = '<div class="note bad pop">❌ 不是「' + esc(lab.label) + '」。選項少的題目答錯就換一張新卡片 —— 用猜的過不了關。</div><div class="row mt2"><button class="btn" id="swap">換一張 →</button></div>';
+                document.getElementById('swap').onclick = function () {
+                  var fresh = all.filter(function (x) { return used.indexOf(x) < 0; });
+                  if (fresh.length) { items[k] = fresh[0]; used.push(fresh[0]); }
+                  card();
+                };
+                return;
+              }
               fb.innerHTML = '<div class="note bad pop">❌ 不是「' + esc(lab.label) + '」—— 再想想，換一個答案。</div>';
             }
           });
@@ -331,12 +401,15 @@ window.CARDGAME = { mount: function (opts) {
     var make = CARDGAME.gens && CARDGAME.gens[rd.gen];
     if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到出題器：' + esc(rd.gen) + '</p></section>'; return; }
     var qs = make(rd), k = 0;
+    function fresh() { var pool = make(rd); return pool[Math.floor(Math.random() * pool.length)]; }
+    function hintOf(it, v, tries) { var h = tries >= 2 && it.hint2 ? it.hint2 : it.hint; return typeof h === 'function' ? h(v) : h; }
     function q() {
-      var it = qs[k], tool = it.tool || rd.tool, kind = it.kind || 'input', val = null;
+      var it = qs[k], tool = it.tool || rd.tool, kind = it.kind || 'input', val = null, tries = 0;
       app.innerHTML = '<section class="card">' + hud() +
         '<p class="small soft bold mt2">🎲 ' + esc(it.prompt || rd.prompt) + '（' + (k + 1) + ' / ' + qs.length + '）</p>' +
         '<div class="qcard mt1 pop"><div class="big">' + (it.icon || '✏️') + '</div><div class="txt' + (it.mono === false ? '' : ' mono') + '">' + esc(it.t) + '</div>' +
         (it.sub ? '<div class="small soft bold mt1">' + esc(it.sub) + '</div>' : '') + (it.html ? '<div class="mt1">' + it.html + '</div>' : '') + '</div>' +
+        (G.practice && it.hint ? '<div class="note small mt2">💡 提示：' + esc(hintOf(it, '', 1)) + '</div>' : '') +
         (tool ? '<div class="mt2" id="tool"></div>' : '') + body(it, kind) +
         '<div class="fb mt2" id="fb" aria-live="polite"></div></section>';
       bindQuit();
@@ -351,21 +424,47 @@ window.CARDGAME = { mount: function (opts) {
         }
         var ok = !!it.check(v), alive = hit(ok), fb = document.getElementById('fb');
         refreshHud();
-        if (ok) {
-          form.querySelectorAll('input,button,select').forEach(function (x) { x.disabled = true; });
-          fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(typeof it.why === 'function' ? it.why(v) : (it.why || '')) + '</div>' +
-            '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < qs.length ? '下一題 →' : '完成這回合 →') + '</button></div>';
-          var nx = document.getElementById('nx'); nx.focus();
-          nx.onclick = function () { k++; if (k < qs.length) q(); else nextRound(); };
-        } else if (!alive) {
-          outOfHearts(fb, '#tf button, #tf input, #tf select');
-        } else {
-          var h = typeof it.hint === 'function' ? it.hint(v) : it.hint;
-          fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (h ? ' 💡 ' + esc(h) : '') + '</div>';
-          if (kind === 'input') document.getElementById('ans').select();
-          if (kind === 'order') { var rs = document.getElementById('reset'); if (rs) rs.click(); }
-        }
+        if (ok && it.follow && !G.practice) return follow(it, form, fb);
+        if (ok) return good(it, v, form, fb);
+        if (!alive) return outOfHearts(fb, '#tf button, #tf input, #tf select');
+        tries++;
+        if (kind === 'choice' && swapStage()) return swap(fb, '❌ 不對。選擇題答錯就換一題新的 —— 用猜的過不了關。');
+        var h = hintOf(it, v, tries);
+        fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (h ? ' ' + (tries >= 2 && it.hint2 ? '🔍 ' : '💡 ') + esc(h) : '') +
+          (tries >= 2 ? '<br><span class="tiny">還是卡住？按上面的「📖 小卡」回去看重點。</span>' : '') + '</div>';
+        if (kind === 'input') document.getElementById('ans').select();
+        if (kind === 'order') { var rs = document.getElementById('reset'); if (rs) rs.click(); }
       };
+    }
+    function good(it, v, form, fb) {
+      form.querySelectorAll('input,button,select').forEach(function (x) { x.disabled = true; });
+      fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(typeof it.why === 'function' ? it.why(v) : (it.why || '')) + '</div>' +
+        '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < qs.length ? '下一題 →' : '完成這回合 →') + '</button></div>';
+      var nx = document.getElementById('nx'); nx.focus();
+      nx.onclick = function () { k++; if (k < qs.length) q(); else nextRound(); };
+    }
+    function swap(fb, msg) {
+      app.querySelectorAll('#tf button, #tf input, #tf select, .gfol').forEach(function (x) { x.disabled = true; });
+      fb.innerHTML = '<div class="note bad pop">' + esc(msg) + '</div><div class="row mt2"><button class="btn" id="swap">換一題 →</button></div>';
+      document.getElementById('swap').onclick = function () { qs[k] = fresh(); q(); };
+    }
+    /* 追問「為什麼」：選對了還要說得出理由，才算真的懂 */
+    function follow(it, form, fb) {
+      var f = it.follow;
+      form.querySelectorAll('input,button,select').forEach(function (x) { x.disabled = true; });
+      fb.innerHTML = '<div class="note ok pop"><b>✅ 對了！</b> 再追問一題：<b>' + esc(f.q) + '</b></div><div class="buckets mt1">' +
+        f.options.map(function (o) { return '<button type="button" class="pick bucket gfol" data-v="' + esc(o.id) + '">' + esc(o.label) + '</button>'; }).join('') + '</div><div id="fb2" class="mt1"></div>';
+      G.qt = Date.now();
+      app.querySelectorAll('.gfol').forEach(function (b) {
+        b.onclick = function () {
+          var ok2 = !!f.check(b.dataset.v), alive = hit(ok2), fb2 = document.getElementById('fb2');
+          refreshHud();
+          if (ok2) { b.classList.add('right'); app.querySelectorAll('.gfol').forEach(function (x) { x.disabled = true; }); fb2.innerHTML = ''; return good(it, b.dataset.v, form, fb2); }
+          b.classList.add('wrong');
+          if (!alive) return outOfHearts(fb2, '.gfol');
+          swap(fb2, '❌ 答案對，但理由不對 —— 可能是猜的。換一題新的。');
+        };
+      });
     }
     /* 各種動手題型的畫面 */
     function body(it, kind) {
@@ -422,6 +521,7 @@ window.CARDGAME = { mount: function (opts) {
 
   /* ── 結束 ─────────────────────────────────── */
   function finish() {
+    if (G.practice) return repairDone();
     if (G.st != null) return finishStage();
     var stars = G.hearts, lv = G.lv, i = G.i;
     var r = STORE.saveLevel(MOD, lv.id, { stars: stars, score: Math.round(G.right / Math.max(1, G.total) * 100), extra: { maxCombo: G.maxCombo } });
@@ -462,24 +562,51 @@ window.CARDGAME = { mount: function (opts) {
     if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
   }
 
+  /* 🩹 修復站：❤️ 用完後，針對卡住的那一回合先練 2 題（不扣心、先給提示），才能重新挑戰 */
   function gameOver() {
-    var i = G.i, lv = G.lv;
-    if (G.st != null) {
-      var s = G.st;
-      app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">第 ' + (s + 1) + ' 階的愛心用完了</h2>' +
-        '<p class="soft mt1">這一階重來就好（題目會換一組）。已經拿到的星星不會不見。</p>' +
-        '<nav id="end-pager"></nav></section>';
-      UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '概念小卡', go: function () { learn(i); } },
-        { id: 'retry', lbl: '再挑戰一次 →', title: STAGE[s].ic + ' 第 ' + (s + 1) + ' 階　' + STAGE[s].n, go: function () { start(i, s); } });
-      return;
-    }
-    app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">愛心用完了</h2>' +
-      '<p class="soft mt1">回去看看概念小卡，再挑戰一次！這次的結果不會記錄。</p>' +
-      '<nav id="end-pager"></nav></section>';
-    UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
-      { id: 'retry', lbl: '再挑戰一次 →', title: '📖 先看概念小卡', go: function () { learn(i); } });
+    var i = G.i, s = G.st, rd = G.deadRd || G.rounds[G.r];
+    var canDrill = rd && (rd.type === 'gen' || rd.type === 'sort');
+    app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">' + (s != null ? '第 ' + (s + 1) + ' 階的' : '') + '愛心用完了</h2>' +
+      '<p class="soft mt1">先到 <b>🩹 修復站</b> 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
+      '<div class="note mt2" style="text-align:left">🩹 卡住的回合：<b>' + esc(rd ? (rd.prompt || rd.title || '這一回合') : '這一回合') + '</b><br>' +
+      (canDrill ? '練 2 題：不扣心、題目上方先給提示，答完看解說。' : '先把概念小卡讀一遍（看著畫面 10 秒）。') + '</div>' +
+      '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="repair-go">🩹 進入修復站</button></div></section>';
+    var go = document.getElementById('repair-go'); go.focus();
+    go.onclick = function () {
+      if (!canDrill) return readCard();
+      var prd = Object.assign({}, rd, rd.type === 'gen' ? { n: 2 } : { pick: 2 });
+      G = { i: i, lv: G.lv, st: s, rounds: [prd], r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0, practice: true };
+      round();
+    };
   }
-
+  function readCard() {
+    var lv = G.lv;
+    app.innerHTML = '<section class="card pop"><p class="kicker">🩹 修復站 · 讀概念小卡</p><h2 class="black" style="font-size:1.4rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
+      '<div class="note mt2 learn">' + lv.learn + '</div><p class="small bold mt2" id="read-msg">看著這個畫面 <span id="read-n">10</span> 秒（離開畫面會重算）</p>' +
+      '<div class="row mt1"><button class="btn go" id="read-ok" disabled>讀完了</button></div></section>';
+    var left = 10, away = false, n = document.getElementById('read-n');
+    function onBlur() { away = true; left = 10; n.textContent = left; document.getElementById('read-msg').style.color = 'var(--bad)'; }
+    function onFocus() { away = false; }
+    function onVis() { if (document.hidden) onBlur(); else onFocus(); }
+    window.addEventListener('blur', onBlur); window.addEventListener('focus', onFocus); document.addEventListener('visibilitychange', onVis);
+    var tm = setInterval(function () {
+      if (!document.getElementById('read-n')) { clearInterval(tm); return; }
+      if (away || document.hidden) return;
+      left--; n.textContent = Math.max(0, left);
+      if (left <= 0) {
+        clearInterval(tm); window.removeEventListener('blur', onBlur); window.removeEventListener('focus', onFocus); document.removeEventListener('visibilitychange', onVis);
+        var b = document.getElementById('read-ok'); b.disabled = false; b.focus(); b.onclick = repairDone;
+      }
+    }, 1000);
+  }
+  function repairDone() {
+    var i = G.i, s = G.st;
+    app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">🩹</p><h2 class="black">修復完成！</h2>' +
+      '<p class="soft mt1">觀念補起來了，重新挑戰吧（題目會換一組）。</p><nav id="end-pager"></nav></section>';
+    UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '概念小卡', go: function () { learn(i); } },
+      { id: 'retry', lbl: '重新挑戰 →', title: s != null ? STAGE[s].ic + ' 第 ' + (s + 1) + ' 階　' + STAGE[s].n : '📖 ' + L[i].title, go: function () { start(i, s); } });
+    document.getElementById('retry').focus();
+  }
   UI.requireLogin(function () {
     var want = (location.hash || '').slice(1);
     var i = L.findIndex(function (lv) { return lv.id === want; });

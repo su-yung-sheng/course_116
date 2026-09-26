@@ -5,6 +5,7 @@ const CABLE = { '電信機房 → 你家社區': 'fiber', '臺北 ↔ 臺中的�
   '牆上的有線電視孔 → 電視盒': 'coax', '社區的有線電視系統 → 各戶': 'coax' };
 const HTTPS = { 登入學校的成績查詢系統: 'y', '網路商店結帳，輸入信用卡號': 'y', '填寫報名表：姓名、電話、地址': 'y', 網路銀行轉帳: 'y', 變更社群網站的密碼: 'y',
   看氣象局公布的明天天氣: 'n', 看公開的新聞文章: 'n', 查公車到站時間: 'n', 看學校首頁的最新消息: 'n' };
+const HTTPS_WHY = { 登入學校的成績查詢系統: '帳號密碼', '網路商店結帳，輸入信用卡號': '付款（信用卡）資料', '填寫報名表：姓名、電話、地址': '個人資料', 網路銀行轉帳: '金錢交易資料', 變更社群網站的密碼: '帳號密碼' };
 const REG = { tw: '臺灣', jp: '日本', kr: '韓國', uk: '英國' }, CAT = { edu: '學校', ac: '學校', gov: '政府機關', go: '政府機關', com: '公司', co: '公司', org: '非營利組織', or: '非營利組織' };
 const n = s => (s.match(/\d+(\.\d+)?/g) || []).map(Number);
 const strip = g => g.map(x => x.replace(/^0+/, '') || '0');
@@ -36,12 +37,19 @@ export async function solve(page) {
   if (await has('.gbit')) { const d = n(t)[0]; return { kind: 'bits', answer: d.toString(2).padStart(8, '0') }; }
   if (await has('.gopt')) {
     const opts = await page.$$eval('.gopt', bs => bs.map(b => b.dataset.v));
-    if (sub.includes('合法的 IPv4')) { const p = t.split('.'); return { kind: 'choice', answer: p.length === 4 && p.every(x => /^\d+$/.test(x) && +x <= 255) ? 'ok' : 'bad' }; }
-    if (sub.includes('公有還是私有')) { const [a, b] = t.split('.').map(Number); const pri = a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168); return { kind: 'choice', answer: pri ? 'pri' : 'pub' }; }
-    if (sub.includes('https')) return { kind: 'choice', answer: HTTPS[t] };
+    if (sub.includes('合法的 IPv4')) {
+      const p = t.split('.'), why = p.length !== 4 ? '組數不對' : p.some(x => !/^\d+$/.test(x)) ? '不是數字' : p.some(x => +x > 255) ? '超過 255' : '每組都在';
+      return { kind: 'choice', answer: why === '每組都在' ? 'ok' : 'bad', follow: why };
+    }
+    if (sub.includes('公有還是私有')) {
+      const [a, b] = t.split('.').map(Number), f = a === 10 ? '10.x' : (a === 172 && b >= 16 && b <= 31) ? '172.16' : (a === 192 && b === 168) ? '192.168' : '三段都不是';
+      return { kind: 'choice', answer: f === '三段都不是' ? 'pub' : 'pri', follow: f };
+    }
+    if (sub.includes('https')) return { kind: 'choice', answer: HTTPS[t], follow: HTTPS[t] === 'y' ? HTTPS_WHY[t] : '公開資料' };
     if (sub.includes('最可能是')) { const s = t.split('.'); return { kind: 'choice', answer: REG[s[3]] + '的' + CAT[s[2]] }; }
     // wirelessPick
-    return { kind: 'choice', answer: sub.includes('不用上網') ? 'bt' : sub.includes('附近沒有 Wi-Fi 基地臺') ? 'mobile' : 'wifi', opts };
+    const w = sub.includes('不用上網') ? 'bt' : sub.includes('附近沒有 Wi-Fi 基地臺') ? 'mobile' : 'wifi';
+    return { kind: 'choice', answer: w, opts, follow: { bt: '近距離', wifi: '室內有', mobile: '會移動' }[w] };
   }
   // 打答案
   let a;
@@ -77,4 +85,12 @@ export async function answer(page, sol, wrong) {
   }
   else if (sol.kind === 'bits') { const b = wrong ? '00000000' : sol.answer; for (let i = 0; i < 8; i++) if (b[i] === '1') await page.click(`.gbit[data-j="${i}"]`); }
   await page.click('#tf button.go');
+  // 追問「為什麼」
+  if (!wrong && sol.follow) {
+    await page.waitForSelector('.gfol');
+    const labels = await page.$$eval('.gfol', bs => bs.map(b => b.textContent.trim()));
+    const pickI = labels.findIndex(l => l === sol.follow);
+    const i = pickI >= 0 ? pickI : labels.findIndex(l => l.includes(sol.follow));
+    await page.locator('.gfol').nth(i).click();
+  }
 }
