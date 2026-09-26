@@ -28,12 +28,12 @@ window.CONFIG = {
     { id: 'media', no: '四', title: '多媒體專題：30 秒廣告', sub: '4 個概念關卡＋6 個 AI 素養關卡＋好好用 AI 廣告工作站', icon: '🎬', color: 'u1',
       href: 'media.html', maxStars: 30, levels: ['M1', 'M2', 'M3', 'M4', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'W1', 'W2', 'W3', 'W4', 'W5'],
       desc: '學會「好好用 AI」：和 AI 一起發想主角、寫三句文案、規劃鏡頭和配樂，最後自己實拍剪輯一支 30 秒廣告，讓平凡物品變主角。', chapter: '第 1 章' },
-    { id: 'network', no: '五', title: '網路世界', sub: '7 個互動體驗遊戲', icon: '🌐', color: 'u3',
+    { id: 'network', no: '五', title: '網路世界', sub: '7 個互動體驗遊戲', icon: '🌐', color: 'u2',
       href: 'network.html', maxStars: 21, levels: ['N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7'],
       desc: '封包快遞、IP 位址偵探、網址拆解、無線網路選手，還有結帳時「嗶」的祕密。', chapter: '第 2 章' },
     /* 單元六：三個部分包成一張課程小卡（parts）。單元首頁 unit6.html 再分成三張小卡；
        各部分的進度仍存在自己的 id（data／sheet／cipher），闖關地圖把它們加起來。 */
-    { id: 'unit6', no: '六', title: '進階資料處理', sub: '資料偵探 → 試算表實作 → 密碼特務', icon: '🗂️', color: 'u2',
+    { id: 'unit6', no: '六', title: '進階資料處理', sub: '資料偵探 → 試算表實作 → 密碼特務', icon: '🗂️', color: 'u3',
       href: 'unit6.html', maxStars: 45, chapter: '第 3 章',
       levels: ['D1', 'D2', 'D3', 'D4', 'T1', 'T2', 'T3', 'T4', 'T5', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6'],
       desc: '看懂 → 動手 → 挑戰：先認識大數據與資料清理，再用小試算表寫公式統計，最後當密碼特務（🎲 每次隨機出題）。',

@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0與1的藝術 - 單元四</title>
+    <title>1-4 · 數位時代 · 116-1</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../shared/theme.css">
     <link rel="stylesheet" href="course-components.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -12,9 +13,9 @@
         /* ========================================== */
         /* 共用基礎樣式                               */
         /* ========================================== */
-        body { font-family: 'Noto Sans TC', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); color: #1e293b; min-height: 100vh; }
+        body { font-family: 'Noto Sans TC', sans-serif; color: var(--ink); min-height: 100vh; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
-        .galaxy-card { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 32px; box-shadow: 0 20px 40px rgba(14, 165, 233, 0.1); border: 1px solid rgba(255, 255, 255, 0.8); }
+        .galaxy-card { background-color: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--line); }   /* 116：改成全站卡片樣式 */
         .nav-btn { position: relative; overflow: hidden; transition: all 0.2s ease-in-out; border-radius: 999px; border: 2px solid transparent; text-decoration: none; display: flex; align-items: center; justify-content: center; }
         .nav-active { background-color: #3b82f6; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
         .nav-inactive { background-color: #ffffff; color: #64748b; border-color: #e2e8f0; }
@@ -53,7 +54,7 @@
         .pe-magnifier-lens { position: absolute; width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 0 3px #8b5cf6, 0 8px 20px rgba(0,0,0,0.4); pointer-events: none; display: none; background-repeat: no-repeat; z-index: 10; }
 
         /* ========================================== */
-        /* 單元四：解碼填色遊戲專屬樣式                 */
+        /* 1-4 解碼填色遊戲專屬樣式                 */
         /* ========================================== */
         .img-game-container { background-color: white; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); padding: 2rem; width: 100%; display: flex; flex-direction: column; gap: 1.5rem; }
         .img-main-content { display: flex; flex-direction: column; gap: 2rem; }
@@ -81,34 +82,22 @@
         #img-game-overlay { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
     </style>
 </head>
-<body class="theme-rose p-4 md:p-8 relative" data-unit="4">
+<body class="theme-rose" data-unit="4">
     
     <!-- 背景裝飾 -->
-    <div class="fixed top-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob -z-10"></div>
-    <div class="fixed top-[20%] right-[-5%] w-72 h-72 bg-purple-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 -z-10"></div>
 
-    <div class="max-w-7xl mx-auto w-full flex flex-col relative z-0">
+    <div class="wrap relative">
         <!-- 標題與選單 -->
-        <header class="text-center space-y-3 animate-fade-up pt-2 shrink-0">
-            <div class="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold tracking-widest mb-1 shadow-sm">NINTH GRADE · COMPUTER SCIENCE</div>
-            <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight">0與1的藝術</h1>
-            <p class="text-slate-500 text-lg font-medium tracking-wide mb-2">資料表示與處理</p>
-        </header>
-
-        <nav class="course-nav flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-visible justify-start md:justify-center -mx-4 px-4 md:mx-0 md:px-0 animate-fade-up shrink-0 pb-4" style="animation-delay: 0.1s;" data-course-nav>
-            <a href="index.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-5 md:py-3 md:text-base font-bold">課程地圖</a>
-            <a href="1.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元一：二進位原理</a>
-            <a href="2.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元二：文字數位化</a>
-            <a href="3.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元三：音訊數位化</a>
-            <a href="4.html" class="nav-btn nav-active shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元四：影像數位化</a>
-        </nav>
+        <!-- 116 全站頁首與課程小卡（progress-hook.js 產生） -->
+        <header id="topbar"></header>
+        <nav id="ucards"></nav>
 
         <main class="relative">
             <!-- ================= 單元四 ================= -->
             <section id="section-image" class="galaxy-card p-6 md:p-10 animate-fade-up">
                 <div class="flex items-center gap-4 mb-6">
                     <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-                    <div><h2 class="text-2xl md:text-3xl font-bold text-slate-800">單元四：影像數位化</h2><p class="text-slate-500 mt-1 text-sm">從像素觀察到色彩編碼，探索螢幕裡的影像世界！</p></div>
+                    <div><h2 class="text-2xl md:text-3xl font-bold text-slate-800">1-4 影像數位化</h2><p class="text-slate-500 mt-1 text-sm">從像素觀察到色彩編碼，探索螢幕裡的影像世界！</p></div>
                 </div>
 
                 <section class="mb-8 rounded-3xl border border-rose-100 bg-rose-50/70 p-5 md:p-6" aria-labelledby="unit-four-goals" data-course-goals><div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p class="text-xs font-black tracking-[0.18em] text-rose-600">LEARNING GOALS</p><h3 id="unit-four-goals" class="mt-1 text-xl font-black text-slate-800">完成這一單元，你可以……</h3></div><span class="w-fit rounded-full bg-white px-3 py-1 text-xs font-bold text-rose-600 shadow-sm">建議順序：像素 → 色彩 → 壓縮</span></div><ul class="mt-5 grid gap-3 md:grid-cols-3 text-sm text-slate-600"><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-rose-600">01</span> 用像素與解析度說明影像的細緻程度。</li><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-rose-600">02</span> 理解取樣、量化與色彩深度的關係。</li><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-rose-600">03</span> 比較圖片格式與壓縮方式的取捨。</li></ul></section>
@@ -711,7 +700,7 @@
             </section>
         </main>
         
-        <footer class="text-center text-slate-400 text-xs font-mono-code py-8">// 國中資訊科技：資料表示與處理教學設計 - 單元四</footer>
+        <footer class="tiny faint center mt3">內容改編自「0 與 1 的藝術」（unforte_114）</footer>
     </div>
 
     <script>
@@ -1893,6 +1882,7 @@
     <script src="../config.js"></script>
     <script src="../../shared/store.js"></script>
     <script src="../../shared/ui.js"></script>
+    <script src="../../shared/unit.js"></script>
     <script src="../../shared/seal.js"></script>
     <script src="progress-hook.js"></script>
 </body>

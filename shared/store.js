@@ -104,6 +104,16 @@
       return n;
     },
 
+    /** 單元的一個部分（config.js 的 parts）：有 mod 就只算那幾關，沒有就算整個 id 模組 */
+    partStars: function (p) {
+      if (!p.mod) return this.moduleStars(p.id);
+      var self = this; return (p.levels || []).reduce(function (a, id) { return a + ((self.level(p.mod, id) || {}).stars || 0); }, 0);
+    },
+    partDone: function (p) {
+      if (!p.mod) return this.moduleDone(p.id);
+      var self = this; return (p.levels || []).filter(function (id) { var r = self.level(p.mod, id); return r && ((r.stars || 0) > 0 || r.done); }).length;
+    },
+
     /** 模組完成幾關（stars ≥ 1 或 done） */
     moduleDone: function (mod) {
       var lv = this.levels(mod), n = 0;

@@ -5,7 +5,7 @@
   .lv-list{display:grid;gap:.45rem}
   .lv{display:flex;align-items:center;gap:.55rem;border:2px solid var(--line);background:#fff;border-radius:.8rem;padding:.5rem .65rem;cursor:pointer;text-align:left;font-weight:800;font-size:.88rem;color:var(--ink)}
   .lv:hover{border-color:#94a3b8}
-  .lv.on{border-color:var(--u2);background:#f0fdf4}
+  .lv.on{border-color:var(--unit);background:var(--unit-soft)}
   .lv.lock{opacity:.5;cursor:not-allowed}
   .lv .ic{font-size:1.3rem}
   .lv .st{margin-left:auto;font-size:.8rem}

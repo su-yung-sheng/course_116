@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0與1的藝術 - 單元三</title>
+    <title>1-3 · 數位時代 · 116-1</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../shared/theme.css">
     <link rel="stylesheet" href="course-components.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); color: #1e293b; min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
+        body { font-family: 'Noto Sans TC', sans-serif; color: var(--ink); min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
-        .galaxy-card { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 32px; box-shadow: 0 20px 40px rgba(14, 165, 233, 0.1); border: 1px solid rgba(255, 255, 255, 0.8); }
+        .galaxy-card { background-color: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--line); }   /* 116：改成全站卡片樣式 */
         .nav-btn { position: relative; overflow: hidden; transition: all 0.2s ease-in-out; border-radius: 999px; border: 2px solid transparent; text-decoration: none; display: flex; align-items: center; justify-content: center; }
         .nav-active { background-color: #3b82f6; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
         .nav-inactive { background-color: #ffffff; color: #64748b; border-color: #e2e8f0; }
@@ -28,32 +29,20 @@
         .animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
     </style>
 </head>
-<body class="theme-teal p-4 md:p-8 relative" data-unit="3">
-    <div class="fixed top-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 -z-10"></div>
-    <div class="fixed top-[20%] right-[-5%] w-72 h-72 bg-purple-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 -z-10" style="animation-delay: 2s;"></div>
+<body class="theme-teal" data-unit="3">
 
-    <div class="max-w-7xl mx-auto w-full flex flex-col relative z-0">
+    <div class="wrap relative">
         <!-- 標題與選單 -->
-        <header class="text-center space-y-3 animate-fade-up pt-2 shrink-0">
-            <div class="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold tracking-widest mb-1 shadow-sm">NINTH GRADE · COMPUTER SCIENCE</div>
-            <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight">0與1的藝術</h1>
-            <p class="text-slate-500 text-lg font-medium tracking-wide mb-2">資料表示與處理</p>
-        </header>
-
-        <nav class="course-nav flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-visible justify-start md:justify-center -mx-4 px-4 md:mx-0 md:px-0 animate-fade-up shrink-0 pb-4" style="animation-delay: 0.1s;" data-course-nav>
-            <a href="index.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-5 md:py-3 md:text-base font-bold">課程地圖</a>
-            <a href="1.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元一：二進位原理</a>
-            <a href="2.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元二：文字數位化</a>
-            <a href="3.html" class="nav-btn nav-active shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元三：音訊數位化</a>
-            <a href="4.html" class="nav-btn nav-inactive shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-6 md:py-3 md:text-base font-bold">單元四：影像數位化</a>
-        </nav>
+        <!-- 116 全站頁首與課程小卡（progress-hook.js 產生） -->
+        <header id="topbar"></header>
+        <nav id="ucards"></nav>
 
         <!-- 單元三內容 -->
         <main class="w-full">
             <section class="galaxy-card p-6 md:p-10 animate-fade-up">
                 <div class="flex items-center gap-4 mb-6">
                     <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
-                    <div><h2 class="text-2xl md:text-3xl font-bold text-slate-800">單元三：音訊數位化</h2><p class="text-slate-500 mt-1 text-sm">聲音是物理波動，電腦將其轉換成 0 與 1 的過程。</p></div>
+                    <div><h2 class="text-2xl md:text-3xl font-bold text-slate-800">1-3 音訊數位化</h2><p class="text-slate-500 mt-1 text-sm">聲音是物理波動，電腦將其轉換成 0 與 1 的過程。</p></div>
                 </div>
 
                 <section class="mb-8 rounded-3xl border border-teal-100 bg-teal-50/70 p-5 md:p-6" aria-labelledby="unit-three-goals" data-course-goals><div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p class="text-xs font-black tracking-[0.18em] text-teal-600">LEARNING GOALS</p><h3 id="unit-three-goals" class="mt-1 text-xl font-black text-slate-800">完成這一單元，你可以……</h3></div><span class="w-fit rounded-full bg-white px-3 py-1 text-xs font-bold text-teal-600 shadow-sm">建議順序：波形 → 取樣 → 格式</span></div><ul class="mt-5 grid gap-3 md:grid-cols-3 text-sm text-slate-600"><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-teal-600">01</span> 用振幅、頻率與音色描述聲音。</li><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-teal-600">02</span> 說明聲音取樣與量化的步驟。</li><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-teal-600">03</span> 比較 WAV、MP3 與 MIDI 的特性。</li></ul></section>
@@ -219,7 +208,7 @@
                 <section class="mt-5 rounded-2xl border border-teal-100 bg-white p-5" aria-labelledby="unit-three-discussion"><div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"><div><p class="text-xs font-black tracking-[0.16em] text-teal-600">PAIR TALK</p><h3 id="unit-three-discussion" class="text-lg font-black text-slate-800">同伴討論挑戰</h3></div><span class="text-xs font-bold text-slate-500">先選擇，再說明理由</span></div><p class="mt-3 text-sm text-slate-600">要把一段訪談上傳到網路，你會優先採用哪種格式？</p><div class="mt-3 grid gap-2 sm:grid-cols-2"><button onclick="chooseDiscussion('MP3，兼顧容量與一般聆聽需求', this)" class="discussion-btn">MP3：兼顧容量與聆聽需求</button><button onclick="chooseDiscussion('WAV，保留更多原始聲音細節', this)" class="discussion-btn">WAV：保留更多原始細節</button></div><p id="discussion-feedback" class="mt-3 min-h-5 text-sm font-bold text-teal-700" aria-live="polite">選擇後，和同伴用「我選……因為……」說明你的理由。</p></section>
             </section>
         </main>
-        <footer class="text-center text-slate-400 text-xs font-mono-code py-8">// 國中資訊科技：資料表示與處理教學設計</footer>
+        <footer class="tiny faint center mt3">內容改編自「0 與 1 的藝術」（unforte_114）</footer>
     </div>
 
     <script>
@@ -385,6 +374,7 @@
     <script src="../config.js"></script>
     <script src="../../shared/store.js"></script>
     <script src="../../shared/ui.js"></script>
+    <script src="../../shared/unit.js"></script>
     <script src="../../shared/seal.js"></script>
     <script src="progress-hook.js"></script>
 </body>

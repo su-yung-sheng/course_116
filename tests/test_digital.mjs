@@ -9,7 +9,7 @@ await page.goto(BASE + '/11601/hub.html');
 await login(page);
 for (const u of ['1', '2']) {
   await page.goto(BASE + `/11601/digital/${u}.html`);
-  await page.waitForSelector('#c116-back');
+  await page.waitForSelector('#ucards .ucard.on');
   // 對錯封存在 data-k，測試改從 private/11601/digital/review.json 讀；u=1 先按一個錯的
   const rv = REVIEW[u];
   const btns = await page.$$('button[onclick*="answerReview"]');
@@ -27,8 +27,11 @@ for (const u of ['1', '2']) {
   console.log('unit', u, 'badge visible:', await page.isVisible('#review-badge'), 'rec:', JSON.stringify(await page.evaluate(k => STORE.level('digital', 'u' + k), u)));
 }
 await page.goto(BASE + '/11601/digital/index.html');
-await page.waitForSelector('.c116-stars');
-console.log('stars on map:', await page.$$eval('.c116-stars', e => e.map(x => x.getAttribute('aria-label'))));
+await page.waitForSelector('#ucards .ucard');
+const prog = await page.$$eval('#ucards .ucard .pg', e => e.map(x => x.textContent.replace(/\s+/g, '')));
+console.log('unit cards:', prog);
+if (!(prog[0].includes('2/3') && prog[1].includes('3/3'))) { console.log('✘ 課程小卡進度不對'); process.exitCode = 1; }
+console.log('topbar back:', await page.getAttribute('#topbar .back', 'href'), 'unit color:', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--unit').trim()));
 await page.screenshot({ path: SHOTS + 'digital-index.png' });
 await page.goto(BASE + '/11601/hub.html');
 await page.waitForTimeout(1200);

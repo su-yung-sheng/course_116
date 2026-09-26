@@ -82,10 +82,29 @@
   };
 
   /** 頁首：返回基地＋學生名牌。放在 <header id="topbar"> 裡 */
+  /** 這一頁屬於哪個單元？依 config.js 的 MODULES 比對網址（單元的 href、parts 的 href、或所在資料夾） */
+  UI.moduleOf = function () {
+    var C = window.CONFIG; if (!C || !C.MODULES) return null;
+    var seg = location.pathname.split('/'), file = seg.pop() || 'index.html', dir = seg.pop() || '';
+    return C.MODULES.filter(function (m) {
+      return m.href === file || m.href === dir + '/' + file || m.href.split('/')[0] === dir ||
+        (m.parts || []).some(function (p) { return p.href === file; });
+    })[0] || null;
+  };
+  /** 套用單元色：把 --unit 系列指到這個單元的 --uN（見 theme.css 與 docs/04_設計系統.md） */
+  UI.useUnitColor = function (c) {
+    if (!c) return;
+    var r = document.documentElement.style;
+    ['', '-bg', '-soft', '-line'].forEach(function (k) { r.setProperty('--unit' + k, 'var(--' + c + k + ')'); });
+    document.documentElement.setAttribute('data-unit', c);
+  };
+
   UI.topbar = function (el, opts) {
     opts = opts || {};
     if (typeof el === 'string') el = document.querySelector(el);
     if (!el) return;
+    var mod = UI.moduleOf();
+    UI.useUnitColor(opts.unit || (mod && mod.color));
     var hub = opts.hub || 'hub.html';
     function render() {
       var p = STORE.me();

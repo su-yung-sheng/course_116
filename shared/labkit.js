@@ -20,8 +20,15 @@ window.LABKIT = {
     var cur = 0;
     function isDone(id) { var r = STORE.level(MOD, id); return !!(r && r.done); }
     function tabs() {
-      document.getElementById('tabs').innerHTML = SECTIONS.map(function (s, i) {
-        return '<button class="tab' + (i === cur ? ' on' : '') + '" data-i="' + i + '">' + (isDone(s.id) ? '✅ ' : s.icon + ' ') + esc(s.badge) + ' ' + esc(s.title.split('：')[0]) + '</button>';
+      // 五節課用「課程小卡」排開（和其他單元同一套樣式，顏色是這個單元的單元色）
+      var nav = document.getElementById('tabs');
+      nav.className = 'ucards'; nav.style.setProperty('--n', SECTIONS.length);
+      nav.innerHTML = SECTIONS.map(function (s, i) {
+        var d = isDone(s.id);
+        return '<button class="ucard tab' + (i === cur ? ' on' : '') + '" data-i="' + i + '" aria-pressed="' + (i === cur) + '">' +
+          '<span class="no">' + (i + 1) + '</span><span class="here">目前在這裡 👇</span>' +
+          '<span class="ic">' + s.icon + '</span><span class="tt">' + esc(s.title.split('：')[0]) + '</span><span class="ds">' + esc(s.badge) + ' · ' + esc(s.link) + '</span>' +
+          '<span class="pg"><span>' + (d ? '✅ 完成' : '尚未完成') + '</span></span><span class="bar"><i style="width:' + (d ? 100 : 0) + '%"></i></span></button>';
       }).join('');
       document.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { show(+b.dataset.i); }; });
     }
@@ -32,7 +39,7 @@ window.LABKIT = {
       try { history.replaceState(null, '', '#' + s.id); } catch (e) {}
       var box = document.getElementById('sec');
       box.innerHTML =
-        '<article class="card pop" style="border-top:6px solid var(--u4)"><div class="row between"><div class="row"><span style="font-size:2.2rem">' + s.icon + '</span><div>' +
+        '<article class="card pop" style="border-top:6px solid var(--unit)"><div class="row between"><div class="row"><span style="font-size:2.2rem">' + s.icon + '</span><div>' +
         '<p class="kicker">' + esc(s.badge) + ' · 連結 ' + esc(s.link) + '</p><h2 class="black" style="font-size:1.4rem">' + esc(s.title) + '</h2></div></div>' +
         (isDone(s.id) ? '<span class="chip" style="background:var(--ok-bg);color:var(--ok)">✅ 已完成</span>' : '') + '</div>' +
         '<p class="mt2">' + esc(s.desc) + '</p>' +

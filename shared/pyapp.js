@@ -58,7 +58,7 @@ window.PYAPP = { mount: function (opts) {
       '<div class="row between"><div class="row"><span style="font-size:2.2rem">' + lv.icon + '</span><div>' +
       '<p class="kicker">任務 ' + (i + 1) + ' / ' + L.length + ' · ' + esc(lv.book) + '</p>' +
       '<h2 class="black" style="font-size:1.5rem">' + esc(lv.title) + '</h2></div></div>' +
-      '<div class="center"><span class="chip" style="background:var(--u2-bg);border-color:transparent;color:#166534">' + esc(lv.concept) + '</span>' +
+      '<div class="center"><span class="chip" style="background:var(--unit-bg);border-color:transparent;color:var(--ink)">' + esc(lv.concept) + '</span>' +
       '<div class="mt1" id="lv-best">' + UI.stars(best ? best.stars : 0) + '</div></div></div>' +
       '<p class="mt2">' + lv.story + '</p>' +
       '<div class="grid g2 mt2"><div><h3 class="bold small soft">📋 任務說明</h3><ol class="small" style="margin:.4rem 0 0;padding-left:1.3rem">' +

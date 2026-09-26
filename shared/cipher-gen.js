@@ -136,7 +136,7 @@
   CARDGAME.tools.abc = function (el) {
     el.innerHTML = '<div class="card soft-bg" style="padding:.8rem"><b class="small">🔤 字母編號表</b><div class="scroll-x mt1"><table class="t mono" style="min-width:40rem"><tr>' +
       A.split('').map(function (c) { return '<td style="text-align:center;padding:.25rem">' + c + '</td>'; }).join('') + '</tr><tr>' +
-      A.split('').map(function (c, i) { return '<td style="text-align:center;padding:.25rem;color:var(--u3);font-weight:900">' + i + '</td>'; }).join('') + '</tr></table></div></div>';
+      A.split('').map(function (c, i) { return '<td style="text-align:center;padding:.25rem;color:var(--unit);font-weight:900">' + i + '</td>'; }).join('') + '</tr></table></div></div>';
   };
   /* 計數表：點一下作答格子做記號，自動算有幾格被點 */
   CARDGAME.tools.tally = function (el, it) {

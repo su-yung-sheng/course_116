@@ -1,7 +1,6 @@
 /* 5016B 實驗室樣式（labkit.js）── 兩學期共用 */
-  .tabs{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.3rem}
-  .tab{flex:0 0 auto;border:2px solid var(--line);background:#fff;border-radius:999px;padding:.45rem .9rem;font-weight:800;cursor:pointer;font-size:.9rem;color:var(--ink)}
-  .tab.on{border-color:var(--u4);background:var(--u4-bg);color:#3730a3}
+  /* 五節課的導覽用全站「課程小卡」（theme.css 的 .ucards），這裡不另外定義 */
+  @media (min-width:821px){ #tabs.ucards .ds{min-height:2.4em} }
   .mini h4{font-size:.85rem;font-weight:900;color:var(--ink-soft)}
   .mini ul{margin:.35rem 0 0;padding-left:1.1rem;font-size:.9rem}
   .sim{background:#0f172a;color:#e2e8f0;border-radius:1rem;padding:1rem}
@@ -21,7 +20,7 @@
   .indent{margin-left:1.4rem}
   .fan{width:7rem;height:7rem;margin:0 auto;display:block}
   .step{display:flex;gap:.6rem;align-items:flex-start}
-  .step .no{flex:0 0 1.7rem;height:1.7rem;border-radius:50%;background:var(--u4);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+  .step .no{flex:0 0 1.7rem;height:1.7rem;border-radius:50%;background:var(--unit);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.85rem}
   .step.dim{opacity:.4}
   table.log td,table.log th{padding:.25rem .5rem;text-align:center;border-bottom:1px solid #334155;font-size:.85rem}
   #card-canvas{max-width:100%;border-radius:.8rem;box-shadow:var(--shadow)}

@@ -30,3 +30,6 @@
 .course-goals-list span { margin-right: .5rem; color: var(--course-accent); font-weight: 900; }
 @media (max-width: 767px) { .course-reflections, .course-questions { grid-template-columns: 1fr; } .course-end-unit { padding: 1.25rem; } }
 @media (max-width: 767px) { .course-goals { padding: 1.25rem; } .course-goals-header { align-items: flex-start; flex-direction: column; } .course-goals-list { grid-template-columns: 1fr; } }
+
+/* 116：手機上輸入框和按鈕同一排時，讓輸入框可以縮小，不撐破版面 */
+.flex > input, .flex > select { min-width: 0; }

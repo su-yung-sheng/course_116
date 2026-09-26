@@ -27,7 +27,14 @@ window.CONFIG = {
   MODULES: [
     { id: 'digital', no: '一', title: '數位時代', sub: '0 與 1 的藝術', icon: '💾', color: 'u1',
       href: 'digital/index.html', maxStars: 12, levels: ['u1', 'u2', 'u3', 'u4'],
-      desc: '二進位、文字編碼、聲音與影像的取樣和量化，四個互動實驗站。', chapter: '第 1 章' },
+      desc: '二進位、文字編碼、聲音與影像的取樣和量化，四個互動實驗站。', chapter: '第 1 章',
+      /* 四課的課程小卡（href 相對於 digital/ 資料夾；進度都存在 digital 模組；color 和各課內容的主色一致） */
+      parts: [
+        { id: 'd1', mod: 'digital', levels: ['u1'], maxStars: 3, color: '#2563eb', bg: '#eff6ff', icon: '🔢', title: '1-1 二進位原理', ds: '位元、權值，十進位與二進位互換', href: '1.html' },
+        { id: 'd2', mod: 'digital', levels: ['u2'], maxStars: 3, color: '#4f46e5', bg: '#eef2ff', icon: '🔤', title: '1-2 文字數位化', ds: '摩斯電碼、ASCII、Big-5、Unicode', href: '2.html' },
+        { id: 'd3', mod: 'digital', levels: ['u3'], maxStars: 3, color: '#0d9488', bg: '#f0fdfa', icon: '🎵', title: '1-3 音訊數位化', ds: '聲波、取樣頻率、量化位元', href: '3.html' },
+        { id: 'd4', mod: 'digital', levels: ['u4'], maxStars: 3, color: '#e11d48', bg: '#fff1f2', icon: '🖼️', title: '1-4 影像數位化', ds: '像素、解析度、色彩與壓縮', href: '4.html' }
+      ] },
     { id: 'python', no: '二', title: '進入 Python 的世界', sub: '畢旅籌備處・10 個任務', icon: '🐍', color: 'u2',
       href: 'python.html', maxStars: 30, levels: ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'], sequential: true,
       desc: '在瀏覽器裡直接寫 Python，送出後用測資自動評分。拿到 2 星才開下一關。', chapter: '第 2 章' },

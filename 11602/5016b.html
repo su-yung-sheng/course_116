@@ -37,14 +37,14 @@
     <p class="small mt1">上學期的<b>智慧教室守護站</b>只會在教室裡量距離、亮燈、轉風扇。這學期讓它<b>連上網路</b>：選對無線技術（2-2）、拿到自己的 IP 位址、用 TCP/IP 把資料送出去（2-1），還要<b>加密</b>才不會被偷看（3-2）。</p>
     <p class="tiny soft mt1">每一節的檢核都是「先預測 → 再執行 → 說對了才算」。元件沿用上學期：超音波、旋鈕、燈條、馬達，外加一塊可以連 Wi-Fi／藍牙的控制板。</p>
   </section>
-  <nav class="tabs mt2" id="tabs" aria-label="五節課"></nav>
+  <nav id="tabs" aria-label="五節課：課程小卡"></nav>
   <div id="sec" class="stack mt2"></div>
 </main>
 
 <script>
 (function () {
   var esc = UI.esc, MOD = 'arduino';
-  UI.topbar('#topbar', { title: '5016B 專題', kicker: '守護站 2.0 · 五節課' });
+  UI.topbar('#topbar', { title: '💡 5016B 專題：守護站 2.0', kicker: '延伸挑戰 · 跨章專題 · 五節' });
   var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   function caesar(t, k) { return String(t).toUpperCase().split('').map(function (c) { var i = A.indexOf(c); return i < 0 ? c : A[(i + k + 26) % 26]; }).join(''); }
 

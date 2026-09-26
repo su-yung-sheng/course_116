@@ -376,7 +376,7 @@ CARDGAME.tools = {
       el.innerHTML = '<div class="card soft-bg" style="padding:.8rem"><div class="row between"><b class="small">🎡 凱薩轉盤（上排明文 → 下排密文）</b>' +
         '<span class="row"><button type="button" class="btn sm" data-d="-1">◀</button><span class="bold mono">位移 ' + shift + '</span><button type="button" class="btn sm" data-d="1">▶</button></span></div>' +
         '<div class="scroll-x mt1"><table class="t mono" style="text-align:center;min-width:40rem"><tr>' + A.split('').map(function (c) { return '<td style="text-align:center;padding:.25rem">' + c + '</td>'; }).join('') + '</tr><tr>' +
-        A.split('').map(function (c, i) { return '<td style="text-align:center;padding:.25rem;color:var(--u3);font-weight:900">' + A[(i + shift + 26) % 26] + '</td>'; }).join('') + '</tr></table></div></div>';
+        A.split('').map(function (c, i) { return '<td style="text-align:center;padding:.25rem;color:var(--unit);font-weight:900">' + A[(i + shift + 26) % 26] + '</td>'; }).join('') + '</tr></table></div></div>';
       el.querySelectorAll('[data-d]').forEach(function (b) { b.onclick = function () { shift = (shift + (+b.dataset.d) + 26) % 26; draw(); }; });
     }
     draw();

@@ -1,135 +1,61 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="國中資訊科技互動課程：從二進位、文字、聲音到影像，探索 0 與 1 的藝術。">
-    <title>0與1的藝術｜課程地圖</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Noto Sans TC', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); color: #1e293b; min-height: 100vh; margin: 0; }
-        .font-mono-code { font-family: 'JetBrains Mono', monospace; }
-        .galaxy-card { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 32px; box-shadow: 0 20px 40px rgba(14, 165, 233, 0.1); border: 1px solid rgba(255, 255, 255, 0.8); }
-        .nav-btn { position: relative; overflow: hidden; transition: all 0.2s ease-in-out; border-radius: 999px; border: 2px solid transparent; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-        .nav-active { background-color: #3b82f6; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
-        .nav-inactive { background-color: #ffffff; color: #64748b; border-color: #e2e8f0; }
-        .nav-inactive:hover { background-color: #f8fafc; color: #3b82f6; border-color: #bae6fd; }
-        .course-card { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease; }
-        .course-card:hover { transform: translateY(-7px); box-shadow: 0 20px 32px rgba(30, 64, 175, 0.14); }
-        .course-card:focus-within { outline: 3px solid rgba(59, 130, 246, 0.35); outline-offset: 4px; }
-        .course-card--binary:hover { border-color: #60a5fa; box-shadow: 0 20px 32px rgba(37, 99, 235, 0.18); }
-        .course-card--text:hover { border-color: #818cf8; box-shadow: 0 20px 32px rgba(79, 70, 229, 0.18); }
-        .course-card--audio:hover { border-color: #2dd4bf; box-shadow: 0 20px 32px rgba(13, 148, 136, 0.18); }
-        .course-card--image:hover { border-color: #fb7185; box-shadow: 0 20px 32px rgba(225, 29, 72, 0.18); }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="國中資訊科技互動課程：從二進位、文字、聲音到影像，探索 0 與 1 的藝術。">
+<title>單元一 數位時代 · 116-1</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/theme.css">
+<script src="../config.js"></script>
+<script src="../../shared/store.js"></script>
+<script src="../../shared/ui.js"></script>
+<script src="../../shared/unit.js"></script>
+<style>
+  .bits{display:flex;gap:.35rem;flex-wrap:wrap}
+  .bits span{width:2.2rem;height:2.6rem;border-radius:.6rem;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:ui-monospace,Consolas,monospace;font-size:1.2rem;border:2px solid var(--unit-line);background:#fff;color:var(--ink-faint)}
+  .bits span.on{background:var(--unit);border-color:var(--unit);color:#fff}
+  .goal .n{width:2.2rem;height:2.2rem;border-radius:.7rem;background:var(--unit-bg);color:var(--unit);font-weight:900;display:flex;align-items:center;justify-content:center}
+</style>
 </head>
-<body class="p-4 md:p-8 relative overflow-x-hidden">
-    <div class="fixed top-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 -z-10"></div>
-    <div class="fixed top-[20%] right-[-5%] w-72 h-72 bg-purple-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 -z-10"></div>
-
-    <div class="max-w-7xl mx-auto w-full relative z-0 pb-6">
-        <header class="flex flex-col md:flex-row items-center justify-between gap-4 py-2 animate-fade-up">
-            <a href="index.html" class="flex items-center gap-3 no-underline text-slate-800">
-                <span class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-lg font-black shadow-lg shadow-blue-500/25 font-mono-code">01</span>
-                <span><span class="block font-black tracking-tight text-lg leading-tight">0與1的藝術</span><span class="block text-xs text-slate-500 font-medium tracking-wide">NINTH GRADE · COMPUTER SCIENCE</span></span>
-            </a>
-            <nav class="flex flex-wrap gap-2 justify-center" aria-label="主要導覽">
-                <a href="index.html" class="nav-btn nav-active px-4 py-2 text-sm font-bold">課程首頁</a>
-                <a href="#course-map" class="nav-btn nav-inactive px-4 py-2 text-sm font-bold">課程地圖</a>
-                <a href="1.html" class="nav-btn nav-inactive px-4 py-2 text-sm font-bold">開始學習 →</a>
-            </nav>
-        </header>
-
-        <main>
-            <section class="galaxy-card mt-5 p-7 md:p-12 overflow-hidden relative animate-fade-up" style="animation-delay: 0.08s;">
-                <div class="absolute -right-20 -top-24 w-72 h-72 rounded-full bg-blue-100/80 blur-2xl"></div>
-                <div class="absolute -left-16 -bottom-24 w-64 h-64 rounded-full bg-indigo-100/70 blur-2xl"></div>
-                <div class="grid lg:grid-cols-12 gap-10 items-center relative">
-                    <div class="lg:col-span-7">
-                        <div class="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold tracking-widest mb-5 shadow-sm">INTERACTIVE LEARNING JOURNEY</div>
-                        <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 tracking-tight leading-tight">看見資料背後的<br>0 與 1</h1>
-                        <p class="mt-6 text-slate-600 text-base md:text-lg leading-relaxed max-w-2xl">從一個數字、一段文字、一首歌到一張照片，探索電腦如何把豐富的世界轉換成可以儲存、處理與傳遞的數位資訊。</p>
-                        <div class="mt-7 flex flex-wrap gap-3">
-                            <a href="1.html" class="nav-btn nav-active px-6 py-3 font-bold">從單元一開始 <span class="ml-2">→</span></a>
-                            <a href="#course-map" class="nav-btn nav-inactive px-6 py-3 font-bold">查看課程地圖</a>
-                        </div>
-                        <div class="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-500 font-medium">
-                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span>4 個學習單元</span>
-                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>互動練習與挑戰</span>
-                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-500"></span>適合自主探索</span>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-5 flex justify-center lg:justify-end">
-                        <div class="w-full max-w-sm rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-600 p-6 md:p-7 text-white shadow-xl shadow-blue-500/30 animate-float">
-                            <div class="flex items-center justify-between text-blue-100 text-xs font-bold tracking-widest"><span>LEARNING PATH</span><span class="font-mono-code">01 → 04</span></div>
-                            <div class="mt-5 space-y-3" data-learning-path>
-                                <div class="flex items-center gap-4 rounded-2xl bg-white/15 px-4 py-3 border border-white/15"><span class="w-8 h-8 rounded-xl bg-white text-blue-600 flex items-center justify-center font-black">1</span><span class="font-bold">二進位原理</span><span class="ml-auto text-blue-100">01</span></div>
-                                <div class="flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-3 border border-white/10"><span class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center font-black">2</span><span class="font-bold">文字數位化</span><span class="ml-auto text-blue-100">02</span></div>
-                                <div class="flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-3 border border-white/10"><span class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center font-black">3</span><span class="font-bold">音訊數位化</span><span class="ml-auto text-blue-100">03</span></div>
-                                <div class="flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-3 border border-white/10"><span class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center font-black">4</span><span class="font-bold">影像數位化</span><span class="ml-auto text-blue-100">04</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="mt-8 grid md:grid-cols-3 gap-4 animate-fade-up" style="animation-delay: 0.14s;" aria-label="課程目標">
-                <div class="bg-white/80 rounded-3xl p-5 border border-blue-100 shadow-sm"><div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-black text-lg">01</div><h2 class="mt-4 font-bold text-slate-800">理解數位表示</h2><p class="mt-1 text-sm leading-relaxed text-slate-500">發現 0 與 1 如何組成數字、文字、聲音與影像。</p></div>
-                <div class="bg-white/80 rounded-3xl p-5 border border-indigo-100 shadow-sm"><div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-lg">02</div><h2 class="mt-4 font-bold text-slate-800">動手互動探索</h2><p class="mt-1 text-sm leading-relaxed text-slate-500">透過模擬器、遊戲與挑戰，把抽象概念變得看得見。</p></div>
-                <div class="bg-white/80 rounded-3xl p-5 border border-teal-100 shadow-sm"><div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-black text-lg">03</div><h2 class="mt-4 font-bold text-slate-800">建立資料思維</h2><p class="mt-1 text-sm leading-relaxed text-slate-500">從生活中的媒體理解資料處理的選擇與限制。</p></div>
-            </section>
-
-            <section id="course-map" class="mt-12 scroll-mt-6 animate-fade-up" style="animation-delay: 0.2s;">
-                <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mb-6">
-                    <div><p class="text-blue-600 text-xs font-black tracking-[0.2em]">COURSE MAP</p><h2 class="mt-2 text-3xl md:text-4xl font-black text-slate-800 tracking-tight">選擇你的探索路徑</h2></div>
-                    <p class="text-sm text-slate-500">建議依序學習，也可直接進入想探索的單元。</p>
-                </div>
-
-                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" data-course-map>
-                    <article class="course-card course-card--binary bg-white rounded-3xl p-5 border border-blue-100 shadow-sm flex flex-col min-h-[245px]">
-                        <div class="flex items-start justify-between"><span class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-black text-lg">01</span><span class="font-mono-code text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded-full px-2.5 py-1 font-bold">BINARY</span></div>
-                        <h3 class="mt-5 text-xl font-black text-slate-800">二進位原理</h3><p class="mt-2 text-sm text-slate-500 leading-relaxed">從位元開始，理解電腦如何用開與關表示數字。</p>
-                        <div class="mt-auto pt-4"><a href="1.html" class="inline-flex items-center rounded-xl bg-blue-50 px-3 py-2 text-blue-700 font-bold text-sm hover:bg-blue-100">開始單元 <span class="ml-2">→</span></a></div>
-                    </article>
-                    <article class="course-card course-card--text bg-white rounded-3xl p-5 border border-indigo-100 shadow-sm flex flex-col min-h-[245px]">
-                        <div class="flex items-start justify-between"><span class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-lg">02</span><span class="font-mono-code text-xs text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-full px-2.5 py-1 font-bold">TEXT</span></div>
-                        <h3 class="mt-5 text-xl font-black text-slate-800">文字數位化</h3><p class="mt-2 text-sm text-slate-500 leading-relaxed">解讀文字編碼，親手傳送與破解摩斯電碼。</p>
-                        <div class="mt-auto pt-4"><a href="2.html" class="inline-flex items-center rounded-xl bg-indigo-50 px-3 py-2 text-indigo-700 font-bold text-sm hover:bg-indigo-100">開始單元 <span class="ml-2">→</span></a></div>
-                    </article>
-                    <article class="course-card course-card--audio bg-white rounded-3xl p-5 border border-teal-100 shadow-sm flex flex-col min-h-[245px]">
-                        <div class="flex items-start justify-between"><span class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center font-black text-lg">03</span><span class="font-mono-code text-xs text-teal-700 bg-teal-50 border border-teal-100 rounded-full px-2.5 py-1 font-bold">AUDIO</span></div>
-                        <h3 class="mt-5 text-xl font-black text-slate-800">音訊數位化</h3><p class="mt-2 text-sm text-slate-500 leading-relaxed">看見聲波、取樣與格式如何保存一段聲音。</p>
-                        <div class="mt-auto pt-4"><a href="3.html" class="inline-flex items-center rounded-xl bg-teal-50 px-3 py-2 text-teal-700 font-bold text-sm hover:bg-teal-100">開始單元 <span class="ml-2">→</span></a></div>
-                    </article>
-                    <article class="course-card course-card--image bg-white rounded-3xl p-5 border border-rose-100 shadow-sm flex flex-col min-h-[245px]">
-                        <div class="flex items-start justify-between"><span class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center font-black text-lg">04</span><span class="font-mono-code text-xs text-rose-600 bg-rose-50 border border-rose-100 rounded-full px-2.5 py-1 font-bold">IMAGE</span></div>
-                        <h3 class="mt-5 text-xl font-black text-slate-800">影像數位化</h3><p class="mt-2 text-sm text-slate-500 leading-relaxed">從像素、色彩到壓縮，拆解一張圖片的祕密。</p>
-                        <div class="mt-auto pt-4"><a href="4.html" class="inline-flex items-center rounded-xl bg-rose-50 px-3 py-2 text-rose-700 font-bold text-sm hover:bg-rose-100">開始單元 <span class="ml-2">→</span></a></div>
-                    </article>
-                </div>
-            </section>
-
-            <section class="galaxy-card mt-10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-5 animate-fade-up" style="animation-delay: 0.25s;">
-                <div class="text-center md:text-left"><p class="font-mono-code text-xs font-bold tracking-widest text-blue-500">READY TO EXPLORE?</p><h2 class="mt-2 text-2xl font-black text-slate-800">先從最小的資訊單位開始。</h2><p class="mt-1 text-sm text-slate-500">點亮位元，開啟第一個互動挑戰。</p></div>
-                <a href="1.html" class="nav-btn nav-active px-7 py-3.5 font-bold whitespace-nowrap">進入單元一 →</a>
-            </section>
-        </main>
-
-        <footer class="text-center text-xs text-slate-400 mt-9 pb-2">0 與 1 的藝術 · 資料表示與處理</footer>
+<body>
+<main class="wrap">
+  <header id="topbar"></header>
+  <section class="card pop">
+    <div class="tape"></div>
+    <div class="row between" style="align-items:flex-start">
+      <div style="flex:1 1 20rem">
+        <p class="kicker">0 與 1 的藝術 · 四課互動實驗</p>
+        <h2 class="black mt1" style="font-size:1.5rem">看見資料背後的 0 與 1</h2>
+        <p class="soft mt1">從一個數字、一段文字、一首歌到一張照片，探索電腦如何把豐富的世界，轉換成可以儲存、處理與傳遞的數位資訊。</p>
+        <p class="small mt2">每一課最後有「快速檢核」三題：一次都沒錯 ⭐⭐⭐、錯 1 次 ⭐⭐、錯 2 次以上 ⭐。可以重玩刷新紀錄。</p>
+      </div>
+      <div class="center" style="flex:0 0 auto">
+        <div class="bits" aria-label="二進位 01000001 是字母 A"><span>0</span><span class="on">1</span><span>0</span><span>0</span><span>0</span><span>0</span><span>0</span><span class="on">1</span></div>
+        <p class="tiny soft bold mt1">01000001 ＝ 65 ＝ 「A」</p>
+        <div class="black mt2" style="font-size:1.8rem;color:var(--star)" id="total">0 / 12</div>
+        <div class="tiny soft bold">⭐ 單元一總星數</div>
+      </div>
     </div>
-    <script src="course-data.js"></script>
-    <script src="course-core.js"></script>
-    <!-- 116 課程系統：進度掛鉤（見 progress-hook.js）-->
-    <script src="../config.js"></script>
-    <script src="../../shared/store.js"></script>
-    <script src="../../shared/ui.js"></script>
-    <script src="../../shared/seal.js"></script>
-    <script src="progress-hook.js"></script>
+  </section>
+  <nav id="ucards"></nav>
+  <section class="grid g3" aria-label="課程目標">
+    <div class="card goal"><div class="n">01</div><h3 class="bold mt1">理解數位表示</h3><p class="small soft mt1">發現 0 與 1 如何組成數字、文字、聲音與影像。</p></div>
+    <div class="card goal"><div class="n">02</div><h3 class="bold mt1">動手互動探索</h3><p class="small soft mt1">透過模擬器、遊戲與挑戰，把抽象概念變得看得見。</p></div>
+    <div class="card goal"><div class="n">03</div><h3 class="bold mt1">建立資料思維</h3><p class="small soft mt1">從生活中的媒體，理解資料處理的選擇與限制。</p></div>
+  </section>
+  <p class="tiny faint center mt3">內容改編自「0 與 1 的藝術」（unforte_114）</p>
+</main>
+<script src="progress-hook.js"></script>
+<script>
+(function () {
+  function total() {
+    var u = UNIT.find('digital'); if (!u) return;
+    var got = u.parts.reduce(function (a, p) { return a + STORE.partStars(p); }, 0);
+    document.getElementById('total').textContent = got + ' / ' + u.maxStars;
+  }
+  total(); window.addEventListener('store:change', total);
+})();
+</script>
 </body>
 </html>
