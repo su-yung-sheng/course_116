@@ -197,7 +197,7 @@
         '<p class="kicker">' + L.length + ' 關 · 在網頁裡直接寫公式</p><h2 class="black" style="font-size:1.35rem">點黃色格子 → 在公式列輸入 → 按「檢查」</h2>' +
         '<p class="small soft mt1">每關 3 顆 ❤️，檢查時有錯扣一顆，剩幾顆就拿幾顆 ⭐。學會之後，到 Google 試算表做課本的實作。</p></div>' +
         '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
-        '<section class="grid g3 mt3">' + L.map(function (lv, i) {
+        '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
           return '<button class="card lvcard pop" data-i="' + i + '"><div class="row between"><span style="font-size:2rem">' + lv.icon + '</span>' + UI.stars(best(lv.id)) + '</div>' +
             '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">' + esc(lv.book) + '</p></button>';
         }).join('') + '</section>';

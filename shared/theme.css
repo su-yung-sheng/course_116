@@ -160,3 +160,10 @@ table.t th{background:var(--soft);font-weight:800}
   .ucards.compact .pg{font-size:.72rem}
   .ucards.compact .pg>span:first-child,.ucards.compact .here{display:none!important}
 }
+
+/* 關卡卡片格線（UI.gridCols）：4 張排 2×2、7～8 張每排 4 張，不會剩一張孤單在最後一排 */
+.lvgrid.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.lvgrid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.lvgrid.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.lvgrid.c3,.lvgrid.c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.lvgrid.c2,.lvgrid.c3,.lvgrid.c4{grid-template-columns:minmax(0,1fr)}}

@@ -34,7 +34,7 @@ window.CARDGAME = { mount: function (opts) {
       '<p class="kicker">' + L.length + ' 個互動體驗關卡 · ' + (opts.sequential ? '依序開放（上一關 2⭐ 開下一關）' : '自由挑戰順序') + '</p><h2 class="black" style="font-size:1.35rem">' + esc(opts.headline || '先讀「概念小卡」，再用遊戲證明你懂了') + '</h2>' +
       '<p class="small soft mt1">每關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。可以一直重玩刷新紀錄。</p></div>' +
       '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
-      '<section class="grid g3 mt3">' + L.map(function (lv, i) {
+      '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
         if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true"><div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">上一關拿到 2 顆星就會開放</p></button>';
         return '<button class="card lvcard pop" data-i="' + i + '" style="animation-delay:' + (i * 40) + 'ms">' +
