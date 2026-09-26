@@ -86,18 +86,27 @@
 (function () {
   var esc = UI.esc, MOD = 'media', STEPS = window.MEDIA_STEPS;
   UI.topbar('#topbar', { title: '🎬 多媒體專題：30 秒廣告', kicker: '單元四 · 3下 第 1 章 · 好好用 AI' });
-  CARDGAME.mount({ app: '#games', levels: MEDIA_LEVELS, mod: MOD, headline: '先看懂影片規格，再和 AI 一起拍一支 30 秒廣告' });
+  /* 兩組闖關（概念 M1～M4、AI 素養 A1～A6）共用 cardgame 引擎，引擎用固定的元素 id，
+     所以同一時間只掛一組：切到哪個分頁就掛哪一組、清掉另一組。 */
+  function mountGames() {
+    var a = document.getElementById('ai-games'); if (a) a.innerHTML = '';
+    CARDGAME.mount({ app: '#games', levels: MEDIA_LEVELS, mod: MOD, headline: '先看懂影片規格，再和 AI 一起拍一支 30 秒廣告' });
+  }
+  mountGames();
 
   /* ── 分頁：概念闖關 → 看示範 → AI 前導關 → 廣告工作站 ── */
   var TABS = ['games', 'demo', 'ai', 'studio'];
   function tab(t) {
     document.querySelectorAll('.mtab').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
     TABS.forEach(function (k) { document.getElementById(k).classList.toggle('hidden', k !== t); });
+    if (t === 'games' && !document.querySelector('#games .card')) mountGames();
     if (t === 'studio') studio();
     if (t === 'demo') demo();
     if (t === 'ai') ai();
   }
-  document.querySelectorAll('.mtab').forEach(function (b) { b.onclick = function () { tab(b.dataset.t); }; });
+  // 手動切分頁時清掉網址的 #關卡（不然引擎會直接打開上次那一關）
+  function clearHash() { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+  document.querySelectorAll('.mtab').forEach(function (b) { b.onclick = function () { clearHash(); tab(b.dataset.t); }; });
 
   function rec(id) { return STORE.level(MOD, id) || {}; }
   function done(id) { return !!rec(id).done; }
@@ -139,36 +148,24 @@
         '<section class="card mt2"><h3 class="bold">💭 想一想（課堂討論）</h3><ol class="mt1">' + D.think.map(function (t) { return '<li class="mt1">' + esc(t) + '</li>'; }).join('') + '</ol>' +
         '<div class="row mt2"><button class="btn primary" id="to-ai">下一步：🤖 AI 前導關 →</button></div></section>';
       box.querySelectorAll('.move').forEach(function (b) { b.onclick = function () { var i = +b.dataset.i; if (found[i]) delete found[i]; else found[i] = 1; draw(); }; });
-      document.getElementById('to-ai').onclick = function () { tab('ai'); };
+      document.getElementById('to-ai').onclick = function () { clearHash(); tab('ai'); };
     }
     draw();
   }
 
   /* ================================================================
-     🤖 AI 前導關（🚧 目前是關卡骨架：主題、學習目標、預計玩法）
-     做好的關卡之後放進 MEDIA_AI_LEVELS，用 cardgame 引擎玩（見 content/media.js 說明）
+     🤖 AI 前導關：AI 素養六關（MEDIA_AI_LEVELS，改編自 Day of AI，計星）
      ================================================================ */
-  var PLAN = { sort: '🗂️ 分類', order: '🔢 排序', build: '🧩 組合', type: '⌨️ 打字' };
   function ai() {
-    var L = window.MEDIA_AI || [], box = document.getElementById('ai');
-    var ready = L.filter(function (a) { return a.ready; }).length;
-    box.innerHTML = '<section class="card pop"><div class="tape"></div><div class="row between"><div><p class="kicker">AI 前導關 · 和 AI 討論文案之前先闖這六關</p>' +
+    var box = document.getElementById('ai'), src = window.MEDIA_AI_SOURCE || {};
+    document.getElementById('games').innerHTML = '';
+    box.innerHTML = '<section class="card pop"><div class="tape"></div><p class="kicker">AI 前導關 · 和 AI 一起做廣告之前先闖這六關</p>' +
       '<h2 class="black" style="font-size:1.3rem">🤖 先認識 AI，再請它幫忙</h2>' +
-      '<p class="small soft mt1">廣告工作站的每一步都可以請 AI 當創作夥伴。AI 很好用，但它怎麼運作、會在哪裡出錯、哪些事不能做，要先弄清楚。</p></div>' +
-      '<div class="center"><div class="black" style="font-size:1.8rem">' + ready + ' / ' + L.length + '</div><div class="tiny soft bold">已開放</div></div></div>' +
-      (ready < L.length ? '<div class="note warn small mt2">🚧 這些關卡還在製作中，現在先看每一關要學什麼。完整的「AI 素養」系列之後會陸續開放。</div>' : '') +
-      '<p class="small mt2">⭐ 這個單元的重點是<b>「好好用 AI」</b>：創意發想、文案、句型、鏡頭、配樂建議都可以請 AI 幫忙，但要用對方法。</p>' + rulesHTML() + '</section>' +
-      '<div class="grid g2 mt2">' + L.map(function (a) {
-        return '<article class="aicard' + (a.ready ? ' ready' : '') + '"><div class="row between"><span class="chip">' + esc(a.id) + '</span>' +
-          '<span class="chip">' + (a.ready ? '✅ 已開放' : '🚧 準備中') + '</span></div>' +
-          '<h3 class="black mt1" style="font-size:1.15rem">' + a.icon + ' ' + esc(a.title) + '</h3>' +
-          '<p class="bold small mt1">❓ ' + esc(a.question) + '</p>' +
-          '<ul class="small mt1">' + a.goals.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul>' +
-          '<div class="plan">' + a.plan.map(function (p) { return '<span class="chip" title="' + esc(p[1]) + '">' + (PLAN[p[0]] || p[0]) + '</span>'; }).join('') + '</div>' +
-          '<ul class="tiny soft mt1">' + a.plan.map(function (p) { return '<li>' + esc(p[1]) + '</li>'; }).join('') + '</ul>' +
-          '<p class="tiny mt1">🔗 ' + esc(a.link) + '</p></article>';
-      }).join('') + '</div>' +
-      '<div class="row mt2"><button class="btn primary" id="to-studio">前往 🎬 廣告工作站 →</button></div>';
+      '<p class="small mt1">⭐ 這個單元的重點是<b>「好好用 AI」</b>：創意發想、文案、句型、鏡頭、配樂建議都可以請 AI 幫忙。AI 是什麼、怎麼學會的、會在哪裡出錯、哪些事不能做，先弄清楚才能用得好。</p>' +
+      rulesHTML(true) + '</section><div id="ai-games" class="mt2"></div>' +
+      '<div class="row mt2"><button class="btn primary" id="to-studio">前往 🎬 廣告工作站 →</button></div>' +
+      (src.note ? '<p class="tiny soft mt2">📚 ' + esc(src.note) + ' <a href="' + esc(src.url) + '" target="_blank" rel="noopener">' + esc(src.name) + ' ↗</a></p>' : '');
+    CARDGAME.mount({ app: '#ai-games', levels: window.MEDIA_AI_LEVELS || [], mod: MOD, headline: 'AI 素養六關：AI 是什麼 → 怎麼學 → 演算法 → 生成式 AI → 好好問 → 倫理' });
     document.getElementById('to-studio').onclick = function () { tab('studio'); };
   }
 
@@ -198,9 +195,9 @@
   function next() { if (cur < STEPS.length - 1) cur++; setTimeout(studio, 900); }
 
   /* 好好用 AI 五守則（工作站最上面一直看得到） */
-  function rulesHTML() {
+  function rulesHTML(closed) {
     var R = window.MEDIA_AI_RULES || [];
-    return '<details class="rules mt2" open><summary class="bold">🤖 好好用 AI：五個守則</summary><div class="grid g3 mt1">' + R.map(function (r, i) {
+    return '<details class="rules mt2"' + (closed ? '' : ' open') + '><summary class="bold">🤖 好好用 AI：五個守則</summary><div class="grid g3 mt1">' + R.map(function (r, i) {
       return '<div class="rule"><div class="bold">' + r.icon + ' ' + (i + 1) + '. ' + esc(r.t) + '</div><div class="tiny soft mt1">' + esc(r.d) + '</div></div>';
     }).join('') + '</div></details>';
   }
@@ -355,7 +352,7 @@
     }
     body.querySelectorAll('input,select,textarea').forEach(function (e) { e.addEventListener('input', upd); e.addEventListener('change', upd); });
     upd(); wireCopy(body);
-    document.getElementById('w2-ai').onclick = function (e) { e.preventDefault(); tab('ai'); };
+    document.getElementById('w2-ai').onclick = function (e) { e.preventDefault(); clearHash(); tab('ai'); };
     document.getElementById('w2-sv').onclick = function () {
       var v = { mine: val('w2-mine'), tone: val('w2-tone'), tool: val('w2-tool'), cands: val('w2-cands'), lines: lines(), edit: val('w2-edit'), mode: val('w2-mode') }, miss = [];
       if (len(v.mine) < 2) miss.push('自己先想的一句');

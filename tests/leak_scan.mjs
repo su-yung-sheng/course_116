@@ -10,6 +10,14 @@ for (const t of ['11601', '11602']) Object.values(load(`private/${t}/lab.js`).LA
 Object.values(JSON.parse(fs.readFileSync('private/11601/digital/review.json'))).flat().forEach(x => x.hint && add(x.hint.slice(0, 14), 'review hint'));
 load('private/11602/content/sheet.js').SHEET_LEVELS.forEach(l => { l.targets.forEach(t => add(t.ref, 'sheet ref')); (l.hints || []).forEach(h => add(h.slice(0, 18), 'sheet hint')); });
 for (const t of ['11601', '11602']) load(`private/${t}/content/python.js`).PY_LEVELS.forEach(l => { (l.hints || []).forEach(h => add(h.slice(0, 18), 'py hint ' + l.id)); l.tests.forEach(t => t.hidden && t.why && add(t.why, 'hidden why ' + l.id)); });
+// 互動遊戲（所有 *_LEVELS）：答對後的解說、組合題的過關說明
+for (const [t, f] of [['11601', 'platform'], ['11602', 'media'], ['11602', 'network'], ['11602', 'data']]) {
+  const W = load(`private/${t}/content/${f}.js`);
+  for (const [k, L] of Object.entries(W)) if (/_LEVELS$/.test(k)) L.forEach(lv => lv.rounds.forEach(rd => {
+    (rd.items || []).forEach(it => it.why && add(it.why.slice(0, 16), 'card why ' + lv.id));
+    (rd.customers || []).forEach(cu => cu.good && add(cu.good.slice(0, 16), 'card good ' + lv.id));
+  }));
+}
 const A = await import(new URL('../private/tests/answers.mjs', import.meta.url));
 // 參考程式裡 input( ) 那一行本來就在範本（starter）裡，不算
 for (const k of ['SOL_11601', 'SOL_11602']) Object.entries(A[k]).forEach(([id, code]) => code.split('\n').map(s => s.trim()).filter(s => s.length > 22 && !/input\(/.test(s)).forEach(s => add(s, 'solution ' + id)));

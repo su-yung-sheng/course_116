@@ -17,27 +17,36 @@ await login(page);
 /* ── 多媒體：概念闖關 ─────────────────────── */
 await page.goto(BASE + '/11602/media.html');
 await page.waitForSelector('#games .lvcard');
-const ML = priv('11602/content/media.js').MEDIA_LEVELS;
-for (let i = 0; i < ML.length; i++) {
-  const lv = ML[i];
-  await page.click(`#games .lvcard[data-i="${i}"]`); await page.click('#go');
-  for (const rd of lv.rounds) {
-    if (rd.type === 'sort') for (let k = 0; k < rd.items.length; k++) {
-      const txt = (await page.textContent('.qcard .txt')).trim();
-      const hit = rd.items.find(x => x.t === txt);
-      await page.click(`.bucket[data-b="${hit.a}"]`); await page.click('#nx');
+const MP = priv('11602/content/media.js'), ML = MP.MEDIA_LEVELS, AL = MP.MEDIA_AI_LEVELS;
+// 照正解玩完一組關卡（sort／order／type／build）
+async function playAll(root, levels, tag) {
+  for (let i = 0; i < levels.length; i++) {
+    const lv = levels[i];
+    await page.click(`${root} .lvcard[data-i="${i}"]`); await page.click('#go');
+    for (const rd of lv.rounds) {
+      if (rd.type === 'sort') for (let k = 0; k < (rd.pick || rd.items.length); k++) {
+        const txt = (await page.textContent('.qcard .txt')).trim();
+        const hit = rd.items.find(x => x.t === txt);
+        await page.click(`.bucket[data-b="${hit.a}"]`); await page.click('#nx');
+      }
+      else if (rd.type === 'order') { for (const [k, it] of rd.items.entries()) { await page.click(`.order-btn[data-t="${it.t}"]`); await page.waitForFunction(n => document.querySelectorAll('.order-btn.right').length >= n, k + 1); } await page.click('#nx'); }
+      else if (rd.type === 'type') for (let k = 0; k < rd.items.length; k++) {
+        const txt = (await page.textContent('.qcard .txt')).trim();
+        const hit = rd.items.find(x => x.t === txt);
+        await page.fill('#ans', hit.a[0]); await page.press('#ans', 'Enter'); await page.click('#nx');
+      }
+      else if (rd.type === 'build') for (const cu of rd.customers) {
+        for (const r of cu.rules) await page.click(`.opt[data-s="${r.pick}"][data-o="${r.is}"]`);
+        for (const sl of rd.slots) if (!cu.rules.some(r => r.pick === sl.id)) await page.click(`.opt[data-s="${sl.id}"]`);
+        await page.click('#submit'); await page.click('#nx');
+      }
     }
-    else if (rd.type === 'order') { for (const [k, it] of rd.items.entries()) { await page.click(`.order-btn[data-t="${it.t}"]`); await page.waitForFunction(n => document.querySelectorAll('.order-btn.right').length >= n, k + 1); } await page.click('#nx'); }
-    else if (rd.type === 'type') for (let k = 0; k < rd.items.length; k++) {
-      const txt = (await page.textContent('.qcard .txt')).trim();
-      const hit = rd.items.find(x => x.t === txt);
-      await page.fill('#ans', hit.a[0]); await page.press('#ans', 'Enter'); await page.click('#nx');
-    }
+    await page.waitForSelector('.end-star');
+    ok((await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'))).startsWith('3'), tag, lv.id);
+    await page.click('#menu');
   }
-  await page.waitForSelector('.end-star');
-  ok((await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'))).startsWith('3'), 'media', lv.id);
-  await page.click('#menu');
 }
+await playAll('#games', ML, 'media');
 
 /* ── 多媒體：看示範、AI 前導關 ─────────────── */
 await page.click('.mtab[data-t="demo"]');
@@ -48,8 +57,21 @@ ok((await page.textContent('#demo')).includes('都找到了') && (await page.$ev
 ok((await page.$eval('#demo-play', a => a.href)).includes('drive.google.com') && (await page.textContent('#demo')).includes('第 46 條'), '看示範：學校雲端硬碟觀看按鈕＋著作權說明');
 await page.screenshot({ path: SHOTS + 'media-demo.png', fullPage: true });
 await page.click('#to-ai');
-await page.waitForSelector('.aicard');
-ok((await page.$$('.aicard')).length === 6 && (await page.textContent('#ai')).includes('準備中'), 'AI 前導關：6 關骨架');
+
+await page.waitForSelector('#ai-games .lvcard');
+ok((await page.$$('#ai-games .lvcard')).length === 6 && (await page.textContent('#ai')).includes('Day of AI') && (await page.$$('#ai .rule')).length === 5, 'AI 前導關：6 關＋五守則＋教材出處');
+// 先答錯一題：A1 第一回合把「計算機」丟進「有用 AI」
+await page.click('#ai-games .lvcard[data-i="0"]'); await page.click('#go');
+{ const txt = (await page.textContent('.qcard .txt')).trim(); const hit = AL[0].rounds[0].items.find(x => x.t === txt);
+  await page.click(`.bucket[data-b="${hit.a === 'ai' ? 'rule' : 'ai'}"]`); await page.waitForSelector('#fb .note');
+  ok(!(await page.textContent('#fb')).includes(hit.why), 'AI 關卡答錯不公布正解'); }
+await page.click('#quit').catch(() => {}); await page.goto(BASE + '/11602/media.html#ai'); await page.waitForSelector('#ai-games .lvcard');
+await playAll('#ai-games', AL, 'AI 素養');
+await page.screenshot({ path: SHOTS + 'media-ai.png', fullPage: true });
+ok(await page.evaluate(() => ['A1','A2','A3','A4','A5','A6'].every(id => (STORE.level('media', id) || {}).stars === 3)), 'AI 素養六關都記錄 3 星');
+await page.click('.mtab[data-t="games"]'); await page.waitForSelector('#games .lvcard');
+ok((await page.$$('#games .lvcard')).length === 4 && !(await page.$('#ai-games .lvcard')), '切回概念闖關：只掛一組遊戲');
+await page.click('.mtab[data-t="ai"]'); await page.waitForSelector('#ai-games .lvcard');
 await page.screenshot({ path: SHOTS + 'media-ai.png', fullPage: true });
 
 /* ── 多媒體：30 秒廣告工作站（決定主題 → 三句文案 → 拍攝重點 → 配樂 → 剪輯） ── */
@@ -151,7 +173,7 @@ for (const cb of await page.$$('input[data-cl="edit"]')) await cb.check();
 await page.click('#w5-make');
 await page.waitForSelector('#card-canvas');
 await page.screenshot({ path: SHOTS + 'media-W5.png', fullPage: true });
-ok(await page.evaluate(() => STORE.moduleDone('media')) === 9, 'media 模組 9 / 9 完成');
+ok(await page.evaluate(() => STORE.moduleDone('media')) === 15, 'media 模組 15 / 15 完成');
 
 /* ── 5016B 守護站 2.0 ─────────────────────── */
 await page.goto(BASE + '/11602/5016b.html');
