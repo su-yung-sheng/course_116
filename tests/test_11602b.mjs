@@ -56,7 +56,7 @@ for (let i = 0; i < nMoves; i++) await page.click(`.move[data-i="${i}"]`);
 ok((await page.textContent('#demo')).includes('都找到了') && (await page.$eval('#demo a[target=_blank]', a => a.href)).includes('douyin'), '看示範：手法全部找到、附原作連結', nMoves);
 ok((await page.$eval('#demo-play', a => a.href)).includes('drive.google.com') && (await page.textContent('#demo')).includes('第 46 條'), '看示範：學校雲端硬碟觀看按鈕＋著作權說明');
 await page.screenshot({ path: SHOTS + 'media-demo.png', fullPage: true });
-await page.click('#to-ai');
+await page.click('#tab-pager .next');
 
 await page.waitForSelector('#ai-games .lvcard');
 ok((await page.$$('#ai-games .lvcard')).length === 6 && (await page.textContent('#ai')).includes('Day of AI') && (await page.$$('#ai .rule')).length === 5, 'AI 前導關：6 關＋五守則＋教材出處');
@@ -75,7 +75,7 @@ await page.click('.mtab[data-t="ai"]'); await page.waitForSelector('#ai-games .l
 await page.screenshot({ path: SHOTS + 'media-ai.png', fullPage: true });
 
 /* ── 多媒體：30 秒廣告工作站（決定主題 → 三句文案 → 拍攝重點 → 配樂 → 剪輯） ── */
-await page.click('#to-studio');
+await page.click('#tab-pager .next');
 await page.waitForSelector('#w1-obj');
 await page.fill('#w1-obj', '塑膠椅');
 await page.click('#w1-sv');

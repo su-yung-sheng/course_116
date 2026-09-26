@@ -102,12 +102,13 @@
 
                 <section class="mb-8 rounded-3xl border border-rose-100 bg-rose-50/70 p-5 md:p-6" aria-labelledby="unit-four-goals" data-course-goals><div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p class="text-xs font-black tracking-[0.18em] text-rose-600">LEARNING GOALS</p><h3 id="unit-four-goals" class="mt-1 text-xl font-black text-slate-800">完成這一單元，你可以……</h3></div><span class="w-fit rounded-full bg-white px-3 py-1 text-xs font-bold text-rose-600 shadow-sm">建議順序：像素 → 色彩 → 壓縮</span></div><ul class="mt-5 grid gap-3 md:grid-cols-3 text-sm text-slate-600"><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-rose-600">01</span> 用像素與解析度說明影像的細緻程度。</li><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-rose-600">02</span> 理解取樣、量化與色彩深度的關係。</li><li class="rounded-2xl bg-white/90 p-3"><span class="font-black text-rose-600">03</span> 比較圖片格式與壓縮方式的取捨。</li></ul></section>
 
-                <div class="flex gap-2 mb-8 overflow-x-auto pb-2">
-                    <button onclick="switchImageSubTab('intro')" id="sub-image-intro" class="px-5 py-2.5 rounded-full text-sm font-bold bg-rose-500 text-white shadow-sm whitespace-nowrap transition-colors">1. 認識解析度</button>
-                    <button onclick="switchImageSubTab('explorer')" id="sub-image-explorer" class="px-5 py-2.5 rounded-full text-sm font-bold bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition-colors">2. 像素探險家</button>
-                    <button onclick="switchImageSubTab('pixel')" id="sub-image-pixel" class="px-5 py-2.5 rounded-full text-sm font-bold bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition-colors">3. 色彩量化與解碼實作</button>
-                    <button onclick="switchImageSubTab('compress')" id="sub-image-compress" class="px-5 py-2.5 rounded-full text-sm font-bold bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition-colors">4. 壓縮方式與檔案格式</button>
-                </div>
+                <p class="text-xs font-black tracking-[0.18em] text-slate-500 mb-1">本課四個小步驟 · 點小卡切換</p>
+                <nav class="ucards" id="image-steps" style="--n:4" aria-label="1-4 的四個小步驟">
+                    <button type="button" onclick="switchImageSubTab('intro')" id="sub-image-intro" class="ucard uc-1 on"><span class="no">1</span><span class="here">目前在這裡 👇</span><span class="ic">🔍</span><span class="tt">認識解析度</span><span class="ds">像素越多，畫面越細緻</span></button>
+                    <button type="button" onclick="switchImageSubTab('explorer')" id="sub-image-explorer" class="ucard uc-2"><span class="no">2</span><span class="here">目前在這裡 👇</span><span class="ic">🧭</span><span class="tt">像素探險家</span><span class="ds">放大照片，找出一格一格的像素</span></button>
+                    <button type="button" onclick="switchImageSubTab('pixel')" id="sub-image-pixel" class="ucard uc-3"><span class="no">3</span><span class="here">目前在這裡 👇</span><span class="ic">🎨</span><span class="tt">色彩量化與解碼</span><span class="ds">用 0 和 1 記下每一格的顏色</span></button>
+                    <button type="button" onclick="switchImageSubTab('compress')" id="sub-image-compress" class="ucard uc-4"><span class="no">4</span><span class="here">目前在這裡 👇</span><span class="ic">🗜️</span><span class="tt">壓縮與檔案格式</span><span class="ds">容量變小的祕密：JPG、PNG、GIF</span></button>
+                </nav>
 
                 <!-- ================= (1) 認識解析度 ================= -->
                 <div id="image-sub-intro" class="space-y-6">
@@ -695,9 +696,12 @@
                     </div>
                 </div>
 
-                <section class="mt-10 rounded-3xl border border-rose-100 bg-gradient-to-r from-rose-50 to-orange-50 p-6 md:p-8" aria-labelledby="unit-four-review"><div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p class="text-xs font-black tracking-[0.18em] text-rose-600">WRAP-UP</p><h3 id="unit-four-review" class="mt-1 text-xl font-black text-slate-800">課後回顧：一張圖片如何變成資料？</h3></div><a href="index.html" class="nav-btn nav-inactive w-fit px-4 py-2 text-sm font-bold">回到課程地圖</a></div><div class="mt-5 grid gap-3 md:grid-cols-3 text-sm text-slate-600"><p class="rounded-2xl bg-white/80 p-4">我能區分：解析度、色彩深度與檔案大小並不相同。</p><p class="rounded-2xl bg-white/80 p-4">我能說明：降低色彩或尺寸為何能減少檔案容量。</p><p class="rounded-2xl bg-white/80 p-4">我能選擇：依透明背景、照片或動畫挑選圖片格式。</p></div><div class="mt-6 rounded-2xl border border-rose-100 bg-white/80 p-5"><div class="flex items-center justify-between gap-3"><div><h4 class="font-black text-slate-800">快速檢核</h4><p class="text-xs text-slate-500">答對三題，取得本單元徽章。</p></div><span id="review-score" class="rounded-full bg-rose-100 px-3 py-1 text-xs font-black text-rose-700">0 / 3</span></div><div class="mt-4 grid gap-3 md:grid-cols-3 text-sm"><article class="rounded-xl border border-slate-100 p-3"><p class="font-bold text-slate-700">1. 透明背景的圖示優先選？</p><div class="mt-2 flex gap-2"><button onclick="answerReview(1, this)" data-k="K04iWwt6usxfLaxpTBcqFgTXcthtQFkE21MxHW8yxM1dejClE257RmPLcrE68fxydmYJFGx4kQo43GbILc5xlCixxRDhvakFPfyABq/z3axTxy6zAUURYpzZ+GBXujxL/iNaqHC2HDme8SAlJA==" class="review-btn">JPG</button><button onclick="answerReview(1, this)" data-k="28OBWwNHxKCk97vQh5uGASIv+RwEsYeEM85ypLi9KuDxr02bT/SM" class="review-btn">PNG</button></div></article><article class="rounded-xl border border-slate-100 p-3"><p class="font-bold text-slate-700">2. 想讓照片檔案較小可優先選？</p><div class="mt-2 flex gap-2"><button onclick="answerReview(2, this)" data-k="XUO+PMn8gOTX4Nbk/vvTFqklIzuhYAS1CPOj/G8GM8PCvz2XQK8c" class="review-btn">JPG</button><button onclick="answerReview(2, this)" data-k="PFfcIIT/tLb/M8op6OODmJZ3yMdgx4A19eM+MmtHZA5t6aidfnYGcGzr9eeO4778orVl4vuPTan5FLEDrlkeq/k9gmWiu54BoH5Q1zOl+tIzeAseXBSMvDNxF0KdBFmADANQfPFsC6qffKEkYJFPPhuBgOA=" class="review-btn">PNG</button></div></article><article class="rounded-xl border border-slate-100 p-3"><p class="font-bold text-slate-700">3. 降低解析度通常會？</p><div class="mt-2 flex gap-2"><button onclick="answerReview(3, this)" data-k="BgxP9iqg5d88+AQsBuQ5+tQQYnY+QSYo2cuKeHjdOsYmtZ6MSLZySCyPktVgvY7gVLjLo4AH/0KivA7XjmAI6yi9aZd2U8bmD9zXfsDKMQNE2LG1tcLtXxDsZhwmO5qthrIrLdjZCXKSZhe17is=" class="review-btn">檔案更大</button><button onclick="answerReview(3, this)" data-k="ZFBUVyG+1LTmixTeub4g+Q1LgEdl0vz8zSvvgKjZQI7Uqm0imxWs" class="review-btn">像素與容量變少</button></div></article></div><p id="review-feedback" class="mt-3 min-h-5 text-sm font-bold text-rose-700" aria-live="polite">從三題中找出你最需要再練習的概念。</p><div id="review-badge" class="mt-3 hidden rounded-xl bg-rose-600 px-4 py-3 text-center text-sm font-black text-white">🏅 圖像資料判讀員徽章已解鎖！</div></div></section>
+                <nav id="image-step-pager" aria-label="上一步／下一步"></nav>
+
+                <section class="mt-10 rounded-3xl border border-rose-100 bg-gradient-to-r from-rose-50 to-orange-50 p-6 md:p-8" aria-labelledby="unit-four-review"><div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p class="text-xs font-black tracking-[0.18em] text-rose-600">WRAP-UP</p><h3 id="unit-four-review" class="mt-1 text-xl font-black text-slate-800">課後回顧：一張圖片如何變成資料？</h3></div><a href="index.html" class="nav-btn nav-inactive w-fit px-4 py-2 text-sm font-bold">回到單元首頁</a></div><div class="mt-5 grid gap-3 md:grid-cols-3 text-sm text-slate-600"><p class="rounded-2xl bg-white/80 p-4">我能區分：解析度、色彩深度與檔案大小並不相同。</p><p class="rounded-2xl bg-white/80 p-4">我能說明：降低色彩或尺寸為何能減少檔案容量。</p><p class="rounded-2xl bg-white/80 p-4">我能選擇：依透明背景、照片或動畫挑選圖片格式。</p></div><div class="mt-6 rounded-2xl border border-rose-100 bg-white/80 p-5"><div class="flex items-center justify-between gap-3"><div><h4 class="font-black text-slate-800">快速檢核</h4><p class="text-xs text-slate-500">答對三題，取得本單元徽章。</p></div><span id="review-score" class="rounded-full bg-rose-100 px-3 py-1 text-xs font-black text-rose-700">0 / 3</span></div><div class="mt-4 grid gap-3 md:grid-cols-3 text-sm"><article class="rounded-xl border border-slate-100 p-3"><p class="font-bold text-slate-700">1. 透明背景的圖示優先選？</p><div class="mt-2 flex gap-2"><button onclick="answerReview(1, this)" data-k="K04iWwt6usxfLaxpTBcqFgTXcthtQFkE21MxHW8yxM1dejClE257RmPLcrE68fxydmYJFGx4kQo43GbILc5xlCixxRDhvakFPfyABq/z3axTxy6zAUURYpzZ+GBXujxL/iNaqHC2HDme8SAlJA==" class="review-btn">JPG</button><button onclick="answerReview(1, this)" data-k="28OBWwNHxKCk97vQh5uGASIv+RwEsYeEM85ypLi9KuDxr02bT/SM" class="review-btn">PNG</button></div></article><article class="rounded-xl border border-slate-100 p-3"><p class="font-bold text-slate-700">2. 想讓照片檔案較小可優先選？</p><div class="mt-2 flex gap-2"><button onclick="answerReview(2, this)" data-k="XUO+PMn8gOTX4Nbk/vvTFqklIzuhYAS1CPOj/G8GM8PCvz2XQK8c" class="review-btn">JPG</button><button onclick="answerReview(2, this)" data-k="PFfcIIT/tLb/M8op6OODmJZ3yMdgx4A19eM+MmtHZA5t6aidfnYGcGzr9eeO4778orVl4vuPTan5FLEDrlkeq/k9gmWiu54BoH5Q1zOl+tIzeAseXBSMvDNxF0KdBFmADANQfPFsC6qffKEkYJFPPhuBgOA=" class="review-btn">PNG</button></div></article><article class="rounded-xl border border-slate-100 p-3"><p class="font-bold text-slate-700">3. 降低解析度通常會？</p><div class="mt-2 flex gap-2"><button onclick="answerReview(3, this)" data-k="BgxP9iqg5d88+AQsBuQ5+tQQYnY+QSYo2cuKeHjdOsYmtZ6MSLZySCyPktVgvY7gVLjLo4AH/0KivA7XjmAI6yi9aZd2U8bmD9zXfsDKMQNE2LG1tcLtXxDsZhwmO5qthrIrLdjZCXKSZhe17is=" class="review-btn">檔案更大</button><button onclick="answerReview(3, this)" data-k="ZFBUVyG+1LTmixTeub4g+Q1LgEdl0vz8zSvvgKjZQI7Uqm0imxWs" class="review-btn">像素與容量變少</button></div></article></div><p id="review-feedback" class="mt-3 min-h-5 text-sm font-bold text-rose-700" aria-live="polite">從三題中找出你最需要再練習的概念。</p><div id="review-badge" class="mt-3 hidden rounded-xl bg-rose-600 px-4 py-3 text-center text-sm font-black text-white">🏅 圖像資料判讀員徽章已解鎖！</div></div></section>
                 <section class="mt-5 rounded-2xl border border-rose-100 bg-white p-5" aria-labelledby="unit-four-discussion"><div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"><div><p class="text-xs font-black tracking-[0.16em] text-rose-600">PAIR TALK</p><h3 id="unit-four-discussion" class="text-lg font-black text-slate-800">同伴討論挑戰</h3></div><span class="text-xs font-bold text-slate-500">先選擇，再說明理由</span></div><p class="mt-3 text-sm text-slate-600">要製作透明背景的社團 Logo 並放上網站，你會怎麼選？</p><div class="mt-3 grid gap-2 sm:grid-cols-2"><button onclick="chooseDiscussion('PNG，保留透明背景與清楚邊緣', this)" class="discussion-btn">PNG：保留透明背景與清楚邊緣</button><button onclick="chooseDiscussion('JPG，把照片壓縮得更小', this)" class="discussion-btn">JPG：把照片壓縮得更小</button></div><p id="discussion-feedback" class="mt-3 min-h-5 text-sm font-bold text-rose-700" aria-live="polite">選擇後，和同伴用「我選……因為……」說明你的理由。</p></section>
             </section>
+            <nav id="pager" aria-label="上一課／下一課"></nav>
         </main>
         
         <footer class="tiny faint center mt3">內容改編自「0 與 1 的藝術」（unforte_114）</footer>
@@ -724,18 +728,27 @@
             modal.classList.remove('hidden');
         }
 
+        /* 116：四個小步驟的結尾「← 上一步／下一步 →」（全站共用 UI.pager 的樣式） */
+        const IMAGE_STEPS = [['intro', '🔍 認識解析度'], ['explorer', '🧭 像素探險家'], ['pixel', '🎨 色彩量化與解碼'], ['compress', '🗜️ 壓縮與檔案格式']];
+        function drawImageStepPager(cur) {
+            if (!window.UI || !UI.pager) return;
+            const i = IMAGE_STEPS.findIndex(x => x[0] === cur), prev = IMAGE_STEPS[i - 1], next = IMAGE_STEPS[i + 1];
+            const go = k => () => { switchImageSubTab(k); document.getElementById('image-steps').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+            UI.pager('#image-step-pager',
+                prev ? { lbl: '← 上一步', title: (i) + '. ' + prev[1], go: go(prev[0]) } : null,
+                next ? { lbl: '下一步 →', title: (i + 2) + '. ' + next[1], go: go(next[0]) } : { lbl: '四步都完成了 →', title: '做下面的快速檢核', go: () => document.querySelector('[aria-labelledby="unit-four-review"]').scrollIntoView({ behavior: 'smooth', block: 'start' }) });
+        }
+        document.addEventListener('DOMContentLoaded', () => drawImageStepPager('intro'));
+
         function switchImageSubTab(subTabName) {
             ['intro', 'explorer', 'pixel', 'compress'].forEach(s => {
                 const subEl = document.getElementById(`image-sub-${s}`);
                 if (subEl) subEl.classList.toggle('section-hidden', s !== subTabName);
                 
                 const btnEl = document.getElementById(`sub-image-${s}`);
-                if (btnEl) {
-                    btnEl.className = s === subTabName 
-                        ? "px-5 py-2.5 rounded-full text-sm font-bold bg-rose-500 text-white shadow-sm whitespace-nowrap transition-colors" 
-                        : "px-5 py-2.5 rounded-full text-sm font-bold bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition-colors";
-                }
+                if (btnEl) { btnEl.classList.toggle('on', s === subTabName); if (s === subTabName) btnEl.setAttribute('aria-current', 'step'); else btnEl.removeAttribute('aria-current'); }
             });
+            drawImageStepPager(subTabName);
             currentImageSubTab = subTabName; 
             
             if(subTabName === 'intro') {

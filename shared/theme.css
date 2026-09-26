@@ -180,3 +180,26 @@ table.t th{background:var(--soft);font-weight:800}
 .lvgrid.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media (max-width:900px){.lvgrid.c3,.lvgrid.c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.lvgrid.c2,.lvgrid.c3,.lvgrid.c4{grid-template-columns:minmax(0,1fr)}}
+
+/* ── 捲動時固定在上方的精簡課程小卡（UI.stickyNav）────────────────── */
+.ucards-ph{display:flow-root}
+.ucards-ph.stuck>.ucards{position:fixed;top:.5rem;left:50%;transform:translateX(-50%);width:min(62rem,calc(100% - 1.5rem));z-index:900;margin:0;padding:.45rem;gap:.45rem;
+  grid-template-columns:repeat(var(--n,4),minmax(0,1fr));background:rgba(231,229,228,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:1rem;box-shadow:0 8px 24px rgba(15,23,42,.18);animation:dropin .2s ease-out}
+.ucards-ph.stuck .ucard{flex-direction:row;align-items:center;gap:.4rem;padding:.4rem .55rem;border-width:2px;border-top-width:4px;transform:none;box-shadow:none;min-width:0}
+.ucards-ph.stuck .ucard .ds,.ucards-ph.stuck .ucard .here,.ucards-ph.stuck .ucard .pg,.ucards-ph.stuck .ucard .bar{display:none!important}
+.ucards-ph.stuck .ucard .no{position:static;flex:0 0 auto;padding:.05rem .45rem}
+.ucards-ph.stuck .ucard .ic{font-size:1.1rem}
+.ucards-ph.stuck .ucard .tt{font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:560px){.ucards-ph.stuck .ucard .tt{display:none}.ucards-ph.stuck .ucard{justify-content:center}}
+@keyframes dropin{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ── 上一個／下一個（UI.pager）：每一課、每一部分的結尾 ──────────────── */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
+.pager .pg-btn{display:flex;flex-direction:column;gap:.15rem;text-decoration:none;color:inherit;background:#fff;border:2px solid var(--line);border-radius:1rem;
+  padding:.8rem 1rem;box-shadow:var(--shadow);cursor:pointer;font:inherit;text-align:left;transition:transform .15s,border-color .15s}
+.pager .pg-btn:hover{transform:translateY(-2px);border-color:var(--unit)}
+.pager .pg-btn.prev{grid-column:1}
+.pager .pg-btn.next{grid-column:2;text-align:right;border-color:var(--unit);background:var(--unit-soft)}
+.pager .lbl{font-size:.75rem;font-weight:800;color:var(--ink-soft)}
+.pager .ttl{font-weight:900}
+@media (max-width:560px){.pager{grid-template-columns:1fr}.pager .pg-btn.prev,.pager .pg-btn.next{grid-column:auto}}

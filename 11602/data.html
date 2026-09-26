@@ -20,10 +20,12 @@
   <header id="topbar"></header>
   <nav id="ucards"></nav>
   <div id="app"></div>
+  <nav id="pager" aria-label="上一課／下一課"></nav>
 </main>
 <script>
 UI.topbar('#topbar', { title: '🕵️ 資料偵探', kicker: '單元六 · 3下 第 3 章', hub: 'unit6.html', backLabel: '← 單元六' });
 UNIT.cards('#ucards', 'unit6', 'data');   // 單元六的三張課程小卡（登入後自動更新進度）
+UNIT.pager('#pager', 'unit6', 'data', 'unit6.html');   // 結尾：← 上一課／下一課 →
 CARDGAME.mount({ app: '#app', levels: DATA_LEVELS, mod: 'data', headline: '看懂資料、清理資料、保護資料' });
 </script>
 </body>

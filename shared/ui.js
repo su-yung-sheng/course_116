@@ -118,6 +118,43 @@
     window.addEventListener('store:change', render);
   };
 
+  /** 課程小卡捲出畫面後，改成精簡版固定在畫面上方（隨時可以切換）。狀態放在外層，小卡重畫也不會掉 */
+  UI.stickyNav = function (nav) {
+    if (typeof nav === 'string') nav = document.querySelector(nav);
+    if (!nav || nav.parentNode.classList.contains('ucards-ph')) return;
+    var ph = document.createElement('div'); ph.className = 'ucards-ph';
+    nav.parentNode.insertBefore(ph, nav); ph.appendChild(nav);
+    var stuck = false, ticking = false;
+    function check() {
+      ticking = false;
+      if (!stuck && ph.getBoundingClientRect().bottom < 0) { ph.style.height = ph.offsetHeight + 'px'; ph.classList.add('stuck'); stuck = true; }
+      else if (stuck && ph.getBoundingClientRect().bottom >= 0) { ph.classList.remove('stuck'); ph.style.height = ''; stuck = false; }
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(check); } }, { passive: true });
+    check();
+  };
+  /** 切換到別的部分後，如果課程小卡已經捲上去了，捲回內容開頭 */
+  UI.scrollToNav = function (nav) {
+    if (typeof nav === 'string') nav = document.querySelector(nav);
+    var ph = nav && (nav.closest('.ucards-ph') || nav);
+    if (ph && ph.getBoundingClientRect().top < 0) ph.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  /** 上一個／下一個：每一課、每一部分的結尾都用這一組。item = { lbl, title, href } 或 { lbl, title, go: function } */
+  UI.pager = function (el, prev, next) {
+    if (typeof el === 'string') el = document.querySelector(el);
+    if (!el) return;
+    el.className = 'pager';
+    function btn(it, cls) {
+      if (!it) return '';
+      var inner = '<span class="lbl">' + UI.esc(it.lbl) + '</span><span class="ttl">' + UI.esc(it.title) + '</span>';
+      return it.href ? '<a class="pg-btn ' + cls + '" href="' + UI.esc(it.href) + '">' + inner + '</a>' : '<button type="button" class="pg-btn ' + cls + '">' + inner + '</button>';
+    }
+    el.innerHTML = btn(prev, 'prev') + btn(next, 'next');
+    [['prev', prev], ['next', next]].forEach(function (x) {
+      var b = el.querySelector('.' + x[0]); if (b && x[1] && x[1].go) b.onclick = x[1].go;
+    });
+  };
+
   /** 關卡卡片的欄數：避免最後一排只剩一張（4 張 → 2×2；7、8 張 → 每排 4 張；其他 3 欄） */
   UI.gridCols = function (n) { return 'lvgrid c' + (n === 4 || n === 2 ? 2 : (n === 7 || n === 8 ? 4 : 3)); };
 

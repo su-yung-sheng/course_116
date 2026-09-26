@@ -27,5 +27,15 @@ window.UNIT = {
     }
     draw();
     window.addEventListener('store:change', draw);
+    if (UI.stickyNav) UI.stickyNav(el);
+  },
+  /* 每一部分的結尾：「← 上一課／下一課 →」。第一課的上一個、最後一課的下一個都回單元首頁（home：從這一頁連回單元首頁的網址） */
+  pager: function (el, unitId, current, home) {
+    var u = UNIT.find(unitId); if (!u) return;
+    var i = u.parts.map(function (p) { return p.id; }).indexOf(current); if (i < 0) return;
+    var prev = u.parts[i - 1], next = u.parts[i + 1];
+    UI.pager(el,
+      prev ? { lbl: '← 上一課', title: prev.icon + ' ' + prev.title, href: prev.href } : { lbl: '← 回到', title: '單元' + u.no + '首頁', href: home },
+      next ? { lbl: '下一課 →', title: next.icon + ' ' + next.title, href: next.href } : { lbl: '全部完成了嗎？回到 →', title: '單元' + u.no + '首頁', href: home });
   }
 };

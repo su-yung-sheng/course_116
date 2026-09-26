@@ -30,7 +30,8 @@ window.LABKIT = {
           '<span class="ic">' + s.icon + '</span><span class="tt">' + esc(s.title.split('：')[0]) + '</span><span class="ds">' + esc(s.badge) + ' · ' + esc(s.link) + '</span>' +
           '<span class="pg"><span>' + (d ? '✅ 完成' : '尚未完成') + '</span></span><span class="bar"><i style="width:' + (d ? 100 : 0) + '%"></i></span></button>';
       }).join('');
-      document.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { show(+b.dataset.i); }; });
+      document.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { show(+b.dataset.i); UI.scrollToNav(nav); }; });
+      UI.stickyNav(nav);   // 捲動時精簡版固定在上方
     }
 
     function show(i) {
@@ -51,8 +52,15 @@ window.LABKIT = {
         (s.blocks ? '<article class="card"><h3 class="bold">🧩 積木 ↔ 🐍 Python</h3><div class="grid g2 mt1"><div class="blocks">' +
           s.blocks.map(function (b) { return '<span class="blk ' + b[0] + '">' + esc(b[1]) + '</span>'; }).join('') + '</div>' +
           (s.python ? '<div class="code">' + esc(s.python) + '</div>' : '<p class="small soft">Python 版本就在上面模擬器裡，黃色框是「正在執行」的那兩行。</p>') + '</div></article>' : '') +
-        (s.checks.length ? '<article class="card"><h3 class="bold">✅ 檢核：先預測，再驗證</h3><div id="checks" class="stack mt1"></div></article>' : '');
+        (s.checks.length ? '<article class="card"><h3 class="bold">✅ 檢核：先預測，再驗證</h3><div id="checks" class="stack mt1"></div></article>' : '') +
+        '<nav id="lab-pager" aria-label="上一節／下一節"></nav>';
       var api = { done: function (rec) { STORE.saveLevel(MOD, s.id, Object.assign({ done: true }, rec || {})); tabs(); UI.toast('✅ ' + s.badge + ' 完成！'); } };
+      // 結尾：← 上一節／下一節 →（最後一節接回闖關地圖）
+      function go(k) { return function () { show(k); UI.scrollToNav('#tabs'); }; }
+      var P = SECTIONS[i - 1], N = SECTIONS[i + 1];
+      UI.pager('#lab-pager',
+        P ? { lbl: '← 上一節', title: P.icon + ' ' + P.title.split('：')[0], go: go(i - 1) } : null,
+        N ? { lbl: '下一節 →', title: N.icon + ' ' + N.title.split('：')[0], go: go(i + 1) } : { lbl: '五節都完成了嗎？回到 →', title: '🗺️ 闖關地圖', href: opts.hub || 'hub.html' });
       var sim = s.sim(box.querySelector('#sim'), api);
       if (s.checks.length) runChecks(s, sim, api);
     }

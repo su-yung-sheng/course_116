@@ -14,6 +14,7 @@
   UI.topbar('#topbar', { title: '💾 數位時代', kicker: '單元一 · 3上 第 1 章 · 0 與 1 的藝術',
     hub: unit ? 'index.html' : '../hub.html', backLabel: unit ? '← 單元一' : '← 闖關地圖' });
   UNIT.cards('#ucards', 'digital', unit ? 'd' + unit : null);
+  if (unit) UNIT.pager('#pager', 'digital', 'd' + unit, 'index.html');   // 每一課結尾：← 上一課／下一課 →
 
   // ⚠️ 要在登入前就換掉：按鈕的 onclick 已經改成 answerReview(題號, this)，原本的函式接不住
   if (unit) hookReview();

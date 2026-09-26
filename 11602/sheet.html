@@ -21,10 +21,12 @@
   <header id="topbar"></header>
   <nav id="ucards"></nav>
   <div id="app"></div>
+  <nav id="pager" aria-label="上一課／下一課"></nav>
 </main>
 <script>
 UI.topbar('#topbar', { title: '📊 試算表實作', kicker: '單元六 · 3下 第 3 章', hub: 'unit6.html', backLabel: '← 單元六' });
 UNIT.cards('#ucards', 'unit6', 'sheet');   // 單元六的三張課程小卡（登入後自動更新進度）
+UNIT.pager('#pager', 'unit6', 'sheet', 'unit6.html');   // 結尾：← 上一課／下一課 →
 SHEET.mount({ app: '#app', levels: SHEET_LEVELS, mod: 'sheet' });
 </script>
 </body>

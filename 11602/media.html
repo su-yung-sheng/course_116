@@ -15,11 +15,9 @@
 <script src="../shared/labkit.js"></script>
 <script src="content/media.js"></script>
 <style>
-  .steps{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr))}
-  .step{border:2px solid var(--line);background:#fff;border-radius:.9rem;padding:.6rem .7rem;cursor:pointer;text-align:left;font:inherit;color:inherit}
-  .step.on{border-color:var(--u1);background:#eff6ff}
-  .step .st{font-size:.75rem;font-weight:800;color:var(--ink-soft)}
-  .step.done .st{color:var(--ok)}
+  /* 工作站五個步驟：和課程小卡同一套樣式（精簡版），五張一排；手機 3＋2 */
+  .wsteps.ucards{margin:1.3rem 0 .4rem}
+  .wsteps .ucard.done .pg{color:var(--ok)}
   .shot{border:1px solid var(--line);border-radius:.9rem;padding:.8rem;background:var(--soft)}
   .shot .grid{gap:.6rem}
   .shot textarea{min-height:3.6rem;resize:vertical}
@@ -27,7 +25,7 @@
   .chk input{width:1.2rem;height:1.2rem;margin-top:.15rem;accent-color:var(--ok)}
   .files{background:#0f172a;color:#e2e8f0;border-radius:.7rem;padding:.7rem .9rem;font:14px/1.7 ui-monospace,Consolas,monospace;white-space:pre-wrap}
   @media (max-width:560px){.tl .n{display:none}}
-  @media (max-width:560px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.step{padding:.45rem .55rem}.step>div:first-child{font-size:1.1rem!important}}
+  @media (max-width:560px){.wsteps.ucards.compact{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .rub td,.rub th{text-align:center}
   .rub td:first-child,.rub th:first-child{text-align:left}
   .cnt{font-size:.8rem;font-weight:800;color:var(--ink-soft)}
@@ -72,6 +70,7 @@
   <div id="demo" class="hidden"></div>
   <div id="ai" class="hidden"></div>
   <div id="studio" class="hidden"></div>
+  <nav id="tab-pager" aria-label="上一部分／下一部分"></nav>
 </main>
 <script>
 (function () {
@@ -105,11 +104,20 @@
         (c.max ? '<span class="pg"><span>' + (c.got >= c.max ? '✅ 完成' : '進度') + '</span><span>' + c.got + ' / ' + c.max + ' ' + c.unit + '</span></span><span class="bar"><i style="width:' + pct + '%"></i></span>'
           : '<span class="pg"><span>👀 ' + c.note + '</span></span>') + '</button>';
     }).join('');
-    document.querySelectorAll('#ucards .ucard').forEach(function (b) { b.onclick = function () { clearHash(); tab(b.dataset.t); }; });
+    document.querySelectorAll('#ucards .ucard').forEach(function (b) { b.onclick = function () { clearHash(); tab(b.dataset.t); UI.scrollToNav('#ucards'); }; });
   }
   window.addEventListener('store:change', function () { if (STORE.me()) drawCards(); });
+  /* 每一部分的結尾：← 上一部分／下一部分 →（和其他單元的「上一課／下一課」同一組樣式） */
+  var TAB_NAMES = { games: '🎮 概念闖關', demo: '📺 看示範', ai: '🤖 AI 前導關', studio: '🎬 廣告工作站' };
+  function tabPager(t) {
+    var i = TABS.indexOf(t), P = TABS[i - 1], N = TABS[i + 1];
+    function go(k) { return function () { clearHash(); tab(k); UI.scrollToNav('#ucards'); }; }
+    UI.pager('#tab-pager',
+      P ? { lbl: '← 上一部分', title: TAB_NAMES[P], go: go(P) } : null,
+      N ? { lbl: '下一部分 →', title: TAB_NAMES[N], go: go(N) } : { lbl: '完成了嗎？回到 →', title: '🗺️ 闖關地圖', href: 'hub.html' });
+  }
   function tab(t) {
-    curTab = t; drawCards();
+    curTab = t; drawCards(); tabPager(t);
     TABS.forEach(function (k) { document.getElementById(k).classList.toggle('hidden', k !== t); });
     if (t === 'games' && !document.querySelector('#games .card')) mountGames();
     if (t === 'studio') studio();
@@ -118,7 +126,8 @@
   }
   // 手動切分頁時清掉網址的 #關卡（不然引擎會直接打開上次那一關）
   function clearHash() { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
-  drawCards();
+  drawCards(); tabPager('games');
+  UI.stickyNav('#ucards');   // 捲動時精簡版課程小卡固定在上方
 
   function rec(id) { return STORE.level(MOD, id) || {}; }
   function done(id) { return !!rec(id).done; }
@@ -157,10 +166,8 @@
             (found[i] ? '<div class="small mt1">💡 ' + esc(m.why) + '</div><div class="tiny soft mt1">➡️ 我們的 30 秒：' + esc(m.ours) + '</div>' : '') + '</button>';
         }).join('') + '</div>' +
         (n === D.moves.length ? '<div class="note ok small mt2">🎉 八個手法都找到了！接下來想想：30 秒裡要留下哪幾個？</div>' : '') + '</section>' +
-        '<section class="card mt2"><h3 class="bold">💭 想一想（課堂討論）</h3><ol class="mt1">' + D.think.map(function (t) { return '<li class="mt1">' + esc(t) + '</li>'; }).join('') + '</ol>' +
-        '<div class="row mt2"><button class="btn primary" id="to-ai">下一步：🤖 AI 前導關 →</button></div></section>';
+        '<section class="card mt2"><h3 class="bold">💭 想一想（課堂討論）</h3><ol class="mt1">' + D.think.map(function (t) { return '<li class="mt1">' + esc(t) + '</li>'; }).join('') + '</ol></section>';
       box.querySelectorAll('.move').forEach(function (b) { b.onclick = function () { var i = +b.dataset.i; if (found[i]) delete found[i]; else found[i] = 1; draw(); }; });
-      document.getElementById('to-ai').onclick = function () { clearHash(); tab('ai'); };
     }
     draw();
   }
@@ -175,10 +182,8 @@
       '<h2 class="black" style="font-size:1.3rem">🤖 先認識 AI，再請它幫忙</h2>' +
       '<p class="small mt1">⭐ 這個單元的重點是<b>「好好用 AI」</b>：創意發想、文案、句型、鏡頭、配樂建議都可以請 AI 幫忙。AI 是什麼、怎麼學會的、會在哪裡出錯、哪些事不能做，先弄清楚才能用得好。</p>' +
       rulesHTML(true) + '</section><div id="ai-games" class="mt2"></div>' +
-      '<div class="row mt2"><button class="btn primary" id="to-studio">前往 🎬 廣告工作站 →</button></div>' +
       (src.note ? '<p class="tiny soft mt2">📚 ' + esc(src.note) + ' <a href="' + esc(src.url) + '" target="_blank" rel="noopener">' + esc(src.name) + ' ↗</a></p>' : '');
     CARDGAME.mount({ app: '#ai-games', levels: window.MEDIA_AI_LEVELS || [], mod: MOD, headline: 'AI 素養六關：AI 是什麼 → 怎麼學 → 演算法 → 生成式 AI → 好好問 → 倫理' });
-    document.getElementById('to-studio').onclick = function () { tab('studio'); };
   }
 
   /* ================================================================
@@ -192,16 +197,23 @@
       '<h2 class="black" style="font-size:1.35rem">拍一支 30 秒廣告：讓平凡物品變主角</h2>' +
       '<p class="small soft mt1">決定主題 → 三句文案 → 拍攝重點 → 配樂 → 剪輯。每一步都可以請 AI 當創作夥伴；影片自己實拍、在電腦上剪。</p></div>' +
       '<div class="center"><div class="black" style="font-size:1.8rem">' + n + ' / ' + STEPS.length + '</div><div class="tiny soft bold">步驟完成</div></div></div>' +
-      '<div class="steps mt2">' + STEPS.map(function (s, i) {
-        return '<button class="step' + (i === cur ? ' on' : '') + (done(s.id) ? ' done' : '') + '" data-i="' + i + '"><div style="font-size:1.4rem">' + s.icon + '</div>' +
-          '<div class="bold">' + (i + 1) + '. ' + esc(s.title) + '</div><div class="st">' + (done(s.id) ? '✅ 完成' : '尚未完成') + '</div></button>';
-      }).join('') + '</div>' + rulesHTML() + '</section><section class="card mt2" id="panel"></section>';
+      '<nav class="ucards compact wsteps" style="--n:' + STEPS.length + '" aria-label="工作站五個步驟">' + STEPS.map(function (s, i) {
+        var d = done(s.id);
+        return '<button class="ucard step' + (i === cur ? ' on' : '') + (d ? ' done' : '') + '" data-i="' + i + '"' + (i === cur ? ' aria-current="step"' : '') + '>' +
+          '<span class="no">' + (i + 1) + '</span><span class="here">目前在這裡 👇</span><span class="ic">' + s.icon + '</span><span class="tt">' + esc(s.title) + '</span>' +
+          '<span class="pg"><span>' + (d ? '✅ 完成' : '尚未完成') + '</span></span><span class="bar"><i style="width:' + (d ? 100 : 0) + '%"></i></span></button>';
+      }).join('') + '</nav>' + rulesHTML() + '</section><section class="card mt2" id="panel"></section>';
     box.querySelectorAll('.step').forEach(function (b) { b.onclick = function () { cur = +b.dataset.i; studio(); }; });
     var s = STEPS[cur], panel = document.getElementById('panel');
     panel.innerHTML = '<h3 class="black" style="font-size:1.2rem">' + s.icon + ' ' + esc(s.title) + '</h3><p class="small soft mt1">' + esc(s.desc) + '</p>' +
       (s.ai ? '<div class="aihelp mt1"><div><b>🤖 AI 可以幫忙</b>' + esc(s.ai.can) + '</div><div><b>🙋 要自己決定</b>' + esc(s.ai.self) + '</div></div>' : '') +
-      '<div id="body" class="mt2"></div>';
+      '<div id="body" class="mt2"></div><nav id="w-pager" aria-label="上一步／下一步"></nav>';
     var body = document.getElementById('body');
+    // 每一步的結尾：← 上一步／下一步 →
+    function goW(k) { return function () { cur = k; studio(); document.getElementById('panel').scrollIntoView({ behavior: 'smooth', block: 'start' }); }; }
+    var P = STEPS[cur - 1], N = STEPS[cur + 1];
+    UI.pager('#w-pager', P ? { lbl: '← 上一步', title: cur + '. ' + P.icon + ' ' + P.title, go: goW(cur - 1) } : null,
+      N ? { lbl: '下一步 →', title: (cur + 2) + '. ' + N.icon + ' ' + N.title, go: goW(cur + 1) } : null);
     ({ W1: topicStep, W2: copyStep, W3: shotStep, W4: musicStep, W5: editStep })[s.id](body, s);
   }
   function next() { if (cur < STEPS.length - 1) cur++; setTimeout(studio, 900); }
