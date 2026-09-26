@@ -45,6 +45,7 @@ await page.waitForSelector('.move');
 const nMoves = (await page.$$('.move')).length;
 for (let i = 0; i < nMoves; i++) await page.click(`.move[data-i="${i}"]`);
 ok((await page.textContent('#demo')).includes('都找到了') && (await page.$eval('#demo a[target=_blank]', a => a.href)).includes('douyin'), '看示範：手法全部找到、附原作連結', nMoves);
+ok((await page.$eval('#demo-play', a => a.href)).includes('drive.google.com') && (await page.textContent('#demo')).includes('第 46 條'), '看示範：學校雲端硬碟觀看按鈕＋著作權說明');
 await page.screenshot({ path: SHOTS + 'media-demo.png', fullPage: true });
 await page.click('#to-ai');
 await page.waitForSelector('.aicard');

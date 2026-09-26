@@ -459,6 +459,7 @@ window.MEDIA_DEMO = {
  "platform": "抖音",
  "url": "https://m.douyin.com/share/user/MS4wLjABAAAANO3p7zrd2YObHBP4TgwFuvh-rkP_paOIrnYXbC9NMw8",
  "length": "約 2 分 30 秒",
+ "schoolUrl": "https://drive.google.com/file/d/15KXrUkAlpxdQlL8LHBuGzaCO57F4rFbY/view",
  "aiNote": "原作品標有「剪映 AI」相關標籤，畫面可能部分或全部是 AI 生成的。我們看的是「廣告怎麼讓人心動」的手法；我們自己的作品要實拍。",
  "moves": [
   {

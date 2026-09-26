@@ -117,7 +117,9 @@
         '<h2 class="black" style="font-size:1.3rem">《' + esc(D.title) + '》</h2>' +
         '<p class="small mt1">創作者：<b>' + esc(D.creator) + '</b>（' + esc(D.platform) + '）· 長度 ' + esc(D.length) +
         ' · <a href="' + esc(D.url) + '" target="_blank" rel="noopener">到創作者頁面看原作 ↗</a></p>' +
-        '<p class="tiny soft mt1">🎥 影片是別人的作品，網站不放檔案，由老師在課堂播放。</p>' +
+        (D.schoolUrl ? '<div class="row mt2"><a class="btn primary" id="demo-play" href="' + esc(D.schoolUrl) + '" target="_blank" rel="noopener">▶ 用學校帳號觀看示範影片</a></div>' +
+          '<p class="tiny soft mt1">🔒 影片放在學校雲端硬碟，只有本校 Google 帳號登入後才能看（依著作權法第 46 條：教學使用、限校內、註明出處）。請不要下載或轉傳。</p>'
+          : '<p class="tiny soft mt1">🎥 影片是別人的作品，網站不放檔案，由老師在課堂播放。</p>') +
         '<div class="note warn small mt2">🤖 ' + esc(D.aiNote) + '</div></section>' +
         '<section class="card mt2"><div class="row between"><h3 class="bold">🔎 這支廣告用了哪些手法？看到就點一下</h3><span class="chip">找到 ' + n + ' / ' + D.moves.length + '</span></div>' +
         '<div class="grid g2 mt1">' + D.moves.map(function (m, i) {
