@@ -25,9 +25,9 @@ window.CONFIG = {
   /* 闖關地圖的卡片（順序即顯示順序）
      maxStars 是進度條的分母，一定要和這門課真的能拿到的星數一致。 */
   MODULES: [
-    { id: 'media', no: '四', title: '多媒體專題：30 秒廣告', sub: '4 個概念關卡＋AI 前導關＋廣告工作站', icon: '🎬', color: 'u1',
+    { id: 'media', no: '四', title: '多媒體專題：30 秒廣告', sub: '4 個概念關卡＋AI 前導關＋好好用 AI 廣告工作站', icon: '🎬', color: 'u1',
       href: 'media.html', maxStars: 12, levels: ['M1', 'M2', 'M3', 'M4', 'W1', 'W2', 'W3', 'W4', 'W5'],
-      desc: '看懂影片規格，拆解示範廣告的手法，先認識 AI 再請它幫忙想標語，最後實拍一支 30 秒廣告，讓平凡物品變主角。', chapter: '第 1 章' },
+      desc: '學會「好好用 AI」：和 AI 一起發想主角、寫三句文案、規劃鏡頭和配樂，最後自己實拍剪輯一支 30 秒廣告，讓平凡物品變主角。', chapter: '第 1 章' },
     { id: 'network', no: '五', title: '網路世界', sub: '7 個互動體驗遊戲', icon: '🌐', color: 'u3',
       href: 'network.html', maxStars: 21, levels: ['N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7'],
       desc: '封包快遞、IP 位址偵探、網址拆解、無線網路選手，還有結帳時「嗶」的祕密。', chapter: '第 2 章' },
