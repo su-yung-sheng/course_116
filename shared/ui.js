@@ -157,7 +157,7 @@
   };
 
   /** 關卡卡片的欄數：避免最後一排只剩一張（4 張 → 2×2；7、8 張 → 每排 4 張；其他 3 欄） */
-  UI.gridCols = function (n) { return 'lvgrid c' + (n === 4 || n === 2 ? 2 : (n === 7 || n === 8 ? 4 : 3)); };
+  UI.gridCols = function (n) { return 'lvgrid c' + (n === 4 || n === 2 ? 2 : (n === 7 || n === 8 ? 4 : (n === 10 || n === 5 ? 5 : 3))); };
 
   window.UI = UI;
 })();

@@ -26,14 +26,14 @@ window.CONFIG = {
      maxStars 是進度條的分母，一定要和這門課真的能拿到的星數一致。 */
   MODULES: [
     { id: 'digital', no: '一', title: '數位時代', sub: '0 與 1 的藝術', icon: '💾', color: 'u1',
-      href: 'digital/index.html', maxStars: 12, levels: ['u1', 'u2', 'u3', 'u4'],
-      desc: '二進位、文字編碼、聲音與影像的取樣和量化，四個互動實驗站。', chapter: '第 1 章',
+      href: 'digital/index.html', maxStars: 24, levels: ['x1', 'u1', 'x2', 'u2', 'x3', 'u3', 'x4', 'u4'],
+      desc: '二進位、文字編碼、聲音與影像的取樣和量化，四個互動實驗站：每課有 🧪 實驗任務和 ✅ 快速檢核。', chapter: '第 1 章',
       /* 四課的課程小卡（href 相對於 digital/ 資料夾；進度都存在 digital 模組；color 和各課內容的主色一致） */
       parts: [
-        { id: 'd1', mod: 'digital', levels: ['u1'], maxStars: 3, color: '#2563eb', bg: '#eff6ff', icon: '🔢', title: '1-1 二進位原理', ds: '位元、權值，十進位與二進位互換', href: '1.html' },
-        { id: 'd2', mod: 'digital', levels: ['u2'], maxStars: 3, color: '#4f46e5', bg: '#eef2ff', icon: '🔤', title: '1-2 文字數位化', ds: '摩斯電碼、ASCII、Big-5、Unicode', href: '2.html' },
-        { id: 'd3', mod: 'digital', levels: ['u3'], maxStars: 3, color: '#0d9488', bg: '#f0fdfa', icon: '🎵', title: '1-3 音訊數位化', ds: '聲波、取樣頻率、量化位元', href: '3.html' },
-        { id: 'd4', mod: 'digital', levels: ['u4'], maxStars: 3, color: '#e11d48', bg: '#fff1f2', icon: '🖼️', title: '1-4 影像數位化', ds: '像素、解析度、色彩與壓縮', href: '4.html' }
+        { id: 'd1', mod: 'digital', levels: ['x1', 'u1'], maxStars: 6, color: '#2563eb', bg: '#eff6ff', icon: '🔢', title: '1-1 二進位原理', ds: '位元、權值，十進位與二進位互換', href: '1.html' },
+        { id: 'd2', mod: 'digital', levels: ['x2', 'u2'], maxStars: 6, color: '#4f46e5', bg: '#eef2ff', icon: '🔤', title: '1-2 文字數位化', ds: '摩斯電碼、ASCII、Big-5、Unicode', href: '2.html' },
+        { id: 'd3', mod: 'digital', levels: ['x3', 'u3'], maxStars: 6, color: '#0d9488', bg: '#f0fdfa', icon: '🎵', title: '1-3 音訊數位化', ds: '聲波、取樣頻率、量化位元', href: '3.html' },
+        { id: 'd4', mod: 'digital', levels: ['x4', 'u4'], maxStars: 6, color: '#e11d48', bg: '#fff1f2', icon: '🖼️', title: '1-4 影像數位化', ds: '像素、解析度、色彩與壓縮', href: '4.html' }
       ] },
     { id: 'python', no: '二', title: '進入 Python 的世界', sub: '畢旅籌備處・10 個任務', icon: '🐍', color: 'u2',
       href: 'python.html', maxStars: 30, levels: ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'], sequential: true,
@@ -46,13 +46,15 @@ window.CONFIG = {
       desc: '感測器取樣、條件判斷、主迴圈、資料上雲端，最後做出自己的教室小幫手。', chapter: '跨章專題' }
   ],
 
-  /* 稱號（依總星數）── 遊戲化：學生看得到自己「升級」 */
+  /* 稱號（依「平均完成度」%）── 遊戲化：學生看得到自己「升級」
+     平均完成度＝每個計星單元各自的完成百分比，再取平均（5016B 不計）。
+     這樣每個單元份量一樣：不會因為某個單元星星特別多，只玩它就能升級。 */
   RANKS: [
-    [0,  '🥚 數位新鮮人'],
-    [10, '🐣 位元見習生'],
-    [22, '🐥 程式學徒'],
-    [36, '🦅 系統工程師'],
-    [50, '🐉 資訊架構師'],
-    [62, '👑 九年級傳說']
+    [0, '🥚 數位新鮮人'],
+    [15, '🐣 位元見習生'],
+    [33, '🐥 程式學徒'],
+    [55, '🦅 系統工程師'],
+    [75, '🐉 資訊架構師'],
+    [92, '👑 九年級傳說']
   ]
 };

@@ -2,6 +2,7 @@
    闖關地圖引擎（兩學期共用）
    ---------------------------------------------------------------------
    內容全部來自 config.js 的 MODULES／RANKS，這支只管「怎麼畫」。
+   稱號看「平均完成度」：每個計星單元各自的完成 %，再取平均（單元星數不同也一樣公平）。
    需要：config.js、store.js、ui.js
    ===================================================================== */
 (function () {
@@ -10,6 +11,13 @@
   // 一個單元可以包好幾個部分（parts，例如單元六：資料偵探＋試算表＋密碼特務），進度就把各部分加起來
   function modStars(m) { return m.parts ? m.parts.reduce(function (a, p) { return a + STORE.partStars(p); }, 0) : STORE.moduleStars(m.id); }
   function modDone(m) { return m.parts ? m.parts.reduce(function (a, p) { return a + STORE.partDone(p); }, 0) : STORE.moduleDone(m.id); }
+
+  // 平均完成度：每個計星單元各自算完成 %，再平均（每個單元份量一樣；5016B 不計星，不算進來）
+  function pctOf(m) { return m.maxStars ? Math.min(1, modStars(m) / m.maxStars) : 0; }
+  function avgPct(mods) {
+    var S = mods.filter(function (m) { return m.maxStars && !m.soon; });
+    return S.length ? Math.floor(S.reduce(function (a, m) { return a + pctOf(m); }, 0) / S.length * 100) : 0;
+  }
 
   function rankOf(total) {
     var r = C.RANKS || [[0, '']], cur = r[0], next = null;
@@ -25,8 +33,8 @@
     var mods = C.MODULES;
     var total = 0, max = 0;
     mods.forEach(function (m) { total += modStars(m); max += m.maxStars; });
-    var rk = rankOf(total);
-    var toNext = rk.next ? (rk.next[0] - total) : 0;
+    var avg = avgPct(mods), rk = rankOf(avg);
+    var toNext = rk.next ? (rk.next[0] - avg) : 0;
     var nextMod = mods.filter(function (m) { return !m.soon && modDone(m) < m.levels.length; })[0];
 
     var head =
@@ -37,9 +45,10 @@
       (p ? '<p class="soft bold mt1">' + esc(p.name) + '，歡迎回來！</p>' : '') + '</div>' +
       '<div class="center" style="min-width:12rem">' +
       '<div class="black" style="font-size:1.35rem">' + esc(rk.cur[1]) + '</div>' +
-      '<div class="small soft bold">總星數 <span class="black" style="color:var(--star);font-size:1.2rem">' + total + '</span> / ' + max + '</div>' +
-      '<div class="bar mt1"><i style="width:' + (max ? Math.round(total / max * 100) : 0) + '%"></i></div>' +
-      '<div class="tiny soft mt1">' + (rk.next ? '再 ' + toNext + ' 顆星升級為 ' + esc(rk.next[1]) : '已達最高稱號！') + '</div>' +
+      '<div class="small soft bold">平均完成度 <span class="black" id="avg-pct" style="color:var(--star);font-size:1.2rem">' + avg + '%</span></div>' +
+      '<div class="bar mt1"><i style="width:' + avg + '%"></i></div>' +
+      '<div class="tiny soft mt1">⭐ 總星數 ' + total + ' / ' + max + ' · ' + (rk.next ? '平均再 ' + toNext + '% 升級為 ' + esc(rk.next[1]) : '已達最高稱號！') + '</div>' +
+      '<div class="tiny faint">每個單元各算完成 %，再取平均</div>' +
       '</div></div>' +
       (nextMod ? '<div class="note mt2 small"><b>下一步建議：</b>單元' + esc(nextMod.no) + '「' + esc(nextMod.title) + '」—— <a href="' + esc(nextMod.href) + '" class="bold">前往 →</a></div>' : '<div class="note ok mt2 small"><b>全部完成！</b>去 5016B 做一個自己的專題吧。</div>') +
       openAllBanner() +
@@ -57,7 +66,7 @@
         '<div><h2 style="font-size:1.25rem" class="black">' + esc(m.title) + '</h2><p class="small soft bold">' + esc(m.sub) + '</p></div></div>' +
         '<p class="small mt1">' + esc(m.desc) + '</p>' +
         '<div class="mt2 row between small bold">' +
-        (m.maxStars ? '<span>⭐ ' + s + ' / ' + m.maxStars + '</span>' : '<span>不計星 · 記錄完成</span>') +
+        (m.maxStars ? '<span>⭐ ' + s + ' / ' + m.maxStars + ' · <span class="upct">' + pct + '%</span></span>' : '<span>不計星 · 記錄完成</span>') +
         '<span class="soft">' + d + ' / ' + n + (m.id === 'arduino' ? ' 節' : ' 關') + '</span></div>' +
         '<div class="bar mt1"><i style="width:' + pct + '%;' + (m.maxStars ? '' : 'background:var(--u4)') + '"></i></div>' +
         '</' + tag + '>';
