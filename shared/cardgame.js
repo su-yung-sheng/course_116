@@ -9,6 +9,9 @@
      build  每個欄位挑一個零件，組出符合需求的東西（rules 檢查）
      type   自己打出答案（answers 任一個都算對；比對前全形轉半形、去空白、不分大小寫）
             可以帶 tool：'caesar'（凱薩轉盤）、'vigenere'（維吉尼亞密碼表）、'binary'（位元權值表）
+     gen    🎲 隨機出題：每次開始都由 CARDGAME.gens[rd.gen](rd) 產生新題目（shared/cipher-gen.js），
+            每位學生、每一次挑戰的題目都不一樣，背答案沒有用；題目自己帶 check(答案)，不存正解
+   opts.sequential：上一關 ≥ 2⭐ 才開下一關（HUB.openAll() 備課模式可暫時全開）
    每一關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。❤️ 用完要重來。
    ⚠️ 內容檔是 tools/build.mjs 從 private/ 產生的「封存版」：答案與解說都要用學生的答案試開（shared/seal.js）。
    ===================================================================== */
@@ -19,6 +22,8 @@ window.CARDGAME = { mount: function (opts) {
 
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function best(id) { var r = STORE.level(MOD, id); return r ? (r.stars || 0) : 0; }
+  function open(i) { return !opts.sequential || i === 0 || best(L[i - 1].id) >= 2 || !!(window.HUB && HUB.openAll && HUB.openAll()); }
+  function norm(s) { return String(s).replace(/[！-～]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/\s+/g, '').toUpperCase(); }
 
   /* ── 關卡選單 ─────────────────────────────── */
   function menu() {
@@ -26,16 +31,18 @@ window.CARDGAME = { mount: function (opts) {
     var total = L.reduce(function (s, lv) { return s + best(lv.id); }, 0);
     app.innerHTML =
       '<section class="card pop"><div class="tape"></div><div class="row between"><div>' +
-      '<p class="kicker">' + L.length + ' 個互動體驗關卡 · 自由挑戰順序</p><h2 class="black" style="font-size:1.35rem">' + esc(opts.headline || '先讀「概念小卡」，再用遊戲證明你懂了') + '</h2>' +
+      '<p class="kicker">' + L.length + ' 個互動體驗關卡 · ' + (opts.sequential ? '依序開放（上一關 2⭐ 開下一關）' : '自由挑戰順序') + '</p><h2 class="black" style="font-size:1.35rem">' + esc(opts.headline || '先讀「概念小卡」，再用遊戲證明你懂了') + '</h2>' +
       '<p class="small soft mt1">每關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。可以一直重玩刷新紀錄。</p></div>' +
       '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
       '<section class="grid g3 mt3">' + L.map(function (lv, i) {
+        if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true"><div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
+          '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">上一關拿到 2 顆星就會開放</p></button>';
         return '<button class="card lvcard pop" data-i="' + i + '" style="animation-delay:' + (i * 40) + 'ms">' +
           '<div class="row between"><span style="font-size:2rem">' + lv.icon + '</span>' + UI.stars(best(lv.id)) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3>' +
           '<p class="tiny soft bold mt1">' + esc(lv.book) + '</p></button>';
       }).join('') + '</section>';
-    app.querySelectorAll('.lvcard').forEach(function (b) { b.onclick = function () { learn(+b.dataset.i); }; });
+    app.querySelectorAll('.lvcard:not(.locked)').forEach(function (b) { b.onclick = function () { learn(+b.dataset.i); }; });
   }
 
   /* ── 概念小卡 ─────────────────────────────── */
@@ -74,6 +81,7 @@ window.CARDGAME = { mount: function (opts) {
     else if (rd.type === 'order') playOrder(rd);
     else if (rd.type === 'build') playBuild(rd);
     else if (rd.type === 'type') playType(rd);
+    else if (rd.type === 'gen') playGen(rd);
   }
 
   function hit(ok) {
@@ -240,7 +248,6 @@ window.CARDGAME = { mount: function (opts) {
   /* type：自己打答案（可附工具）；每一種可接受的寫法各封存一份 */
   function playType(rd) {
     var qs = rd.shuffle ? shuffle(rd.items) : rd.items.slice(), k = 0;
-    function norm(s) { return String(s).replace(/[！-～]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/\s+/g, '').toUpperCase(); }
     function tryOpen(it, v) {
       var i = 0;
       return (function next() {
@@ -286,6 +293,45 @@ window.CARDGAME = { mount: function (opts) {
     q();
   }
 
+  /* gen：🎲 隨機出題。題目在「開始這一回合」時才產生，答錯扣心、不公布答案；答對才顯示解說 */
+  function playGen(rd) {
+    var make = CARDGAME.gens && CARDGAME.gens[rd.gen];
+    if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到出題器：' + esc(rd.gen) + '</p></section>'; return; }
+    var qs = make(rd), k = 0;
+    function q() {
+      var it = qs[k], tool = it.tool || rd.tool;
+      app.innerHTML = '<section class="card">' + hud() +
+        '<p class="small soft bold mt2">🎲 ' + esc(rd.prompt) + '（' + (k + 1) + ' / ' + qs.length + '）</p>' +
+        '<div class="qcard mt1 pop"><div class="big">' + (it.icon || '✏️') + '</div><div class="txt mono">' + esc(it.t) + '</div>' +
+        (it.sub ? '<div class="small soft bold mt1">' + esc(it.sub) + '</div>' : '') + '</div>' +
+        (tool ? '<div class="mt2" id="tool"></div>' : '') +
+        '<form class="row mt2" id="tf"><input class="input" id="ans" autocomplete="off" style="flex:1;min-width:10rem;margin:0" placeholder="' + esc(it.ph || '輸入答案') + '" aria-label="答案">' +
+        '<button class="btn go">確定</button></form><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
+      bindQuit();
+      if (tool && CARDGAME.tools[tool]) CARDGAME.tools[tool](document.getElementById('tool'), it);
+      var inp = document.getElementById('ans'); inp.focus();
+      document.getElementById('tf').onsubmit = function (e) {
+        e.preventDefault();
+        var v = norm(inp.value); if (!v) return;
+        var ok = !!it.check(v), alive = hit(ok), fb = document.getElementById('fb');
+        refreshHud();
+        if (ok) {
+          inp.disabled = true; document.querySelector('#tf button').disabled = true;
+          fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(typeof it.why === 'function' ? it.why(v) : (it.why || '')) + '</div>' +
+            '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < qs.length ? '下一題 →' : '完成這回合 →') + '</button></div>';
+          var nx = document.getElementById('nx'); nx.focus();
+          nx.onclick = function () { k++; if (k < qs.length) q(); else nextRound(); };
+        } else if (!alive) {
+          inp.disabled = true; outOfHearts(fb, '#tf button');
+        } else {
+          inp.select();
+          fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (it.hint ? ' 💡 ' + esc(it.hint) : '') + '</div>';
+        }
+      };
+    }
+    q();
+  }
+
   /* ── 結束 ─────────────────────────────────── */
   function finish() {
     var stars = G.hearts, lv = G.lv, i = G.i;
@@ -316,7 +362,7 @@ window.CARDGAME = { mount: function (opts) {
   UI.requireLogin(function () {
     var want = (location.hash || '').slice(1);
     var i = L.findIndex(function (lv) { return lv.id === want; });
-    if (i >= 0) learn(i); else menu();
+    if (i >= 0 && open(i)) learn(i); else menu();
   });
   return { menu: menu, learn: learn };
 } };

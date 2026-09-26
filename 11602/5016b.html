@@ -108,7 +108,7 @@
       objectives: ['用凱薩密碼把讀值加密', '比較 http 與 https 在傳輸途中的差別'],
       materials: ['守護站', '上學期的 Python 密碼程式'],
       blocks: [['b-var', '變數 密文 設為 ( 凱薩加密 ( 讀值 ) 金鑰 3 )'], ['b-hw', '傳送 ( 密文 )']],
-      python: "msg = 'DIST 45'\nsecret = caesar(msg, 3)     # 用 Python 密碼特務寫的函式\nsend(secret)                # 路上的人只看到 GLVW 45",
+      python: "msg = 'DIST 45'\nsecret = caesar(msg, 3)     # 密碼特務學過的凱薩加密\nsend(secret)                # 路上的人只看到 GLVW 45",
       sim: simCrypto,
       checks: [
         { q: '用 http、金鑰 0（不加密）傳送「DIST 45」，路上偷看的人會看到什麼？', options: ['DIST 45', '一串看不懂的亂碼', '什麼都看不到'],

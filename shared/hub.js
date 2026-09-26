@@ -93,7 +93,7 @@
 
   function openAllBanner() {
     if (!window.HUB || !HUB.openAll()) return '';
-    return '<div class="note warn mt2 small"><b>備課模式：</b>Python 依序開放已暫時關閉，到 ' + esc(C.OPEN_ALL_UNTIL) + ' 自動恢復。</div>';
+    return '<div class="note warn mt2 small"><b>備課模式：</b>「依序開放」已暫時關閉，到 ' + esc(C.OPEN_ALL_UNTIL) + ' 自動恢復。</div>';
   }
 
   window.HUB = {

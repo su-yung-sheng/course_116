@@ -12,12 +12,12 @@ window.CONFIG = {
   TERM_START: '2028-02-14',
   HUB_PAGE: 'hub.html',
 
-  /* Python 執行環境（Pyodide）
+  /* Python 執行環境（Pyodide）—— 下學期的密碼特務改成不寫程式的互動版，目前沒有頁面用到；保留給之後擴充
      ⚠️ 學校網路擋 CDN 時：把 pyodide 整包放到 shared/pyodide/，
         這裡改成 '../shared/pyodide/'（結尾要有斜線）。 */
   PYODIDE_URL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
 
-  /* 備課用總開關：把 Python 的「依序開放」整個關掉。
+  /* 備課用總開關：把「依序開放」（密碼特務）整個關掉。
      ⚠️ 一定要留到期日 —— 過了那天自動失效（「記得關掉」不是機制，是願望）。 */
   OPEN_ALL_UNITS: false,
   OPEN_ALL_UNTIL: '2028-02-01',
@@ -37,15 +37,15 @@ window.CONFIG = {
     { id: 'sheet', no: '六', title: '試算表實作', sub: '5 關・公式自動評分', icon: '📊', color: 'u2',
       href: 'sheet.html', maxStars: 15, levels: ['T1', 'T2', 'T3', 'T4', 'T5'],
       desc: '在網頁裡的小試算表寫 SUM、AVERAGE、COUNTIF，清理資料，最後統計模擬考答題。', chapter: '第 3 章' },
-    { id: 'python', no: '六', title: 'Python 密碼特務', sub: '6 個任務・延續上學期', icon: '🐍', color: 'u2',
-      href: 'python.html', maxStars: 18, levels: ['Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6'], sequential: true,
-      desc: '把凱薩密碼寫成 Python 程式，最後用程式做答題統計（Python 版的 COUNTIF）。2 星開下一關。', chapter: '第 3 章' },
+    { id: 'cipher', no: '六', title: '密碼特務', sub: '6 個任務・🎲 每次隨機出題', icon: '🔐', color: 'u2',
+      href: 'cipher.html', maxStars: 18, levels: ['K1', 'K2', 'K3', 'K4', 'K5', 'K6'], sequential: true,
+      desc: '不用寫程式：字母編號、繞圈取餘數、凱薩加密解密、暴力破解、維吉尼亞，最後統計全班作答。題目每次都隨機，背答案沒有用。2 星開下一關。', chapter: '第 3 章' },
     { id: 'arduino', no: '＋', title: '5016B 專題：守護站 2.0 連上網路', sub: '延伸挑戰・五節', icon: '💡', color: 'u4',
       href: '5016b.html', maxStars: 0, levels: ['S1', 'S2', 'S3', 'S4', 'S5'],
       desc: '幫上學期的智慧教室守護站選無線技術、分配 IP、傳封包、加密上傳，做出連網小幫手。', chapter: '跨章專題' }
   ],
 
-  /* 稱號（依總星數，下學期滿分 96：單元四 30＋網路 21＋資料 12＋試算表 15＋Python 18）── 遊戲化：學生看得到自己「升級」 */
+  /* 稱號（依總星數，下學期滿分 96：單元四 30＋網路 21＋資料 12＋試算表 15＋密碼特務 18）── 遊戲化：學生看得到自己「升級」 */
   RANKS: [
     [0,  '🎒 畢業倒數中'],
     [15, '🤖 AI 見習生'],

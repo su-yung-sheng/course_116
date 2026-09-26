@@ -25,7 +25,7 @@ python.html ──► pyrunner.js ──postMessage──► pyworker.js（Web W
 - **time.sleep() 不會真的等**，只記下來；試跑時畫面每遇到一次 sleep 停 0.4 秒做動畫。
 - 每次執行同時用 `ast` 分析程式結構（for／while／if 鏈長度／and／呼叫了哪些函式／用了哪些運算子）。
 
-## 關卡欄位（`11601/content/python.js`、`11602/content/python.js`）
+## 關卡欄位（`11601/content/python.js`）
 
 ```js
 {

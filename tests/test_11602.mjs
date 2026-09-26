@@ -1,7 +1,6 @@
-// 116-2 下學期：網路世界、資料偵探（遊戲）、試算表、Python 密碼特務
+// 116-2 下學期：網路世界、資料偵探（遊戲）、試算表、密碼特務（🎲 隨機出題）
 import { launch, login, BASE, SHOTS } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
-import { SOL_11602 as SOL, WEAK_11602 as WEAK } from '../private/tests/answers.mjs';
 import { priv } from './harness.mjs';
 
 const { browser, context } = await launch();
@@ -113,18 +112,57 @@ for (let i = 0; i < SL.length; i++) {
 await page.click('.lvcard[data-i="3"]');
 await page.screenshot({ path: SHOTS + 'sheet-T4.png', fullPage: true });
 
-/* ── Python 密碼特務 ───────────────────── */
-
-
-await page.goto(`${BASE}/11602/python.html`);
-await page.waitForSelector('#engine.ok', { timeout: 60000 });
-const grade = (id, code) => page.evaluate(async ([id, code]) => {
-  const lv = PY_LEVELS.find(l => l.id === id); const g = await PYRUN.grade(lv, code);
-  return { stars: g.stars, fails: g.tests.filter(t => !t.pass).map(t => t.test.name + ':' + (t.error ? t.error.type : JSON.stringify(t.fails[0]))), reqs: g.reqs.filter(r => !r.ok).map(r => r.req.need) };
-}, [id, code]);
-for (const [id, code] of Object.entries(SOL)) { const r = await grade(id, code); ok(r.stars === 3, 'python', id, r.stars + '★', r.fails.join('|'), r.reqs.join(',')); }
-for (const [id, code, want] of WEAK) { const r = await grade(id, code); ok(r.stars === want, 'weak', id, 'want', want, 'got', r.stars, r.fails.join('|')); }
-await page.screenshot({ path: SHOTS + 'py-11602.png' });
+/* ── 密碼特務（🎲 隨機出題）──────────────── */
+// 解題機器人：只看畫面上的題目算答案（和學生一樣），不讀任何答案資料
+const solve = () => page.evaluate(() => {
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', C = CARDGAME.cipher;
+  const t = document.querySelector('.qcard .txt').textContent.trim(), sub = (document.querySelector('.qcard .small') || {}).textContent || '';
+  let m;
+  if (/編號是？/.test(sub)) return String(A.indexOf(t));
+  if (/哪一個字母/.test(sub)) return A[+t.replace(/\D/g, '')];
+  if ((m = t.match(/編號 (\d+) 往(後|前)移 (\d+) 格/))) return String(((+m[1] + (m[2] === '後' ? 1 : -1) * +m[3]) % 26 + 26) % 26);
+  if ((m = sub.match(/^加密，金鑰 (\d+)/))) return C.shift(t, +m[1]);
+  if ((m = sub.match(/^解密，金鑰 (\d+)/))) return C.shift(t, -m[1]);
+  if (/金鑰不知道/.test(sub)) { for (let k = 1; k < 26; k++) { const w = C.shift(t, -k); if (C.WORDS.includes(w)) return w; } }
+  if ((m = sub.match(/金鑰依序 (\d+)、(\d+)、(\d+)/))) return C.vig(t, [+m[1], +m[2], +m[3]], 1);
+  const ans = [...document.querySelectorAll('#tool [data-i] .black')].map(e => e.textContent.trim()), key = sub.match(/正解是 ([A-D])/)[1];
+  if (/答對的有幾人/.test(t)) return String(ans.filter(x => x === key).length);
+  if ((m = t.match(/選 ([A-D]) 的有幾人/))) return String(ans.filter(x => x === m[1]).length);
+  if (/答對率/.test(t)) return String(Math.round(ans.filter(x => x === key).length / ans.length * 100));
+  return '??';
+});
+await page.goto(`${BASE}/11602/cipher.html`);
+await page.waitForSelector('.lvcard');
+ok((await page.$$('.lvcard.locked')).length === 5, '密碼特務：一開始只開放第 1 關');
+// 隨機：同一關連開兩次，題目應該不一樣
+const firstQs = async () => { await page.click('.lvcard[data-i="0"]'); await page.click('#go'); const q = []; for (let r = 0; r < 1; r++) q.push(await page.textContent('.qcard .txt')); return q.join(); };
+const q1 = await firstQs(); await page.goto(`${BASE}/11602/cipher.html`); await page.waitForSelector('.lvcard');
+const q2 = await firstQs(); await page.goto(`${BASE}/11602/cipher.html`); await page.waitForSelector('.lvcard');
+const q3 = await firstQs();
+ok(new Set([q1, q2, q3]).size >= 2, '密碼特務：每次開始題目都隨機', q1, q2, q3);
+await page.goto(`${BASE}/11602/cipher.html`); await page.waitForSelector('.lvcard');
+const CL = priv('11602/content/cipher.js').CIPHER_LEVELS;
+for (let i = 0; i < CL.length; i++) {
+  await page.click(`.lvcard[data-i="${i}"]`); await page.click('#go');
+  let wrongDone = i !== 2;
+  for (let guard = 0; guard < 40 && !(await page.$('.end-star')); guard++) {
+    await page.waitForSelector('#ans:not([disabled])');
+    if (!wrongDone) {          // K3 先故意答錯一次：扣心、不公布答案
+      await page.fill('#ans', 'ZZZZZZ'); await page.press('#ans', 'Enter');
+      const fb = await page.textContent('#fb'); ok(fb.includes('不對') && !/→/.test(fb), '密碼特務答錯：扣心、不給答案'); wrongDone = true;
+    }
+    const a = await solve();
+    await page.fill('#ans', a); await page.press('#ans', 'Enter');
+    await page.waitForSelector('#nx'); await page.click('#nx');
+    await page.waitForTimeout(50);
+  }
+  const s = await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'));
+  ok(s.startsWith(i === 2 ? '2' : '3'), 'cipher', CL[i].id, s);
+  if (i === 5) await page.screenshot({ path: SHOTS + 'cipher-end.png', fullPage: true });
+  await page.click('#menu');
+}
+await page.click('.lvcard[data-i="5"]'); await page.click('#go');
+await page.screenshot({ path: SHOTS + 'cipher-K6.png', fullPage: true });
 
 console.log('errors', errors);
 ok(errors.length === 0, '沒有頁面錯誤');

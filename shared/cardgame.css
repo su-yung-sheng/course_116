@@ -23,3 +23,6 @@
   .fb{min-height:3.2rem}
   .scene{font-weight:900;color:var(--u3)}
   .end-star{font-size:3.5rem;letter-spacing:.12em}
+
+/* 依序開放：還沒解鎖的關卡 */
+.lvcard.locked{opacity:.55;cursor:not-allowed;filter:grayscale(.6)}

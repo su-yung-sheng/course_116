@@ -134,6 +134,8 @@ async function sealCards(levels) {
           items.push({ t: it.t, sub: it.sub, icon: it.icon, ph: it.ph, hint: it.hint, toolShift: it.toolShift, s, e });
         }
         rounds.push({ type: 'type', prompt: rd.prompt, tool: rd.tool, shuffle: rd.shuffle, items });
+      } else if (rd.type === 'gen') {
+        rounds.push({ type: 'gen', gen: rd.gen, n: rd.n, max: rd.max, prompt: rd.prompt, tool: rd.tool });   // 隨機出題：沒有固定答案，不用封存
       } else throw new Error('不認得的回合：' + rd.type);
     }
     out.push({ id: lv.id, icon: lv.icon, title: lv.title, book: lv.book, learn: lv.learn, rounds });
