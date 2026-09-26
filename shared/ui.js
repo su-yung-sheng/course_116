@@ -91,7 +91,7 @@
       var p = STORE.me();
       el.className = 'topbar';
       el.innerHTML =
-        (opts.noBack ? '' : '<a class="back" href="' + hub + '">← 闖關地圖</a>') +
+        (opts.noBack ? '' : '<a class="back" href="' + hub + '">' + UI.esc(opts.backLabel || '← 闖關地圖') + '</a>') +
         (opts.title ? '<div><p class="kicker">' + UI.esc(opts.kicker || '') + '</p><h1 class="title">' + UI.esc(opts.title) + '</h1></div>' : '') +
         '<span class="who" id="who">' + (p ? UI.esc(p.cls + ' 班 ' + p.seat + ' 號 ' + p.name) : '尚未登入') + '</span>';
     }

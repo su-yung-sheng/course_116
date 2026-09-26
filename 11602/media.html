@@ -15,9 +15,6 @@
 <script src="../shared/labkit.js"></script>
 <script src="content/media.js"></script>
 <style>
-  .mtabs{display:flex;gap:.5rem;margin-bottom:1rem}
-  .mtab{border:2px solid var(--line);background:#fff;border-radius:999px;padding:.5rem 1rem;font-weight:900;cursor:pointer;color:var(--ink)}
-  .mtab.on{border-color:var(--u1);background:var(--u1-bg);color:#1e40af}
   .steps{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr))}
   .step{border:2px solid var(--line);background:#fff;border-radius:.9rem;padding:.6rem .7rem;cursor:pointer;text-align:left;font:inherit;color:inherit}
   .step.on{border-color:var(--u1);background:#eff6ff}
@@ -29,7 +26,6 @@
   .chk{display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border:1px solid var(--line);border-radius:.7rem;background:#fff;cursor:pointer}
   .chk input{width:1.2rem;height:1.2rem;margin-top:.15rem;accent-color:var(--ok)}
   .files{background:#0f172a;color:#e2e8f0;border-radius:.7rem;padding:.7rem .9rem;font:14px/1.7 ui-monospace,Consolas,monospace;white-space:pre-wrap}
-  .mtabs{flex-wrap:wrap}
   @media (max-width:560px){.tl .n{display:none}}
   @media (max-width:560px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.step{padding:.45rem .55rem}.step>div:first-child{font-size:1.1rem!important}}
   .rub td,.rub th{text-align:center}
@@ -71,12 +67,7 @@
 <body>
 <main class="wrap">
   <header id="topbar"></header>
-  <nav class="mtabs" aria-label="切換">
-    <button class="mtab on" data-t="games">🎮 概念闖關</button>
-    <button class="mtab" data-t="demo">📺 看示範</button>
-    <button class="mtab" data-t="ai">🤖 AI 前導關</button>
-    <button class="mtab" data-t="studio">🎬 廣告工作站</button>
-  </nav>
+  <nav id="ucards" class="ucards" aria-label="課程小卡：選一個部分開始"></nav>
   <div id="games"></div>
   <div id="demo" class="hidden"></div>
   <div id="ai" class="hidden"></div>
@@ -94,10 +85,31 @@
   }
   mountGames();
 
-  /* ── 分頁：概念闖關 → 看示範 → AI 前導關 → 廣告工作站 ── */
-  var TABS = ['games', 'demo', 'ai', 'studio'];
+  /* ── 課程小卡：概念闖關 → 看示範 → AI 前導關 → 廣告工作站（照上課順序，顯示各自的進度）── */
+  var TABS = ['games', 'demo', 'ai', 'studio'], curTab = 'games';
+  function starsOf(ids) { return ids.reduce(function (a, id) { return a + ((STORE.level(MOD, id) || {}).stars || 0); }, 0); }
+  function drawCards() {
+    var M = (window.MEDIA_LEVELS || []).map(function (l) { return l.id; }), AI = (window.MEDIA_AI_LEVELS || []).map(function (l) { return l.id; });
+    var W = STEPS.filter(function (s) { return (STORE.level(MOD, s.id) || {}).done; }).length, D = window.MEDIA_DEMO || {};
+    var C = [
+      { t: 'games', icon: '🎮', title: '概念闖關', ds: '畫質、影片格式、時間軸、後製與著作權', got: starsOf(M), max: M.length * 3, unit: '⭐' },
+      { t: 'demo', icon: '📺', title: '看示範', ds: '拆解示範廣告的 ' + ((D.moves || []).length || 8) + ' 個手法', note: '課堂一起看' },
+      { t: 'ai', icon: '🤖', title: 'AI 前導關', ds: 'AI 素養六關：先認識 AI，再請它幫忙', got: starsOf(AI), max: AI.length * 3, unit: '⭐' },
+      { t: 'studio', icon: '🎬', title: '廣告工作站', ds: '好好用 AI，拍一支 30 秒廣告', got: W, max: STEPS.length, unit: '步' }
+    ];
+    document.getElementById('ucards').innerHTML = C.map(function (c, i) {
+      var pct = c.max ? Math.round(c.got / c.max * 100) : 0;
+      return '<button class="ucard mtab uc-' + (i + 1) + (c.t === curTab ? ' on' : '') + '" data-t="' + c.t + '" aria-pressed="' + (c.t === curTab) + '">' +
+        '<span class="no">' + (i + 1) + '</span><span class="here">目前在這裡 👇</span>' +
+        '<span class="ic">' + c.icon + '</span><span class="tt">' + c.title + '</span><span class="ds">' + esc(c.ds) + '</span>' +
+        (c.max ? '<span class="pg"><span>' + (c.got >= c.max ? '✅ 完成' : '進度') + '</span><span>' + c.got + ' / ' + c.max + ' ' + c.unit + '</span></span><span class="bar"><i style="width:' + pct + '%"></i></span>'
+          : '<span class="pg"><span>👀 ' + c.note + '</span></span>') + '</button>';
+    }).join('');
+    document.querySelectorAll('#ucards .ucard').forEach(function (b) { b.onclick = function () { clearHash(); tab(b.dataset.t); }; });
+  }
+  window.addEventListener('store:change', function () { if (STORE.me()) drawCards(); });
   function tab(t) {
-    document.querySelectorAll('.mtab').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
+    curTab = t; drawCards();
     TABS.forEach(function (k) { document.getElementById(k).classList.toggle('hidden', k !== t); });
     if (t === 'games' && !document.querySelector('#games .card')) mountGames();
     if (t === 'studio') studio();
@@ -106,7 +118,7 @@
   }
   // 手動切分頁時清掉網址的 #關卡（不然引擎會直接打開上次那一關）
   function clearHash() { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
-  document.querySelectorAll('.mtab').forEach(function (b) { b.onclick = function () { clearHash(); tab(b.dataset.t); }; });
+  drawCards();
 
   function rec(id) { return STORE.level(MOD, id) || {}; }
   function done(id) { return !!rec(id).done; }

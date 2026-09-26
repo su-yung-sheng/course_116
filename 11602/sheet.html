@@ -11,6 +11,7 @@
 <script src="config.js"></script>
 <script src="../shared/store.js"></script>
 <script src="../shared/ui.js"></script>
+<script src="../shared/unit.js"></script>
 <script src="../shared/seal.js"></script>
 <script src="../shared/sheet.js"></script>
 <script src="content/sheet.js"></script>
@@ -18,10 +19,12 @@
 <body>
 <main class="wrap">
   <header id="topbar"></header>
+  <nav id="ucards"></nav>
   <div id="app"></div>
 </main>
 <script>
-UI.topbar('#topbar', { title: '📊 試算表實作', kicker: '單元六 · 3下 第 3 章' });
+UI.topbar('#topbar', { title: '📊 試算表實作', kicker: '單元六 · 3下 第 3 章', hub: 'unit6.html', backLabel: '← 單元六' });
+UNIT.cards('#ucards', 'unit6', 'sheet');   // 單元六的三張課程小卡（登入後自動更新進度）
 SHEET.mount({ app: '#app', levels: SHEET_LEVELS, mod: 'sheet' });
 </script>
 </body>

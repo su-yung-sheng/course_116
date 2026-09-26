@@ -217,6 +217,14 @@ for (const href of cards) {
   const r = await page.request.get(BASE + '/11602/' + href);
   ok(r.ok(), 'link', href);
 }
+// 單元六：闖關地圖只有一張卡，進去後是三張課程小卡；各部分頁面上方也有同一組小卡
+ok(cards.includes('unit6.html') && !cards.includes('data.html') && !cards.includes('sheet.html') && !cards.includes('cipher.html'), '闖關地圖：單元六包成一張課程小卡');
+await page.goto(BASE + '/11602/unit6.html'); await page.waitForSelector('#ucards .ucard');
+const parts = await page.$$eval('#ucards .ucard', as => as.map(a => a.getAttribute('href')));
+ok(parts.join() === 'data.html,sheet.html,cipher.html', '單元六首頁：三張課程小卡', parts.join());
+await page.screenshot({ path: SHOTS + 'unit6.png', fullPage: true });
+await page.click('#ucards .ucard[data-part="sheet"]'); await page.waitForSelector('#ucards .ucard.on');
+ok((await page.getAttribute('#ucards .ucard.on', 'data-part')) === 'sheet' && (await page.getAttribute('#topbar .back', 'href')) === 'unit6.html', '試算表頁：小卡標示目前位置、返回單元六');
 console.log('errors', errors);
 ok(errors.length === 0, '沒有頁面錯誤');
 await browser.close();

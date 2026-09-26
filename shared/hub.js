@@ -7,8 +7,9 @@
 (function () {
   var C = window.CONFIG, esc = UI.esc;
 
-  function modStars(m) { return STORE.moduleStars(m.id); }
-  function modDone(m) { return STORE.moduleDone(m.id); }
+  // 一個單元可以包好幾個部分（parts，例如單元六：資料偵探＋試算表＋密碼特務），進度就把各部分加起來
+  function modStars(m) { return m.parts ? m.parts.reduce(function (a, p) { return a + STORE.moduleStars(p.id); }, 0) : STORE.moduleStars(m.id); }
+  function modDone(m) { return m.parts ? m.parts.reduce(function (a, p) { return a + STORE.moduleDone(p.id); }, 0) : STORE.moduleDone(m.id); }
 
   function rankOf(total) {
     var r = C.RANKS || [[0, '']], cur = r[0], next = null;

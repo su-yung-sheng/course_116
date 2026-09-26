@@ -9,6 +9,7 @@
 <script src="config.js"></script>
 <script src="../shared/store.js"></script>
 <script src="../shared/ui.js"></script>
+<script src="../shared/unit.js"></script>
 <script src="../shared/hub.js"></script>
 <script src="../shared/seal.js"></script>
 <script src="../shared/cardgame.js"></script>
@@ -19,10 +20,12 @@
 <body>
 <main class="wrap">
   <header id="topbar"></header>
+  <nav id="ucards"></nav>
   <div id="app"></div>
 </main>
 <script>
-UI.topbar('#topbar', { title: '🔐 密碼特務', kicker: '單元六 · 3下 第 3 章 · 🎲 每次隨機出題' });
+UI.topbar('#topbar', { title: '🔐 密碼特務', kicker: '單元六 · 3下 第 3 章 · 🎲 每次隨機出題', hub: 'unit6.html', backLabel: '← 單元六' });
+UNIT.cards('#ucards', 'unit6', 'cipher');   // 單元六的三張課程小卡（登入後自動更新進度）
 CARDGAME.mount({ app: '#app', levels: CIPHER_LEVELS, mod: 'cipher', sequential: true,
   headline: '🎲 每次挑戰題目都不一樣：從字母編號一路練到破解密碼' });
 </script>

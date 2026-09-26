@@ -31,15 +31,20 @@ window.CONFIG = {
     { id: 'network', no: '五', title: '網路世界', sub: '7 個互動體驗遊戲', icon: '🌐', color: 'u3',
       href: 'network.html', maxStars: 21, levels: ['N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7'],
       desc: '封包快遞、IP 位址偵探、網址拆解、無線網路選手，還有結帳時「嗶」的祕密。', chapter: '第 2 章' },
-    { id: 'data', no: '六', title: '資料偵探與密碼', sub: '4 個概念關卡', icon: '🕵️', color: 'u2',
-      href: 'data.html', maxStars: 12, levels: ['D1', 'D2', 'D3', 'D4'],
-      desc: '大數據 5V、資料清理、開放文件格式與壓縮，最後用凱薩和維吉尼亞密碼解謎。', chapter: '第 3 章' },
-    { id: 'sheet', no: '六', title: '試算表實作', sub: '5 關・公式自動評分', icon: '📊', color: 'u2',
-      href: 'sheet.html', maxStars: 15, levels: ['T1', 'T2', 'T3', 'T4', 'T5'],
-      desc: '在網頁裡的小試算表寫 SUM、AVERAGE、COUNTIF，清理資料，最後統計模擬考答題。', chapter: '第 3 章' },
-    { id: 'cipher', no: '六', title: '密碼特務', sub: '6 個任務・🎲 每次隨機出題', icon: '🔐', color: 'u2',
-      href: 'cipher.html', maxStars: 18, levels: ['K1', 'K2', 'K3', 'K4', 'K5', 'K6'], sequential: true,
-      desc: '不用寫程式：字母編號、繞圈取餘數、凱薩加密解密、暴力破解、維吉尼亞，最後統計全班作答。題目每次都隨機，背答案沒有用。2 星開下一關。', chapter: '第 3 章' },
+    /* 單元六：三個部分包成一張課程小卡（parts）。單元首頁 unit6.html 再分成三張小卡；
+       各部分的進度仍存在自己的 id（data／sheet／cipher），闖關地圖把它們加起來。 */
+    { id: 'unit6', no: '六', title: '進階資料處理', sub: '資料偵探 → 試算表實作 → 密碼特務', icon: '🗂️', color: 'u2',
+      href: 'unit6.html', maxStars: 45, chapter: '第 3 章',
+      levels: ['D1', 'D2', 'D3', 'D4', 'T1', 'T2', 'T3', 'T4', 'T5', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6'],
+      desc: '看懂 → 動手 → 挑戰：先認識大數據與資料清理，再用小試算表寫公式統計，最後當密碼特務（🎲 每次隨機出題）。',
+      parts: [
+        { id: 'data', icon: '🕵️', title: '資料偵探', ds: '大數據 5V、資料清理、檔案轉換、凱薩與維吉尼亞入門', href: 'data.html',
+          maxStars: 12, levels: ['D1', 'D2', 'D3', 'D4'] },
+        { id: 'sheet', icon: '📊', title: '試算表實作', ds: '在網頁裡寫 SUM、AVERAGE、COUNTIF，清理資料再統計', href: 'sheet.html',
+          maxStars: 15, levels: ['T1', 'T2', 'T3', 'T4', 'T5'] },
+        { id: 'cipher', icon: '🔐', title: '密碼特務', ds: '不寫程式：加密、解密、暴力破解、答題統計，🎲 每次隨機', href: 'cipher.html',
+          maxStars: 18, levels: ['K1', 'K2', 'K3', 'K4', 'K5', 'K6'], sequential: true }
+      ] },
     { id: 'arduino', no: '＋', title: '5016B 專題：守護站 2.0 連上網路', sub: '延伸挑戰・五節', icon: '💡', color: 'u4',
       href: '5016b.html', maxStars: 0, levels: ['S1', 'S2', 'S3', 'S4', 'S5'],
       desc: '幫上學期的智慧教室守護站選無線技術、分配 IP、傳封包、加密上傳，做出連網小幫手。', chapter: '跨章專題' }
