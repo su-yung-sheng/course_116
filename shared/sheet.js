@@ -316,11 +316,12 @@
         '<div class="note small mt2" style="text-align:left;display:inline-block">' + lv.targets.map(function (t) { return '<div><b class="mono">' + t.cell + '</b>　<code>' + esc(formulas[t.cell]) + '</code></div>'; }).join('') + '</div>' +
         (lv.after ? '<p class="small mt2">' + lv.after + '</p>' : '') +
         (r.improved ? '<p class="note ok small mt2" style="display:inline-block">⭐ 新紀錄已儲存！</p>' : '<p class="small soft mt1">最佳紀錄：' + UI.stars(best(lv.id)) + '</p>') +
-        '<div class="row mt3" style="justify-content:center"><button class="btn" id="again">🔁 再做一次</button>' +
-        (i + 1 < L.length ? '<button class="btn go" id="next">下一關：' + esc(L[i + 1].title) + ' →</button>' : '') + '<button class="btn" id="menu">關卡選單</button></div></section>';
+        '<div class="row mt3" style="justify-content:center"><button class="btn" id="again">🔁 再做一次</button></div><nav id="end-pager"></nav></section>';
       document.getElementById('again').onclick = function () { start(i); };
-      document.getElementById('menu').onclick = menu;
-      var n = document.getElementById('next'); if (n) n.onclick = function () { start(i + 1); };
+      // 結尾：← 關卡選單／下一關 →（全站同一組樣式）
+      var N = L[i + 1];
+      UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
+        N ? { id: 'next', lbl: '下一關 →', title: N.icon + ' ' + N.title, go: function () { start(i + 1); } } : null);
       if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
     }
 
@@ -328,9 +329,9 @@
       var i = S.i;
       app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">愛心用完了</h2>' +
         '<p class="soft mt1">看看提示，再挑戰一次！這次的結果不會記錄。</p>' + (S.msg || '') +
-        '<div class="row mt3" style="justify-content:center"><button class="btn go" id="retry">🔁 重新挑戰</button><button class="btn" id="menu">關卡選單</button></div></section>';
-      document.getElementById('retry').onclick = function () { start(i); };
-      document.getElementById('menu').onclick = menu;
+        '<nav id="end-pager"></nav></section>';
+      UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
+        { id: 'retry', lbl: '再挑戰一次 →', title: '🔁 重新挑戰', go: function () { start(i); } });
     }
 
     function maxRow(lv) { var m = 0; (lv.targets || []).concat(Object.keys(lv.labels || {}).map(function (k) { return { cell: k }; })).forEach(function (t) { m = Math.max(m, parseRef(t.cell).r); }); return m; }

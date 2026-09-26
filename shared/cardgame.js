@@ -341,12 +341,14 @@ window.CARDGAME = { mount: function (opts) {
       '<div class="end-star mt1">' + UI.stars(stars) + '</div>' +
       '<p class="bold">答對 ' + G.right + ' / ' + G.total + ' · 最高連對 ' + G.maxCombo + '</p>' +
       (r.improved ? '<p class="note ok small mt2" style="display:inline-block">⭐ 新紀錄已儲存！</p>' : '<p class="small soft mt1">最佳紀錄：' + UI.stars(best(lv.id)) + '</p>') +
-      '<div class="row mt3" style="justify-content:center"><button class="btn" id="again">🔁 再玩一次</button>' +
-      (i + 1 < L.length ? '<button class="btn go" id="next">下一關：' + esc(L[i + 1].title) + ' →</button>' : '') +
-      '<button class="btn" id="menu">關卡選單</button></div></section>';
+      '<div class="row mt3" style="justify-content:center"><button class="btn" id="again">🔁 再玩一次</button></div>' +
+      '<nav id="end-pager"></nav></section>';
     document.getElementById('again').onclick = function () { start(i); };
-    document.getElementById('menu').onclick = menu;
-    var n = document.getElementById('next'); if (n) n.onclick = function () { learn(i + 1); };
+    // 結尾：← 關卡選單／下一關 →（和全站的「上一課／下一課」同一組樣式）
+    var N = L[i + 1];
+    UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
+      !N ? null : open(i + 1) ? { id: 'next', lbl: '下一關 →', title: N.icon + ' ' + N.title, go: function () { learn(i + 1); } }
+        : { id: 'next', locked: true, lbl: '🔒 下一關', title: '這一關拿到 2⭐ 才開放', go: function () { UI.toast('這一關拿到 2 顆星，下一關才會開放'); } });
     if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
   }
 
@@ -354,9 +356,9 @@ window.CARDGAME = { mount: function (opts) {
     var i = G.i, lv = G.lv;
     app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">愛心用完了</h2>' +
       '<p class="soft mt1">回去看看概念小卡，再挑戰一次！這次的結果不會記錄。</p>' +
-      '<div class="row mt3" style="justify-content:center"><button class="btn go" id="retry">📖 看小卡再挑戰</button><button class="btn" id="menu">關卡選單</button></div></section>';
-    document.getElementById('retry').onclick = function () { learn(i); };
-    document.getElementById('menu').onclick = menu;
+      '<nav id="end-pager"></nav></section>';
+    UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
+      { id: 'retry', lbl: '再挑戰一次 →', title: '📖 先看概念小卡', go: function () { learn(i); } });
   }
 
   UI.requireLogin(function () {

@@ -9,7 +9,7 @@
 window.PYAPP = { mount: function (opts) {
   var L = opts.levels, esc = UI.esc, MOD = opts.mod || 'python';
   var root = typeof opts.root === 'string' ? document.querySelector(opts.root) : opts.root;
-  root.innerHTML = '<div class="row between" style="margin-top:-.5rem;margin-bottom:1rem">\n    <p class="small soft bold">' + esc(opts.subtitle || '') + '</p>\n    <span id="engine" class="engine">⏳ Python 引擎載入中…</span>\n  </div>\n\n  <div class="py-grid">\n    <aside class="card" style="padding:.8rem">\n      <p class="kicker" style="margin:.2rem .2rem .6rem">任務清單 · 2⭐ 開下一關</p>\n      <nav id="lv-list" class="lv-list" aria-label="關卡"></nav>\n      <p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過<br>3⭐ 再加上程式結構要求</p>\n    </aside>\n\n    <section id="stage" class="stack"></section>\n  </div>\n';
+  root.innerHTML = '<div class="row between" style="margin-top:-.5rem;margin-bottom:1rem">\n    <p class="small soft bold">' + esc(opts.subtitle || '') + '</p>\n    <span id="engine" class="engine">⏳ Python 引擎載入中…</span>\n  </div>\n\n  <div class="py-grid">\n    <aside class="card" style="padding:.8rem">\n      <p class="kicker" style="margin:.2rem .2rem .6rem">任務清單 · 2⭐ 開下一關</p>\n      <div class="lv-prog"><span>進度</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>\n      <nav id="lv-list" class="lv-list" aria-label="關卡"></nav>\n      <p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過<br>3⭐ 再加上程式結構要求</p>\n    </aside>\n\n    <section id="stage" class="stack"></section>\n  </div>\n';
   var cur = null;                 // 目前關卡
   var session = { inputs: [], seed: 116 };
   var running = false;
@@ -32,10 +32,15 @@ window.PYAPP = { mount: function (opts) {
   function renderList() {
     document.getElementById('lv-list').innerHTML = L.map(function (lv, i) {
       var ok = unlocked(i);
-      return '<button class="lv' + (cur && cur.id === lv.id ? ' on' : '') + (ok ? '' : ' lock') + '" data-i="' + i + '"' + (ok ? '' : ' aria-disabled="true"') + '>' +
-        '<span class="ic">' + (ok ? lv.icon : '🔒') + '</span><span>' + (i + 1) + '. ' + esc(lv.title) + '</span>' +
-        '<span class="st">' + UI.stars(stars(lv.id)) + '</span></button>';
+      var on = cur && cur.id === lv.id;
+      return '<button class="lv' + (on ? ' on' : '') + (ok ? '' : ' lock') + (stars(lv.id) >= 2 ? ' done' : '') + '" data-i="' + i + '"' + (ok ? '' : ' aria-disabled="true"') + (on ? ' aria-current="step"' : '') + '>' +
+        '<span class="no">' + (i + 1) + '</span><span class="ic">' + (ok ? lv.icon : '🔒') + '</span><span class="bd"><span class="tt">' + esc(lv.title) + '</span>' +
+        '<span class="st">' + UI.stars(stars(lv.id)) + '</span></span></button>';
     }).join('');
+    // 清單上方的進度條（和課程小卡一樣：星數／滿分）
+    var got = L.reduce(function (a, lv) { return a + stars(lv.id); }, 0), max = L.length * 3;
+    document.getElementById('lv-got').textContent = got + ' / ' + max + ' ⭐';
+    document.getElementById('lv-bar').style.width = Math.round(got / max * 100) + '%';
   }
   document.getElementById('lv-list').addEventListener('click', function (e) {
     var b = e.target.closest('.lv'); if (!b) return;
@@ -299,10 +304,13 @@ window.PYAPP = { mount: function (opts) {
         '<div class="scroll-x mt2"><table class="t"><tr><th>測資</th><th>輸入</th><th>結果</th></tr>' + rows + '</table></div>' +
         (reqs ? '<h4 class="bold small mt2">🏗️ 程式結構要求（3 星條件）</h4><ul class="small" style="margin:.3rem 0 0;padding-left:1.2rem;list-style:none">' + reqs + '</ul>' : '') +
         (g.stars >= 2 && lv.bonus ? '<div class="note mt2 small"><b>🧗 延伸挑戰（不計星）：</b>' + esc(lv.bonus) + '</div>' : '') +
-        (openedNext ? '<div class="row mt2"><button class="btn go big" id="btn-next">🔓 下一關已開放：' + esc(L[idx + 1].title) + ' →</button></div>' :
-          (g.stars >= 2 && idx < L.length - 1 ? '<div class="row mt2"><button class="btn" id="btn-next">下一關 →</button></div>' : '')) +
-        (g.stars >= 2 && idx === L.length - 1 ? '<div class="note ok mt2"><b>🏆 你打倒魔王了！</b> ' + esc(opts.finale || '全部完成，回闖關地圖看看你的稱號吧。') + '</div>' : '');
-      var nb = document.getElementById('btn-next'); if (nb) nb.onclick = function () { open(idx + 1); };
+        (g.stars >= 2 && idx === L.length - 1 ? '<div class="note ok mt2"><b>🏆 你打倒魔王了！</b> ' + esc(opts.finale || '全部完成，回闖關地圖看看你的稱號吧。') + '</div>' : '') +
+        '<nav id="res-pager"></nav>';
+      // 結尾：← 上一關／下一關 →（全站同一組樣式；下一關要這一關 2⭐ 才開）
+      var P = L[idx - 1], N = L[idx + 1];
+      UI.pager('#res-pager', P ? { lbl: '← 上一關', title: P.icon + ' ' + P.title, go: function () { open(idx - 1); } } : null,
+        !N ? null : (openedNext || g.stars >= 2 || unlocked(idx + 1)) ? { id: 'btn-next', lbl: openedNext ? '🔓 下一關已開放 →' : '下一關 →', title: N.icon + ' ' + N.title, go: function () { open(idx + 1); } }
+          : { id: 'btn-next', locked: true, lbl: '🔒 下一關', title: '這一關拿到 2⭐ 才開放', go: function () { UI.toast('這一關拿到 2 顆星，下一關才會開放'); } });
       res.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (saved.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(g.stars));
     });

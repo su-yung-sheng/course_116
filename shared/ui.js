@@ -139,7 +139,7 @@
     var ph = nav && (nav.closest('.ucards-ph') || nav);
     if (ph && ph.getBoundingClientRect().top < 0) ph.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  /** 上一個／下一個：每一課、每一部分的結尾都用這一組。item = { lbl, title, href } 或 { lbl, title, go: function } */
+  /** 上一個／下一個：每一課、每一部分、每一關的結尾都用這一組。item = { lbl, title, href } 或 { lbl, title, go: function }（可加 id、locked） */
   UI.pager = function (el, prev, next) {
     if (typeof el === 'string') el = document.querySelector(el);
     if (!el) return;
@@ -147,7 +147,8 @@
     function btn(it, cls) {
       if (!it) return '';
       var inner = '<span class="lbl">' + UI.esc(it.lbl) + '</span><span class="ttl">' + UI.esc(it.title) + '</span>';
-      return it.href ? '<a class="pg-btn ' + cls + '" href="' + UI.esc(it.href) + '">' + inner + '</a>' : '<button type="button" class="pg-btn ' + cls + '">' + inner + '</button>';
+      var attr = ' class="pg-btn ' + cls + (it.locked ? ' locked' : '') + '"' + (it.id ? ' id="' + UI.esc(it.id) + '"' : '');
+      return it.href ? '<a' + attr + ' href="' + UI.esc(it.href) + '">' + inner + '</a>' : '<button type="button"' + attr + '>' + inner + '</button>';
     }
     el.innerHTML = btn(prev, 'prev') + btn(next, 'next');
     [['prev', prev], ['next', next]].forEach(function (x) {

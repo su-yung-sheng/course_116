@@ -200,6 +200,8 @@ table.t th{background:var(--soft);font-weight:800}
 .pager .pg-btn:hover{transform:translateY(-2px);border-color:var(--unit)}
 .pager .pg-btn.prev{grid-column:1}
 .pager .pg-btn.next{grid-column:2;text-align:right;border-color:var(--unit);background:var(--unit-soft)}
+.pager .pg-btn.locked{border-color:var(--line);background:#f8fafc;color:var(--ink-faint)}
+.card .pager{margin-top:1.4rem;text-align:left}
 .pager .lbl{font-size:.75rem;font-weight:800;color:var(--ink-soft)}
 .pager .ttl{font-weight:900}
 @media (max-width:560px){.pager{grid-template-columns:1fr}.pager .pg-btn.prev,.pager .pg-btn.next{grid-column:auto}}

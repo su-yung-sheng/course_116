@@ -34,10 +34,10 @@
         var fb = document.getElementById('review-feedback'), sc = document.getElementById('review-score');
         if (r.ok) {
           right[q] = true;
-          btn.className = 'bg-emerald-500 text-white border-emerald-600 rounded px-2 py-1';
+          btn.classList.remove('wrong'); btn.classList.add('right');   // 全站選項樣式：答對綠框
           if (fb) fb.innerText = '✅ 第 ' + q + ' 題答對了！';
         } else {
-          wrong++;
+          wrong++; btn.classList.add('wrong');   // 答錯紅框（不公布正解，看提示再想）
           if (fb) fb.innerText = '💡 ' + r.hint;
         }
         var n = Object.keys(right).length;

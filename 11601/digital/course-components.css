@@ -33,3 +33,11 @@
 
 /* 116：手機上輸入框和按鈕同一排時，讓輸入框可以縮小，不撐破版面 */
 .flex > input, .flex > select { min-width: 0; }
+
+/* 116：課後回顧、快速檢核、同伴討論改用全站樣式（theme.css 的 .card .pick .note .chip） */
+.wrapup{margin-top:2.2rem}
+.wrapup .quiz{border:2px dashed var(--unit-line);border-radius:1rem;padding:1rem;background:var(--unit-soft)}
+.wrapup .review-q{background:#fff;border:1px solid var(--line);border-radius:.85rem;padding:.8rem}
+.wrapup .review-opts{display:flex;gap:.5rem;flex-wrap:wrap}
+.wrapup .review-opts .pick{flex:1 1 5rem;text-align:center;padding:.55rem .6rem;font-size:.9rem}
+.discuss .discussion-btn{text-align:left}
