@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>多媒體專題：畢經之路 · 116-2</title>
+<title>多媒體專題：30 秒廣告 · 116-2</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/theme.css">
 <link rel="stylesheet" href="../shared/cardgame.css">
@@ -29,8 +29,28 @@
   .chk{display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border:1px solid var(--line);border-radius:.7rem;background:#fff;cursor:pointer}
   .chk input{width:1.2rem;height:1.2rem;margin-top:.15rem;accent-color:var(--ok)}
   .files{background:#0f172a;color:#e2e8f0;border-radius:.7rem;padding:.7rem .9rem;font:14px/1.7 ui-monospace,Consolas,monospace;white-space:pre-wrap}
+  .mtabs{flex-wrap:wrap}
+  @media (max-width:560px){.tl .n{display:none}}
+  @media (max-width:560px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.step{padding:.45rem .55rem}.step>div:first-child{font-size:1.1rem!important}}
   .rub td,.rub th{text-align:center}
   .rub td:first-child,.rub th:first-child{text-align:left}
+  .cnt{font-size:.8rem;font-weight:800;color:var(--ink-soft)}
+  .cnt.bad{color:var(--bad)} .cnt.ok{color:var(--ok)}
+  .tl{display:flex;border-radius:.7rem;overflow:hidden;border:2px solid var(--line)}
+  .tl>div{padding:.45rem .4rem;font-size:.75rem;font-weight:800;text-align:center;border-right:2px solid #fff;min-width:0}
+  .tl>div:last-child{border-right:0}
+  .tl .n{display:block;font-size:.7rem;font-weight:700;opacity:.85}
+  .s0{background:#fee2e2}.s1{background:#ffedd5}.s2{background:#dbeafe}.s3{background:#ede9fe}.s4{background:#dcfce7}
+  .shotrow{display:grid;gap:.5rem;grid-template-columns:2.2rem minmax(0,1.1fr) minmax(0,2fr) minmax(0,1fr) 4.2rem 2.4rem;align-items:end;padding:.5rem;border:1px solid var(--line);border-radius:.8rem;background:#fff}
+  .shotrow .input{margin-top:.15rem;padding:.45rem .55rem}
+  .shotrow .no{font-weight:900;text-align:center;padding-bottom:.55rem}
+  @media (max-width:700px){.shotrow{grid-template-columns:2rem minmax(0,1fr) minmax(0,1fr)}.shotrow .what{grid-column:2/4}}
+  .move{border:2px solid var(--line);border-radius:.9rem;padding:.8rem;background:#fff;cursor:pointer;text-align:left;font:inherit;color:inherit}
+  .move.on{border-color:var(--ok);background:var(--ok-bg)}
+  .move .at{font-weight:900}
+  .aicard{border:2px dashed var(--line);border-radius:1rem;padding:1rem;background:#fff}
+  .aicard.ready{border-style:solid;border-color:var(--u1)}
+  .plan{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
   #card-canvas{max-width:100%;border-radius:.8rem;box-shadow:var(--shadow)}
   @media print{
     body *{visibility:hidden}
@@ -45,28 +65,32 @@
   <header id="topbar"></header>
   <nav class="mtabs" aria-label="切換">
     <button class="mtab on" data-t="games">🎮 概念闖關</button>
-    <button class="mtab" data-t="studio">🎬 專題工作站</button>
+    <button class="mtab" data-t="demo">📺 看示範</button>
+    <button class="mtab" data-t="ai">🤖 AI 前導關</button>
+    <button class="mtab" data-t="studio">🎬 廣告工作站</button>
   </nav>
   <div id="games"></div>
+  <div id="demo" class="hidden"></div>
+  <div id="ai" class="hidden"></div>
   <div id="studio" class="hidden"></div>
 </main>
 <script>
 (function () {
   var esc = UI.esc, MOD = 'media', STEPS = window.MEDIA_STEPS;
-  UI.topbar('#topbar', { title: '🎬 多媒體專題：畢經之路', kicker: '單元四 · 3下 第 1 章' });
-  CARDGAME.mount({ app: '#games', levels: MEDIA_LEVELS, mod: MOD, headline: '先看懂影片規格，再動手剪自己的畢業影片' });
+  UI.topbar('#topbar', { title: '🎬 多媒體專題：30 秒廣告', kicker: '單元四 · 3下 第 1 章' });
+  CARDGAME.mount({ app: '#games', levels: MEDIA_LEVELS, mod: MOD, headline: '先看懂影片規格，再動手拍一支 30 秒廣告' });
 
-  /* ── 分頁 ─────────────────────────────────── */
+  /* ── 分頁：概念闖關 → 看示範 → AI 前導關 → 廣告工作站 ── */
+  var TABS = ['games', 'demo', 'ai', 'studio'];
   function tab(t) {
     document.querySelectorAll('.mtab').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
-    document.getElementById('games').classList.toggle('hidden', t !== 'games');
-    document.getElementById('studio').classList.toggle('hidden', t !== 'studio');
+    TABS.forEach(function (k) { document.getElementById(k).classList.toggle('hidden', k !== t); });
     if (t === 'studio') studio();
+    if (t === 'demo') demo();
+    if (t === 'ai') ai();
   }
   document.querySelectorAll('.mtab').forEach(function (b) { b.onclick = function () { tab(b.dataset.t); }; });
 
-  /* ── 專題工作站 ───────────────────────────── */
-  var cur = 0;
   function rec(id) { return STORE.level(MOD, id) || {}; }
   function done(id) { return !!rec(id).done; }
   function extra(id) { return rec(id).extra || {}; }
@@ -75,13 +99,78 @@
     if (isDone && r.improved) UI.toast('✅ ' + STEPS.filter(function (s) { return s.id === id; })[0].title + ' 完成！');
     return r;
   }
+  function val(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+  function len(t) { return Array.from(String(t || '').replace(/\s/g, '')).length; }      // 字數（不算空白）
+  function sel(id, opts, v) { return '<select class="input" id="' + id + '">' + opts.map(function (o) { return '<option' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>'; }
+  function msgBox(el, ok, okText, miss) {
+    el.innerHTML = ok ? '<div class="note ok small">' + okText + '</div>' : '<div class="note warn small">已暫存，但還不算完成 —— 還差：' + miss.map(esc).join('、') + '</div>';
+  }
 
+  /* ================================================================
+     📺 看示範：出處＋手法拆解（影片不放進網站，老師課堂播放）
+     ================================================================ */
+  function demo() {
+    var D = window.MEDIA_DEMO, box = document.getElementById('demo'), found = {};
+    function draw() {
+      var n = Object.keys(found).length;
+      box.innerHTML = '<section class="card pop"><div class="tape"></div><p class="kicker">看示範 · 邊看邊找廣告手法</p>' +
+        '<h2 class="black" style="font-size:1.3rem">《' + esc(D.title) + '》</h2>' +
+        '<p class="small mt1">創作者：<b>' + esc(D.creator) + '</b>（' + esc(D.platform) + '）· 長度 ' + esc(D.length) +
+        ' · <a href="' + esc(D.url) + '" target="_blank" rel="noopener">到創作者頁面看原作 ↗</a></p>' +
+        '<p class="tiny soft mt1">🎥 影片是別人的作品，網站不放檔案，由老師在課堂播放。</p>' +
+        '<div class="note warn small mt2">🤖 ' + esc(D.aiNote) + '</div></section>' +
+        '<section class="card mt2"><div class="row between"><h3 class="bold">🔎 這支廣告用了哪些手法？看到就點一下</h3><span class="chip">找到 ' + n + ' / ' + D.moves.length + '</span></div>' +
+        '<div class="grid g2 mt1">' + D.moves.map(function (m, i) {
+          return '<button class="move' + (found[i] ? ' on' : '') + '" data-i="' + i + '"><div class="at">' + m.icon + ' ' + esc(m.at) + (found[i] ? ' ✅' : '') + '</div>' +
+            '<div class="small mt1">' + esc(m.what) + '</div>' +
+            (found[i] ? '<div class="small mt1">💡 ' + esc(m.why) + '</div><div class="tiny soft mt1">➡️ 我們的 30 秒：' + esc(m.ours) + '</div>' : '') + '</button>';
+        }).join('') + '</div>' +
+        (n === D.moves.length ? '<div class="note ok small mt2">🎉 八個手法都找到了！接下來想想：30 秒裡要留下哪幾個？</div>' : '') + '</section>' +
+        '<section class="card mt2"><h3 class="bold">💭 想一想（課堂討論）</h3><ol class="mt1">' + D.think.map(function (t) { return '<li class="mt1">' + esc(t) + '</li>'; }).join('') + '</ol>' +
+        '<div class="row mt2"><button class="btn primary" id="to-ai">下一步：🤖 AI 前導關 →</button></div></section>';
+      box.querySelectorAll('.move').forEach(function (b) { b.onclick = function () { var i = +b.dataset.i; if (found[i]) delete found[i]; else found[i] = 1; draw(); }; });
+      document.getElementById('to-ai').onclick = function () { tab('ai'); };
+    }
+    draw();
+  }
+
+  /* ================================================================
+     🤖 AI 前導關（🚧 目前是關卡骨架：主題、學習目標、預計玩法）
+     做好的關卡之後放進 MEDIA_AI_LEVELS，用 cardgame 引擎玩（見 content/media.js 說明）
+     ================================================================ */
+  var PLAN = { sort: '🗂️ 分類', order: '🔢 排序', build: '🧩 組合', type: '⌨️ 打字' };
+  function ai() {
+    var L = window.MEDIA_AI || [], box = document.getElementById('ai');
+    var ready = L.filter(function (a) { return a.ready; }).length;
+    box.innerHTML = '<section class="card pop"><div class="tape"></div><div class="row between"><div><p class="kicker">AI 前導關 · 和 AI 討論文案之前先闖這六關</p>' +
+      '<h2 class="black" style="font-size:1.3rem">🤖 先認識 AI，再請它幫忙</h2>' +
+      '<p class="small soft mt1">廣告工作站的步驟 2 要和 AI 一起想標語。AI 很好用，但它怎麼運作、會在哪裡出錯、哪些事不能做，要先弄清楚。</p></div>' +
+      '<div class="center"><div class="black" style="font-size:1.8rem">' + ready + ' / ' + L.length + '</div><div class="tiny soft bold">已開放</div></div></div>' +
+      (ready < L.length ? '<div class="note warn small mt2">🚧 這些關卡還在製作中，現在先看每一關要學什麼。完整的「AI 素養」系列之後會陸續開放。</div>' : '') + '</section>' +
+      '<div class="grid g2 mt2">' + L.map(function (a) {
+        return '<article class="aicard' + (a.ready ? ' ready' : '') + '"><div class="row between"><span class="chip">' + esc(a.id) + '</span>' +
+          '<span class="chip">' + (a.ready ? '✅ 已開放' : '🚧 準備中') + '</span></div>' +
+          '<h3 class="black mt1" style="font-size:1.15rem">' + a.icon + ' ' + esc(a.title) + '</h3>' +
+          '<p class="bold small mt1">❓ ' + esc(a.question) + '</p>' +
+          '<ul class="small mt1">' + a.goals.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul>' +
+          '<div class="plan">' + a.plan.map(function (p) { return '<span class="chip" title="' + esc(p[1]) + '">' + (PLAN[p[0]] || p[0]) + '</span>'; }).join('') + '</div>' +
+          '<ul class="tiny soft mt1">' + a.plan.map(function (p) { return '<li>' + esc(p[1]) + '</li>'; }).join('') + '</ul>' +
+          '<p class="tiny mt1">🔗 ' + esc(a.link) + '</p></article>';
+      }).join('') + '</div>' +
+      '<div class="row mt2"><button class="btn primary" id="to-studio">前往 🎬 廣告工作站 →</button></div>';
+    document.getElementById('to-studio').onclick = function () { tab('studio'); };
+  }
+
+  /* ================================================================
+     🎬 30 秒廣告工作站
+     ================================================================ */
+  var cur = 0;
   function studio() {
     var box = document.getElementById('studio');
     var n = STEPS.filter(function (s) { return done(s.id); }).length;
-    box.innerHTML = '<section class="card pop"><div class="tape"></div><div class="row between"><div><p class="kicker">專題工作站 · 不計星 · 記錄完成</p>' +
-      '<h2 class="black" style="font-size:1.35rem">做一支自己的畢業紀念影片</h2>' +
-      '<p class="small soft mt1">影片在電腦上用 <b>Shotcut</b> 剪；這裡幫你規劃、檢查、記錄進度。</p></div>' +
+    box.innerHTML = '<section class="card pop"><div class="tape"></div><div class="row between"><div><p class="kicker">廣告工作站 · 不計星 · 記錄完成</p>' +
+      '<h2 class="black" style="font-size:1.35rem">拍一支 30 秒廣告：讓平凡物品變主角</h2>' +
+      '<p class="small soft mt1">選題與文案 → 鏡頭清單 → 拍攝 → 剪輯配音 → 同儕試看。影片自己實拍、在電腦上剪；這裡幫你規劃、檢查、記錄。</p></div>' +
       '<div class="center"><div class="black" style="font-size:1.8rem">' + n + ' / ' + STEPS.length + '</div><div class="tiny soft bold">步驟完成</div></div></div>' +
       '<div class="steps mt2">' + STEPS.map(function (s, i) {
         return '<button class="step' + (i === cur ? ' on' : '') + (done(s.id) ? ' done' : '') + '" data-i="' + i + '"><div style="font-size:1.4rem">' + s.icon + '</div>' +
@@ -91,74 +180,182 @@
     var s = STEPS[cur], panel = document.getElementById('panel');
     panel.innerHTML = '<h3 class="black" style="font-size:1.2rem">' + s.icon + ' ' + esc(s.title) + '</h3><p class="small soft mt1">' + esc(s.desc) + '</p><div id="body" class="mt2"></div>';
     var body = document.getElementById('body');
-    if (s.id === 'W1') storyboard(body);
-    else if (s.id === 'W2') filesStep(body, s);
-    else if (s.id === 'W5') exportStep(body);
-    else checklist(body, s);
+    ({ W1: topicStep, W2: copyStep, W3: shotStep, W4: shootStep, W5: finishStep })[s.id](body, s);
+  }
+  function next() { if (cur < STEPS.length - 1) cur++; setTimeout(studio, 900); }
+
+  /* W1 選擇主題 */
+  var FEEL = ['驚喜', '溫暖', '好笑', '帥氣', '安心', '療癒', '懷念'];
+  function topicStep(body) {
+    var ex = extra('W1');
+    body.innerHTML = '<div class="grid g2">' +
+      '<label class="field">🎯 主角是（一項物品）<input class="input" id="w1-obj" maxlength="10" value="' + esc(ex.obj || '') + '" placeholder="例：塑膠椅、水壺、雨傘、書包"></label>' +
+      '<label class="field">👥 想給誰看？<input class="input" id="w1-who" maxlength="12" value="' + esc(ex.who || '') + '" placeholder="例：同學、爸媽、通勤的上班族"></label></div>' +
+      '<label class="field mt1">大家通常覺得它…<input class="input" id="w1-usual" maxlength="24" value="' + esc(ex.usual || '') + '" placeholder="例：很普通，隨便一張而已"></label>' +
+      '<label class="field mt1">我想讓觀眾發現它…（只挑一個特色）<input class="input" id="w1-find" maxlength="24" value="' + esc(ex.find || '') + '" placeholder="例：輕到可以帶去任何地方"></label>' +
+      '<label class="field mt1">看完想讓觀眾有什麼感受？（只選一種）' + sel('w1-feel', FEEL, ex.feel || '驚喜') + '</label>' +
+      '<div class="note small mt2" id="w1-pre"></div>' +
+      '<p class="tiny soft mt1">💡 好主角：容易取得、可以從不同角度拍（上面、側面、特寫、有人在用）。</p>' +
+      '<div class="row mt2"><button class="btn go" id="w1-sv">💾 儲存</button></div><div id="w1-msg" class="mt1"></div>';
+    function pre() {
+      document.getElementById('w1-pre').innerHTML = '📝 主角是 <b>' + esc(val('w1-obj') || '＿＿') + '</b>；大家通常覺得它 <b>' + esc(val('w1-usual') || '＿＿') +
+        '</b>；我想讓觀眾發現它 <b>' + esc(val('w1-find') || '＿＿') + '</b>，看完覺得 <b>' + esc(val('w1-feel')) + '</b>。';
+    }
+    body.querySelectorAll('input,select').forEach(function (e) { e.oninput = pre; e.onchange = pre; });
+    pre();
+    document.getElementById('w1-sv').onclick = function () {
+      var v = { obj: val('w1-obj'), who: val('w1-who'), usual: val('w1-usual'), find: val('w1-find'), feel: val('w1-feel') }, miss = [];
+      if (!v.obj) miss.push('主角');
+      if (!v.who) miss.push('想給誰看');
+      if (len(v.usual) < 2) miss.push('大家通常覺得它');
+      if (len(v.find) < 2) miss.push('我想讓觀眾發現它');
+      save('W1', v, !miss.length);
+      msgBox(document.getElementById('w1-msg'), !miss.length, '✅ 主題決定了！下一步：寫文案。', miss);
+      if (!miss.length) next();
+    };
   }
 
-  /* W1 分鏡腳本 */
-  var TRANS = ['（無）', '淡入淡出', '溶解', '推移', '縮放'];
-  function scenes() {
-    var d = null; try { d = JSON.parse(STORE.draft('media-scenes') || 'null'); } catch (e) {}
-    return d || extra('W1').scenes || [1, 2, 3, 4].map(function () { return { desc: '', file: '', sec: 10, trans: TRANS[1], extra: '' }; });
+  /* W2 文案生成（和 AI 討論） */
+  var TONE = ['溫暖', '幽默', '酷', '優雅', '活潑', '感性'];
+  var HYPE = /最|第一|唯一|100%|百分之百|保證|永遠|全世界|世界級|無敵|神級|絕對/;
+  function copyStep(body) {
+    var ex = extra('W2'), w1 = extra('W1'), f = ex.feats || ['', '', ''];
+    body.innerHTML = (done('W1') ? '' : '<div class="note warn small">先完成步驟 1「選擇主題」，這裡會自動帶入主角和觀眾。</div>') +
+      '<p class="bold">① 列出 3 個「看得見」的特點，選最有畫面的一個</p><div class="stack mt1">' + [0, 1, 2].map(function (i) {
+        return '<div class="row" style="flex-wrap:nowrap"><input type="radio" name="w2-pick" value="' + i + '"' + (ex.pick === i ? ' checked' : '') + ' aria-label="選第 ' + (i + 1) + ' 個特點" style="width:1.2rem;height:1.2rem">' +
+          '<input class="input" id="w2-f' + i + '" maxlength="20" value="' + esc(f[i] || '') + '" placeholder="' + ['例：輕巧、方便搬動', '例：可以疊起來收', '例：有很多顏色'][i] + '" style="margin-top:0"></div>';
+      }).join('') + '</div><p class="tiny soft mt1">左邊的圓圈選「最有畫面」的那一個 —— 拍得出來的特點才能變成廣告。</p>' +
+      '<p class="bold mt3">② 請 AI 幫忙發想標語</p>' +
+      '<div class="note small mt1">🤖 還沒闖 <a href="#" id="w2-ai">AI 前導關</a>？先看看 AI 會在哪裡出錯、哪些事不能做。<br>⚠️ <b>不要</b>把自己或同學的姓名、照片、學校、電話貼給 AI。</div>' +
+      '<div class="grid g2 mt1"><label class="field">對象<input class="input" id="w2-who" maxlength="12" value="' + esc(ex.who || w1.who || '') + '"></label>' +
+      '<label class="field">語氣' + sel('w2-tone', TONE, ex.tone || '溫暖') + '</label></div>' +
+      '<p class="small bold mt2">📋 提示詞（可以直接複製給 AI）</p><div class="files mt1" id="w2-prompt"></div>' +
+      '<div class="row mt1"><button class="btn sm" id="w2-copy">📋 複製提示詞</button><span id="w2-copied" class="tiny soft"></span></div>' +
+      '<label class="field mt2">用了哪個 AI 工具？（沒用就寫「沒有用 AI」）<input class="input" id="w2-tool" maxlength="20" value="' + esc(ex.tool || '') + '" placeholder="例：老師指定的 AI 工具"></label>' +
+      '<label class="field mt1">AI 給的標語（貼上來，選填）<textarea class="input" id="w2-cands" rows="4" placeholder="把 AI 回答的 5 句貼在這裡，方便比較">' + esc(ex.cands || '') + '</textarea></label>' +
+      '<p class="bold mt3">③ 選一句，依實際畫面修改成你的主標語</p>' +
+      '<label class="field">主標語 <span class="cnt" id="w2-sc"></span><input class="input" id="w2-slogan" maxlength="24" value="' + esc(ex.slogan || '') + '" placeholder="例：想坐哪裡，就坐哪裡。"></label>' +
+      '<div id="w2-hype" class="mt1"></div>' +
+      '<label class="field mt1">我怎麼修改的？為什麼？<input class="input" id="w2-edit" maxlength="40" value="' + esc(ex.edit || '') + '" placeholder="例：把「超級無敵輕」改掉，因為太誇張，而且畫面拍得出「搬來搬去」"></label>' +
+      '<p class="bold mt3">④ 旁白或字幕</p><div class="row">' +
+      '<label class="chk"><input type="radio" name="w2-mode" value="narr"' + (ex.mode !== 'sub' ? ' checked' : '') + '><span>有旁白（50～70 字）</span></label>' +
+      '<label class="chk"><input type="radio" name="w2-mode" value="sub"' + (ex.mode === 'sub' ? ' checked' : '') + '><span>只用少量字幕＋音樂</span></label></div>' +
+      '<label class="field mt1"><span id="w2-nlabel"></span> <span class="cnt" id="w2-nc"></span><textarea class="input" id="w2-narr" rows="3">' + esc(ex.narr || '') + '</textarea></label>' +
+      '<div class="row mt2"><button class="btn go" id="w2-sv">💾 儲存文案</button></div><div id="w2-msg" class="mt1"></div>';
+    function pick() { var r = document.querySelector('input[name=w2-pick]:checked'); return r ? +r.value : -1; }
+    function mode() { return (document.querySelector('input[name=w2-mode]:checked') || {}).value || 'narr'; }
+    function prompt() {
+      var p = pick(), feat = p >= 0 ? val('w2-f' + p) : '';
+      return '請為' + (w1.obj || '＿＿') + '寫 5 句廣告標語；對象：' + (val('w2-who') || '＿＿') + '；特色：' + (feat || '＿＿') + '；語氣：' + val('w2-tone') +
+        '；每句不超過 15 字，避免誇大。';
+    }
+    function upd() {
+      document.getElementById('w2-prompt').textContent = prompt();
+      var sl = len(val('w2-slogan')), sc = document.getElementById('w2-sc');
+      sc.textContent = sl + ' / 15 字'; sc.className = 'cnt ' + (sl === 0 ? '' : sl <= 15 ? 'ok' : 'bad');
+      var h = val('w2-slogan').match(HYPE);
+      document.getElementById('w2-hype').innerHTML = h ? '<div class="note warn small">「' + esc(h[0]) + '」聽起來有點誇大，畫面真的拍得出來嗎？可以換個說法。</div>' : '';
+      var m = mode(), nl = len(val('w2-narr')), nc = document.getElementById('w2-nc');
+      document.getElementById('w2-nlabel').textContent = m === 'narr' ? '旁白稿' : '字幕（每行一句）';
+      nc.textContent = m === 'narr' ? nl + ' 字（50～70）' : '';
+      nc.className = 'cnt ' + (m !== 'narr' || nl === 0 ? '' : (nl >= 50 && nl <= 70 ? 'ok' : 'bad'));
+    }
+    body.querySelectorAll('input,select,textarea').forEach(function (e) { e.addEventListener('input', upd); e.addEventListener('change', upd); });
+    upd();
+    document.getElementById('w2-ai').onclick = function (e) { e.preventDefault(); tab('ai'); };
+    document.getElementById('w2-copy').onclick = function () {
+      var t = prompt(), out = document.getElementById('w2-copied');
+      try { navigator.clipboard.writeText(t).then(function () { out.textContent = '✅ 已複製'; }, function () { out.textContent = '請手動選取上面的文字複製'; }); }
+      catch (e) { out.textContent = '請手動選取上面的文字複製'; }
+    };
+    document.getElementById('w2-sv').onclick = function () {
+      var v = { feats: [val('w2-f0'), val('w2-f1'), val('w2-f2')], pick: pick(), who: val('w2-who'), tone: val('w2-tone'), tool: val('w2-tool'),
+        cands: val('w2-cands'), slogan: val('w2-slogan'), edit: val('w2-edit'), mode: mode(), narr: val('w2-narr') }, miss = [];
+      if (v.feats.some(function (x) { return len(x) < 2; })) miss.push('3 個特點');
+      if (v.pick < 0) miss.push('選一個最有畫面的特點');
+      if (!v.tool) miss.push('用了哪個 AI 工具');
+      var sl = len(v.slogan); if (!sl || sl > 15) miss.push('主標語（1～15 字）');
+      if (len(v.edit) < 4) miss.push('我怎麼修改的');
+      var nl = len(v.narr);
+      if (v.mode === 'narr' ? (nl < 50 || nl > 70) : nl < 2) miss.push(v.mode === 'narr' ? '旁白（50～70 字）' : '字幕');
+      save('W2', v, !miss.length);
+      msgBox(document.getElementById('w2-msg'), !miss.length, '✅ 文案完成！主標語：「' + esc(v.slogan) + '」。下一步：列鏡頭清單。', miss);
+      if (!miss.length) next();
+    };
   }
-  function totalSec(sc) { return sc.reduce(function (a, s) { return a + (+s.sec || 0); }, 0); }
-  function mmss(t) { return Math.floor(t / 60) + ' 分 ' + (t % 60) + ' 秒'; }
-  function storyboard(body) {
-    var sc = scenes();
+
+  /* W3 鏡頭清單：30 秒分成五個時段 */
+  var SEGS = [
+    { t: '0–3 秒', what: '物品特寫或有趣動作', aim: '抓住注意', sec: 3 },
+    { t: '3–8 秒', what: '材質、外形、細節', aim: '認識主角', sec: 5 },
+    { t: '8–18 秒', what: '人物使用或移動物品', aim: '呈現特色', sec: 10 },
+    { t: '18–25 秒', what: '最有情緒或趣味的畫面', aim: '加深印象', sec: 7 },
+    { t: '25–30 秒', what: '物品全景＋一句主標語', aim: '留下記憶', sec: 5 }
+  ];
+  var ANGLE = ['特寫', '中景', '遠景', '低角度', '俯拍', '跟拍'];
+  function shots() {
+    var d = null; try { d = JSON.parse(STORE.draft('media-shots') || 'null'); } catch (e) {}
+    return d || extra('W3').shots || [0, 1, 1, 2, 2, 2, 3, 4].map(function (g, i) { return { seg: g, what: '', angle: [ '特寫', '特寫', '中景', '中景', '低角度', '遠景', '中景', '遠景'][i], sec: 3 }; });
+  }
+  function sumSec(sh) { return sh.reduce(function (a, x) { return a + (+x.sec || 0); }, 0); }
+  function shotStep(body) {
+    var sh = shots(), w1 = extra('W1'), w2 = extra('W2');
     function draw() {
-      var tot = totalSec(sc);
-      body.innerHTML = '<div id="print-area"><p class="bold">畢經之路 · 分鏡腳本　<span class="small soft">' + esc((STORE.me() || {}).cls || '') + ' 班 ' + esc((STORE.me() || {}).seat || '') + ' 號 ' + esc((STORE.me() || {}).name || '') + '</span></p>' +
-        '<div class="stack mt1">' + sc.map(function (s, i) {
-          return '<div class="shot"><div class="row between"><b>第 ' + (i + 1) + ' 幕</b>' + (sc.length > 1 ? '<button class="btn sm no-print" data-del="' + i + '">刪除</button>' : '') + '</div>' +
-            '<div class="grid g2 mt1"><label class="field">畫面描述<textarea class="input" data-k="desc" data-i="' + i + '" placeholder="例：七年級新生訓練的大合照，慢慢放大">' + esc(s.desc) + '</textarea></label>' +
-            '<div class="stack"><label class="field">素材檔名<input class="input" data-k="file" data-i="' + i + '" value="' + esc(s.file) + '" placeholder="例：' + String(i + 1).padStart(2, '0') + '_新生訓練.jpg"></label>' +
-            '<div class="grid" style="grid-template-columns:1fr 1fr;gap:.5rem"><label class="field">秒數<input class="input" type="number" min="1" max="60" data-k="sec" data-i="' + i + '" value="' + esc(s.sec) + '"></label>' +
-            '<label class="field">轉場<select class="input" data-k="trans" data-i="' + i + '">' + TRANS.map(function (t) { return '<option' + (t === s.trans ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label></div></div></div>' +
-            '<label class="field mt1">文字／配樂<input class="input" data-k="extra" data-i="' + i + '" value="' + esc(s.extra) + '" placeholder="例：字幕「我們相遇的那一天」、配樂開始"></label></div>';
+      var tot = sumSec(sh), per = SEGS.map(function (_, g) { return sumSec(sh.filter(function (x) { return +x.seg === g; })); });
+      body.innerHTML = '<div id="print-area"><p class="bold">30 秒廣告 · 鏡頭清單　<span class="small soft">主角：' + esc(w1.obj || '＿＿') + '　主標語：' + esc(w2.slogan || '＿＿') + '　' +
+        esc((STORE.me() || {}).cls || '') + ' 班 ' + esc((STORE.me() || {}).seat || '') + ' 號 ' + esc((STORE.me() || {}).name || '') + '</span></p>' +
+        '<div class="tl mt1">' + SEGS.map(function (g, i) {
+          return '<div class="s' + i + '" style="flex:' + g.sec + '">' + esc(g.t) + '<span class="n">' + esc(g.aim) + '・已排 ' + per[i] + ' 秒</span></div>';
+        }).join('') + '</div>' +
+        '<div class="scroll-x mt1"><table class="t small"><tr><th>時段</th><th>拍攝內容</th><th>目的</th></tr>' + SEGS.map(function (g, i) {
+          return '<tr><td class="s' + i + '">' + esc(g.t) + '</td><td>' + esc(g.what) + '</td><td>' + esc(g.aim) + '</td></tr>'; }).join('') + '</table></div>' +
+        '<div class="stack mt2">' + sh.map(function (x, i) {
+          return '<div class="shotrow"><div class="no">#' + (i + 1) + '</div>' +
+            '<label class="tiny bold">時段<select class="input" data-k="seg" data-i="' + i + '">' + SEGS.map(function (g, k) { return '<option value="' + k + '"' + (+x.seg === k ? ' selected' : '') + '>' + g.t + '</option>'; }).join('') + '</select></label>' +
+            '<label class="tiny bold what">拍什麼<input class="input" data-k="what" data-i="' + i + '" value="' + esc(x.what) + '" placeholder="例：手指滑過椅面的紋路"></label>' +
+            '<label class="tiny bold">角度<select class="input" data-k="angle" data-i="' + i + '">' + ANGLE.map(function (a) { return '<option' + (a === x.angle ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
+            '<label class="tiny bold">秒數<input class="input" type="number" min="1" max="8" data-k="sec" data-i="' + i + '" value="' + esc(x.sec) + '"></label>' +
+            (sh.length > 1 ? '<button class="btn sm no-print" data-del="' + i + '" aria-label="刪除第 ' + (i + 1) + ' 個鏡頭">✕</button>' : '<span></span>') + '</div>';
         }).join('') + '</div></div>' +
-        '<div class="row mt2 no-print"><button class="btn" id="add">＋ 新增一幕</button><span class="bold">總長度：<span id="tot"' + (tot < 60 || tot > 180 ? ' style="color:var(--bad)"' : '') + '>' + mmss(tot) + '</span></span>' +
-        '<span class="tiny soft">（建議 1～3 分鐘）</span></div>' +
-        '<div class="row mt2 no-print"><button class="btn go" id="sv">💾 儲存腳本</button><button class="btn" id="pr">🖨️ 列印／存成 PDF</button></div><div id="msg" class="mt1"></div>';
+        '<div class="row mt2 no-print">' + (sh.length < 12 ? '<button class="btn" id="add">＋ 新增鏡頭</button>' : '') +
+        '<span class="bold">共 ' + sh.length + ' 個鏡頭・總長 <span id="tot"' + (tot < 26 || tot > 34 ? ' style="color:var(--bad)"' : '') + '>' + tot + ' 秒</span></span><span class="tiny soft">（8～12 個鏡頭、約 30 秒）</span></div>' +
+        '<div class="row mt2 no-print"><button class="btn go" id="sv">💾 儲存鏡頭清單</button><button class="btn" id="pr">🖨️ 列印／存成 PDF</button></div><div id="msg" class="mt1"></div>';
       body.querySelectorAll('[data-k]').forEach(function (el) {
-        el.oninput = function () {
-          sc[+el.dataset.i][el.dataset.k] = el.dataset.k === 'sec' ? (+el.value || 0) : el.value;
-          STORE.draft('media-scenes', JSON.stringify(sc));
-          var t = totalSec(sc), te = document.getElementById('tot'); te.textContent = mmss(t); te.style.color = (t < 60 || t > 180) ? 'var(--bad)' : '';
-        };
+        var k = el.dataset.k;
+        el.oninput = function () { sh[+el.dataset.i][k] = (k === 'sec' || k === 'seg') ? (+el.value || 0) : el.value; STORE.draft('media-shots', JSON.stringify(sh)); };
+        if (k !== 'what') el.onchange = function () { el.oninput(); draw(); };   // 換時段、角度、秒數才重畫（打字時不重畫，游標才不會跳掉）
       });
-      body.querySelectorAll('[data-del]').forEach(function (b) { b.onclick = function () { sc.splice(+b.dataset.del, 1); STORE.draft('media-scenes', JSON.stringify(sc)); draw(); }; });
-      document.getElementById('add').onclick = function () { sc.push({ desc: '', file: '', sec: 10, trans: TRANS[1], extra: '' }); draw(); };
+      body.querySelectorAll('[data-del]').forEach(function (b) { b.onclick = function () { sh.splice(+b.dataset.del, 1); STORE.draft('media-shots', JSON.stringify(sh)); draw(); }; });
+      var add = document.getElementById('add'); if (add) add.onclick = function () { sh.push({ seg: 2, what: '', angle: '中景', sec: 3 }); STORE.draft('media-shots', JSON.stringify(sh)); draw(); };
       document.getElementById('pr').onclick = function () { window.print(); };
       document.getElementById('sv').onclick = function () {
-        var filled = sc.filter(function (s) { return s.desc.trim().length >= 4 && (+s.sec) > 0; }).length, t = totalSec(sc), msg = [];
-        if (filled < 4) msg.push('至少要有 4 幕寫了畫面描述（目前 ' + filled + ' 幕）');
-        if (t < 60 || t > 180) msg.push('總長度要在 1～3 分鐘之間（目前 ' + mmss(t) + '）');
-        var ok = !msg.length;
-        save('W1', { scenes: sc }, ok);
-        document.getElementById('msg').innerHTML = ok ? '<div class="note ok small">✅ 腳本已儲存！下一步：照腳本整理素材。</div>' :
-          '<div class="note warn small">已暫存，但還不算完成：' + msg.map(esc).join('；') + '</div>';
-        if (ok) setTimeout(studio, 800);
+        var filled = sh.filter(function (x) { return len(x.what) >= 2; }), miss = [], t = sumSec(sh);
+        if (filled.length < 8 || sh.length > 12) miss.push('8～12 個寫好內容的鏡頭（目前 ' + filled.length + ' 個）');
+        SEGS.forEach(function (g, k) { if (!filled.some(function (x) { return +x.seg === k; })) miss.push(g.t + ' 至少一個鏡頭'); });
+        if (!sh.some(function (x) { return x.angle === '遠景'; })) miss.push('一個遠景');
+        if (!sh.some(function (x) { return x.angle === '特寫'; })) miss.push('一個特寫');
+        if (sh.some(function (x) { return x.sec < 2 || x.sec > 4; })) miss.push('每個鏡頭 2～4 秒');
+        if (t < 26 || t > 34) miss.push('總長約 30 秒（目前 ' + t + ' 秒）');
+        save('W3', { shots: sh }, !miss.length);
+        msgBox(document.getElementById('msg'), !miss.length, '✅ 鏡頭清單完成！印出來帶去拍攝吧。', miss);
+        if (!miss.length) next();
       };
     }
     draw();
   }
 
-  /* W2 素材整理：依腳本產生建議檔名 */
-  function filesStep(body, s) {
-    var sc = scenes();
-    var names = sc.map(function (x, i) {
-      var base = (x.desc || '素材').replace(/[\\/:*?"<>|，。、！？\s]/g, '').slice(0, 6) || '素材';
-      var ext = /\.(\w+)$/.test(x.file) ? x.file.match(/\.(\w+)$/)[0] : '.jpg';
-      return String(i + 1).padStart(2, '0') + '_' + base + ext;
-    });
-    body.innerHTML = '<p class="bold small">📋 依你的分鏡腳本，建議的檔名：</p><div class="files mt1">' + esc(names.join('\n')) + '</div>' +
-      '<p class="tiny soft mt1">編號放最前面，匯入 Shotcut 時就會依出場順序排好。還沒寫腳本的話，先回到步驟 1。</p><div id="cl" class="mt2"></div>';
+  /* W4 拍攝：前面步驟的檢查＋實拍檢核表 */
+  function shootStep(body, s) {
+    var w2 = extra('W2');
+    var pre = [['主題與觀眾清楚', done('W1')], ['只有一個核心特色', done('W1') && done('W2')], ['主標語簡短（≤ 15 字）', done('W2') && len(w2.slogan) <= 15], ['已列 8～12 個鏡頭', done('W3')]];
+    body.innerHTML = '<p class="bold small">📋 拍攝前檢查（從前面的步驟自動帶入）</p><div class="row mt1">' +
+      pre.map(function (p) { return '<span class="chip"' + (p[1] ? ' style="background:var(--ok-bg);border-color:var(--ok)"' : '') + '>' + (p[1] ? '✅ ' : '⬜ ') + esc(p[0]) + '</span>'; }).join('') + '</div>' +
+      (pre.every(function (p) { return p[1]; }) ? '' : '<p class="tiny soft mt1">還有⬜的，先回到前面的步驟完成。</p>') +
+      '<p class="bold small mt2">🎥 實拍檢核（拍完一項勾一項）</p><div id="cl" class="mt1"></div>';
     checklist(document.getElementById('cl'), s);
   }
 
-  /* 通用檢核表（W2～W4）：全部打勾才完成 */
+  /* 通用檢核表：全部打勾才完成（「（挑戰）」開頭的可以不做） */
   function checklist(body, s) {
     var st = extra(s.id).checks || [];
     body.innerHTML = '<div class="stack">' + s.checks.map(function (c, i) {
@@ -172,64 +369,76 @@
         var ok = got >= need;
         save(s.id, { checks: st }, ok);
         document.getElementById('cmsg').innerHTML = ok ? '<div class="note ok small">✅ 這一步完成了！</div>' : '<p class="tiny soft">還有 ' + (need - got) + ' 項（「挑戰」那項可以不做）</p>';
-        if (ok) setTimeout(studio, 900);
+        if (ok) next();
       };
     });
   }
 
-  /* W5 匯出設定＋自評＋作品說明卡 */
-  function exportStep(body) {
-    var ex = extra('W5'), me = STORE.me() || {};
-    var RUB = ['故事完整：有開頭、過程、結尾', '畫面品質：清楚、沒有黑畫面或跳動', '後製效果：轉場、文字、配樂恰當', '著作權：素材都有合法來源'];
-    function sel(id, opts, v) { return '<select class="input" id="' + id + '">' + opts.map(function (o) { return '<option' + (o === v ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select>'; }
-    body.innerHTML = '<p class="bold">① Shotcut 匯出設定（你選了哪些？）</p><div class="grid g4 mt1">' +
-      '<label class="field">解析度' + sel('e-res', ['480p', '720p', '1080p', '2160p'], ex.res || '1080p') + '</label>' +
-      '<label class="field">每秒影格數' + sel('e-fps', ['24', '30', '60'], ex.fps || '30') + '</label>' +
-      '<label class="field">容器（副檔名）' + sel('e-box', ['.mp4', '.mov', '.wmv'], ex.box || '.mp4') + '</label>' +
-      '<label class="field">編碼' + sel('e-codec', ['H.264', 'MPEG-4'], ex.codec || 'H.264') + '</label></div>' +
-      '<div id="e-tip" class="mt1"></div>' +
-      '<p class="bold mt3">② 自我評量（1 待加強、2 還不錯、3 很滿意）</p><div class="scroll-x"><table class="t rub mt1"><tr><th>項目</th><th>1</th><th>2</th><th>3</th></tr>' +
-      RUB.map(function (r, i) { return '<tr><td>' + esc(r) + '</td>' + [1, 2, 3].map(function (v) { return '<td><input type="radio" name="rub' + i + '" value="' + v + '"' + ((ex.rub || [])[i] == v ? ' checked' : '') + ' aria-label="' + esc(r) + ' ' + v + ' 分"></td>'; }).join('') + '</tr>'; }).join('') + '</table></div>' +
-      '<p class="bold mt3">③ 三句話介紹你的影片</p>' +
-      '<label class="field">影片名稱<input class="input" id="e-name" maxlength="14" value="' + esc(ex.name || '') + '" placeholder="例：我們的畢經之路"></label>' +
-      '<label class="field mt1">這支影片想說什麼？<input class="input" id="e-s1" maxlength="30" value="' + esc(ex.s1 || '') + '"></label>' +
-      '<label class="field mt1">我最滿意的一個剪輯技巧<input class="input" id="e-s2" maxlength="30" value="' + esc(ex.s2 || '') + '"></label>' +
-      '<label class="field mt1">想對國中三年說的一句話<input class="input" id="e-s3" maxlength="30" value="' + esc(ex.s3 || '') + '"></label>' +
-      '<div class="row mt2"><button class="btn go" id="e-make">🎨 產生作品說明卡</button></div><p id="e-err" class="small bold mt1" style="color:var(--bad)"></p><div id="e-out" class="center mt2"></div>';
-    function tip() {
-      var res = document.getElementById('e-res').value, box = document.getElementById('e-box').value, codec = document.getElementById('e-codec').value, t = [];
-      if (res === '480p') t.push('480p 只是 SD 畫質，投影出來會糊，建議至少 720p。');
-      if (res === '2160p') t.push('4K 檔案很大、學校電腦匯出會很久；素材本身不是 4K 的話，選 4K 也不會更清楚。');
-      if (box !== '.mp4') t.push(box + ' 不是每台裝置都能播，上傳和分享建議用 .mp4。');
-      if (codec !== 'H.264') t.push('H.264 是目前相容性最好的編碼。');
-      document.getElementById('e-tip').innerHTML = t.length ? '<div class="note warn small">' + t.map(esc).join('<br>') + '</div>' : '<div class="note ok small">👍 1080p／.mp4／H.264 是分享畢業影片最穩的組合。</div>';
-      return !(res === '480p' || box !== '.mp4' || codec !== 'H.264');
+  /* W5 剪輯・同儕試看・修正・AI 使用聲明 → 作品說明卡 */
+  var PEER = ['前三秒，你想看下去嗎？', '看完，你知道它的特色是什麼嗎？', '你記得最後那一句標語嗎？'];
+  var ANS = ['是', '有一點', '不是'];
+  var FIX = ['刪去重複的畫面', '縮短文案', '加強結尾', '調整字幕或音量'];
+  var AIUSE = ['標語發想', '旁白稿', '配樂或音效', '畫面或影片生成', '沒有使用 AI'];
+  function finishStep(body) {
+    var ex = extra('W5'), w1 = extra('W1'), w2 = extra('W2'), me = STORE.me() || {};
+    function checks(name, list, on) { return list.map(function (t, i) { return '<label class="chk"><input type="checkbox" name="' + name + '" value="' + i + '"' + ((on || []).indexOf(i) >= 0 ? ' checked' : '') + '><span>' + esc(t) + '</span></label>'; }).join(''); }
+    body.innerHTML = '<p class="bold">① 剪輯</p><div class="grid g3 mt1">' +
+      '<label class="field">剪輯軟體' + sel('w5-app', ['Shotcut', '剪映', 'iMovie', '其他'], ex.app || 'Shotcut') + '</label>' +
+      '<label class="field">影片長度（秒）<input class="input" type="number" id="w5-len" min="1" max="120" value="' + esc(ex.len || '') + '" placeholder="30"></label>' +
+      '<label class="field">畫面比例' + sel('w5-ratio', ['16:9 橫式', '9:16 直式'], ex.ratio || '16:9 橫式') + '</label></div>' +
+      '<p class="bold mt3">② 同儕試看：請一位同學看完回答</p>' +
+      '<label class="field">試看的同學（座號或名字）<input class="input" id="w5-peer" maxlength="12" value="' + esc(ex.peer || '') + '"></label>' +
+      '<div class="scroll-x"><table class="t rub mt1"><tr><th>問題</th>' + ANS.map(function (a) { return '<th>' + a + '</th>'; }).join('') + '</tr>' +
+      PEER.map(function (q, i) { return '<tr><td>' + esc(q) + '</td>' + ANS.map(function (a, k) { return '<td><input type="radio" name="pq' + i + '" value="' + k + '"' + ((ex.pa || [])[i] === k ? ' checked' : '') + ' aria-label="' + esc(q) + ' ' + a + '"></td>'; }).join('') + '</tr>'; }).join('') +
+      '</table></div>' +
+      '<p class="bold mt3">③ 依回答修正（不必靠複雜特效）</p><div class="stack mt1">' + checks('w5-fix', FIX, ex.fix) + '</div>' +
+      '<label class="field mt1">我改了什麼？（三題都「是」的話，寫為什麼不用改）<input class="input" id="w5-what" maxlength="40" value="' + esc(ex.what || '') + '"></label>' +
+      '<p class="bold mt3">④ AI 使用聲明：這支廣告哪些地方用了 AI？</p><div class="stack mt1">' + checks('w5-ai', AIUSE, ex.ai) + '</div><div id="w5-aiw" class="mt1"></div>' +
+      '<div class="row mt2"><button class="btn go" id="w5-make">🎨 產生作品說明卡</button></div><p id="w5-err" class="small bold mt1" style="color:var(--bad)"></p><div id="w5-out" class="center mt2"></div>';
+    function picked(name) { return Array.from(document.querySelectorAll('input[name=' + name + ']:checked')).map(function (c) { return +c.value; }); }
+    function aiWarn() {
+      var a = picked('w5-ai'), t = [];
+      if (a.indexOf(4) >= 0 && a.length > 1) t.push('勾了「沒有使用 AI」，就不能再勾其他項目。');
+      if (a.indexOf(3) >= 0) t.push('這次的作業要自己實拍；AI 生成的畫面要在作品裡清楚標示，並先和老師討論。');
+      document.getElementById('w5-aiw').innerHTML = t.length ? '<div class="note warn small">' + t.map(esc).join('<br>') + '</div>' : '';
+      return !(a.indexOf(4) >= 0 && a.length > 1);
     }
-    ['e-res', 'e-fps', 'e-box', 'e-codec'].forEach(function (id) { document.getElementById(id).onchange = tip; });
-    tip();
-    document.getElementById('e-make').onclick = function () {
-      var v = { res: val('e-res'), fps: val('e-fps'), box: val('e-box'), codec: val('e-codec'), name: val('e-name'), s1: val('e-s1'), s2: val('e-s2'), s3: val('e-s3'),
-        rub: RUB.map(function (_, i) { var r = document.querySelector('input[name=rub' + i + ']:checked'); return r ? +r.value : 0; }) };
-      var miss = [];
-      if (!tip()) miss.push('匯出設定（看上面的黃色提醒）');
-      if (v.rub.some(function (x) { return !x; })) miss.push('自我評量每一項都要選');
-      if (!v.name) miss.push('影片名稱');
-      ['s1', 's2', 's3'].forEach(function (k, i) { if (v[k].length < 4) miss.push('第 ' + (i + 1) + ' 句（至少 4 個字）'); });
-      document.getElementById('e-err').textContent = miss.length ? '還差：' + miss.join('、') : '';
+    body.querySelectorAll('input[name=w5-ai]').forEach(function (c) { c.onchange = aiWarn; });
+    aiWarn();
+    document.getElementById('w5-make').onclick = function () {
+      var v = { app: val('w5-app'), len: +val('w5-len') || 0, ratio: val('w5-ratio'), peer: val('w5-peer'),
+        pa: PEER.map(function (_, i) { var r = document.querySelector('input[name=pq' + i + ']:checked'); return r ? +r.value : -1; }),
+        fix: picked('w5-fix'), what: val('w5-what'), ai: picked('w5-ai') }, miss = [];
+      if (v.len < 25 || v.len > 35) miss.push('影片長度約 30 秒（25～35）');
+      if (!v.peer) miss.push('試看的同學');
+      if (v.pa.some(function (x) { return x < 0; })) miss.push('三題試看都要回答');
+      if (len(v.what) < 4) miss.push('我改了什麼');
+      if (!v.ai.length) miss.push('AI 使用聲明（沒用也要勾「沒有使用 AI」）');
+      if (!aiWarn()) miss.push('AI 使用聲明（看上面的提醒）');
+      if (!done('W2')) miss.push('先完成步驟 2 的主標語');
+      document.getElementById('w5-err').textContent = miss.length ? '還差：' + miss.join('、') : '';
       if (miss.length) { save('W5', v, false); return; }
-      var sc = scenes(), tot = totalSec(sc);
-      LABKIT.showCard(document.getElementById('e-out'), LABKIT.drawCard({
-        title: v.name, banner: '畢經之路 · 畢業紀念影片', me: me,
-        rule: 'Shotcut · ' + v.res + ' ' + v.fps + 'fps · ' + v.box + '（' + v.codec + '）· ' + sc.length + ' 幕 · ' + mmss(tot),
-        boxes: [['解析度', v.res], ['影格率', v.fps + ' fps'], ['自評', v.rub.reduce(function (a, b) { return a + b; }, 0) + ' / 12'], ['長度', mmss(tot)]],
-        lines: [v.s1, v.s2, v.s3] }), me);
-      var a = document.querySelector('#e-out a'); if (a) a.download = '作品說明卡-' + me.cls + '_' + me.seat + '_' + me.name + '.png';
+      var yes = v.pa.filter(function (x) { return x === 0; }).length, n = (extra('W3').shots || []).length;
+      var decl = v.ai.indexOf(4) >= 0 ? '沒有使用 AI' : 'AI 協助：' + v.ai.map(function (i) { return AIUSE[i]; }).join('、') + '（主標語經我修改）';
+      LABKIT.showCard(document.getElementById('w5-out'), LABKIT.drawCard({
+        title: w2.slogan, banner: '30 秒廣告 · 主角：' + (w1.obj || ''), me: me,
+        rule: v.app + ' · ' + v.len + ' 秒 · ' + v.ratio + ' · ' + n + ' 個鏡頭 · 試看者 ' + v.peer,
+        boxes: [['主角', w1.obj || ''], ['長度', v.len + ' 秒'], ['鏡頭', n + ' 個'], ['試看', yes + ' / 3 題「是」']],
+        lines: [('想讓你發現它' + (w1.find || '')).slice(0, 34), ('看完覺得' + (w1.feel || '') + '；對象：' + (w1.who || '')).slice(0, 34), decl.slice(0, 34)] }), me);
+      var a = document.querySelector('#w5-out a'); if (a) a.download = '廣告說明卡-' + me.cls + '_' + me.seat + '_' + me.name + '.png';
       save('W5', v, true);
     };
   }
-  function val(id) { return document.getElementById(id).value.trim(); }
 
-  if (/^#W/.test(location.hash)) { var wi = STEPS.findIndex(function (s) { return '#' + s.id === location.hash; }); if (wi >= 0) cur = wi; tab('studio'); }
+  /* 網址 #W3 → 工作站第 3 步；#ai、#demo → 對應分頁 */
+  function route() {
+    var h = location.hash;
+    if (/^#W/.test(h)) { var wi = STEPS.findIndex(function (s) { return '#' + s.id === h; }); if (wi >= 0) cur = wi; tab('studio'); }
+    else if (h === '#ai' || /^#A\d/.test(h)) tab('ai');
+    else if (h === '#demo') tab('demo');
+  }
+  route();
+  window.addEventListener('hashchange', route);
 })();
 </script>
 </body>
