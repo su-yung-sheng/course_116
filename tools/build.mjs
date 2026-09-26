@@ -91,9 +91,22 @@ async function sealPython(levels) {
 async function sealCards(levels) {
   const out = [];
   for (const lv of levels) {
+    const base = { id: lv.id, icon: lv.icon, title: lv.title, book: lv.book, learn: lv.learn };
+    if (lv.stages) {   // ⭐ 三星三階：每一階各自封存（salt 帶上階段編號）
+      const stages = [];
+      for (let si = 0; si < lv.stages.length; si++) {
+        const st = lv.stages[si];
+        stages.push({ goal: st.goal, rounds: await sealRounds({ id: lv.id + '#' + si }, st.rounds) });
+      }
+      out.push({ ...base, stages });
+    } else out.push({ ...base, rounds: await sealRounds(lv, lv.rounds) });
+  }
+  return out;
+}
+async function sealRounds(lv, list) {
     const rounds = [];
-    for (let ri = 0; ri < lv.rounds.length; ri++) {
-      const rd = lv.rounds[ri], s0 = salt('card', lv.id, ri);
+    for (let ri = 0; ri < list.length; ri++) {
+      const rd = list[ri], s0 = salt('card', lv.id, ri);
       if (rd.type === 'sort') {
         const items = [];
         for (let i = 0; i < rd.items.length; i++) {
@@ -135,12 +148,10 @@ async function sealCards(levels) {
         }
         rounds.push({ type: 'type', prompt: rd.prompt, tool: rd.tool, shuffle: rd.shuffle, items });
       } else if (rd.type === 'gen') {
-        rounds.push({ type: 'gen', gen: rd.gen, n: rd.n, max: rd.max, prompt: rd.prompt, tool: rd.tool });   // 隨機出題：沒有固定答案，不用封存
+        rounds.push({ ...rd });   // 隨機出題：沒有固定答案，不用封存（出題器參數原樣帶過去）
       } else throw new Error('不認得的回合：' + rd.type);
     }
-    out.push({ id: lv.id, icon: lv.icon, title: lv.title, book: lv.book, learn: lv.learn, rounds });
-  }
-  return out;
+    return rounds;
 }
 
 /* ── 試算表 ───────────────────────────────────── */

@@ -12,7 +12,14 @@
      gen    🎲 隨機出題：每次開始都由 CARDGAME.gens[rd.gen](rd) 產生新題目（shared/cipher-gen.js），
             每位學生、每一次挑戰的題目都不一樣，背答案沒有用；題目自己帶 check(答案)，不存正解
    opts.sequential：上一關 ≥ 2⭐ 才開下一關（HUB.openAll() 備課模式可暫時全開）
-   每一關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。❤️ 用完要重來。
+
+   兩種計星方式：
+     · 一般關卡（lv.rounds）：3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐
+     · ⭐ 三星三階（lv.stages：[基礎, 操作, 挑戰]）：每一階各有 3 顆 ❤️，過了第幾階就拿幾顆 ⭐
+         ⭐ 基礎：觀念（題庫隨機抽）　⭐⭐ 操作：動手做（🎲 參數隨機）　⭐⭐⭐ 挑戰：🎲 更難的隨機題
+       上一階過了才開下一階；❤️ 用完只要重來那一階。星星代表「做到多難」，不是「錯幾次」。
+   gen 回合的題目可以是好幾種「動手」題型（it.kind）：
+     input（預設，打答案）、choice（按選項）、order（依序點）、slots（每一格選一個）、bits（點位元湊出數字）
    ⚠️ 內容檔是 tools/build.mjs 從 private/ 產生的「封存版」：答案與解說都要用學生的答案試開（shared/seal.js）。
    ===================================================================== */
 window.CARDGAME = { mount: function (opts) {
@@ -32,7 +39,7 @@ window.CARDGAME = { mount: function (opts) {
     app.innerHTML =
       '<section class="card pop"><div class="tape"></div><div class="row between"><div>' +
       '<p class="kicker">' + L.length + ' 個互動體驗關卡 · ' + (opts.sequential ? '依序開放（上一關 2⭐ 開下一關）' : '自由挑戰順序') + '</p><h2 class="black" style="font-size:1.35rem">' + esc(opts.headline || '先讀「概念小卡」，再用遊戲證明你懂了') + '</h2>' +
-      '<p class="small soft mt1">每關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。可以一直重玩刷新紀錄。</p></div>' +
+      '<p class="small soft mt1">' + (L.some(function (lv) { return lv.stages; }) ? '每關三階：📘 基礎 ⭐ → 🛠️ 操作 ⭐⭐ → 🏆 挑戰 ⭐⭐⭐。過了第幾階就拿幾顆星；🎲 題目每次都不一樣。' : '每關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。可以一直重玩刷新紀錄。') + '</p></div>' +
       '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
       '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
         if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true"><div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
@@ -54,29 +61,55 @@ window.CARDGAME = { mount: function (opts) {
       '<p class="kicker">第 ' + (i + 1) + ' 關 · ' + esc(lv.book) + '</p>' +
       '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
       '<div class="note mt2 learn"><b>📖 概念小卡</b><div class="mt1">' + lv.learn + '</div></div>' +
-      '<p class="small soft mt2">共 ' + lv.rounds.length + ' 回合 · 最佳紀錄 ' + UI.stars(best(lv.id)) + '</p>' +
-      '<div class="row mt2"><button class="btn go big" id="go">開始挑戰 ▶</button><button class="btn" id="back">← 關卡選單</button></div></section>';
+      (lv.stages ? stageCards(lv) +
+        '<div class="row mt2"><button class="btn" id="back">← 關卡選單</button></div></section>'
+      : '<p class="small soft mt2">共 ' + lv.rounds.length + ' 回合 · 最佳紀錄 ' + UI.stars(best(lv.id)) + '</p>' +
+      '<div class="row mt2"><button class="btn go big" id="go">開始挑戰 ▶</button><button class="btn" id="back">← 關卡選單</button></div></section>');
+    if (lv.stages) {
+      app.querySelectorAll('.stage:not([disabled])').forEach(function (b) { b.onclick = function () { start(i, +b.dataset.s); }; });
+      var go = app.querySelector('.stage.next') || app.querySelector('.stage:not([disabled])');
+      if (go) { go.id = 'go'; }
+      document.getElementById('back').onclick = menu;
+      if (go) go.focus();
+      return;
+    }
     document.getElementById('go').onclick = function () { start(i); };
     document.getElementById('back').onclick = menu;
     document.getElementById('go').focus();
   }
 
+  /* ⭐ 三星三階：三張階段卡（過了上一階才開下一階） */
+  var STAGE = [{ n: '基礎', ic: '📘', d: '觀念題，題庫隨機抽' }, { n: '操作', ic: '🛠️', d: '動手做，🎲 每次參數不同' }, { n: '挑戰', ic: '🏆', d: '🎲 更難的隨機題' }];
+  function stageOpen(lv, s) { return s === 0 || best(lv.id) >= s || !!(window.HUB && HUB.openAll && HUB.openAll()); }
+  function stageCards(lv) {
+    var b = best(lv.id);
+    return '<p class="small bold mt2">⭐ 三星三階：過了第幾階就拿幾顆星（每一階 3 顆 ❤️）</p><div class="stages mt1">' + lv.stages.map(function (st, s) {
+      var ok = stageOpen(lv, s), done = b > s, nx = ok && !done && (s === 0 || b >= s);
+      return '<button class="stage' + (done ? ' done' : '') + (nx ? ' next' : '') + '" data-s="' + s + '"' + (ok ? '' : ' disabled') + '>' +
+        '<span class="st-stars">' + '⭐'.repeat(s + 1) + '</span><span class="st-n">' + (ok ? STAGE[s].ic : '🔒') + ' 第 ' + (s + 1) + ' 階　' + STAGE[s].n + '</span>' +
+        '<span class="st-d">' + UI.esc(st.goal || STAGE[s].d) + '</span>' +
+        '<span class="st-s">' + (done ? '✅ 已通過' : ok ? '▶ 開始' : '過了第 ' + s + ' 階才開放') + '</span></button>';
+    }).join('') + '</div>';
+  }
+
   /* ── 遊戲流程 ─────────────────────────────── */
-  function start(i) {
-    G = { i: i, lv: L[i], r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0 };
+  function start(i, s) {
+    var lv = L[i], st = lv.stages ? (s || 0) : null;
+    G = { i: i, lv: lv, st: st, rounds: lv.stages ? lv.stages[st].rounds : lv.rounds, r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0 };
     round();
   }
 
   function hud() {
     var lv = G.lv;
     return '<div class="hud"><button class="btn sm" id="quit">✕ 離開</button>' +
-      '<b>' + lv.icon + ' ' + esc(lv.title) + '</b><span class="chip">回合 ' + (G.r + 1) + ' / ' + lv.rounds.length + '</span>' +
+      '<b>' + lv.icon + ' ' + esc(lv.title) + '</b>' + (G.st != null ? '<span class="chip stage-chip">' + '⭐'.repeat(G.st + 1) + ' ' + STAGE[G.st].n + '</span>' : '') +
+      '<span class="chip">回合 ' + (G.r + 1) + ' / ' + G.rounds.length + '</span>' +
       '<span style="margin-left:auto" class="combo">' + (G.combo >= 2 ? '🔥 連對 ' + G.combo : '') + '</span>' + UI.hearts(G.hearts, HEARTS) + '</div>';
   }
   function bindQuit() { var q = document.getElementById('quit'); if (q) q.onclick = function () { if (confirm('離開這一關？這次的進度不會保留。')) menu(); }; }
 
   function round() {
-    var rd = G.lv.rounds[G.r];
+    var rd = G.rounds[G.r];
     if (rd.type === 'sort') playSort(rd);
     else if (rd.type === 'order') playOrder(rd);
     else if (rd.type === 'build') playBuild(rd);
@@ -93,7 +126,7 @@ window.CARDGAME = { mount: function (opts) {
 
   function nextRound() {
     G.r++;
-    if (G.r >= G.lv.rounds.length) finish(); else round();
+    if (G.r >= G.rounds.length) finish(); else round();
   }
 
   /* ⚠️ 下面四種回合用的都是「封存版」內容（tools/build.mjs 產生）：
@@ -299,41 +332,97 @@ window.CARDGAME = { mount: function (opts) {
     if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到出題器：' + esc(rd.gen) + '</p></section>'; return; }
     var qs = make(rd), k = 0;
     function q() {
-      var it = qs[k], tool = it.tool || rd.tool;
+      var it = qs[k], tool = it.tool || rd.tool, kind = it.kind || 'input', val = null;
       app.innerHTML = '<section class="card">' + hud() +
-        '<p class="small soft bold mt2">🎲 ' + esc(rd.prompt) + '（' + (k + 1) + ' / ' + qs.length + '）</p>' +
-        '<div class="qcard mt1 pop"><div class="big">' + (it.icon || '✏️') + '</div><div class="txt mono">' + esc(it.t) + '</div>' +
-        (it.sub ? '<div class="small soft bold mt1">' + esc(it.sub) + '</div>' : '') + '</div>' +
-        (tool ? '<div class="mt2" id="tool"></div>' : '') +
-        '<form class="row mt2" id="tf"><input class="input" id="ans" autocomplete="off" style="flex:1;min-width:10rem;margin:0" placeholder="' + esc(it.ph || '輸入答案') + '" aria-label="答案">' +
-        '<button class="btn go">確定</button></form><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
+        '<p class="small soft bold mt2">🎲 ' + esc(it.prompt || rd.prompt) + '（' + (k + 1) + ' / ' + qs.length + '）</p>' +
+        '<div class="qcard mt1 pop"><div class="big">' + (it.icon || '✏️') + '</div><div class="txt' + (it.mono === false ? '' : ' mono') + '">' + esc(it.t) + '</div>' +
+        (it.sub ? '<div class="small soft bold mt1">' + esc(it.sub) + '</div>' : '') + (it.html ? '<div class="mt1">' + it.html + '</div>' : '') + '</div>' +
+        (tool ? '<div class="mt2" id="tool"></div>' : '') + body(it, kind) +
+        '<div class="fb mt2" id="fb" aria-live="polite"></div></section>';
       bindQuit();
       if (tool && CARDGAME.tools[tool]) CARDGAME.tools[tool](document.getElementById('tool'), it);
-      var inp = document.getElementById('ans'); inp.focus();
-      document.getElementById('tf').onsubmit = function (e) {
+      var form = document.getElementById('tf');
+      wire(it, kind, function (v) { val = v; });
+      form.onsubmit = function (e) {
         e.preventDefault();
-        var v = norm(inp.value); if (!v) return;
+        var v = kind === 'input' ? norm(document.getElementById('ans').value) : val;
+        if (v == null || v === '' || (kind === 'order' && v.length < (it.need || it.items.length)) || (kind === 'slots' && v.indexOf(null) >= 0)) {
+          return UI.toast(kind === 'order' ? '先把每一個都依序點完' : kind === 'slots' ? '每一格都要選' : '先作答再按確定');
+        }
         var ok = !!it.check(v), alive = hit(ok), fb = document.getElementById('fb');
         refreshHud();
         if (ok) {
-          inp.disabled = true; document.querySelector('#tf button').disabled = true;
+          form.querySelectorAll('input,button,select').forEach(function (x) { x.disabled = true; });
           fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(typeof it.why === 'function' ? it.why(v) : (it.why || '')) + '</div>' +
             '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < qs.length ? '下一題 →' : '完成這回合 →') + '</button></div>';
           var nx = document.getElementById('nx'); nx.focus();
           nx.onclick = function () { k++; if (k < qs.length) q(); else nextRound(); };
         } else if (!alive) {
-          inp.disabled = true; outOfHearts(fb, '#tf button');
+          outOfHearts(fb, '#tf button, #tf input, #tf select');
         } else {
-          inp.select();
-          fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (it.hint ? ' 💡 ' + esc(it.hint) : '') + '</div>';
+          var h = typeof it.hint === 'function' ? it.hint(v) : it.hint;
+          fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (h ? ' 💡 ' + esc(h) : '') + '</div>';
+          if (kind === 'input') document.getElementById('ans').select();
+          if (kind === 'order') { var rs = document.getElementById('reset'); if (rs) rs.click(); }
         }
       };
+    }
+    /* 各種動手題型的畫面 */
+    function body(it, kind) {
+      var go = '<button class="btn go">確定</button>';
+      if (kind === 'choice') return '<form id="tf" class="mt2"><div class="buckets">' + it.options.map(function (o) {
+        return '<button type="button" class="pick bucket gopt" data-v="' + esc(o.id) + '">' + (o.icon ? '<span class="ic">' + o.icon + '</span>' : '') + '<span>' + esc(o.label) + '</span></button>'; }).join('') +
+        '</div><div class="row mt2">' + go + '<span class="tiny soft">先選一個，再按確定</span></div></form>';
+      if (kind === 'order') return '<form id="tf" class="mt2"><p class="tiny soft bold">依序點下去（點錯可以按「重排」）</p><div class="gorder mt1">' + it.items.map(function (x, i) {
+        return '<button type="button" class="pick gitem" data-i="' + i + '">' + (x.icon ? '<div style="font-size:1.6rem">' + x.icon + '</div>' : '') + '<div class="bold">' + esc(x.t) + '</div></button>'; }).join('') +
+        '</div><div class="gseq mt2" id="seq"><span class="tiny soft">還沒點</span></div><div class="row mt2">' + go + '<button type="button" class="btn sm" id="reset">↺ 重排</button></div></form>';
+      if (kind === 'slots') return '<form id="tf" class="mt2"><div class="gslots">' + it.parts.map(function (p, i) {
+        return '<label class="gslot"><span class="bold mono">' + esc(p.t) + '</span>' + (p.sub ? '<span class="tiny soft">' + esc(p.sub) + '</span>' : '') +
+          '<select class="input" data-i="' + i + '"><option value="">— 選一個 —</option>' + (p.options || it.options).map(function (o) { return '<option value="' + esc(o.id) + '">' + esc(o.label) + '</option>'; }).join('') + '</select></label>'; }).join('') +
+        '</div><div class="row mt2">' + go + '</div></form>';
+      if (kind === 'bits') return '<form id="tf" class="mt2"><div class="gbits" id="gbits"></div><div class="row mt2">' + go + '</div></form>';
+      return '<form class="row mt2" id="tf"><input class="input" id="ans" autocomplete="off" style="flex:1;min-width:10rem;margin:0" placeholder="' + esc(it.ph || '輸入答案') + '" aria-label="答案">' + go + '</form>';
+    }
+    function wire(it, kind, set) {
+      if (kind === 'input') { document.getElementById('ans').focus(); return; }
+      if (kind === 'choice') app.querySelectorAll('.gopt').forEach(function (b) {
+        b.onclick = function () { app.querySelectorAll('.gopt').forEach(function (x) { x.classList.toggle('on', x === b); }); set(b.dataset.v); };
+      });
+      if (kind === 'order') {
+        var seq = [];
+        function show() {
+          document.getElementById('seq').innerHTML = seq.length ? seq.map(function (i, n) { return '<span class="chip">' + (n + 1) + '. ' + esc(it.items[i].t) + '</span>'; }).join(' → ') : '<span class="tiny soft">還沒點</span>';
+          app.querySelectorAll('.gitem').forEach(function (b) { var n = seq.indexOf(+b.dataset.i); b.classList.toggle('on', n >= 0); b.disabled = n >= 0; });
+          set(seq.map(function (i) { return it.items[i].id != null ? it.items[i].id : it.items[i].t; }));
+        }
+        app.querySelectorAll('.gitem').forEach(function (b) { b.onclick = function () { seq.push(+b.dataset.i); show(); }; });
+        document.getElementById('reset').onclick = function () { seq = []; show(); };
+        show();
+      }
+      if (kind === 'slots') {
+        var picks = it.parts.map(function () { return null; });
+        app.querySelectorAll('.gslot select').forEach(function (sel) { sel.onchange = function () { picks[+sel.dataset.i] = sel.value || null; set(picks.slice()); }; });
+        set(picks.slice());
+      }
+      if (kind === 'bits') {
+        var n = it.n || 8, bits = []; for (var j = 0; j < n; j++) bits.push(0);
+        function drawBits() {
+          var sum = bits.reduce(function (a, b, j) { return a + b * Math.pow(2, n - 1 - j); }, 0);
+          document.getElementById('gbits').innerHTML = '<div class="row" style="flex-wrap:nowrap;overflow-x:auto">' + bits.map(function (b, j) {
+            return '<button type="button" class="pick mono gbit' + (b ? ' on' : '') + '" data-j="' + j + '"><div class="tiny soft">' + Math.pow(2, n - 1 - j) + '</div><div class="black" style="font-size:1.25rem">' + b + '</div></button>'; }).join('') +
+            (it.showSum === false ? '' : '<span class="bold mono" style="margin-left:.5rem">＝ ' + sum + '</span>') + '</div>';
+          app.querySelectorAll('.gbit').forEach(function (b) { b.onclick = function () { bits[+b.dataset.j] ^= 1; drawBits(); }; });
+          set(bits.join(''));
+        }
+        drawBits();
+      }
     }
     q();
   }
 
   /* ── 結束 ─────────────────────────────────── */
   function finish() {
+    if (G.st != null) return finishStage();
     var stars = G.hearts, lv = G.lv, i = G.i;
     var r = STORE.saveLevel(MOD, lv.id, { stars: stars, score: Math.round(G.right / Math.max(1, G.total) * 100), extra: { maxCombo: G.maxCombo } });
     app.innerHTML = '<section class="card pop center"><div class="tape"></div><p class="kicker">過關！</p>' +
@@ -352,8 +441,38 @@ window.CARDGAME = { mount: function (opts) {
     if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
   }
 
+  /* 三星三階：過了這一階 → 星數＝第幾階 */
+  function finishStage() {
+    var lv = G.lv, i = G.i, s = G.st, stars = s + 1, more = s + 1 < lv.stages.length;
+    var r = STORE.saveLevel(MOD, lv.id, { stars: stars, score: Math.round(G.right / Math.max(1, G.total) * 100) });
+    app.innerHTML = '<section class="card pop center"><div class="tape"></div><p class="kicker">第 ' + (s + 1) + ' 階 · ' + STAGE[s].n + ' 通過！</p>' +
+      '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
+      '<div class="end-star mt1">' + UI.stars(stars) + '</div>' +
+      '<p class="bold">答對 ' + G.right + ' / ' + G.total + ' · 剩 ' + G.hearts + ' 顆 ❤️</p>' +
+      (r.improved ? '<p class="note ok small mt2" style="display:inline-block">⭐ 新紀錄已儲存！</p>' : '<p class="small soft mt1">最佳紀錄：' + UI.stars(best(lv.id)) + '</p>') +
+      (more ? '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="up">挑戰第 ' + (s + 2) + ' 階：' + STAGE[s + 1].ic + ' ' + STAGE[s + 1].n + ' ▶</button><button class="btn" id="again">🔁 這一階再玩一次</button></div>'
+        : '<p class="note ok small mt2" style="display:inline-block">🏆 三階全部通過！想刷新紀錄或練習，可以再挑戰一次（題目會不一樣）。</p><div class="row mt2" style="justify-content:center"><button class="btn" id="again">🔁 再挑戰一次</button></div>') +
+      '<nav id="end-pager"></nav></section>';
+    document.getElementById('again').onclick = function () { start(i, s); };
+    var up = document.getElementById('up'); if (up) { up.onclick = function () { start(i, s + 1); }; up.focus(); }
+    var N = L[i + 1];
+    UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
+      !N ? null : open(i + 1) ? { id: 'next', lbl: '下一關 →', title: N.icon + ' ' + N.title, go: function () { learn(i + 1); } }
+        : { id: 'next', locked: true, lbl: '🔒 下一關', title: '這一關拿到 2⭐ 才開放', go: function () { UI.toast('這一關拿到 2 顆星，下一關才會開放'); } });
+    if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
+  }
+
   function gameOver() {
     var i = G.i, lv = G.lv;
+    if (G.st != null) {
+      var s = G.st;
+      app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">第 ' + (s + 1) + ' 階的愛心用完了</h2>' +
+        '<p class="soft mt1">這一階重來就好（題目會換一組）。已經拿到的星星不會不見。</p>' +
+        '<nav id="end-pager"></nav></section>';
+      UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '概念小卡', go: function () { learn(i); } },
+        { id: 'retry', lbl: '再挑戰一次 →', title: STAGE[s].ic + ' 第 ' + (s + 1) + ' 階　' + STAGE[s].n, go: function () { start(i, s); } });
+      return;
+    }
     app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">愛心用完了</h2>' +
       '<p class="soft mt1">回去看看概念小卡，再挑戰一次！這次的結果不會記錄。</p>' +
       '<nav id="end-pager"></nav></section>';

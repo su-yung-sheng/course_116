@@ -2,6 +2,7 @@
 import { launch, login, BASE, SHOTS } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 import { priv } from './harness.mjs';
+import { solve as netSolve, answer as netAnswer } from './net_solver.mjs';
 
 const { browser, context } = await launch();
 const page = await context.newPage();
@@ -15,11 +16,60 @@ await page.goto(BASE + '/11602/hub.html');
 await login(page);
 
 /* ── 遊戲：照正解玩完每一關 ───────────────── */
+/* 🎲 gen 回合：看畫面算答案（net_solver.mjs）；每一回合的第一題故意先答錯一次，確認會扣心、可以重答 */
+async function playGen() {
+  for (let guard = 0; guard < 20; guard++) {
+    const head = await page.textContent('#app .card > p.small');
+    const [k, n] = (head.match(/（(\d+) \/ (\d+)）/) || []).slice(1).map(Number);
+    const sol = await netSolve(page);
+    if (k === 1 && !genWrongTried) {
+      genWrongTried = true;
+      await netAnswer(page, sol, true);
+      await page.waitForSelector('#fb .note');
+      ok((await page.textContent('#fb')).includes('不對'), '🎲 答錯會扣心、可以重答', sol.kind);
+      if (sol.kind === 'bits') for (let i = 0; i < 8; i++) if (await page.$(`.gbit[data-j="${i}"].on`)) await page.click(`.gbit[data-j="${i}"]`);
+      if (sol.kind === 'order') await page.click('#reset').catch(() => {});
+      if (sol.kind === 'choice') {}
+    }
+    await netAnswer(page, sol, false);
+    await page.waitForSelector('#nx', { timeout: 5000 }).catch(async () => { throw new Error('🎲 答不對：' + (await page.textContent('.qcard')) + ' → ' + JSON.stringify(sol) + ' ' + (await page.textContent('#fb'))); });
+    await page.click('#nx');
+    if (k === n) return;
+  }
+}
+let genWrongTried = false;
+async function playRounds(rounds) {
+  for (const rd of rounds) {
+    if (rd.type === 'gen') { await playGen(); continue; }
+    await playSealed(rd);
+  }
+}
 async function playCard(levels, i) {
   const lv = levels[i];
   await page.click(`.lvcard[data-i="${i}"]`);
+  if (lv.stages) {   // ⭐ 三星三階：一階一階打上去
+    genWrongTried = false;
+    await page.click('.stage[data-s="0"]');
+    for (let s = 0; s < lv.stages.length; s++) {
+      if (s > 0) await page.click('#up');
+      await playRounds(lv.stages[s].rounds);
+      await page.waitForSelector('.end-star');
+      const got = await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'));
+      ok(got.startsWith(String(s + 1)), lv.id, '第', s + 1, '階通過 →', got);
+    }
+    const s = await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'));
+    await page.click('#menu');
+    return s;
+  }
   await page.click('#go');
-  for (const rd of lv.rounds) {
+  await playRounds(lv.rounds);
+  await page.waitForSelector('.end-star');
+  const s = await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'));
+  await page.click('#menu');
+  return s;
+}
+async function playSealed(rd) {
+  {
     if (rd.type === 'sort') {
       const n = rd.pick || rd.items.length;
       for (let k = 0; k < n; k++) {
@@ -41,15 +91,17 @@ async function playCard(levels, i) {
       }
     }
   }
-  await page.waitForSelector('.end-star');
-  const s = await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'));
-  await page.click('#menu');
-  return s;
 }
 for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS']]) {
   await page.goto(`${BASE}/11602/${file}.html`);
   await page.waitForSelector('.lvcard');
   const levels = priv('11602/content/' + file + '.js')[varName];   // 正解從 private 讀
+  if (file === 'network') {   // ⭐ 三星三階：一開始只開第 1 階
+    await page.click('.lvcard[data-i="0"]');
+    ok(!(await page.$eval('.stage[data-s="0"]', b => b.disabled)) && await page.$eval('.stage[data-s="1"]', b => b.disabled) && await page.$eval('.stage[data-s="2"]', b => b.disabled), '三星三階：一開始只開放第 1 階');
+    await page.screenshot({ path: SHOTS + 'net-stages.png', fullPage: true });
+    await page.click('#back');
+  }
   for (let i = 0; i < levels.length; i++) { const s = await playCard(levels, i); ok(s.startsWith('3'), file, levels[i].id, s); }
 }
 // 凱薩轉盤與位元計算機截圖

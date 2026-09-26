@@ -13,7 +13,7 @@ for (const t of ['11601']) load(`private/${t}/content/python.js`).PY_LEVELS.forE
 // 互動遊戲（所有 *_LEVELS）：答對後的解說、組合題的過關說明
 for (const [t, f] of [['11601', 'platform'], ['11602', 'media'], ['11602', 'network'], ['11602', 'data']]) {
   const W = load(`private/${t}/content/${f}.js`);
-  for (const [k, L] of Object.entries(W)) if (/_LEVELS$/.test(k)) L.forEach(lv => lv.rounds.forEach(rd => {
+  for (const [k, L] of Object.entries(W)) if (/_LEVELS$/.test(k)) L.forEach(lv => (lv.stages ? lv.stages.flatMap(st => st.rounds) : lv.rounds).forEach(rd => {
     (rd.items || []).forEach(it => it.why && add(it.why.slice(0, 16), 'card why ' + lv.id));
     (rd.customers || []).forEach(cu => cu.good && add(cu.good.slice(0, 16), 'card good ' + lv.id));
   }));

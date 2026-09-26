@@ -26,3 +26,28 @@
 
 /* 依序開放：還沒解鎖的關卡 */
 .lvcard.locked{opacity:.55;cursor:not-allowed;filter:grayscale(.6)}
+
+/* ⭐ 三星三階：階段卡 */
+.stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+@media (max-width:640px){.stages{grid-template-columns:minmax(0,1fr)}}
+.stage{display:flex;flex-direction:column;gap:.25rem;text-align:left;font:inherit;color:inherit;background:#fff;border:2px solid var(--line);border-top:6px solid var(--unit);border-radius:1rem;padding:.8rem .9rem;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s}
+.stage:hover:not([disabled]){transform:translateY(-2px)}
+.stage.next{border-color:var(--unit);background:var(--unit-soft)}
+.stage.done{border-color:var(--ok);border-top-color:var(--ok)}
+.stage[disabled]{opacity:.55;cursor:not-allowed;filter:grayscale(.6)}
+.stage .st-stars{font-size:.9rem}.stage .st-n{font-weight:900;font-size:1.05rem}.stage .st-d{font-size:.8rem;color:var(--ink-soft)}.stage .st-s{margin-top:auto;font-size:.78rem;font-weight:800}
+.stage.done .st-s{color:var(--ok)}
+.stage-chip{background:var(--star-bg,#fef3c7);border-color:transparent}
+/* 🎲 動手題型 */
+.gorder{display:grid;grid-template-columns:repeat(auto-fill,minmax(8rem,1fr));gap:.5rem}
+.gorder .gitem{text-align:center}
+.gorder .gitem.on{opacity:.45}
+.gseq{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;min-height:2rem}
+.gslots{display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:.6rem}
+.gslot{display:flex;flex-direction:column;gap:.3rem;background:#fff;border:2px solid var(--line);border-radius:.8rem;padding:.6rem}
+.gslot select{margin:0}
+.gbit{min-width:3rem;text-align:center;padding:.4rem}
+.gbit.on{border-color:var(--unit);background:var(--unit-soft)}
+.gopt.on{border-color:var(--unit);background:var(--unit-soft)}
+.barcode{display:inline-flex;height:4.5rem;border:2px solid var(--ink);padding:.3rem;background:#fff;gap:0}
+.barcode i{display:block;width:1.4rem;height:100%}.barcode i.k{background:#0f172a}.barcode i.w{background:#fff}
