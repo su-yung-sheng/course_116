@@ -8,6 +8,16 @@ const GEN = { netChain: ['order', 5], portsCalc: ['input'], cableAssign: ['slots
   bitsToDec: ['input'], ipPrivate: ['choice', 2], ipBinary: ['input'], hexBits: ['input'], v6short: ['input'], v6expand: ['input'], urlSlots: ['slots', 4, 3], urlRead: ['choice', 4],
   mailFlow: ['order', 5], protoSlots: ['slots', 3, 4], httpsJudge: ['choice', 2], wirelessPick: ['choice', 3], download: ['input'], bottleneck: ['input'], barcode: ['input'], checkout: ['input'] };
 const r = n => Math.floor(Math.random() * n), fact = n => n <= 1 ? 1 : n * fact(n - 1);
+function buildP(rd, cu) {
+  let combos = [[]];
+  for (const sl of rd.slots) combos = combos.flatMap(c => sl.options.map(o => [...c, [sl.id, o]]));
+  const good = combos.filter(c => {
+    const chosen = Object.fromEntries(c), props = { price: rd.base ? rd.base.price : 0 };
+    for (const [, o] of c) { if (o.price) props.price += o.price; for (const k in o) if (!['id', 'label', 'price'].includes(k)) props[k] = o[k]; }
+    return !cu.rules.some(r => r.sum ? props[r.sum] > r.max : r.pick ? chosen[r.pick].id !== r.is : ((r.min != null && !(props[r.prop] >= r.min)) || (r.eq != null && props[r.prop] !== r.eq)));
+  }).length;
+  return good / combos.length;
+}
 function stage(rounds) {
   let e = 0; const bad = () => ++e >= 3;
   for (const rd of rounds) {
@@ -16,6 +26,9 @@ function stage(rounds) {
       const n = rd.pick || rd.items.length, k = rd.buckets.length;
       for (let i = 0; i < n; i++) { if (k <= 3) { while (r(k) !== 0) if (bad()) return false; } else { e += r(k); if (e >= 3) return false; } }
     } else if (rd.type === 'order') { for (let m = rd.items.length; m > 1; m--) { e += r(m); if (e >= 3) return false; } }
+    else if (rd.type === 'build') {   // 每位客人：從所有組合裡猜到合格的一組（猜錯扣心）
+      for (const cu of rd.customers) { const p = buildP(rd, cu); while (Math.random() > p) if (bad()) return false; }
+    }
     else if (rd.type === 'gen') {
       const g = GEN[rd.gen]; if (!g) throw new Error('guess_sim 不認得出題器 ' + rd.gen + '：請加進 GEN');
       for (let q = 0; q < rd.n; q++) {
@@ -29,7 +42,7 @@ function stage(rounds) {
   return true;
 }
 let fail = 0, worst = 0;
-const L = priv('11602/content/network.js').NET_LEVELS;
+const L = priv('11602/content/network.js').NET_LEVELS.concat(priv('11601/content/platform.js').PF_LEVELS);
 for (const lv of L) {
   if (!lv.stages) continue;
   const ps = lv.stages.map(st => { let ok = 0; const N = 40000; for (let i = 0; i < N; i++) if (stage(st.rounds)) ok++; return ok / N; });

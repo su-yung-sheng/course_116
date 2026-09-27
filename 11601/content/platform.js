@@ -7,105 +7,133 @@ window.PF_LEVELS = [
   "title": "平臺分類局",
   "book": "3-1 什麼是系統平臺、3-2 新興系統平臺",
   "learn": "系統平臺＝<b>硬體＋作業系統＋應用軟體</b>，讓我們用來處理事情的整套環境。依樣貌可以分成四類：<ul><li>🖥️ <b>電腦系統平臺</b>：桌上型電腦、筆記型電腦</li><li>📱 <b>可攜式</b>：可以隨身攜帶或穿戴，例如手機、智慧手錶</li><li>☁️ <b>雲端</b>：<span class=\"hl\">運算在網路另一端的機房</span>完成，你的裝置只負責送出指令、顯示結果</li><li>🔌 <b>嵌入式</b>：外表看不出是電腦，<span class=\"hl\">藏在裝置裡</span>自動完成特定工作</li></ul>",
-  "rounds": [
+  "stages": [
    {
-    "type": "sort",
-    "prompt": "這個屬於哪一種系統平臺？",
-    "pick": 10,
-    "buckets": [
+    "goal": "分辨四種系統平臺（題庫隨機抽）",
+    "rounds": [
      {
-      "id": "pc",
-      "label": "電腦",
-      "icon": "🖥️"
-     },
-     {
-      "id": "mobile",
-      "label": "可攜式",
-      "icon": "📱"
-     },
-     {
-      "id": "cloud",
-      "label": "雲端",
-      "icon": "☁️"
-     },
-     {
-      "id": "emb",
-      "label": "嵌入式",
-      "icon": "🔌"
+      "type": "sort",
+      "prompt": "這個屬於哪一種系統平臺？",
+      "pick": 8,
+      "buckets": [
+       {
+        "id": "pc",
+        "label": "電腦",
+        "icon": "🖥️"
+       },
+       {
+        "id": "mobile",
+        "label": "可攜式",
+        "icon": "📱"
+       },
+       {
+        "id": "cloud",
+        "label": "雲端",
+        "icon": "☁️"
+       },
+       {
+        "id": "emb",
+        "label": "嵌入式",
+        "icon": "🔌"
+       }
+      ],
+      "items": [
+       {
+        "t": "桌上型電腦",
+        "icon": "🖥️",
+        "s": "85f358b4bec7a874",
+        "e": "+R9YdrYc3OzWy5M30uo92Fl4cgeoc3zX9r0QJqViwrsQK+8gK95PlqRJAByEHpe22xl/LORxC4PN8IfWnrjI78yHGjPVVvRfRaB/6u6G8ZHYqQKfkboN4K/GKiE1YJckOB7YGMbScxgHCgUE6J3SYmDmL78Ef5E9vMuCY1I="
+       },
+       {
+        "t": "筆記型電腦",
+        "icon": "💻",
+        "s": "8fb8b6118f66da6d",
+        "e": "jbdKW0bpV/FLZnuf6nH5Ds2m79eqssHbVJNn9CPbJ16wDCkInJc707KPG+n5EyCqVGDV7eJYZ+K6fbG+sUJUugRszIdRsHM/rOs8JcyACYrnRdPr+XIpdwhhxK66SbxvzveHWv8WiQOAEfYQxoM+dJDmX2+oAN6upaMe82Rp2g4="
+       },
+       {
+        "t": "智慧型手機",
+        "icon": "📱",
+        "s": "e2d4acec4b5b4e49",
+        "e": "657BrVzwT3YXTxCRBTfDAP4ECfFDJaNAzTKMsPhOGgY6GueLuc6aadz9ngUyzWYhM0b9GgRXyp135MNTYD9Y9kFWdBmMrVy+QsJK16g7YIypO787w8tlRvq9SsqBW2PLbTZ4rynm0/wdp+TpTBo7xIgyKAkxmmFqTPwJKzFA"
+       },
+       {
+        "t": "智慧手錶",
+        "icon": "⌚",
+        "s": "41ef88f4df49f767",
+        "e": "nZ3Xgmc1e87BqikaCWRNZbhxxMFdk3HkANQ+FTsybNihuPxXQRqw2q9wZ9fWG039uXRGqiktHhhY72Uvjnvm2beVsUSdEOPQWah0+L4V7zu75rnDVk9muMRRSx52njDYdYE="
+       },
+       {
+        "t": "智慧眼鏡",
+        "icon": "🥽",
+        "s": "6ee2816e0887ee03",
+        "e": "Nci3ifFf2ziscyFHNRiD3EPUk8J4DUX7bDzztzDMZUlDvmDjkoeE27wLsLzT14JSMIQeHQP6D9s0EdX5jSfeHQUHIBNHzEZ9QMc57HvYoAHi5RkWmctPUIg="
+       },
+       {
+        "t": "YouTube 影片串流",
+        "icon": "▶️",
+        "s": "4f66c7aadb755f55",
+        "e": "XfroGJxRJN9oe1ezOnE9DoB4eV15HurJjnOvDCUF8qElOUzdYGoCV0Mtiz7oCOyhD3xSWvKZ9T9nHHZ1HdtwRlYUmdtpYec/9Z0Rv/e5uIGNV0xDZvuKva76XhInDLznVU2MejQ+KrzPF/qDkmjhPqtKGUCFC3RdZlsIfQJK0OI="
+       },
+       {
+        "t": "Google 文件多人共編",
+        "icon": "📄",
+        "s": "cf5d38f92f0dbdc1",
+        "e": "WazRiA9FUTu8XEX3P1GsBB7da+lpIYEBseWXkM9NCW/n5Ot0LWz2HRwxlGHBn9cCuXn4nt+qNVm+o94vCA9tO01z3n/HilLO51ZoQ7eQy5HrKsiicde60sQOwpiYKAQrzf1ZsX5WDVY="
+       },
+       {
+        "t": "線上翻譯服務",
+        "icon": "🌐",
+        "s": "883f374ce049b18e",
+        "e": "dql4HYyupCcO+JyhByx+lWeycMRRx9/xj7PaflttMdCfqftLcJfZZhmtcBChgevkOihyVn+f3m9XQA8S0Np5P77RJOl7Iel/siEyj35kUfExZ793KmbCK2e8By/jpPpv/sj+PAc="
+       },
+       {
+        "t": "智慧電鍋",
+        "icon": "🍚",
+        "s": "b4aef58dbadd6f39",
+        "e": "VV7835E9S5am10jxqGMamEHmeuw5Zz0Hlb65euPE+cPUV9sltcebipOLA7qwkBe46kQGnjPRGWf/owJgUlH1mdnw/8+gwCi/iSlIL0lfod0GbnYo63d8c0XHM0NuerZtZkFYK80e8iM="
+       },
+       {
+        "t": "交通號誌控制器",
+        "icon": "🚦",
+        "s": "f1740c87d62fed9a",
+        "e": "CbV7/tb1Z27sidjovMUhZ+e4JSixZ9SzQ7nfW9t7mn+xQxTv8W99QHt1kyPpkfsZKWl1ju+3UwtbIoU/hii9RlIcTpYASglAyqmk5noj9/UwbSyKkpw7439Mwxvp+Cb9af+q7/e4ql2C2LfQVLY="
+       },
+       {
+        "t": "掃地機器人",
+        "icon": "🤖",
+        "s": "18cd016de2e755c3",
+        "e": "gbxEP4kYo4PpWI8nOXj5SltoSNS8YKK4WI2NB1whA9UQSAK07taRc57PQlaqM6HVLGvtJHNOsAli/6nYIOPK4kAX/S7Mld4oHz1Fo0sy5weZyKUNXAVJ9JyFI3Thshz5wJU="
+       },
+       {
+        "t": "捷運悠遊卡閘門",
+        "icon": "🚇",
+        "s": "5f87f1f1e49a0902",
+        "e": "s8LCqWfGEWHyV2wQ/bFATeFXFpdxxZDae0rCTDUXQReRmI8ngf+DTtjHMAjp1+V98jdhd66qLmFc+KqmaPuemvQXkAJUKNjQTbO1d6idNei9pZmW4tYoo3AejShxoaCcO61LIhat+IXf3Fm1te0zupw="
+       }
+      ]
      }
-    ],
-    "items": [
+    ]
+   },
+   {
+    "goal": "🧪 平臺組合機：依任務挑出相容的硬體＋作業系統＋App（🎲 任務每次不同）",
+    "rounds": [
      {
-      "t": "桌上型電腦",
-      "icon": "🖥️",
-      "s": "7357faf781d28f50",
-      "e": "bjwCTCd4s5XYAIVHpTb07pGWDwXzmubG+KXLeb414BbKttUZWkNRrjlVuBcSqO/QN4CVhsi9wdREIaqGrOLyR1n4w1rEonB7uAtTShA+HOSA2oqGSap474J2TJC5vzU9x0D5Yj7LIbZNvPObBw6ia9dKGoAcc0t9gLIyZpE="
-     },
+      "type": "lab",
+      "lab": "platformBuilder",
+      "n": 2,
+      "prompt": "平臺組合機"
+     }
+    ]
+   },
+   {
+    "goal": "🧪 四種平臺一起判斷、任務更多（🎲）",
+    "rounds": [
      {
-      "t": "筆記型電腦",
-      "icon": "💻",
-      "s": "fd9a5c8c0ebfd6a8",
-      "e": "n+hyJySMjlYgjgp/IDezU2wRs3yiff64IQvJFKpwYrL/o79J452kU24IUOfFSNagEHZwDdzJE0sV6gl3fEO06F2YOPMxiecQ1S+28LDQuCGbl9EGjf6mGbn4eWPujcII24BQJ5mcl+zYeW/t5n+8QGvj2N9see9WZMneRnaGiN8="
-     },
-     {
-      "t": "智慧型手機",
-      "icon": "📱",
-      "s": "1d9bb0aa44c59a15",
-      "e": "IuuXYrGcTOszN83BXWKnc+UU25nUYkR3vS3e9YLFYYkJX45oAspz3YBSmWOrgk1YRQehniCs5g8BlPdT0m0y5+VUPj73eA+fL1OUn2GsoFbrcMT1TKDQH0b3QIkp9KCPJMjfXolG8yNaUD6SLd1/dREwWEiSlFzL6arbNjs/"
-     },
-     {
-      "t": "智慧手錶",
-      "icon": "⌚",
-      "s": "07ee0a9c48472052",
-      "e": "/lIz6pOmynOARX2f17cW8RWeyWTYxM8oF0c8AdJgIv6n17KEJHRVlVkkr5iYXrLinNgD8VnEprDLitIjkp0uUU1CkKpB+rixOgS/UKq95zkLNDpGvFcxjuETL4hrBSZnDk4="
-     },
-     {
-      "t": "智慧眼鏡",
-      "icon": "🥽",
-      "s": "048d76beb062110f",
-      "e": "S4O1TWGF6EioDFZgP5WFK7YOEbrBCkBGL3RTIfU32/hkgExk6krNBTfiq0/4cifNvk3pSAUBshdLSfcc4TBAS+wN9oZ9k8Jdl7tk7oK51fgMhvY4Arpa7SQ="
-     },
-     {
-      "t": "YouTube 影片串流",
-      "icon": "▶️",
-      "s": "bdbde7b7113697e5",
-      "e": "Ebpxypyh8ZBYKLYm3CIM4SM0b8vo6XhsGweqQHVYebBfcgC5BQ9dPmfMEmVbiBnXXfW6azxhrb2FLT75Cw+LREimtJaa2EdQcOYHPOUl2AEv3a+xLFc5v1W4Ndnaf1zgFns+0yFfZ/3CUVmv44oFDRFVMo+xPcwldfGJNYMMcrA="
-     },
-     {
-      "t": "Google 文件多人共編",
-      "icon": "📄",
-      "s": "6b0c090ce418b9a0",
-      "e": "mBkPqV1sKtHHSr56AbdrQFKvLrno6qFmNq+sYCjIpEu6zSiT9HMZJ/hMWsBA9kpU5h/RPTtF8rUCl2b2JwGoJsceKL7WccMhh081EmwGjznojbUDHHFi/D8Dp/95BvcNHg+88YgPGfE="
-     },
-     {
-      "t": "線上翻譯服務",
-      "icon": "🌐",
-      "s": "e9fd0b6b713ad603",
-      "e": "UvCJWxAyNIN8q+ZJz8zVoVum7koUEtPOgYUvE5PFS91+9Wb9o7dk0QyLoVGYL5ZGJBri/GxwYGeOKiUgn0tDfNACSejHzOg3hmcvqzodFUmLAsdneRczblNfDbLfoKLHNSlGqu0="
-     },
-     {
-      "t": "智慧電鍋",
-      "icon": "🍚",
-      "s": "ce441d0582d1d5c9",
-      "e": "3Zm7p5jtKYkztGwRrEgeTXvsrY1/kZvFXii4C171j8mOMJCo4S8P0XEBkBDI6wWQ5+XM6UJJUIPHAn88wlgP1qMGIG/eEhk8lm8PTEQT94zgzQQHBCTBKlNT7aKTMeh5a6a1O6pZw70="
-     },
-     {
-      "t": "交通號誌控制器",
-      "icon": "🚦",
-      "s": "e5113b2bcea4c779",
-      "e": "TjAIq+BdBsHK43Oe/KiubcIpGebAbj4XAZj+6VYYgyURC2d4YdmL4HvWK8jJLhtGnAum8rAAznaG2R/WbnTjCTxbEmyWywfcWn+cz2lEIm55/9gH4oLJgKCh5SMWkXpNrpIlL47LMPnAON1n52M="
-     },
-     {
-      "t": "掃地機器人",
-      "icon": "🤖",
-      "s": "a1235c34f13256b9",
-      "e": "VsmEPbeHRe8E3YUS6byh8oMloUm2Fs+T3lJYPX3laYo03+MK6MSXjCmiIVzNDigKZLgaUkae0tBz4YPQB9d/lwYDfaGYewVFkWwNTwZgWaNjz24ZAF9DGwmagMsNdOWM4EQ="
-     },
-     {
-      "t": "捷運悠遊卡閘門",
-      "icon": "🚇",
-      "s": "dbba26f2c026ffb0",
-      "e": "nW1nTAmKe/DBb7B7rFVDNzJwQdIp3R1TvI9aC2horDHk1K0QpWiz9ButGmI9eTLa763U8xqZZ2c8GpS4lIpKzNLARvH7ZH1OabJ+4TrQEp4xJqiL6EAOOZPebqp/9ov1AEbPWd4sqELTeTrts5oOOxg="
+      "type": "lab",
+      "lab": "platformBuilder",
+      "n": 3,
+      "prompt": "平臺組合機：挑戰",
+      "hard": true
      }
     ]
    }
@@ -117,108 +145,136 @@ window.PF_LEVELS = [
   "title": "五大單元傳令兵",
   "book": "3-1 電腦系統平臺硬體",
   "learn": "電腦硬體可以分成五大單元：<ul><li>⌨️ <b>輸入單元</b>：把資料送進電腦（鍵盤、滑鼠、麥克風、鏡頭）</li><li>🗄️ <b>記憶單元</b>：存放資料和程式</li><li>🎛️ <b>控制單元</b>：像指揮官，<span class=\"hl\">協調</span>各單元什麼時候做什麼</li><li>🧮 <b>算術與邏輯單元</b>：負責<span class=\"hl\">計算和比較</span></li><li>🖥️ <b>輸出單元</b>：把結果呈現出來（螢幕、喇叭、印表機）</li></ul>控制單元＋算術與邏輯單元 ＝ <b>中央處理器（CPU）</b>，是整部電腦的核心。",
-  "rounds": [
+  "stages": [
    {
-    "type": "sort",
-    "prompt": "這一步是哪個單元負責的？",
-    "ordered": true,
-    "buckets": [
+    "goal": "每一步是哪個單元負責的",
+    "rounds": [
      {
-      "id": "in",
-      "label": "輸入",
-      "icon": "⌨️"
-     },
-     {
-      "id": "mem",
-      "label": "記憶",
-      "icon": "🗄️"
-     },
-     {
-      "id": "ctl",
-      "label": "控制",
-      "icon": "🎛️"
-     },
-     {
-      "id": "alu",
-      "label": "算術與邏輯",
-      "icon": "🧮"
-     },
-     {
-      "id": "out",
-      "label": "輸出",
-      "icon": "🖥️"
+      "type": "sort",
+      "prompt": "這一步是哪個單元負責的？",
+      "ordered": true,
+      "buckets": [
+       {
+        "id": "in",
+        "label": "輸入",
+        "icon": "⌨️"
+       },
+       {
+        "id": "mem",
+        "label": "記憶",
+        "icon": "🗄️"
+       },
+       {
+        "id": "ctl",
+        "label": "控制",
+        "icon": "🎛️"
+       },
+       {
+        "id": "alu",
+        "label": "算術與邏輯",
+        "icon": "🧮"
+       },
+       {
+        "id": "out",
+        "label": "輸出",
+        "icon": "🖥️"
+       }
+      ],
+      "items": [
+       {
+        "t": "用鍵盤打入「23 ＋ 19」",
+        "icon": "⌨️",
+        "scene": "任務一：用電腦算 23 ＋ 19",
+        "s": "9f68a1078ccab286",
+        "e": "gY8/OCJ8oIQ3Q5iYzUSpjmAMyfom+bekL4cWpPEm0ckv/siJDBTwHUw+zeiFI/NUYO8tCJked5syEp2QnDScwUKKFozIvDcotOXfiVnKxVBwDL9z1kg="
+       },
+       {
+        "t": "把 23 和 19 先存起來，等著計算",
+        "icon": "🗄️",
+        "scene": "任務一：用電腦算 23 ＋ 19",
+        "s": "ef9093304506883d",
+        "e": "fpDULcxoTx1HMHn9P28fBjq6lH0Ay7s078neK1ViyXotFOwBr2PkzYtvRH2J/Q47P89+QZXqBTjMakyJigXb9Vg9gTYTPzEghojru5xTaVI="
+       },
+       {
+        "t": "下命令：「把兩個數字送去做加法」",
+        "icon": "🎛️",
+        "scene": "任務一：用電腦算 23 ＋ 19",
+        "s": "90b63e1fcfcca0a5",
+        "e": "YWI9S/liAguxoI52u0ymQ+qA+b0LffUx/O+NeqLLxiIpwE2/6Ex2o16VS9I2NfZYo629531Yg+6TNuQB1XQLWeLHEh8Sq4Ic2KGbSrQnsXkC57rnTc021PA="
+       },
+       {
+        "t": "算出 23 ＋ 19 ＝ 42",
+        "icon": "🧮",
+        "scene": "任務一：用電腦算 23 ＋ 19",
+        "s": "1e072ebba10a975e",
+        "e": "zatg7sc4U8L4HbiKWxTt0Pr5MyUts5Zc6gGTRg8M7VioMvrQsW76m/R5ALotXgwajY310vA/2GN4C8wpqgU+V6vYofQhZEvY9hQwW6padRE="
+       },
+       {
+        "t": "螢幕顯示 42",
+        "icon": "🖥️",
+        "scene": "任務一：用電腦算 23 ＋ 19",
+        "s": "0b93efa2697b969b",
+        "e": "6n9fDBkuMncXIQCzALzs+83UNjvwPnElB2HJAcmnU9RBkh8aBUAR2LqDR1RpnI+v/Q9++NQNXS/kFjFizCpbyWtMfR1OPIIIdIyerscZxGFYrn681Y84vIE="
+       },
+       {
+        "t": "感應器偵測投進了 50 元",
+        "icon": "🪙",
+        "scene": "任務二：自動販賣機買飲料",
+        "s": "ae59c7db0f1bfb9a",
+        "e": "lmbvB6fk7onj8P9A5Er9/Uqy7tN+UgqN4AteyDATABDjAdWRiZgohfYIfbYGeJPfU9J0vn0NAS2Pv7aUYxoBYbAsnMpf0SE2JFgoxrQm5QqM6IrkVCDD+kLDwMKz6xM9e5Pd5Gw="
+       },
+       {
+        "t": "比較：投入的錢 ≥ 飲料價格 嗎？",
+        "icon": "⚖️",
+        "scene": "任務二：自動販賣機買飲料",
+        "s": "154e6e3af2c7ead4",
+        "e": "Mb8Wc8bQh60GksFTAQAuNjdNnHuCDV5lfAV2mjkuqqP+nd+P+vxExyvD4R3VAZCGkWh2EqLnoIoPYy1j1F/rccmGvLQQGh8iUjz3Tb7tXuGv4J6uLy2Vk/ZpTQbAp+qP6O47hTK25FY="
+       },
+       {
+        "t": "安排順序：先出飲料、再找零錢",
+        "icon": "📋",
+        "scene": "任務二：自動販賣機買飲料",
+        "s": "fe8f12ddd115c6b2",
+        "e": "/zojb1adXRn2Q2uZYwMliJwg+PbUkyPNfMKHkrCPHttN6/QbkKg8ob9VadHtiXUlUJlDsTmK5izffrI7OjjALrxxXB94PyuW+APr25Oo6YyvZyIJUuGCWbn/OE2tqHuFbKs="
+       },
+       {
+        "t": "記住今天賣出幾瓶、還剩幾瓶",
+        "icon": "📦",
+        "scene": "任務二：自動販賣機買飲料",
+        "s": "28b31e38790cba44",
+        "e": "KeSjnUCxCx5K3TsdYWSvXQ79AsWSeQkmEmw40tagfLyXOQlXva1VAls5JeDoKH214+cRbj4eVlU9eS9qrRfNDiWhBC4fEBAhUhyvZsI="
+       },
+       {
+        "t": "飲料掉出來、螢幕顯示找零 15 元",
+        "icon": "🥤",
+        "scene": "任務二：自動販賣機買飲料",
+        "s": "e1a22e2a9ee6ed5a",
+        "e": "ck7uJ/NDxvaesZRaZVqr9e72zGDxlGqTqQ5xgJK7XkyvZyydtpQlVbBobgiCcCrttCntDgdZullsk9c6vAe9f9WahJcEr9aHZe7+fGgBxKRTKPM="
+       }
+      ]
      }
-    ],
-    "items": [
+    ]
+   },
+   {
+    "goal": "🧪 五大單元傳令兵：讓資料一站一站走，走到算術與邏輯單元自己算（🎲 題目每次不同）",
+    "rounds": [
      {
-      "t": "用鍵盤打入「23 ＋ 19」",
-      "icon": "⌨️",
-      "scene": "任務一：用電腦算 23 ＋ 19",
-      "s": "2ff00346fbeff29f",
-      "e": "tGasMHWrhKR6VC00xMyOJGZ6r+VTYRAwyMsUovsyUEAX8ys7k+BvWmKgAHSLzwvq0Vu6R88PIJ+5byD1ob9RNGLcaCikKZ88Q9Jt8evF7kpYsmaoq80="
-     },
+      "type": "lab",
+      "lab": "fiveUnits",
+      "n": 2,
+      "prompt": "五大單元傳令兵"
+     }
+    ]
+   },
+   {
+    "goal": "🧪 兩次運算（算平均）：控制單元要下兩次指令（🎲）",
+    "rounds": [
      {
-      "t": "把 23 和 19 先存起來，等著計算",
-      "icon": "🗄️",
-      "scene": "任務一：用電腦算 23 ＋ 19",
-      "s": "83fc71345e184bce",
-      "e": "41cpe415a77O2PtNM7F5lWkNSPSbAY8u/G3zClvA9yrd/lr7SNqPZkGqEEHXiJgjGw1UPlSeVws5+SJwl8TQmLTAteLYK9h584SvbY+QjJ4="
-     },
-     {
-      "t": "下命令：「把兩個數字送去做加法」",
-      "icon": "🎛️",
-      "scene": "任務一：用電腦算 23 ＋ 19",
-      "s": "bd0e04b611c2491d",
-      "e": "uTnRpTJVL31qh2Y4NRaxZg5vQQgwjngTO4y/3mnGOkLDSZG2Puyhz6j5iqQi0vK/QjpwVVgz30TP1dT+whzT+wBK/+wKSdtmQIBoc88nQkImZZJN6172H6o="
-     },
-     {
-      "t": "算出 23 ＋ 19 ＝ 42",
-      "icon": "🧮",
-      "scene": "任務一：用電腦算 23 ＋ 19",
-      "s": "670c8942ddb7ae42",
-      "e": "io+Pyc1IhiNcSaeDPIuyG+CASNGsN2MN1xiH+I3d0BdmRK855b6J0EiI1KAWrDAbX9gPmB/lnb7aFGO2sSLpnOaVJLCfour18qus/pVNE9Y="
-     },
-     {
-      "t": "螢幕顯示 42",
-      "icon": "🖥️",
-      "scene": "任務一：用電腦算 23 ＋ 19",
-      "s": "e04eba744dc95b1e",
-      "e": "gmdoknsXFzDA0i4e4q3Zw+j1Y77+uuKgy1mwbxzmUmo46qTShe2NWioBsUgwBDvCGARPtFWoSgj1pwSsOjlRg1rRSEBHBsCMKCNI9kthUYDKTgYGgAS8ZgQ="
-     },
-     {
-      "t": "感應器偵測投進了 50 元",
-      "icon": "🪙",
-      "scene": "任務二：自動販賣機買飲料",
-      "s": "2d37fc72e0785548",
-      "e": "w5eflveA7BzF5UyXbRxl4Pp5wjXSF+DEYZ7h0X8pt5B4OCS+jkWvFHGfqDS03qJX70bgjYtF3yj2aN4WvIOhofE06vCA4bBmeQ44OIx7aQxdos7hYQJKpiX724fl3+Rd7VJkhp4="
-     },
-     {
-      "t": "比較：投入的錢 ≥ 飲料價格 嗎？",
-      "icon": "⚖️",
-      "scene": "任務二：自動販賣機買飲料",
-      "s": "14c86d229d7b2d8f",
-      "e": "0S9F0nPQvijIe2KO6ywHW0I5MXCvsQ+S85PZ0Jzylsz51VyikpaJqQqCRIuGG55FhzMb2smSJ0vcGpiSLKPD+PvOGytoZagkNt/e2f8K/ORAWOl/0F+gfsigt/SRQ6072Ks0VY7EY/o="
-     },
-     {
-      "t": "安排順序：先出飲料、再找零錢",
-      "icon": "📋",
-      "scene": "任務二：自動販賣機買飲料",
-      "s": "f7eb487ad664f64b",
-      "e": "ptjHp9THwdFZLTCGaatcpNn7WzgJ7A3fy5xODufPJkxEncUOMq8RSid1ZSdjqst2+5bv8u4luZailio3RqDC7p3RfYl16vfQIjUGvMftzJhnlEH6wteAcXa8dIC9cu3G+G4="
-     },
-     {
-      "t": "記住今天賣出幾瓶、還剩幾瓶",
-      "icon": "📦",
-      "scene": "任務二：自動販賣機買飲料",
-      "s": "801969c3e18ea3c4",
-      "e": "ET+nXmGGgfyZLtsG28W8BkpBLXepru3JYya6tJr6vnQNVy0ORaj/GAoSvSdws9rPUi3dbCerhQpTjpQb3FX63WteSaOBGTpq95Ib9PE="
-     },
-     {
-      "t": "飲料掉出來、螢幕顯示找零 15 元",
-      "icon": "🥤",
-      "scene": "任務二：自動販賣機買飲料",
-      "s": "a85d23f8762bb7f5",
-      "e": "D0bV9QFBld/9pTd6lVbatdJq14OkOy0V8FGyUAP02IFD0zfbg9Y5SbygRD9T+faMHq4khJRWw5dHGGtlHzDMBWJjvpO5zRuPsFI2Tu0JumIG6nE="
+      "type": "lab",
+      "lab": "fiveUnits",
+      "n": 1,
+      "prompt": "五大單元傳令兵：挑戰",
+      "hard": true
      }
     ]
    }
@@ -230,128 +286,157 @@ window.PF_LEVELS = [
   "title": "記憶體快遞",
   "book": "3-1 記憶單元",
   "learn": "CPU 找資料會<span class=\"hl\">由近而遠</span>：暫存器 → 快取記憶體 → 隨機存取記憶體（RAM）→ 輔助記憶體。<ul><li>🧠 <b>暫存器</b>：在 CPU 裡面，像你腦中正在想的數字</li><li>📝 <b>快取記憶體</b>：像便利貼，隨手記、但記不多</li><li>📒 <b>RAM（主記憶體）</b>：像筆記本，能記比較多，但要翻找；<span class=\"hl\">關機資料就消失</span></li><li>📚 <b>輔助記憶體</b>（硬碟、隨身碟）：像圖書館，容量最大、最慢，<span class=\"hl\">關機後資料還在</span></li></ul>越快的越貴、容量越小；越慢的越便宜、容量越大。",
-  "rounds": [
+  "stages": [
    {
-    "type": "order",
-    "prompt": "依「存取速度」由快排到慢",
-    "hint": "依序點選，第一個點最快的。",
-    "s": "85e46a8fb786a949",
-    "items": [
+    "goal": "速度、容量排順序＋資料放哪裡（題庫隨機抽）",
+    "rounds": [
      {
-      "t": "快取記憶體",
-      "icon": "📝"
+      "type": "order",
+      "prompt": "依「存取速度」由快排到慢",
+      "hint": "依序點選，第一個點最快的。",
+      "s": "f462e0bf28c726e2",
+      "items": [
+       {
+        "t": "快取記憶體",
+        "icon": "📝"
+       },
+       {
+        "t": "隨機存取記憶體 RAM",
+        "icon": "📒"
+       },
+       {
+        "t": "輔助記憶體（硬碟）",
+        "icon": "📚"
+       },
+       {
+        "t": "暫存器",
+        "icon": "🧠"
+       }
+      ],
+      "seq": [
+       "QVoMswTr59YrRDq26c6rj1WkC2kvaLJpnLuUxIC4",
+       "QUfqYLjwufcdQ/8f456sviRN60gZ+K9NlXVET+PH",
+       "N4gM4y/xg2aqBsrvlr7bpQyhec2cFPKe1oqVdHJX",
+       "I3zgKZ59l33TJ2yP7S1mIkej3VDG95Itt0DQK2kWFTR/kYjGe6oHMwS0IkEkSIH//qXio8kH137ViYaRsRMqDD8DB6CIkdWiNIu9ZG9PZzpS+oBqHwzeHaeGljL+xETu0YOTrYWKIuiYN1m+"
+      ]
      },
      {
-      "t": "隨機存取記憶體 RAM",
-      "icon": "📒"
+      "type": "order",
+      "prompt": "依一般電腦的「容量」由大排到小",
+      "hint": "依序點選，第一個點容量最大的。",
+      "s": "d8f3f9c2c9d4aa75",
+      "items": [
+       {
+        "t": "隨機存取記憶體 RAM",
+        "icon": "📒"
+       },
+       {
+        "t": "暫存器",
+        "icon": "🧠"
+       },
+       {
+        "t": "快取記憶體",
+        "icon": "📝"
+       },
+       {
+        "t": "輔助記憶體（硬碟）",
+        "icon": "📚"
+       }
+      ],
+      "seq": [
+       "zCABEQIiEyOhwhwznjv4j7Rvf8n7vHOLjIVGOD4M",
+       "XLrmwxH4iIWu2iUp9+8lyYjieeiaEoi3Trm+6N1i",
+       "4XJsvR7Pv7VU6tz1Q6qhpIJDb3H9Uu9bROPg7fDw",
+       "DtCUI8Zpnmc73apykP6riGDHciWV5vn6U4lMMCPqikYA5hEi30jHtni27yIYx/fQ/MTfwIMLSm10fjoi4EQeNw2h50yZCZ8I94PoBrk66xx4Ee6prLZtWHBgunxSSGphDyn72FXyah583zCfbeK83tc4DkeE2pMp"
+      ]
      },
      {
-      "t": "輔助記憶體（硬碟）",
-      "icon": "📚"
-     },
-     {
-      "t": "暫存器",
-      "icon": "🧠"
+      "type": "sort",
+      "prompt": "這份資料最適合放在哪裡？",
+      "pick": 4,
+      "buckets": [
+       {
+        "id": "reg",
+        "label": "暫存器",
+        "icon": "🧠"
+       },
+       {
+        "id": "cache",
+        "label": "快取",
+        "icon": "📝"
+       },
+       {
+        "id": "ram",
+        "label": "RAM",
+        "icon": "📒"
+       },
+       {
+        "id": "hd",
+        "label": "輔助記憶體",
+        "icon": "📚"
+       }
+      ],
+      "items": [
+       {
+        "t": "CPU 此刻正在相加的兩個數字",
+        "icon": "➕",
+        "s": "96d612c1411a58ea",
+        "e": "6E6rBebz2dNU3kwKLaleiMUSdGfnxUk3lX1vqQMROYew6hNCmeLhhjX0rWACKbIb+l4Mlmm7prTn33HUJNvw+cDxfd8PWeaT+ZmtfltDsMCvbe9YV7JqULeXnavBck0HqA=="
+       },
+       {
+        "t": "剛剛才用過、馬上又要再用的指令",
+        "icon": "🔁",
+        "s": "a524b65e885617f2",
+        "e": "eGqbrixIwufHF0RZ58bDgvVTl40upu1uB3LZ0M7h+w9PmI6m6Jc+N5KiH40UXp0dQuytL6xQt3TXKs7VKQkzrNJiNMbx8NlYgw2yp3EfUe13oqe8HBo1muiEoOE5XTJgn+/OlQ=="
+       },
+       {
+        "t": "正在玩的遊戲程式與關卡資料",
+        "icon": "🎮",
+        "s": "a28e41f2ddcd8778",
+        "e": "UpwPTRGfISEL1tbzc8DEQmQrfhcw4cAJmcQZWWj7i93hFAl9AokZJBxzGol6fr5GPUw8X5fwIm8Kpe2081V+UDFUDItudAWcBOcyuUULQ++Ii7a5WJ0ILqb1f0+9"
+       },
+       {
+        "t": "瀏覽器開著的十個分頁",
+        "icon": "🗂️",
+        "s": "60f69d6c6fc86358",
+        "e": "S6PqJhWSw4Y0bRWn4VetEVan30YFAG/xIeVaEze73DcKatW1CBH0XOO5+BBvD83820UUYnMOEnd6sSi9bxWujDNNiUKTZ/lIyO1BUFfy4+0rckj1apjXAxTQs0G7mBDzYwe9A6KJcW2GYYCovsxq/yo="
+       },
+       {
+        "t": "關機後還要保留的期末報告",
+        "icon": "📄",
+        "s": "424e15ed780136ab",
+        "e": "nvPxz8Yxyu5ai4vCj/iAw+HAUxc6hgPFNuw7/FU6s7l9wOUehCVJ5seSxGXjmWQmNlWemSZlOufJXqqXlIrvl72e8bF36mcCEUSjG0qr9ueaR95SnD+VA66KHQ/8jXpkUHUXQn9gji2s"
+       },
+       {
+        "t": "手機相簿裡的畢旅照片",
+        "icon": "🖼️",
+        "s": "c7948a1fa7bb7baa",
+        "e": "oXH2dVDZkvwHwYCiWPlOPYpnuXPp8SX8OMK49bI7DW3bqMmAEg/AufVKj/k5wlIjyiaxIPKCuPUG2cCFKegyMnO6mVlxS2SJ+F38W0oM+laPAE9OJ2pshJhVGMZw3RRi/V26cEyH9OsKd7yDoxKs1GQ="
+       }
+      ]
      }
-    ],
-    "seq": [
-     "nIr2nws7OJ4d7KGRaewhp5GORRcy4pMwra86f6cg",
-     "yEuttWhnZHV/9MHxtokT19uDgUxH0WL+1GDNjz6C",
-     "W9710tvka5U+H+olBL3dHfG/31QHStD6uAczouka",
-     "4+QNeVVe9pwBFZjX7ylyQfybm+TGVud+xwT9IJaBeN9nQ0RgR1hkFhFZqqU2zQwe6hEiJxCmnw5Xv+3lxeh1ir1N5Vvu9uIimsFI/aK0bm/+9TU9l96BfXoiX76Nlnl6WHyU9/AhSnQ4/p7q"
     ]
    },
    {
-    "type": "order",
-    "prompt": "依一般電腦的「容量」由大排到小",
-    "hint": "依序點選，第一個點容量最大的。",
-    "s": "5b2f0943cc818fc0",
-    "items": [
+    "goal": "🧪 記憶體調度員：把資料放到快取／RAM／輔助記憶體，讓讀取時間最短（🎲 次數每次不同）",
+    "rounds": [
      {
-      "t": "快取記憶體",
-      "icon": "📝"
-     },
-     {
-      "t": "暫存器",
-      "icon": "🧠"
-     },
-     {
-      "t": "隨機存取記憶體 RAM",
-      "icon": "📒"
-     },
-     {
-      "t": "輔助記憶體（硬碟）",
-      "icon": "📚"
+      "type": "lab",
+      "lab": "memPlan",
+      "n": 2,
+      "prompt": "記憶體調度員"
      }
-    ],
-    "seq": [
-     "navr8/h0xVV358dJjN0ek8qaRSWTsFYtDE+GDCt4",
-     "xP9vysqSRxOTAYGPLJERJHTzxx3I+kLQyv/R5eQL",
-     "HqT0eXZv28lMMT+CWRph+iAx41lLtR6q9xCm+EV4",
-     "SmkuU+L6MFjgkUNdCIjbjgCz/+osC/KrN3H5LXzPDMb//ouaj68F1Y08OEgf0RZeOOtUHhJ7QLPXzvIECGKtm8aRA84qmvZkwb29egFFLu+HHDCNjFTiVU7c9cx/5f2wdqMmlWTAA9gvwGRtW7Ne1rKY11wTFuSw"
     ]
    },
    {
-    "type": "sort",
-    "prompt": "這份資料最適合放在哪裡？",
-    "buckets": [
+    "goal": "🧪 資料更多、有的關機後還要留著（🎲）",
+    "rounds": [
      {
-      "id": "reg",
-      "label": "暫存器",
-      "icon": "🧠"
-     },
-     {
-      "id": "cache",
-      "label": "快取",
-      "icon": "📝"
-     },
-     {
-      "id": "ram",
-      "label": "RAM",
-      "icon": "📒"
-     },
-     {
-      "id": "hd",
-      "label": "輔助記憶體",
-      "icon": "📚"
-     }
-    ],
-    "items": [
-     {
-      "t": "CPU 此刻正在相加的兩個數字",
-      "icon": "➕",
-      "s": "b80600ed923f0f46",
-      "e": "3PhnHvMoNpFGd/TVDKqED/U9MQz0CVBIvxzwV8154HipRzartbGUvtc3oc7LdqInDn0o4od8b8sKD7mBXTy6WgGac+laPv0uHVYVr1950sZstIelqBE5SWzvcZ5AteqhhQ=="
-     },
-     {
-      "t": "剛剛才用過、馬上又要再用的指令",
-      "icon": "🔁",
-      "s": "6059daaf7ca2e977",
-      "e": "FGVaXTr6HnMLxNQGncI3hT3kgK/BIK2nFkVezYJVFGVGX8l/05qZniAnvNyOH3CqhOGheMEbh1fRqAl16KmzYL8dwzrUql0mdQkw7WUHnEziklCzvvBz8oux4gVMpyvI4PochQ=="
-     },
-     {
-      "t": "正在玩的遊戲程式與關卡資料",
-      "icon": "🎮",
-      "s": "60c5bbb18dc64a41",
-      "e": "v8T6hB0foYyyKfBcJtWFi5OuwHJ/kcHRwKho/MtZxyRJ3vL7BDNbB1d8l3czjE5s5S3k4WzE07w5Ts5sCrbEwmi+ORRqVt4lCq3LfhrcFtkzPP8cLmD6EKBqQQhF"
-     },
-     {
-      "t": "瀏覽器開著的十個分頁",
-      "icon": "🗂️",
-      "s": "f389639a364fa406",
-      "e": "Wj9eI01cs13IGxdzu15mMY38ZCDnIZcLfTkVB1yL1LNoDugPNRXrpaWdNDpg7VI0op+FMJihodCnF1aIMTlGyvuqzie9vV7NInjBq5zj+uJnlMllx+RPeZWAXKr7rjzDn9mvfSmtiy490rZZYQ+Q/zE="
-     },
-     {
-      "t": "關機後還要保留的期末報告",
-      "icon": "📄",
-      "s": "c346d90e6a06abd2",
-      "e": "AV8LjX8U0V61XoUz036VOMYAci45RNYwcPb2WXLEQlUfvVq5CApNd98tJvL0xv5xsed4tis0KPpyC9k0oXRqYJ34eBBFheF5hiE3WiJ9ZH+x+lpM1yniiXKJ7imy0C0y4M9wIpTwZXty"
-     },
-     {
-      "t": "手機相簿裡的畢旅照片",
-      "icon": "🖼️",
-      "s": "bb4d134b97ec78e1",
-      "e": "TxsXwPS7qELioolzHaEccGV8ivKmLtqxxHrXJ4YE7COh/bR4RYv9PpvMDSuD7Ru/rSXGxFh/Feb9SxHT052mBt9ZyOvb3gs7yjLub7txYcLGLSYL0EMvxY31GU+6CB5oCafbZIvFu+BZrg/9jKQeY14="
+      "type": "lab",
+      "lab": "memPlan",
+      "n": 1,
+      "prompt": "記憶體調度員：挑戰",
+      "hard": true
      }
     ]
    }
@@ -363,293 +448,388 @@ window.PF_LEVELS = [
   "title": "電腦組裝師",
   "book": "3-1 CPU 與電腦發展、延伸學習 HDD／SSD",
   "learn": "挑電腦就是在「需求」和「預算」之間取捨：<ul><li><b>CPU 核心數</b>：多核心可以<span class=\"hl\">同時</span>處理好幾件事，打電動、剪影片需要多一點</li><li><b>RAM</b>：同時開的程式越多、檔案越大，需要越大</li><li><b>傳統硬碟 HDD</b>：便宜、容量大，但有讀寫頭會轉動，比較慢；<b>固態硬碟 SSD</b>：沒有機械零件、<span class=\"hl\">快很多</span>，但比較貴</li></ul>每台電腦都要另外加 <b>8,000 元</b>的主機板、電源、機殼和螢幕。",
-  "rounds": [
+  "stages": [
    {
-    "type": "build",
-    "base": {
-     "price": 8000
-    },
-    "slots": [
+    "goal": "HDD／SSD 比一比＋幫三位客人組電腦",
+    "rounds": [
      {
-      "id": "cpu",
-      "label": "處理器 CPU",
-      "options": [
+      "type": "sort",
+      "prompt": "這句話說的是傳統硬碟 HDD，還是固態硬碟 SSD？",
+      "pick": 5,
+      "buckets": [
        {
-        "id": "c2",
-        "label": "雙核心",
-        "price": 3000
+        "id": "hdd",
+        "label": "傳統硬碟 HDD",
+        "icon": "💿"
        },
        {
-        "id": "c4",
-        "label": "四核心",
-        "price": 6000
+        "id": "ssd",
+        "label": "固態硬碟 SSD",
+        "icon": "⚡"
+       }
+      ],
+      "items": [
+       {
+        "t": "裡面有會轉動的碟片和讀寫頭",
+        "icon": "🌀",
+        "s": "b563d833994b3766",
+        "e": "IrSM/gvGF+s3ruCG8uvDdOxJE6SeusVATp5hnle5jVTjmHIlz4HUbi9mprxN4Pho3BGPIU/Zc0KTvnYQ4OBwQDMfIi5JilT0VXbsC7WBJOG3TJxrojen7bce"
        },
        {
-        "id": "c8",
-        "label": "八核心",
-        "price": 12000
+        "t": "沒有機械零件，用晶片存資料",
+        "icon": "🔲",
+        "s": "6d2133d61e2f118d",
+        "e": "UOS48nhhwDxTxTfKCQHQQkka02t/I9RFCgxpM5SXF7qK2FOQuRMjZJtk/XLH+/S/dqzWxjbGkNaklLzK497IlZt7KF+ezEvAteI31cLwaq8NC7e/ivE4XoT9Vtjm"
        },
        {
-        "id": "c16",
-        "label": "十六核心",
-        "price": 22000
+        "t": "開機、開遊戲的讀取速度快很多",
+        "icon": "🚀",
+        "s": "a8156186b5e0ba81",
+        "e": "fXXvpYN7P60zDfuFM6J8ok4dTktat6wPdFZgEse6a9synjsECPu7PTEOceqzO7qOyQ54Y/lHr2c0+LI+C4G7irC7Xz73cdfZGZ111+gAss++"
+       },
+       {
+        "t": "同樣的價錢，容量比較大",
+        "icon": "📦",
+        "s": "cb140a12e017f8d2",
+        "e": "P5ZWWa3R1MyL4I1GppygXrpXunGxSbQ4aQsCdVzXZ1Ksjb3IvXkQjltHSx+Fk068N4CtyI1YrNDjn2sn67scE6Lq8wr3oxcRIi3YlRPLFKYlyTNC7RqIgQ=="
+       },
+       {
+        "t": "筆電掉到地上比較不怕壞",
+        "icon": "🛡️",
+        "s": "f947011f0cdefa89",
+        "e": "N2koVAG5RAeLGe/ZQAS01aB5UlqCcwrg5NmlWLz3SwOicjTrLJcOjOgLxC25hpjSFj4W0CNfSmrS7+XY2OsSim3vW/Q4SyZx9FpK9iE="
+       },
+       {
+        "t": "運作時可能聽到輕微的轉動聲",
+        "icon": "🔊",
+        "s": "bb04555c03860114",
+        "e": "WtOOPg5xWYqBL4Xi4AxDhV1Yy5gz9PCsB/eXGjavMOqYYK7HlXMty2zcOcjUeQ4lTpPz/XSIpda6UP+REFS8LKsZRYA="
+       },
+       {
+        "t": "適合拿來備份大量的照片和影片（便宜又大）",
+        "icon": "🗄️",
+        "s": "738876f992b4f3b0",
+        "e": "FJQ+1x0SqxSq9IDeYwivVVfufJfPg88EPhFJdoUuhl/gNd6tJxAipzzy1Iwy6RF2X8RRoNLyf53bZj3jnW5CiSucgpqPAO9iKOKx"
+       },
+       {
+        "t": "同樣容量，價格比較貴",
+        "icon": "💰",
+        "s": "94a67d2c77e6b79a",
+        "e": "3/qlq0em4rl1P1EdvLDUBLHoM61CDWqv5DhAUN0YPxD5FDTX+fRamxnnG6ewwoFt/AfeGxD3pbVtQESofQ=="
        }
       ]
      },
      {
-      "id": "ram",
-      "label": "記憶體 RAM",
-      "options": [
+      "type": "build",
+      "base": {
+       "price": 8000
+      },
+      "slots": [
        {
-        "id": "r8",
-        "label": "8 GB",
-        "price": 1500
+        "id": "cpu",
+        "label": "處理器 CPU",
+        "options": [
+         {
+          "id": "c2",
+          "label": "雙核心",
+          "price": 3000
+         },
+         {
+          "id": "c4",
+          "label": "四核心",
+          "price": 6000
+         },
+         {
+          "id": "c8",
+          "label": "八核心",
+          "price": 12000
+         },
+         {
+          "id": "c16",
+          "label": "十六核心",
+          "price": 22000
+         }
+        ]
        },
        {
-        "id": "r16",
-        "label": "16 GB",
-        "price": 3000
+        "id": "ram",
+        "label": "記憶體 RAM",
+        "options": [
+         {
+          "id": "r8",
+          "label": "8 GB",
+          "price": 1500
+         },
+         {
+          "id": "r16",
+          "label": "16 GB",
+          "price": 3000
+         },
+         {
+          "id": "r32",
+          "label": "32 GB",
+          "price": 6000
+         }
+        ]
        },
        {
-        "id": "r32",
-        "label": "32 GB",
-        "price": 6000
+        "id": "disk",
+        "label": "儲存裝置",
+        "options": [
+         {
+          "id": "h1",
+          "label": "傳統硬碟 HDD 1TB",
+          "price": 1500
+         },
+         {
+          "id": "s05",
+          "label": "固態硬碟 SSD 512GB",
+          "price": 2000
+         },
+         {
+          "id": "s1",
+          "label": "固態硬碟 SSD 1TB",
+          "price": 3500
+         },
+         {
+          "id": "s2",
+          "label": "固態硬碟 SSD 2TB",
+          "price": 6500
+         },
+         {
+          "id": "h4",
+          "label": "傳統硬碟 HDD 4TB",
+          "price": 3500
+         }
+        ]
        }
-      ]
-     },
-     {
-      "id": "disk",
-      "label": "儲存裝置",
-      "options": [
+      ],
+      "customers": [
        {
-        "id": "h1",
-        "label": "傳統硬碟 HDD 1TB",
-        "price": 1500
+        "who": "👵 阿嬤",
+        "need": "「我只要上網看連續劇、跟孫子視訊。錢不要花太多，<b>18, 000 元</b>以內喔！」",
+        "s": "a36c950f5aa8c03b",
+        "outcomes": {
+         "327d906226a459ce91fdbd32": "jmxTNJ5fcB+xoeemqEaMME1SgSU6FL3oY25LQM12wa0FLu+8wbhCDQzWZpLoSn4xN59e1swP3lDIpS1Z3tAxvHjEuPCjb4N7D2MPYGcqvk1ibxp8Oe6hf2RlnDcThRjP7JNEqVHNdSkbRav2vw3osQ==",
+         "27beeadff4d4e58e85a8ad7b": "VSfcfDMpQ5rQMcoTsKLbiKkPxCptk8A8yCkDs2NHCepxkh95KJKqrXSQsslU7ZGQ+8GMp25TJQphhn5lmxl5OmM+codouabkiZwJ/bpf6QPB7F0gztJO6wj9Ke3qjgGL+2cNA8IjILK1QXVzJv0j1w==",
+         "9f2391a38df4032077263d8f": "Q/z+H77FyKFeGFcfEaT6dRvJU+kqg6AVpqrqNT/+BqiJOrdMhBYWMQU4IuG1jDO2ek+JPlQ+si0BwcPlp1qGesQUhCEGWuXwvBjkp0k7njbX8W1mLxDagf4VzX1o5/NSEOFScWZbip2JmIV7yxNopw==",
+         "02c0c404b533f1e4cd3a6502": "HrU7gm13okueswghwX9GeV2g5Om6SHCwC7gHD5wfXq2SEJLdJGBcgw9oOVF8rhSBimWV3XCcPa63zNxwXKa1aJHUITN8SvJhWabn2fyAU+1gAJOM78pOpYn5WxUntFhG7LA5j6yBaqgGNw3dXAyheA==",
+         "838f15b512a49606113b259e": "9fJXHXZBIaJw65o4PLApesdqSEylhR7J9a/YmedB8CMnK6dA7wvVNp1/d9FJ8UmtnY8BMdm42nsrZo3amFfB1my+4/EoIQ5m5itxEM7bW1VL3tfp2j//ta18re3a06tn6LuEuRNgjfzUAH5c0jbXvA==",
+         "dba9c591953b163b994deaa0": "MBFHahR+NLC5uWsn5/9hxBEPP/wovUt+NulgcpLX6MILT8KPl7zxivL3HJtYXITPQhASOHtOZtOaAdSeExVHlgPhwDHQMKIOBdHcvmuks8GeUaZNwPmuqfsylR2lXgWE9NszOhOK9RaiUYjbVJxjJA==",
+         "c3bcffaff94fdd79044ad720": "Jf8VTBzBfWqdpgvAl6Rd9rK1+zoxNNrpAXRKs29bX1MqYXwsbIQljo74aQP+TOU73Gmr82DQtlk4ECiDmVCA/0e3mtVd76/InAd6KsnqpMf9QKUEeSq/iiaDR6OT1FQ6w6sUC3cQz7v2scUnk140Tg==",
+         "0c211a341293b020e9a70a1a": "WOSn4ydDWLDCPlY8uK//LU/D72MQkmJwOv3dj6Wf28SJmqNTsSENgWW8vijXZOMQ4af/dVM05asxGQ5ciZ7NPf3Nzz4nozm1qXEBQqF1Nyz/4FKRhobtQUvQsOfb3ICThxouR60/PIJXhQJlKZEIRw==",
+         "fa07436cf5514d88bd00d1f8": "d66TfZbG31DtaSUlvH9wPB+6REhoZPyoXIF/Z0uk9JPXeZ+52cldTFFkEShboa6/sfc7v8B/3QBA7bhmjGtIyW/1lpaFDcdMfE9GDGycPFNPdOhgoDU5Jxcg3ryA/gN/9qLTQRjXCR162qm9TGUhmQ==",
+         "5a6453c5a753e54a970e715f": "l5QPrS8ARuZz7TLKHKrdCG/Ihru43oVY2rxKaXtL6u7+yaxgZ8rMrCsmNnnZMpkHj5Xlx4le0f2eNeDp5VhP236T9CgPKPWkNIOtQnMwm0wz8bKBTFz12+uALh+QUvE6PHix9fv6XTS/uxQ7ZGGrhw==",
+         "5be06958cff29aadc495353c": "TNMWnOsZ3UuEGWVtdnCyXnI33rWB2qkfuTwBV1OwtnFmobg2cStz2pUEtJQ7WPM8bcao8QWMTxaoasFTqlvTEnas4VuKRGxoARV8+bKsCjkifuSQPoQgBtrKn02vMUAtNRA+h1FWu8pwKRVfg84FVw==",
+         "33ab081d657e5a34073a3730": "QY5YtCQfXGE1KvZCwA9DGlvTmWio9/rJyKs6Cku1UWYwnuXLVjgr1x5SiKYT6PX2q5j3w3oWuvmiOJUsF0/LTRPONskJLgZxO7k1x+FuILK33ePYWXp4aAkoe4/VuWRke4EBkWOGt/oEZ2ODK37KVw==",
+         "b4a53a487200405eeb97a422": "BGecIcawNrrkxzIoPNpKser/TzScjXCuDR8/MBha7IMPEG4dxCZdKVRv7PPIRGiZIRZ3c3TgAo6z2oLchS74FKj7TAfVSqXsc1HA1g2k5LsUgq63nhQp2pMmneWBzVCbvkaFX2yqs0LR8YMLdUey6g==",
+         "9f9d282f088cd44410d91101": "LHhNgsy1VNzxZI5P9LnXMBCYRmvuXZF6xvrKWxGoeeYABpCTRYpqnQ5WnRunenl8rl2b4dAAvlIjpQuWDL1RY3Wv80lQwMMne9BFxsYuVjNvXmSM8ZEos4yPrcBrCjUN5JWjqo/s+PE5iaprTcMi6g==",
+         "1ba01397fc1024252b0056bd": "/+JmndWp8RSAEiQr2J3WtbPg3OGExgubwa6EheWwgmjoshF+1rVIgFl8WvcuJ1fy+UWt3HKOu23JJkqh1xyQCOE8atTwZa5SKrVvSDo7DUxT8FGy4P1K0ro0KWfGTd30SixHR0E577b4lKZESlWQlQ==",
+         "05b3e726be68ee0c298a0199": "khIHunDjoRKAt8fURPeYUGomS7xtAfm2pDKXP0cMui0bLZJlLQebimcrf+keqshnjXrzKIh80ZrXjOWsggcKcTl67YABNMs2pG5O/TZsZhclGgzvxKlzyp7lQ0spaV/ORlKDY6pzvFJAXPx3VMPZOQ==",
+         "27814d0ff52ebcbdcd77cf07": "d4EAhACgYcfefpiCNUP2FEKVWai4+5cVkLcWlz3dSwdVpc9Lt9SUv0X96pIkC/zF/Q89Pk3xM+iUkZWifKrnKB5OEshZu7B2IW2IuBpkebFVU4rqxSRSNEtzYSFbqEuSpAvxuU1605rflAmDcvJiEw==",
+         "e6fd02248990e7969b1476ed": "ksKDjni/l8ihHcV+5DnLY7PRBFijVcB0tM9LwAOGrhUmPxernLI9LfDc2NiUEKkntMx7SPbKRYUNgKt6XuivOVXoRsXVxlyl83zYySjBOinMo5QLhnXuIytRNVwxIQhPjvhlvhAXtZEKE8z2D4a+RQ==",
+         "3215220e92b52a04e5af6471": "exMoC2cXrfHAlOLcqhvza7LIHYf+mFFfl0rqkvyOzmJ4/LZYO2o8UrWFQIsYuKfhoN7i0BaWSnmjckOa4GBYYNXVAmwDsZt5A++a/NCKEQuCp0QmfwxtvUQxF0OhVRP3PXU5kEUHumLUcTpy49cz7A==",
+         "568fd509784efe1e2e8a4ce1": "QZxZKCdp6VPP/WcKBZrRcMB9+Uk2NBlsIV6rlQOrN1aE4rMk0UmGlj5yEg4nY2ynnkJ1j6b1oNFVtdQXG2yf9bWXmh545ST19EkFCtkIJ0u+7xPvMnhDqBHVkHtKEicTz2vW3wVTmKVEgSY1uq1P1Q==",
+         "576868695b22ee8def871fff": "eu1Y88ti33u3srStM0sgGzWMjLKhx9xfigJ6mzS7klqufQBQwNMggD746ZzYLAtcgU7HhDmYbllnhrlUMujoU1SZlW2bURoXFDR3NJgwdWeZtQTqkogQT5YG2+Bv9kQvYmuxmm1mJPPDuA6VyGdzKA==",
+         "773b415693604dc0308486fc": "Gs9bfnkT+L6NecQe0ElgaXdyHv1V2I1pn5WXJVoIG8zFiqN2+bS1IweHe0cxp1etkX9GdjDGc5brF1DgYBPDgEH7+H19rLaVXKW16pWHH42nbr84TfOBCzVFeEjt2btB8RWYY/WHILSlUborTURQig==",
+         "ce61710e6225c38a8de89652": "CEZ6/3eJ4dF4pnUMYvmS0mmO9n6jeV+6PHVGamzrDo6rOSeAs1vmggrzVc9CJk7Zum1zxyi+iMuQmnxno1gjb4YbCtr/KqLY75z6F0asro/zDpGGF0B47jbYTH+3Lx2hscIoVmxlsfDAr3Z/TZXlhA==",
+         "14ef5b67b6c59f2f4a60f9b5": "S+OlkCkhhNu12F+mIK8AqJoyoXNjeikXp1kfVF//m9H+Xb/CTDr5ZUg/PZWgKI5UxdZwAUpuxHjmss2unDGVuGVE4LCanlPlIAg+Ad1Q6xV/W3Xbb/iV1iFdulSqZsHh++DeMQcBP2oRmJiPFyUxAw==",
+         "a36421a8d0cf27ede75f25cc": "SfJByR8PGDBa/03RV1Wl/d2+ja6U42pR0Hv3S/OEADk57XyT6TVG58SVuwfx4uQp3gaAcYK9RldKCfO4OR2SM0vYysy1GkoZzOz5KieXZv+2y2d15ODeiNCxVVRCOH9DCuACxoYNuuLxbjLMr0Yrjg==",
+         "df5d55f66961c3f8f97fb8a5": "RvxV7iETAkB0UxzOnL9gLNJFuKJbpot5YIHuwpbT7XFoE0M+NAzKWNo6ZL04rm+mzI1u3gyfXhX+ROjz23Cgu0O3ljXRhJOX7oS7obxG3wFI51XIeBf/hgbUZPdJxw3vVVOleD4VgyRCO/ACPrbZcw==",
+         "a28a15513a7f7e4139b6f781": "ocNixC+xM/kwu0Gs6bRAyYu5F4QS9fnlzwrxbS+OoO5fl6vyehukLwlFbMguwZNljLULWaPAgqL4go3ZyXC8v/S3STD+cgV9+3SKzlWHbUWwUCtwvgkqaf0HADvExQ30ikKcqCbI424/JwuKuLJuGg==",
+         "d22e98323986f206cc866fe2": "eNbMV1n+2IgwYRye6Yxd3vYmi80iJJ8OEudSKpSWKxbKztLqRmgjW/tgmHALOuIgaDAPzte2OOVApWB+4XrhnSbIDBanaqeoERlAm8qtXtVA7sZVeowdP49AutTS9+wT299tfTKnQHqJw+lRpE3MJA==",
+         "b59326bc8d503be8c08905af": "tniVKoangjGSlATaMlXtcIU2IBhgxFhFTJNjfZYfwwgP/Z6H2Dsvf3gRqosPO4NNKTtg8EM8jy3/MH3NyN9B+gJlTKFmvT8x3NsoYGXdbLo7y0LHVK1kHdKeiazM60ZzN3PHJ4OrLkAk6loFq7Rv/Q==",
+         "a6dd2665d808146d2654d334": "Uev6VYW6jkezBiXEzLpGdJaihxS47qMJhVAn4ORX//db5nez2r96lkYBedczOaotickmzeiHwVvoDqrihTu9C6TJNXJSQbyEy93+jIRLTSDLBziieNYkR15FVL1fO3drxOz8u+6ikPxugkJg02FIJg==",
+         "7e4b5e4f26789138a4cf4340": "BmMRR0ud4nhIRgxVnvVCc//FUd07aL+tM8zP0Kf9kKMV/NoP7/MBN2e4q4+4DpDdQZcimA6YOtCgg4U7kae9lB+AaULUBpemYI/TO1OQz3+aejuYOgJuivIgplzYYM5JpLUnLiOza6rVBD+2Lk7VIg==",
+         "c0c0839b1b94dbdf9520fcac": "8qXty/nemDEAlm00zZDtyFpP1LG/J4h2BsKCBt5LyrjYo/X4admz13a5ML0djTBZIhKQVevTSweeY0G7fDAcLTWbISc76VOzhyTuZ2wEJf2QPGn4Ai7tOXVicsUizkC7HuqRHM5OhUP+X83wKMozfQ==",
+         "7baa2567862db5f3d089c05b": "kx9LyI1N3hgIdlAf8BvMkdNBPGD2Tvzbza5MdxzBVKjqPxh/wOVf1UrZGiTqobvSEQPlkGi++D1eLABjtxAkwniowJKfmPs8aDKJ+vym5EPiaeAv4HuvRAkOEjCeBCxexj4jK4qE//Yareiq1h69iA==",
+         "c355721c784d51d248edc40b": "iyJUMnw5ySRbG5cnO3L0vkF7hZJ8liTa0PL0+C2G2IBhdG1ytyStMWwAxGzN+sbrnr0VuQB/ECrKiu5jGxIuOXXbbJkanw71MPdjQbIDUYlePS7RirSu2PXsrikcNU9lcvT8+GXYzDwO78/yWAJGkw==",
+         "10af0e453cb325ab21465661": "Ad0k27Ep5K4HODVkbSYNz8b/ErQU38CjM5KySZBsd/JxA03bcVxShLT46gWoxka7k0oxuO6xFUUnFLadFK0BvWi+kunNEiWsGw4PJ8QHewRhSbjOdbWg7+QFLLHiaO0JHycRQTD7YNzIPK/QYvvegA==",
+         "18c256afb307b72fc66968a7": "1rJF7ByUdFTOBY1UNxKI0EDMDCtKqFl+r2DXzhGDSnOvePYMa1ZVjylRCHilgrTPiX/RmpcQEA6ZbNrACWU1hpWhpWTN24l5WGwJ6uRaIrlL9bb3NiK3t2hnoJBHTW4akKPI+LBk0KCUZOVXu19Vlw==",
+         "13caa883a439b570820d097d": "D2oO5jBFuG0e9pxwlNlWTI7j1sqaNMVDaxNVj+6KWpXZtVzV93Hm4zMchGGxio33/3Zhy5txAdQh4GWAw1YisaE0HYPPOImcMy+Ih1wrMxhE4dveHZVn6JcVKfilPKsccjrwlBU4jpGoxNCXer4/iA==",
+         "f7a763e93306e7e9ed31d5e8": "3JiiZvU15F6QyRuv7hfQIszCtI+gj3MM8Bnywe1XimPOUNPO70pILVKxAa6RZVxO0TBXDue7WFp7mnTesNj8NQD03XwDPoTtjonPpS+mfa+9lX5zzfp81peA7qOlu60aLK7V8NvvEE/EAjlfDun4aQ==",
+         "5b5474b616251bd580f5655d": "HsjiY5Je2sLlmp9RZpSgbRaKU3/WYADIiufeCQkXJIrL0ZMVQ6l95O65uAuT2U0XkFkNIvizZ6i2n2qZfLIx92vMxOqq0LeQLrp1dC3DrydZ4xZeT49OLB12OiPUMwD47c1l+TJRbpUrcH8coKX1wQ==",
+         "98a7b84bde387d6f21fc34a7": "YLO0AmvNxYX3n0W24J+oCVNB8KwKPMIszmm08YhT1ennBZLK7OG4lrNFfz3BDMXOwLEyCuYn56QbGHQhwAqP56DpMhrs/19pRfSKw8U8qfh0a3GNJxUMBOaFW4aWWTQehqsZi8XiZo0aY8kavH/oAg==",
+         "16b18eaf4a8f04e092d2808e": "OeVDOrEXQHrfX02M1bQEWUkt6OsilwisZt/rZNrbN3tmJF/odqQLIeaSmBWFWpNM1WHzUqmTfWUhVyTVK2hbAiBWEE/PJNGPsurQYLf/AkukScIqKe8wZ43Ey3Ty3mnlurbuGIs6AsWJftsLa+LAPA==",
+         "69b3dbb68b7bb92708c611b7": "mNlLwJznNqKCo4Akjh/My6x21kg5DllFaJfCJ9/Elu8IDZ13VIAmf8X3MLf7fIHJJ5Mwg4ig+NXpHw3193blh2iQnEgkfxvB3p8spt+GDRnXipJPF7WBZGsR2j3Q3OZ8L5hr4UXofI28tiRIta2QVg==",
+         "b7b1eb8383b5575d77421322": "f9eCS3EmZzU4yXqZFse8bUJmrnzru3MVG42hPd+JcUg6u4KZXRVkT1CWQtQPTrKhy14KYcF4cW2l0sHO2nEikcL2GDRypI6KufPGuPhH5bNMoiNSNMxBnrhGWFAyGSBs00+xJiahzGTkN6K6lNiRGg==",
+         "b10936809b0a705124c49782": "81oCZ21EUdDSUVGJ5D3eyfZ3O9ajxiW845rehgD8FOXBHSBLiTnRUAAEq5wNxX+mlbpNB0RNkyl6wHf8pSOWZyw7ePooAaK/YwmGw15jnC8XnQZ3PLTKwb2NlegH4j4UED5KmrVbpdl7RzEkHL2q7Q==",
+         "3f2f0ee7318bcbeae62b3412": "vSesRBwD2gNgyzYl828N6IsxHiFiNDnNixVzJbAsZe7FQqrQJrPgXIFlNRGYCP36HeO2q0oc43njvbBjyTXCmfM5A70vJx8Yq5sBedBezTuobJ5CC+Aovktdk0O6gGD8WPuyN51fo9Jts2dpqYTPAA==",
+         "8ea3ebfe5a7d3846cbea27c1": "GN1/MlPc9k+Ghupm1h7srOJGS3CIsZYFbhXTVh3V+xhOpz7XO2Z8resGMaAuK16O3VGl2/afC9H/etT+tleO0fspX7Mmr+9Lh9guNrasM79uuqhi/iTAiptrCmx8mJaBksS6Sne9MZ8o9Wv1U6CQqA==",
+         "2691d8f8980c467ec611217a": "Prhw+3cuK+S03euW9pAYt3I2OdFkra9zISDvo9HVksZlpJbkg5hsirHEoFDpolMPhy013QGk0Of8cOqrvcviRzsPVwAVggCnBIzQgW05hwxr/PxEe17GFnqfcT2TQbfal4WG1mCLe7IDqI+OfEvAkQ==",
+         "e0b814eef58e06315506c21d": "ZzgpStc5YVU4z0+eT/SUasvWMA0SjfZLWO2PTtN62l42gDtilBk87L+W+8y3DAe3tDhrCpXcDYUv/83ShqXEsoHGQJOf/tNRVb30M/D14JNi2K3XtbiM68Md0jdiaDnZRmvGvS6szaLoQ6cmcOEkUQ==",
+         "9ab86099aa93bc52bcc467e4": "IzOZ6lArUxfgExjHDmRcnwVspAU48zQM+L0WaaVkPJ737AK3/3HJ4+jOtdDMG8bJU572WGBMf5eg4AApizdxzrpRoTGDrfpYdUYa1uv2vE+aENslzk/sPIxvR8EmhP6aNWw06D9kDf55BFhLfcTGnA==",
+         "33d241e6f6752f710ab23244": "h+Zm1FacfglexUjax2DMfDXO1kYFfTKLRuhyxVbr3XPPOttMmvvSvTFhgUFrNxAYZOQCc0sClQS/lqEKlD/3by5zSDeE1Gub9OcR/TK2swxBt0TCZdFA1TpIZNqYi+jgscrSeCwEKGZxhOT6ALqgZw==",
+         "a7c8a6b070871a8d6b7361c0": "Pmge6V3xBea67IWzxkkLVwhoi9l1HyyfxdDLVLguyoYSSztA4R+/NO1bIkCAzawGab1aCzy9sj3gdnP1UjeaWurCmIecKsmmSI9oiLMjSRSMVkXde3KzXydNr3lHz20AfsN0HdhQw18RCWgFe/qu/A==",
+         "357c302539cc9b065af6c65d": "yq9fgXVGoCqhQ3MmjR8xPtOn1FTYaNCoLUVuBV8943tazHKdlbil3TDY6dUNYiJY4Oqs9OY6p3WQwzI6bU0Ks0AnmjmKIoqmCsZwBhn5e8/dwZPBcF39jOd4lScOQVOa12F09K7vzZUPc20B/4x30g==",
+         "9e38195440285ce4742b21d6": "OGG+JAjLvXyvjWCuMv42rqvrXCOkD4yF2KN//goxmGNnd7EJSL8VZMhVOptFdm5QQB+elsPpIMm7d4Ys9mPE+FhtoLQhjtiOxrjkPrYZEM/jr4TLc/sd4+7O/mIP0a4/tWICQLVYj6VV5gsM9MtcVg==",
+         "db9e5cde9e845ea738fd1fbb": "BRpY+icyizCYgODzN02rK0hvdT4h0osE/gPE6B5lgGYlhkpG9ibZhPNxJhZezNgYJ3JGEAAzekVNbyvhLA3QSBZM4f5vb1F9Z7vpESg2aOMp94VVqUkQj3IbdRXJjng0r1+xsVPFrgP8dwHd35NyAA==",
+         "841cd453376343a24ef1d52b": "IZE6ej4QD7gwDyCvdY0crmgP7WfIsiLyLB7Xf+XgYRgJZZpdPPGy/lJ2CMRG7I3eN8PdBr73TUwrX31q2ox79kvrvUtXTfT7uTG9lc5qqNV6eo6mScXOfER0jQJoOOxunUR/l77uxVeQlVlgTpkUhA==",
+         "08d1b3b975d873b34c726499": "bQ4BdJMOx7I94+Fh3IuGsuJPakIZZq1Qtws7qnWdIRxyqDcBwkCEaj3miQLnK+Bi8VJv2TeoPiLP9bZ4DiEHVxDtvh4Ieo7RJAwsWvt1Phmq8RkTDPqeyxUZSk0J4ExWuOKynUAya13QfLgmj3etCQ==",
+         "13ce7251d7489ce587de7e66": "Q4rF2HUu3ZgLwhY4L+5/t2VBQyx53NpXi1DHuPuLLsKlvNq2+jZWZDAGRmZkbC+2A9EXqSUBb2G8EvioPe+v/HGDVYqn77P8AZiZBmQywztTgJECdpGxPFJlY5zdA4ovBiuPQkgVUhkgFPR81NLeuQ==",
+         "c62b0177beef9663875da8f4": "unVtbGyBojqymQBD+Htw/k5JxYx9fR+qh20tymDOwfFHDwRWMoHmE55lZsLGdhlJG2gQ0S4dXCLrzZyUKudENH8UCL1BmSP/SodNzKbh79Ef2FvBRKFzRSTE6RpkIqTlT8mpoFQ/zarioetOcB6GKg==",
+         "4d8b7f6de6fbfce3a230348a": "0RXmrwRkl/Xvk3i2kjtAVVAHOGfwmqczuPOnK7IBKS/1rFctly7RkHe/qzRZfJ92eXIPuxu+EhSqXQzw1JQQEeu6arm4ZKyqCgCsYZAZtH8JMr6eHJs2y/ZK2J0BswV9pY2RzXXXnVQSC9crRhmyTw==",
+         "9f0ab65f04fdf6c450cba1ea": "uN8id6ccvtjRAgZt8fuDAQ7pftPlnp0JgcJOwIj1KIYGSu4mJiw6d4sqy29he9O4uC/6bq2Sl4PC5VsBFt3fHGvkDqGQJZ/W192J7F02E3j0SHbIxAIoa/I7VKDSXBCp7xc5tTGyXENyKC3XQIW35A=="
+        }
        },
        {
-        "id": "s05",
-        "label": "固態硬碟 SSD 512GB",
-        "price": 2000
+        "who": "🎮 電競玩家小凱",
+        "need": "「我要玩最新的 3A 大作，<b>讀取要快</b>、同時開直播也不能卡。預算 <b>45, 000 元</b>。」",
+        "s": "f592b9da6ebf47aa",
+        "outcomes": {
+         "c8031bd758348227db201d23": "wLSptPjnR4OLBn/ibfwWv/2hgBbsNn1joFiuiQv6z3a7XjHQmxmPf9v+Nbr8cv5EacKAW/hjhnHhuOx0WoRJzynfigCfOK3NxrQgwc1+hhky1AuoYssE9T20RO0yY8EtmyEggDy8acQjEGxmuPXbU1uI6GShIbDdi5SD2ehM95dsCGOSOHX4F6AdjuJB4J426u5EXAh2wbQDBp72LzRJ6062AwbfozeHtMM4m9Z2Qkfv1MyrMVfJPlSUYqzLTUtFsmBIlD3/f7AgAntvgUYZ/isW0WN1om1G6JDJMtDs7GmRKlEfL6Qzt0UIqFlppT67y3qjQPlt16LnV2dmRIRhqk/h0nGE",
+         "410691656bdf61d77b2daa14": "jVCj5JF7rTFJFZop9R9VJqZAzmVFYoSeaM6ZfsHeLFRWNn9hdiXY6fQ2isltscdpRl0xeZXbDzvMKB4gnHpJ5gzTBWGgwAsHTVE84mdieTijUouQj27Vb4XiY2esj1BCwCq6ftzEwvIRZyQtttCwRY4R6huNQ53CyygOSKmlobNVfnqGSPgtoOwSDDhSLblF8SdZ/UQ5keD9K/XS9E7FqMqJtoVy1r8cfw2ldMApNreBvK5G/EwZ8MTUVPtc3AB7O8XjzXJa",
+         "0c1b2aab6f4768740af7b405": "myhAKSQQ/UsST7uJnSZ1k8wg2xuba/LfU21VODuhEK2Qbsh7hum8mJkq/M/uurYmtw7bKjmNiM8pXXNhLqFMOT4RmfuHc3YfURE08lsGgyJ6DCd+6Lo26hD+928W+h3lp9fCvXczoc0T4V3BnPb0JwdDxqhFRou1xb+/6mLshn45/2KkFHsFtBaZI/QnsO0McywRpWmmaCzNVv6RWePPidv1rh+RqDCFOL28H+S1ixCcfS3tOOQVx+njfB/c2KlyqwCs3vbM",
+         "32d4950b7e5a8f78bebbd3f2": "Vob3S4ehfQx7yhxG3q7TRZOTp1/WTE3Hsa8NB5Zysup/LFNXppxGPWurZgh7bVioqXHJ12493/+z3yx/hGrwC06ctVSBfMXRW2VNiqHF8jOwz9JmJ/j5JWgr3SA1Msj4jOWuDdb0If7lHTHxWCis3cctSlVIRbdSdhuJ7jHOXF4omMPLTf+ljBEK6ScdNSBC68DuFp/X8tFJj7VS5raHrKmvgzDhYtnvoh2lIo/CruCbbzom2+ob2rdUwestRYElfpIuQRAA",
+         "5d7839ef25e406ec0d7e405f": "XkPRSCkfEg+HOxXc+7DUiS7b1IAPFNtXwNUo0buYiEOp4fm68sdo9fzvafasSk+SDw1J+oEzrYNN8yD4hWFygOIqwejR3wqGjxfQ8WyBMMCJ3YrMxoQJwimGZUA0qpCelVpmXafXDWHS3b1SpAqj2DbSbl+EMJdcVIveyUKPKFBYce7rWZjjy9t5oSdlpukoSCCH2noc4PyDVytR8yps3+iBO/Pm6jNTGAH0kxdP5GmB/YAalFFdHhg3PUabUvGP71BQaenngvN850wbYRWDtrQuyF3nHkPelnjpcmDCzXygFCAKcrubaH7tkgQxqhKIU8QmC+XUdIYe7JP/r0gDYTFR3Z69",
+         "3bb991eb7a40e40199027c9a": "IpOCxuxtw1SgY5Ap0clfMkHHDWHjTk8hiD9kZEpHPtcI8yV3eIn1LxF4l49HyMXgJPSblq5NJoK1cwrO4f80k5M7NxjnIA0LoBIVKyvvV8i+8MHQ5tIx3urqt66KwvjtZuuGY2N7hwjpdCutgijkJ8guV++JHt0UYZyA4XtRdl34lvNhZGPX8/4TbxhxhTIFlv5KqbkoeSLW5yW8eZyG3sRe97MUE4JN0KDp5eFuOQMRXBPUTfxNQrQKGfootPCU0oMoOBtNYHqozqb9+bin",
+         "572177b3bedff6866e29bb78": "RVyXPpVLa6wS1JQhgkkTBvPHubymu4v2J4/DaeDi5+zPcQ3q1dx8BFBm0T5yUy9BwVqXT48qlrmwqI//UhdfZ5OKfVXrPROzOHo/nEz3bSa1dzDulryP3ImmOQeQURqLfg3QfRhWAKHQEQw5DavOL/5eI+NRWgPaz1qF7oHkcxOXohB7T7eBZHXQ/5S7FU3R",
+         "793abfd1f1b7df6c40632b9e": "OOo/2ctgpQC7C2k1F2Mn+0HAnMES21Z2E85Q6Yqn7r6yMTB8mJ3RhqBHtoCtPYkfY0zD26X4k0aaVZdMfc4lw35pNIhrM0Mzb4iBEMj0sCOTeJEX8hqb68COlYHUakOzNeuOcXu/VgdW6Ny8t9hKqAmdPiQO1rUsjTsS5vvFsztEOwwiVa+SNVCDZU+WkueC",
+         "ebd9c2b77aac3248b02aa14f": "W4ehYA9Ghv4wX0mtFShopvEocJhTm2xrmL0YPcTj3zAr2Agi2gDI87PmIMc6EIl6bI0i9IvlBhBVQ8pU3as8OaMFELAEnS1gV7Frw6yRLBxkYLLPEYsDEOXP/tWwSRwEB/G77pK9J0pd509DAoAbJGvxWwz0Oiiyh3y9XwO0ub7w8UMbK+U1EwJ6csWBtNtS",
+         "b16fc715faad83b16b544c2f": "UFi+DOlPCRMZeOdTWchNzD9PEZpg0Ek9+iJDqwiscuT793OLmOVP3X50RVR6PfbqWIjTVKjn71ahQQys06HYEjnQSfEHfH4Cx3ebzmFzzdXG1Erp7Mi7eh2HeyGXZNitaCcTxXtvE4Gj9jSqZsPMIrrFLNQ8DpExtW9Bl4OzECVdVTllFj1/MJnaSuVg7+Xt3kD///vo88uyQYulczCK56Ed2dTZdT1rzCsu8u5ueWpvUCb45HQniZigsTtCAeuh6reZ1XW2uFSympbEOnRH",
+         "53272e0860b2b5d5e9a1b18e": "GP6vl/tqitGnSEkKGD9OUp9T0LG17N9PVoJp2fQVjM3M45rJ8O4Unrz4v1P9UfWDiPiHTfLJJ0HHDfuhtvaZIPfqbXoxHfqE9FbqDOUpL6Z7/lXb0wECVTBYIpyopY/kjyMU9NDRq3w4ODEboEwr/7h8cOKjoijZmusBYBzULqRPh6E1vqF/kgv8buXO1YlqmS3Xo+ep3k7sxpMFgm8p5TNwkd9+v6oqF+HfJnHwkwBzUmm/UlBEM/D8zS8w5U5FtvnHaRn9qf9C5UGytvMg",
+         "a9c63f2dd55dbf4260dc475c": "qQfKHnko83wfuKYLuR19wRoVB2YsJ1okLGlaz4UVGkK3BNgJARQlX4Rdrq9eSV9l8dGPvYWEqHUZeyszb3qaSPpCY7wTnsyTryMs7XuT4vyg6meIlay2WL49IsrzB8JCR932x2ydmE+fzZ8cYbfh0D+xjCUvqKN7G5AkhkJ16yOhVnp9t8OTt7HN+BNmq95B",
+         "49e8b221f2e953cb5605f871": "B8rXsxq+19AOgfVYAq8okyZjwaBzlOYtXMExnIvyfWhzoT9aGpsPA6OkA4WffB7jsJ/oSmNchti6KR4zxfVI0lPbfiWZiSf5Tftef7FezFxuY3nHIyYh8jCHE5gesCaOwyq5L3VvIHX3wDYPqcQRQUFF5Q4jmoLQL5NXClw7RkI77nSkMdumvouLNSa7C8OI",
+         "07c5c6a787473be2ea267ea0": "Y8/RdYK77c4VMQWxCK1LFaTr9TxI8+iHok4qgVESmafyoaYuZcostg96HtHJW139A622KrAxcpQ3ucoPMBDGsk2B1fVvH9+QbdlewL2EXjEvJ/psDM18X3vgmxgvKeMnOwpiRtMdU8XZilQvQDXGWfWIqJ4nnr2GTxAINZAhxCskJ/6U5YUxt2tZmqDyqR34",
+         "fea0e2f49ae48f4b64bb298a": "SS6qKj/QRVFqRh9tUqaBYLeFPKv28m64v4ITsabclzjH6Rwy9dRkg02sFWDLlV/djdUFw1lRpLkYFr0RoknVBM5zZQA7p+2D5UOXJpVAxfOpRYw73RBZWLzkz+svDVNo6t9Ee0oKizCT9R9F/L757UesiiW6SoD9XR2rJWGDAxB6g84WffSfzraWMu0DomO/6oowZhGAf5fhF348Ij4H3y/MJ7T+v9TzJoZuuUDAyDGLzZYcwsEcuu/C34+D2m1GXa84ZdKNX8PpJpV7T0Vk",
+         "18dcdd06dbed8a59401b1d43": "UPCxQ0NErS1/ncWAaotedpYYo2zEen68cSu9tcobsZsYfcacmnUqFXc9KD0qIkE9YI0l1tLu2F/iDqGBJfRk//EN5Mv1SzF4xsaYgs0CzCSIH+7rU+6gQyspPX2u8ZYpN92psOtspTW/7m53wsoqqUe0fc+gFnWDMTILbkY8BVOjh2PAS8CfLgQYDFhVw92p+Cn5gZSs4li6lzr7E4r7NW3pdyU7gsE24zlbKl2ExnQteIU/8FEnIDw0dVDDZRiUjyh6pR4XssZwES/5wAy51kBsCc6/cWoUrkBCqm12oVJQ0R0rVHRY4BXky/Tda5ANO/heO/28C0+cT/SnARJSfyMwz5Le",
+         "fe16032514f73ad463e2356d": "scN8DhOuwTGGbaGTA08TDuQuWN6zSCD9kpnGJuOUL8kcFHrtmgn9x1OSaZekMy1K00IjaRHBcrQfF5Uz3H7nKMu6iZVAhM4c3UHOFHFPVOtkJQ6tTAB6ODx26hiCWEivcIBYDkiyqv4xJ9l1W10I68GkLkoccFE1GwVhPAj89uwJyvaP06dDSlIQ4+Uqim92GNZ2idpwTnrJf03DuG2QQVEeVUvgd/3uS2D+DlfGIjdUT8dThZ1o2pzczCuDly1yPZcSLBLe",
+         "3de9d771e0f001c8fb2fa7a4": "kV4Vow8CXPF9p5mUofKMUBOa5EtkHjsOWEP9oMdJfCsAmnhsSSlzRnQYHh9Rt3or1qt9Yv1qRrgFNYQ0IhG3mO3hiLlTr4uYwbq4ATHOEqrbNVqi0s2ytSPKEbPyKMUUcYMIiZaNePyGmaGFfuaxBFwm90ki3ABQ337c5NJf490lNHDyfz0MLDEkU+O71mM4I8zmOQo00iGnTQTLoq6kr9qKtMZ+8V1En0CxhR6zBFmJ4boahhGFrII+v5urcMno42mlQB1z",
+         "0d01a5d3a5acba671a00613c": "V8CUO6BQLk69XZQIwOyp0sDyjaX0RG77T4nP+//wfogrxUHAmgwbS/RxB45u+SwJvbN+pzxcCUu94coKMLWKnRG8L7NVxl9SqnYz9wYmJ81P33wZAhKj8ZFKcWh7VdKRhd5usNhk9rLVIUshp1BNJjeOQaFwjBQ7qu3Yc8TdHxloevDdTi1cNK9ecFwYhAZo2YMMNtAJLQzOOLerhQ3Y0afsMTGltxPET0sED9/qO+GBzsAwvVmzwaSpnWnn4lV7HqBwN1Mt",
+         "3233b2329b375ad9947f4a86": "Nu4lqwibu25G2eMrbKtQkjpVJWDDdDKTNHg/WjjG3A/DZc5OU1QHUqCrj2M1F4COJAjHRA7dXHgqZaJ9gmH3wRJjsBp40CSH2B4KvslLgUBMG13gNejVuWYTTPv8Ga2TzWUWGWGXQJU3+4wYT17qykUuutR5lDxItujSC76LqxA8g4H2hC5u8p+rBGwAWQ++WAohJ6cVUQmdBFWutkY4fb31ggGB6v9z5+3HU/NlR0N5XcyXkKWGJc2nTzDxbMqDRw4hIrnnOd7gtIYylV1Mot6PjTdfQiyeUSvy2WP6bgMo4bwmm5NtiIRAl3B21TcudmkqMqaHGxDjFrFTf7yCZCpMbvyY",
+         "d6124a1aafc22a7baee2d8e9": "2BFeHO4qoplj4Qr6U/g8GylC2H6/2YEf1BAwmBRd9LkJaWUpYb4YhUjdV2NVDM7c2gz9Nh7BzKoCfydjy1BJl4FrbazgKsORl/Ai3ZiejYe9Kj9atLv4S60+c2yXpjHYjR3eRsGzTzKqL7Leh0O6lKRFPn5bJjOqdzKS3Ac+kUZKrcJMY5vnRmP4r7FDzMI4mBxbi1WfH0pXzH2JH0j/GJgiasc+pxGW8mXcVYewpS3jiTQy/9524ELLg5VIYn8vnQYRQy93kOkImN6HZ0hl",
+         "c9e4a316cac8a67c9bdb4584": "/TN1NKsp9zlxo8+o4L339PreflSRjXYAnD55pkNYAfAGtM9V+N9bt3HrO1jGgY7lw8uOKsfHcyD0pmqhO9GQ1wisO0PVM0QiR/ZS490j/vhWAhWaNP+FxnwOiUDSpgCUe660nljLYcAgxmklrZvH5+ebiD8Sy0rQRfXq8LPeApKMJ1qSeRaIPyCp+4muRf7C",
+         "8a2b307478b3c33d67cc2e3b": "0nQL7pPorTAYi83UBuTzFDrD0PO85fJM0MfZjJAeL/c6cSg8y9oZPFQHs4EnToNXK6ldw+5eqbOkukj4SlaOivoOyBqYQGTI9GnKhODUtYn0DYSf4I/oYKzDsrxxEtrrzl+2U9UA8/sLEsYXTay/4Nr2m0rjC0MuomOKL+Tn9qqZBctviBf7+WFfPRs9sjzV",
+         "6dd28dba0f0477f2279246d8": "nU+yZ0g8QsW9eNaZch099jMb6E6A8JBZY8Nz4t6zqTh4GtCKPm+gEtVibely8RWOFA1aiFxDCY6ULumWiTQAaoNBvyx84ZB4lxdfPWCiZLS02HOqPKSL+n9FGhM6ARZbIb2nzAxPHbGBqZ7+EhtdUnG2VbCj1bqtQlL+xXbaRsqXND1BMjZlwNYxZ5K7aEOP",
+         "ddaa1d3946dca2fa4eaba9d9": "5jM+Z08amvlA92S3GzXfIsvAU5ziPBGnZi/UoqdOy0YtLfguOWYkVtfw0TXyEXUVqNuLcOiz1kLhGy9GZ34GTUDZLYZ8ydGqeaAE1ow2FUPVPxNeX7VXldij6Qlso9xm92n775bcUFPyGWyp30f7TmrykR2Q7MIvwVseMhVTxH5Ho9VuDIQp6S8A2moiZF3DrTQe49iw3tw9CwGGcbr5ERBXxyAb/z37nv+FlRAsLac1hYTOBoJFChezV3RIbehrWp1czfj2+z3tZxn5O8LY",
+         "056cff109db5ca4ad9d7b8e2": "A+47UWjeKlZo4ybiUWS1yRa2G5JvJxmYv9O5OMkv+nCOIAEKy1PfTmUnjBMqeeKqEYJyyvldtE3ZHP8PybfdC/BarReJ2w3KXuF9Q2oml54AqplmIFAjv0Ge/EdgniSIR6+QUNc5ON8O9MeVxATgXBGEwRkEIovU9oRU/NJiaUv6Iqsnv5lbNW5VWHO7bgXpeYVS05oyBq5RmweIHNIVTTn4WS9y3oD4iZOnQWcp9zSI/Wy+tr7i3h+GPQrUldKBi8hbBTUlTidm5LiDyXcD",
+         "fc323542ea80975f8afb8f9f": "F0S2tDYToacPte1/IO3ibxpo0duqf1yjR60eGmBOqPKvDLNaSxwG0Te8Mqvgf3wA/Qt2Nl8Em8Qw/LaKswnSsOO92C13d2KyW5WgE8oQq+tTElMGrfwizy2qXzdltAk4jDeGKCeUt8ffc2gDZVDoMc6KrqWUGYfDOsi/Vsi6izS6BS3JVFd3DdL9QrJTZI6W",
+         "2b06762923c3ab7ebdccaf86": "nzvogd4v/UfZwxBtl4U+QW/Rtco3YZDp7RuydYCCGCe8cvJR8K9fpIrwcJDvzuVOVGS03swHS+Odv2J/kT2fe4WGRLgSTZ6HUfBNpnSxscVs//WbZ/fDpr6T8OHMGdwzX+k0S0DiHC+zLyoZ6GtALl4akCpjgAXGA8dWxcQMOpV5cJd2rXxRgmYgZBe2MxvB",
+         "9f7d09388e372a69ef705f91": "Hj1uKaVZ0metFtfdsgwZgvMFLlc45B6Odrp/wOEqbd55uTt+x6Syjbg1XTr5DTMAkVGCvfn8Jzt2zrfvcwbccNXqNvwHtXhgdz68dL/ShkGVKMgvoqxvP9zMF+1BPxeg1HAjG18SXnuyVMaOLcpUDk169EB8qXQHR7zX+uo3YfilG+Uf/wUqUmL/Iu2o7ClO",
+         "0b34170a44b4fe69aafafe9b": "ddrMGLVnibxERNImlmDsPCQzZ6J4yQni6txcf415ThdCgaPZjvHiOp5nRX+AtzeoP7ye3x78MQrDrZjRYVOCyUu6SZ+L6sLYGiu+6gc3sbjuothQLqAvsvZEViA2K8fPFg2ihH0cL+glEIsS17j5gYipSoT4+p15HbCihpZx7B/Exv9cFgsi4QIU6lIxvCkrQs2BGcd+zJkDLFlU8yhDqbtgZd+ZMBC0vBIpPve6HKYZJdZEMfOjRnpDRZLusNpevq4ee+LG9WRZD0OpruRn",
+         "5ab84a8f02c23e7fd98645cd": "rfluGjuColV74Eg2ceka3YwSatRI+uPTNwvDwqTavrV0K53Vcsqn25oARA8kxUeiqRdb4aBAkDBRBAHWrPvlu7SKjYfLalLGVg11UsdooQgrtkpL8mTNPIPU5F3P5Rf9cSZpZuDE2yjuIiGLrvXr8IRFCk3xedO3ZrgVg/Qk4R5KtRIwgD026iKvJN18oj9xthOZQPmq6vXZUeasrN3X2EzajSPuAQ==",
+         "10ce8172d39157fd6395ca82": "Yab5xIYV2AQEdbeGmyW0BXuV1kNrycfR62hhebdRrNJWL1yP25suBboPGaWdlNaBxcTHUjqrZD5OojG/ow9L/RyPvjQ1KYRr54rPN+95KfRYX2ViNTeSGS9FEFIEtNG9mM46auMqhA==",
+         "eb09ce0890ab7561191a4a85": "kZ9QRXA8Bv5E6m6N/l0FpKRDU7IDSmHyMdjQk3ie4YpILnfZFawfkNYKHWe8H2VGKjhMvTYJIRhAxK4jVwHFaimglMBwcC+s8rkZwtCtUXhc4KPxjdoPglq8pA8ghLSI++ZBnExuJw==",
+         "424ac49d604d2a0d7ffaed57": "4IF35iIi8n7O9fiEtWD7yz5XJHoHdSm3oT9uyOViSKUj+etobY4SgQFva9Xm9G5BoaETrt911mh6mPtyx73MHy48UChASPCjbK0T9f750kwQsBcpBex13KafXwcNDycXTUC5b4uhUA==",
+         "1b46db62d307ee78d82be3bd": "yhbGDfSnCJ1QSGE9NzP7uoFmTL58JsHItNTFGzEaH52pjAonDWw+t22nZzj6sIkvLFWF12sbgV6qVHnazzZRyBdnzbQYNuPTRTSY4M9oCqTlCu8YP+Q0Vgaf9zhXORMIvuy/EJdeW84Kft8iGw/BZz428JBvoLWEGSkkC4JRzBz6Gw8yrygOhzIFiHHYa9s7/kq6/wIFNgVno0dX0Oehk+Q1elqQAQ==",
+         "ae9fe2c68de5dcd8e6670c53": "hnkF3gYJ40E06F8qSrlhdddVElIagevDMf24Hdexwr2tg4Mnm9Zx8aCVJjyPu1V1d8XC57JgIVFBaN+1mfp+tCT25b7BYPBBY7kEvQqR0EpuDq1soBgCf/DHQz8P33DPdOZqjNlw+GdYIJ/thD+aLA==",
+         "ad393565d9c55ced27de6905": "8K1ef1rqUNPQzD7jq8Ql6+gB4b6t0gUiMx69dzI5nP17SMRCw/yL7GH31NOrfu+kB72ObQahCEON09EOSvX4aaiw6ddi+utijhDBBhlegpWLazEqxc7ORmiOO3Zg3nYcTsxIQdyDFA==",
+         "e43f698b9e0f8959e666244d": "2HVnMjm4ixAqqDwgTp+19FufDElCeZRp7RBI4d5iU/bGq+wP3UPXenepatOOl7wtf9SZ/xKY40OsKOGLtB3gHryzGisZIZNLwimlXGiCy2h5z++iauodlQpdMVVq38eGXqLdJSf43w==",
+         "a644478e55d5dcb18bd92b15": "HNGlvN0Ed5wbqtQYoenWvFwadthLOIbBDmUY5Q13KPgXZiPm5IpJyt8mrKiHP76JjLcNWSSmKvTAiRoYtBHFK5bp5isgiOl6ddoLd5bxyAwmoGgpnaeYpmYdlPPYgmN/AdcEzFdx6w==",
+         "c50434ef40ac1fddd4e1b1a3": "iqIDNfsIAsLSHhkClkA2FckwwnvmA2lZszLZfXKqJDjjBei2mV22hxLOTQk0MnrhuJyLLB3MUMfQzYJXIw62jWAJDQn+lXHxUO5mGj+CWnMYBE2Rl5YFgNVRRzetwROoYkKhsF5yb/pPTmKZiAuZNA==",
+         "02d0390a12b4d1c561ea1766": "O2R9/I1Qn1dN2Daz32RDgBFSwJXNjL++K3HIeX67nFheSziae3AQxQFLJkWla5CWw0bylA4Ren+7Mh2oe8T/gIHtCUt76NmjbpEsjL5ZDXJYsdEyenuzaW80beuPotvEJaC5/zmi1fIm17mnfZ0U6w==",
+         "7e7d699f908cb8f9739b096d": "a/LF13IN3h5lxonD+zPmcTqaYyLbJVi4LS7D+mtURx5FmLmOTu5vYPnaQ4LYQM37nAqn5W2vqZ08L+ft+KL5MqBy1E6g/5NIY23c65nzngNSVTTxj/XBVBMgSu0lpSkP9P2wGV+K7A==",
+         "7e8309a47ed0006098ff08ee": "A7dfRSLluE8fJnQimT5e7B/4zuJFUOX/eFW7FElT9XQTeb/OSJ77eiaP738DU7Pwz45GC5zqJ5gKiK7amWZAVPdjgK90wH4qVIf6/yKLbIYaaTfpb+o0tT6nHK5WkGSwihGB94aBqQ==",
+         "9e981f1a543bebe015502db2": "ARWjynF5tPGm5whwdEtOf9YTgLRxFNC/wZWfxMtc+gzh/hGwd8Ol66MXmfJ13crRl/q8H9Lf9oEKUXrncI2Mrm8Pqj12mOPiBhTkgLLjO7W9KbtUknuZXPQULyIWx41ZEGPyVp4NmQ==",
+         "669cce08054695be11790330": "tjIl8YTMT4NQI885MuHUZKs66xG+yF0JFIfkxn9Ff7htUYR7VptT96oWwcBX+Awu0fBtGqZ+gJLUBNteiL6OGnRq+ffqamGpai0/VwjTEH8DuuvapCai6F+tCXwjvDwKc8yLIGoo10m27lmkgjhlQw==",
+         "2d85899cdec47c90eec0a132": "opstdsdwRnf5tAyWNnv3C2sGPFzKc12OHh9XC4G/hDhT41Gt9+aVgtZc1oRKYa47eUsZaOUN9rAihEl6q+jiHYknRUVH9Dlh76yAMTKnf/SVgjJ155ektmJeqZEbDE6leSojQ24880NgfQ6TcZIll57rmvP/XS7PusCFbRXNCzwSO2ahodfpFdy9IG99vSb7msZ7zHYYHzyPhShxyoTAVBYzxnDEuQ==",
+         "498c68433910eaf669910a7b": "i01/GG0tykLDDN1hynErqbj+38FkOkXKTKIRjAHAt5EW+HIaR+wKt2LZA3LQeiJ76GlAKAE+AH7Lgi0+xfEdscBR5ygDo9XAZaWfivV+IfFQDu4KmCI0E9NWMVFqxOy5WnXIfq6uJw==",
+         "a355c93ea43d3575c5805615": "4lKM3Vhgmxh/JmOvaRxJuaVkkMXA3i4biTTelQLUYzEdTpLBXi0a48i4/3oauQo2DZl0TB2snkUul+zeDREeErm5sQZUBiru91NhQBGWZY8GR6uqA79rt2VldTf/7Tn/o5qdBU6vjg==",
+         "cfd84340a8b8ed9bcd3d2642": "srTQ1XVnWZbuqlJyyi2lJmmjBv56GcjMPBUslIKLCwReyFP1zR3QNis0OqHCHUwebTfCGvJKKllO0UPy1eID0lyjH70U5S6eW9QDFg1QwYRJoYByXQFPOiUN4H5Ip7boS9kMHbFqCA==",
+         "0ba9755b4812cf6cfa85283e": "oQ53JhXfL1suk7EgWn0lN6RwTJGSSE+cyNi0vMoq919Rs+sJ/qP0mSNnYzy/aZQFH+wTjD5ymfkbitSejtgzZLQbACNQJJLsdZKCu9U/1Zi7YgegMnox8joE6V31dsLjzbaBuowuMEmZQYdA/chJa7Be+XA2XKEY0WLMfifnBXiccLiz7Bwe0zdfVRcz6C2nqDS418aWoyIG+O4TTOcik/tnpyL30A==",
+         "cc02c2ad51867d9b367a192c": "4BEIbI+t6ZHND0qr7bN2SqJIBcnmqHM1MA63szRA1xw02T2ND+/IvgD7lvUgXydvhv7oL8k9tqdxdIAEeRPyXanwgGnpFkhgrE1UCdPKtcKIIFwYgURJwef6Ks5FFgFvj14MBjsvctLKyy/2RvI25Q==",
+         "1cea6f780795efa855060921": "Wzvn3ANVRmQ7bbtHhAWFcE9mMyDldnEj2wo8YGQNYZVyG3zUqwz61JBZtmWjvUu8e3lqtYTKVpppzeQCTHM2EHFMERe+lgm+S84Q02/Byhpg1byzdy2Suvo+ytj33eWcCLYf6p8hEQ==",
+         "b48a3a19524e93a2372fba99": "Fp78LcNKBCsZq8FObv4AU63xEDPzJvUHsYzTOuQLeR40YHA20V+ZHlxPqrIcovExfRQ707IqpLZyDryuBdsNSmRgVC4qRv/hTivDaIqARJHNZpvHUylu7rlHLwiJWumeHblJScGJ9Q==",
+         "3dfb1d872e0b723e4ec5cb46": "0eJ99X52Tcj8Crh5EfTrfQsOJFK9EGUmQMwnImppTWqF/K1cwuo+orI1JFwDq4fioqK5wfORnJxYTFIByX4LeyPgBQfuH/JkXcLsUW7D9kWHOCNszCHRz764qEiBkkPDUGqV1QMjxA==",
+         "5509ec5f8517d6217fca328b": "Cy4Y36tIRrDsWOlW6MXn8DKv5LiCYnLrAL9NXPf3OlKFbTJr3ymNH0tD0gvQatP8F6OpjmKspZf02Jm7Kuts51jm1qmoKHxpSg234LRZ8z4XdsqxtUF5turoydic6fKZG8WFG2pUKVF88kE1G1tiYQ==",
+         "d9bb5310046e868c0f8cf3e2": "xRQMYZdq5pZ+reRMeESUZXA78n7/YzjAdqzF2aogZeZ/btOQcOOw1flTjGTXM+L3XwI5ZhrTApDQmQw6GqNjDYiv6xx0IIGyChaOMq3rvOFmUF3Ft8INrtwsrQMZu+hHfvysuXFQjb48HYfwW4TsNA==",
+         "9e15a70007d65dff1ed1c1e3": "dIZkw7x3ry7BCZRnuCMaD/cA7+TmNrjt1OJsEMLlQC89gXp7Zp44XCN1FcYARH6agMzebFxbJiXFedV6iC5yLoNem97v+HFx4mer5e3BZ+hICPAAGw+qdN4DIsDqgRcFjif1VSup4Q==",
+         "b8574c3889b4cfe4fe606df0": "4+U9h3WOkA3jL/EaRtJaYnD+WgJpC8OzD9uRS1oUXThYlO64rcQ5TuHV5Y1fhMW1QjBScN3AxVwZqeszXql+zRG4jZ/HuOKjD0xaj5gwdg+YzjkU1GmM0n0eTbU9mNzxvOWPCOFF1w==",
+         "ecca44dddf8df5950ec82d6d": "iQedZ7ZuT8vm1gbUD0Dk7ZqIlf5Ir3vrWtDpAt+ZkzOLin38UEFUeyoqlvor2Sle+/M8Tym5dbse0cgyf2j310MfTHjRI8BB+FbTYuOM8LpSx1Rb1peiA/5m8C/998mo+98x8iHcdQ==",
+         "1df9fa379d41b72a7bbf1374": "6h27xnu3P2uoOQyFN5OAKGPgaLGslIH3LGmElLUpxYSfqA0rRLBIFyWomSTDddjXlPQP8oCgKXDe68+fdZzHMFK1NwPDpoF35afxzYMmJUdjSh69TEkAP2QTZSmWY9FHkXgkF0k4bCOB5nYqrY7ShQ=="
+        }
        },
        {
-        "id": "s1",
-        "label": "固態硬碟 SSD 1TB",
-        "price": 3500
-       },
-       {
-        "id": "s2",
-        "label": "固態硬碟 SSD 2TB",
-        "price": 6500
-       },
-       {
-        "id": "h4",
-        "label": "傳統硬碟 HDD 4TB",
-        "price": 3500
+        "who": "🎬 影片剪輯師",
+        "need": "「我剪 4K 影片，一支就好幾十 GB，<b>容量至少要 2TB</b>，算圖要快、素材要開很多。預算 <b>50, 000 元</b>。」",
+        "s": "705a99d71f380966",
+        "outcomes": {
+         "20dd7b74f9e4ebee87881923": "hzA6drbVyTaz1WKGUJpPHjs++s/1+Y2z23HN/5+rRAZXrKs0qufBBMbI12LmqsAdvnAKosXVofkPCDYsVVzMMfDqeFS2ELJICmt0KWb3sL+0MiKHW7pV2qlEVixqFelM9kahDfblo7rQ4i5dqXaQEUJE9b3wiiqm4/DGr36uXZ5bQkmco5NxVSSskDT4fgAj4/trOXKTWmv2sbbOOcG71Ttd6Tn21N+ort8DjSlGSJrWqyCwQp7+MYJ6RVoQ6m8X",
+         "b53c4f0bf78b14a6a36c3200": "5Uoo29529zGyqiraJxB757Rd/nnwH4/z5ATe10XLEYpIWti0rzcU+8U0JvctBa9POobu3stnuiVbymtqTMj5LXKvBFMflkz70sK9EXpBypBU5M9vWnbtgTGmMlkmwnNYvwjjrqVZr9aEScqil6mDQzL3ZjRrBpTIsGGR8jgQ7BuCLz7HCU8e+ShiLP8LR2AfZoMt04yzy0/d1YcM+DO9wR5x0Qt2hsEZvcEUVCaT7WsvdV1n5b4cH+dl4NpVBP2B",
+         "38a7c993f517118d539a387f": "Akn3k5hnUForuC6Ia2+CW6MKn0oIZt1OENNvyYjerUHzTGgPTFZLjOrPxj4IXT7Q8dH1a1cjSQ1rv8+8dkY0SCH0CmIfnE3lqxnGxugWy4SXheyARQPRbYFSonH44XCHGgOaIrE5sOlsJjrvgf2yK/G2TJHYn/peKoGjsajqbL87XDbfhG4UVhS4UO4PVJasY20YqvSmNkTNFvL/692u9FosNTuLV5jBTmvoMun9kNxRMrhJMOhpnCnIg3A9YEfU",
+         "a341e2929ecd59ac70b0704f": "od5WIT77n4+bJ9DWClmczX38yUlyRiPgjVrUuWVY6EtcLI2rMVjtKCInW0yEvjh+SKe/9ky7Y9P6iQxDlQoG4oVdR1TMUfo+BqkS/QAIQhpwXTAZAZT5OWA9QahqsjcA9TeTBV50zFUJee69xqhSJZN0Ng6gNN3xoAptwWw9I/AFJoBPLihOr8XEs7yJrWbqefEd",
+         "68fbac6be9df607697803f96": "TcFdmkUDKBEuDJji6M91JCvnU90hMYlVJ909+l48h5vM6lnLltWBGJT6Xn/Z6IprPa1qP3r7WvqiZ0i6i4Pwf2TAvP92lQ/bOEhvET7d8zFoBO5sfU/Y4fi0CxztEEaXZsUF7LCnljanQudzh/imnU68OqC7P6jRsYY1hWppqgLRFgb7a2S5LrROsS7IvSBtSLWv",
+         "41ccce6390c5237cf390f429": "5KTZH7b+U27GYAR922PqZNqmzdBMtLqe68zhLm4lDKMxkFEmun6foPss21oa9LvQnJMH+1Hx7sybY9nwW4IBekCYBkx2Ps9rF3oTSJ028pGQD5Y6lEENCSi2BiSWz2DkVVKIyHIgz6hHQiNdZzg0AgzCaDiLMSTX3Gk0eCJWG5kiaGvTXXNYy2QFetRSUXX+BdVzrtX5mMbJfBmnb3jK7iHe7+XcZSc/8wY1iFwQ+EOFYkViwgFK95LyL5ZqulVW",
+         "581fceb0d36c2fc2aac10e32": "yI+VVK0AbDM4ufPfMHoLZBwDloLkSO850+7WLpvKt52oWGhzAi7nJTHHvQ954JNsg6Vj5SiaEzv3/hhUVf+6/wmVB023Jk7hSnkYHl2liMpnV4FJWR6pTpg6phogfUX456LS7W+WWyC7oNN4IK3B6OF+lppHnLh7taXQrNVfEjB31oIXIijacSJGFHZCdtJTcBVTxd2dmNln+SC1TxoZxQMxrZd2JyIk5p1BPwPrYDqf1YfbTLoVJLDiQAv5TgF4",
+         "eea1556b0cf52723a939605b": "YjKG/oX9w3FrdNktReLFxhY5LiiXNRzu82HeM3ic+09/pUYM1mRjS8ANudWG3/MjN/JeR2/djbfkRVV1AGQKZijhANNAJdLkhH9SBaCfs/ZQ/boudHmT07QQjfVvRDkGVudI2nZKYiI7o6YsSwYFqjFHOuJsbuCxPJew87drwf+w6dBsSImGR8PjsuLu3rSuU7WVlosgSjjVaCNQKD4I4yIE5o4Er6pc55LOMkJtsuensZGDSIB3HJdLBMkmRCc/",
+         "ffbd71eb2b76b6f7ca6c36bb": "aPdam7FZzD+df7PwYaMvJylZNk+AUwx3BapSc5m0kEjqVXJ7pfe2kgi0KRvsvbogv3KQkJgxB9wY3myzDt1RBFYa/eIWNBN7d2TvxMrxWkYQqfWeOdlGQ9T9AO/8UfVbBjdA4uuSDwgg9WCMF4D1zMeymAPrAwN3VcK6tUTHEV+ChSS7R1kQ4YpFH2r+Ghpq9Iwz",
+         "071f331c3897e675c972f21c": "EocixLx9BfjJ49C+wxxIOXwcIOD/qDCxaX83eWD6c4WBwVZnMBr3CjHRyiWecq7PJ2NDBOFULJnmvhL719vaZza2LmLmO5kjSix31JUFFpjmLEGQeGEDqs7XmHlBgSd540OkUtbWVvgJ2ZAxh+IuhR/YXq78lq8WioB4qK+HAUCu5M1mpVCUFyZCa2wOdLunSa7t",
+         "31bf4b6b16a4d39d072a08a6": "BoFroVl0tgcaPiIyWN0hHzb7fps+FIODbugzpIvw4SUMuTDOTnY8OHUd3bO3585zyZKXnzGOz4ZkMhOTtWn4OwGK6OmSGQw+/JGNssoRUYCBdjtdKsV6BTr95mBPE0LjFxJUQjvETqUigkyDGFlX7T0eqa7lhdo6akE8IN5024x2R94AXMqnu/NHYZbm3R/DBkTi",
+         "81ac856848f8995e76969581": "niqhxEJx/4CMgO4oM87cQP/XrmI6Wjt+CB+GLj4X6Lcz/2qMtGnXFTqRuJDh20+wJEi4uL8EHIUvi4KIWCEJuaye+aw3U/8urjU7i80Yv4Jsdp89e1Uu8CHlLAIOSU0VaQc7mBUzZe1qqLZ5B8YT9hHCQNE2V0AbS/fFmwgVvvrH3HsiQqw341O71QvrdiTa2aiU",
+         "0315365c6dc61cf61bdea15a": "jk/AHzpWsQ/ucWNjcBs6iunFmu33wEACwnfX9iDg6CXkZWz3EW0qf+7vqxI+EjKZ1L0xbyz13nZeZZTPNuIqycBy/I5SNOFi3znlOZLl8X3+NNey/ctBlnG50N81UNnqZYyhY4xVTHNrQdUmezTxgx2Rp975mcpnqqTHDRI821ZQ+IMBFEFCD9ayCBQKVwbAwUsu",
+         "52d1951f33b244186b0c32ae": "0wRLQABSP8G8qBOas6sC2wEh8HC++ITlgvVysYEmdHnIOuDrKPYq1tYwPGQJ/EU4n+Yk+MHsZlEq2/xZUHqZae37wMYctej8YxCoFXoXq42ZXC7k0OQ2Vvj346sr0zioyQ4TGLcA",
+         "7e8570476ac5d6044a9ea938": "BZjXpSwBAhQhMzrtZEb6u+2dNqxgxXyMCixZowMaBsBqcpQqvW90DMNSJSEXa3CE3QockXmSCStjUEAnvZuLSKyBlZ6jDL3GYnFhhbhamFZRZfZnkaB4y8/O1Zxi82Tm9t1ShTPL",
+         "77e8a54a518d542b365628b9": "1CW5JfTdYTEXtyAUikN8iu8UzftXd7hoY8jYSWElHN37zOs8n5/4k43bODd0C7rdsrJIxrvykFu4EjJD38wdoSXgSknndbA5jfWTJJVUjDAIIYoVlQNX8ZSGo5M4r8s8AIEMbY6pfj4biFq4uGxZFyYUmsJd2U7Sp02lo9r98XXcD3MrS8Aty2AhN9VVrRmYbRSSlJ+LU4hXnzXxUuCZXQsz0BzRhaQ9muUQn/ARhEEjeou5Q7cgtuFXS4KKrwd/",
+         "eb94f064a1ca7f40d0aef5c2": "U/p1/hxCyPIa4bzC/C4GpHeMhVFRaD6+21Fn3R8lR1Q4l7ygWU90VrSuXmobQ94IirFZ9lu95ZAABBy+SyNTUW+Gn47hgp1mtTPlazRB8O+lLRLBoLwdzURmZD5AERJkbeNsJ/A2o9pO2Ao8V+5GYkdbbOzkTr0XYNO44BpAE6O+0qatw7eNRzMOeRyQn7I0jXGu8JW1osKLuYRyOQYKEzbTWG2BjkI3OX7F2waR6/M2WV+TEPfSG1fUVU0bV+Ef",
+         "3a9e48913302dfc1f53e4228": "wnt4aWYLbgFO3a0OKN2VCU2yExXqItogm+LHm90bZrpUHGYf5XC7yyR37GhhM2oynR9UqRNFXgJD37AXgOPSXZnYd9UKW/7HRMHo1xs4ll5wRvMWFxEXIlDkjARycckUX89yQsazdqCoqvmquaEW2XxGwbIotlqacxb7d/GGTRhP538O8j2ob3YeM+zyQkNlwdCNfoDiLum/NDXGNnm+XbbNeKKBYM3+IvmOl/Yx/06BhFgPGkVykZHeNQFTSKbM",
+         "489c49451b89625399c43095": "vdUpbIPcWUErMYINPVF795aXhoS7UyUFScycfQjVQAZASKwoBzfz4qCae9hJ9KzI6eCMTJ4b/ODJEzbO82w5arhDScggqDwtqM7LzHazpi3qhWTRVC5MftaX/0MJ7HVSy7BmyqLkgJhXireDmuNfcjQz/FVSnbe8P+NFb8X2aKB5+fqM55Pyr7hUOieIhmW2jgDI",
+         "29ef43ed113b80f5578f620f": "BnjVbMwLtf6dYqxiJ2jGtQCMMNTOoSEb+dxFvIKO8FbdiJB7HHU7J6RPHSGt2uX5VwGxKls7i9PqvvZ5uK6dU7MWkN92LnYR3yGFXF0bPbndrBKZx0w/pOPaQ1/bkK9nFDr+gikt+OFKnhqo564liX/tkkD0//ET4iEhkRGKxv2PC4EEyTzXd6iXRgQDVfAN6gwD",
+         "853e18d5c2b40c80661b49b1": "z0OfD64jrmHE74UkwAVRgqBW3VfB5I1oPNzwGH/MSf+Rqyav+fMu8ACaZP5YnPxLFIDiudK5Me4RSi98R96nEZsoYTzAYjxf2xgWu6RgBAdTqJWHJ9DJ8FjHc/654iI62gKgz7I08Bs0BTCBKRBUy86kCTmwfXtJjgko2mlEJTHOydOHLDjIwBqOJTHBTyM2b8OBNbwLSPw9lsvs23RVvUyS/wOsiIh1YoJ6zklc7/9H0JGGce4N4FE/XFbKXaGB",
+         "546fac5ed49ae8133a513417": "BAUZdnmnQU/y5Qi2BrLV7qIoXDduS2han/CNZxBndmVUhfIVCTQRwY2+J1YoTL0RNlvbbBfwpJBzsNnZpRpXKKy8wgnmSnThx69um36garTwx7rNqRwia5jUEyXRs/PZZyFmuVxC3+t7hU7vUNn33lvVdzgGVbqgSS7jdzqiWykX7l9bDIyPPTbInXEKTB+rPcT6pKqXl8mkwZnJpHVG7l/x+tS0JXfrKCpv8JLZYVRHAPXmVuepsWpZyun/P6cF",
+         "ea05b047f3c40d18a1c7fd63": "PoGCBEZOioH2b+UK4eNb/VIXpVeVrBWVskc1xcwjnIf59RxTs2hxa36YY/NPMfTtBU1i27u8MjLq9KmBhZyJ8IofS5FlXaBmfMFMYlwehv/rq42Mb6vwe+ZZ8UL3XauZTVN3CeGXAVDfcwGWBK5V5FT6/SLD4YVylkeQ9390xjU54bsJNg4bTV8zwohkzzibp4EWrh8S1FxSWa8Hdm7UX5NcubOxArldRStHRjvEGvWhtp19fG9V2ortjypfs/Cr",
+         "e7ba4f122b98cfd65efeb779": "KXW9ObTGwQuC/o4mX/Jzcdk0rSfxpgm4CqMXu+RQ28g4aNeCCk+PVYR0Xf1rkVgWeq4IovluT0rkxZmPO1py8Y1iypvx8J1pQG4LnQpRbwnN1oYd7bLLmER6heF3lmWo6r9fbhcd4yWrEoO+S/v9G9hoDZQ1TYeUXK/GrlRvwNJM9Tc0302LRe69Njqa4Q/VZ+9f",
+         "dbbebcc246da9f1c45ec2f79": "cdhb4K8/zg0V4hmubkLZBOj1MJjBjTvzvPiab/pXG2s82kcArFtd7mTnb2zfzutVIx2zP7egOS21DXicu7xGjFCBwyZLVLhRzdR7pKEScVcbiVZ92N50aPnk9MSZgu4qBL9Pzxiui+qSwRjf0+VXQf9yjN6xlhhvIFkUzTkCw28vgYZJ8ADw7q3jcTXnhCY//ycI",
+         "1c90415a4df98999ae0bb627": "ZPQIKqIEN1kD0hASEm9zRcFz9G//kl5R4fgDYrBSWzgiyduKZXChuiK7iqQbAsxfuPqkVnZedK4XOPTrIODAvxxgHmW5gFaKyWfEUgOKepAIm0UjVlem729vki+N2ql/N3jVTs41aFI7UCcoy3WLvnumefzWZBK91uP7kZGCnysjhfOslNoR4ki2yN72SXnd9aJz",
+         "8ba94cf6dccfb948151961a4": "RqSAk53Gh4jje8jLdcxfvzg2bq7PVqZ/jkw2xDfNBYiWJtsB2I3YnDU+cZDuuOWj2tYKNQJkLPYgSmtZKvIwBWjN/qmuWOPMOzo+s0rsc4cg6I3AGV2u936nXui74bKXKzvDiE8ZyoI009g8V29sbugjxyApxMdVsQfT1/GEbMtxOvp+qQFQ0Ns8xPm18Sl85FKN",
+         "e8ecfb7b8f02fbe1e3dbbf03": "1cteCWhRwIVhH91weA0Hd6/SNqTMkm/WRmrawqe5v7m0AtcMmVbEIgh/8QKjL71NUktBLvsZO1mH2Z5wUFg2iaj9y0wooOnj1ISPcpxcHqILSHyO5n4DC+DNg6RI7Rd//bn/WCqiRpmZgoVFNMlETwXu5431CRbkC8wlCjAk9kn5o6LM3u04yc+k0E9LxvK4M1vt",
+         "479ca227d600e1c223ee7702": "k89JSMf2f4cZdRyOkiYH5X3FXZvB7IInstXIQ08ZojHwBK962G1+sFxIvFSPsuQh/mO0IUIBCjimU7U/ZufWJu2666FMDyAtZ7t68eryGPnhGu7JTjjEkclnFydaaQhs+BU64+iK",
+         "ebe314c96ede82cd7f624a5c": "EgeuJNraiDuzYt1zp3EXy3/HJOGJr2IM6k7YIx9pnaBwjCPnWqQ3CqBIkbjjYAsUB4qRLngfzrW1cPUDALWdzs49JSSpibnWnA6HjRZ7Fe6XoAaaq1NwXiNlqafeVgEP8MQiSash",
+         "6a8b6760676aca701848438d": "SGIGN0A72lsiBG1QgpW2cgipMHYPlWIgPvP2gMrm1rqz+suKrfHhvFE69KgmeUTUS2C/QYp1OLgBhDIRsapCuHcSXNiXfnke452h1cCsj+wtCkN5/Z1gNT2iQyh/tCAKBs5XN9lU+2UITsI0eKswZxvYEMe32vh4NRb5LhRUMf5Fn+blZS060dd5Cw==",
+         "4299e0850f4ce504c4a3387e": "fb4YiJ9KS14uHqUSarXS3r6yeQlENd3I8+2CW1JSN5FS0xU0MRUtCI308/AlmoLWzXbKYNyKbTB+Kk7ED592S+opEuwWmIDHPqr8xKbmJI7M/HamMM+/Xi+Cs6Io+HahGd0a+RBY6vL8PJFf7HlJEK8SkcViQ9oqCgcsQNbGtlr9uQcRhF+7S2bNyg==",
+         "e75099fd81cd346177978e41": "MpPZop8zrht5Bc3SEfu0thm/JYacWm1BdKuY4Gnbtcl24Ha0pKk3MiRLbbm/ITkphm4957cGKwgOlQ7UHRCvRVPD2/ZN2XZ2LMOd6k15lNzdDV3FUglbrmsx++pqpafKiLYmgwIIFQWEYRFe+ea8taymyajN0ymtwDD0NLvyTX5uUtQN2Gb1rznMXA==",
+         "42661bae838329eda20acfb0": "dtOP0vpF29r2wH9RSsDJqffWHkRL8z1ACDfaC3/V5RBOGP8fTr+5DDHzGARvYlhxnE9gmmhJd49HSIKHjpSNANhDEG/hMEuUY8X9VeilKvfseVzd4pqt7W454ZUW9g==",
+         "2672f6a7ddb08b9694b0209b": "exXQy5fKsvp7vFTsx1uAmx7LvFGRJTZAnx7ITZpPp5K0gcI7Y1jbR/xsYIKTMuJVOrmz2kHTIJK9R7CSDGqgH6QIB5vtcxYMsOuRZ444urYK5bOYjypdOLvDAIMOVw==",
+         "6a814983d1d6b1163ac94457": "CyllKWt2YgwPbNChJY8q+98urZe1VWt72smPXz6sIAUXjnhppWL4YDC+J8o5G+KiGAc2J4nlpfeLb5kZxPG9AdFgOoNGalsCFdvvvLWdev3WGley7XRBbVZ36sppy9aaIm/9eox7Lr0VVSapbilWSADgTU6YjG8Nv7SRtGjLH06BaqAwNq2EuO0oww==",
+         "72c7d3ed1579d07962f28c2f": "3NNNza8mLh3ToEQBnHBUm+lHXLcSyv7QD5NmDwMzfAiMZBiK2dqXEcvnlctgHgc/JhGuAbFMhIz61wyN54tUvdzRww1tDhqltgtQPxAsO1tI9UbO7X2YniMmIdSiVpSVa7xEYVsSb8pAgRoefEYmBdNi0zVS87qCHw5WNu1HNMTdd0sU7+14YHcRgg==",
+         "62013728babe0c92b94b21d8": "Ah0STow85zv425+pJ7IaYPjBJdPDK8oT6tWWM6p0MLu2twPPdcOQz0Qcjuai2D58qONxC7fA2rUiR190RVMWu80FnYXYLoNqSsgsQxFaXbS5GSuH+B/xCPqj607VwDmOG+6ewEy+A2GqF1UoLQloUT+LGatG1a7WTsGauJFmRQk3786Tt+5ssgjYMQ==",
+         "aae7b323a2a9ebd098a85761": "8meNTqV85fM8j5ZGF+r4H2x+XfR2uwiBiMMlYFzB+Jw6ybM5uIeuGvXRAFcuTGiZnEdeFJQy7SqpSW4LqGpvwDR4z/DtpGk9YPHehw/7GReQGZr7BBuqGOFee3Hgkg==",
+         "edcc56898641cad379c1323e": "UL9ujch9T8W3AKnIsiBkXvihDsJFcwbORtY5EQWBLQVg+UZS4UdQZZcILkZOhrOyCo8jHfo9J9ujiZ0FOPrp0zNm6z7HtXdrLdavslLNoXkf+3b9BI2PzyJFJDX2Ow==",
+         "5c58271517b3e23fff2eed36": "07AgJw7dBGqKVIr9yFw8ukp2/1hVP3Z3qPIDaWkzmrJEEyzhRSodty0EmkE9TSm71lXP90mCPG9dGYSxZZTlRPyAbZy303bRXKTASunmzgeJdCiG5ny7l3UivWExQw==",
+         "530d2b9fa2c505d65c83585f": "n7cJWsAN6hxa/AMTTmBRu4t1tjpCqiUyy+VLhCn83dPM2WJcH758cYLBZMHB2RZ4S26JpyRlKDgoFYWr30Rhnbo/NnG3Evfrz+aBEL0lGu+j7Qjrg0k27gzg4Qy1nw==",
+         "f02f71055176e8d9766f5a63": "m3K0vAt3iTxbE93CejKsICmsrFBNlHKKwdlCcfJicHVg4o1wLcp4IGkxJHpvvR72fPSPo8iKdOGTdnFquZrnCpNvE0+6MrTwVbfZjgPOw36XpZpTYQBnwg4L7n8MzQ==",
+         "a837cb3233c31a28f6452ca6": "bTiF3Q/tDjYv/zYcEVCcdEFzeZ4C6QCf4AtCVM/sK6Wx8/5zE1A6QAMetoWigxznMjGn/RC6WGg3qOqkJttb5zXP3Hx7y5TCFG1bxddjwsDlkmrWc5HAPu/GIxGJYAH4E6+LkL+ft3QwMh+ViKuKN/6T2Lj/MCYKat/1AkkBpuKMPSo7Qw==",
+         "6e095f8e9a247e7dae3ea1e1": "5DCXnzfl9x+kdRSAtgEeaAtE80XM3wDJ/q4ZufyLdhTDQtc5ZhaUG1R+Fp1uski2Mx18kpVW+hRgzQPS7ykIsYVT9MDFWTnCyFe6pgqQ9uJpJCdQ7whzfRlNF3WWPWTdxnAG7b7c/7CQ2S1rTrVWHOHe5ZpS00v1OreZOSefKs9XIGP92w==",
+         "8af8223780632057b0092971": "A3TEGBwHuL+qVieFakfwBnK2aJNK6GhOsveURkFvT1V7tCG5yYaAsvk/N6ECNSxEdzra5rIQ3vaNLLvFInSMuOHCHtfYz/9K2/MnE0bKCBUqEBv+gT+80z35shsbvTnyQBZOswU6m3KtXKoEzeGwyLjYm+dgDKzktOyiEfCX34dDIN2090HBIZO5aw==",
+         "3006dfeeff7375fdb339f1e6": "osWOXr+zMoZKdFnYlH4PKaAMrdRe2SzCfqPMc2kcDSA5c/BeYEa1QqnttDfHS5M+cQkSYzCJSTGHkQru3bBV9Xu/m+5YAQMzstxCwhk4JFW1tmeF5DsL8mEgKyTYkJ3Wt0rKn07yJQCqeUOF1OSfmrHHlXo3W4UNuvWuZiqyHy4nZFl9JAh+HxZUmw==",
+         "80f783360560275f64ae7625": "U86rmZHTg0PXiMwLhN8KdCJcvCr1XA6dTLGBLdAbM/Gp7/NBBYc7GMh5QoLtI0FM96BumadbyyM0jkcNWy1LgWeponad+PP3r+JwQvSSJbYsadnLwQXzNWH82zTvp1gm0zj+R6R/9oKeCPMiKSTwZ814gNehhX7Xpp/pBHDfZvsz/b6l4If3LG2jdQ==",
+         "918e6cadbcbdda244c67115e": "cGgjJ1mGcJR9haKJPocKqjERujdU2XDk6fvMx40YJhTs23ImWrF7JlG5NNHRocD+wsg3RouUkdAyNjTAIUww1tEpeRIMH2av2PQIClQwTEgZo+K4H8snZPRpuH1xpA==",
+         "76f61ee8e718df10cfea4061": "B6PPstHJ7fZl1iqwIaPoj8BaoaZRBc0FWgAC5iWauStzS1s8OJf7SitMjaid3AxfST7JQfEC/9zUk8IpDEN6ky7jQPHQNar8vvXTFXOvdASnHmNBgRRp0uLa6Ej5og==",
+         "dc9542f6fe0d249f055313e7": "VDWjUylmUpyIv4FMXzNXLgKYF3QMYZqoWh7YIehsefY5UTCykDw8x0tWPY0ojX/+RgsZvxqPRecqGWc2m9QqKiotWaVHyip28BWiWgj6y6V9RcY3pSpZqKsml21ky4WCE+C4pZy+NAM5bTszaToWrQCfpVta6genZeRLDKJcp9zeAhX2HCik9hGYLg==",
+         "946dcdc6a7d8c7385ed2b3f2": "WT4XtfEnBpdrg46Z2v8rUfP3/TlG5IHL6sWDsR4cm324+WWO3IGUFmdf8mWE24HAcHzmEdrI51G+qvi2yM36rFhAMBsP6etTRRKwtE92pviuVlwxJEZLlCKoP0RIjAJwbuBmTs83+iU/W87dTk2S1KQzdjNJLFMXmPXV6j7ZFSeSv40N3AhYkE5I+g==",
+         "f85efed857ff2aed045895cc": "OPkfla9kX/BeXt29GKnZieQe7SGAvudRLpUshaQZt34D8c/SzOimIRcNHkKbslypH+VJL7CEWHJg7En5XRCd4fPZX23xESxHxbhqC+3Ot34HEC5stdtPoqKeLs1dYiBfsI93kBeLuGvFyzCyekD18Mj0g3WOh651CxKZ5tn/F1OhSsXOT6dUwDUXsQ==",
+         "8c8da60ec057962688b5412d": "7gJaPZWagROexV5+gM8GSftlDDOmJjpyZGp5e45iRP0FdUJlLGO9fr/oDaRNS2ayP759UNz0xb6SOEkVU0FzaqEuYiFh3/AB5QHyBAF1ww4SmYKi/BvQf7qQhCH5hQ==",
+         "1c5786f35e07a96671f029fb": "WPZgFg+tRTEd+FUd8p0yW9JAGeQ32TyD0cbL0bfgfEF+McoGPxL99MCJpKDILM9OyZpqNlHLFVsioqUQDK5MMz/jJacVdkgH6J45/PRnudqX+3xpJNBl2Ptcho+OpQ==",
+         "1c7106f4f96b9398b0905876": "DvYvPmzRBLIU0QUxISSbZJ1jCmaCe6fOWo9NuKy4urgI5vTbj6hRF+nO/v3LGQ3+ZGRGQmyrU1PIv2C/8zvN48bjVgFC5uefAMK/oBWY58CK+aTU4mVAv+1USg0wLg==",
+         "146e77039ed7e8ffff1ed4dc": "uJVmXpI4hEWMnajYdFKmCJ5d7c7ul9lCDswlAd2yjZ8gETDCLRmxwINNYumd853qvjh/HMWHREd1HC6KfnchTMlIm4wXEAHiHEvOYgWREKPwTcko9zAO5qALIBREjw==",
+         "ee1be49e0b1ae47acabfc31e": "zy2BTTW0N+8VpNUjaecxThB1TeXxp9gpUMXpHw6oGS7e6NYFAhuISPoFmG7A+e+ZwszNz7GdOGd0FXmfjTOT6RAc/q3F/6sLo9UbE6OPwZcfaGVbecO8cCPQ6+nEng==",
+         "0cd8da4675fd870a43109139": "8vOF8L+VVZ0uH2pcanfT1HMan3RviFlgjHaUuMAYXi3ZHbXtadAq9HOaAwQMiXBR0d2ryqj4ZeJk584tojBipuUpyb0+l4l6/gClnYNnGX3UTy5qSqW+K3c/lQrMMdPpkXbAdxqr2+P/ChU+eRlK7eJs227SACzJSOlNNU+hLssE/wsAww==",
+         "a445d092ce4a2d8110dc2310": "OrNpotB3HfXfmpdKd2v6pmAzw4YZ7eNx8cvjUDTCFJGc16HIX8IMhJKZjuJfPHwEuEuFa3KsclB5a9j2/8Jf4r/sxKYG6tetF5mDjr5LRDp5BUGM8+eP2QpldIMtWk+cfaZP0SdtsleDu4314QDa5vUmP2EncMAVGXhWs4CGDQI9lAwFgQ=="
+        }
        }
       ]
      }
-    ],
-    "customers": [
+    ]
+   },
+   {
+    "goal": "🧪 電腦組裝師：照需求和預算挑零件（🎲 需求、預算每次不同）",
+    "rounds": [
      {
-      "who": "👵 阿嬤",
-      "need": "「我只要上網看連續劇、跟孫子視訊。錢不要花太多，<b>18,000 元</b>以內喔！」",
-      "s": "bb7f84740c34873f",
-      "outcomes": {
-       "09f9c022673dcaff1ae8094b": "g4o9NEarne3Ei8ki6a4UsXnQT7lMhjRZjltZv9KdwToRGJPVSakpxVhCbFn4EyNsdcQqRcAG2RBpyNMGXy6iwAqOXWNAycJRFLaN+Z79C2U/gbs1nnbZMDROYN/xV7ogF9rWHZewR3C4MylgomvNrg==",
-       "68dd845afd76264c33df1f09": "3isIX1uVQvS4uQkMxkalDWVAcDcBk+JEHySlc36yKXpN+holq5u5dmW/ORlsAl0fKMx6O/2uUue/BL+jZuOG6r06d8qxBDr7k8MnoY48uqEBhyDHTZ0XEMvcoH5EupJGAadYC1mrmWcVSvC9ouq72A==",
-       "7fdee38657086aa60ff12cd6": "xA1q3fapyNsIkWq3TQJp2lTTlOrPASEd8ZQHFPzeHu6qhjpV1N3m0vbzooxM1cSH3ff/0Xr2YzkRZDwkRYDbEmKEZqkgvjG3we/4YYemov72GCd1w/X26OphmZ0POdxSwYPYLTJGvIP3uCYfj7JQCA==",
-       "edbe80ca13da9cd92b89850d": "pFC0a7uUUcQ2SfDuJXS6yh27YQtPVYiFI2Gxt8YfhkOLNydIpZFlreao/dkkQkWcgI1iySEc1o35/0wE/zUlzRWi1/34w1Hf6t9OVWMbSHDoqu4Vf9DiAlHuiCQUIx8i5C5WkeS1/gKnIl3psHDO",
-       "8abe1d01ff3e50859a86a07e": "OMt0EdHPtSjAQJkBG524mOZcSEDpqRIpL86+El2R6uWiL2u4WAEbuNnwIX+puYziKvH9cWAWWbZETOWHU4QLiHYpQMkaRc6TTfNpIWZM7C7kyeZxpJ/o40B4WFmc/tdD1NHK7Gc5vy5RaGuIBh9/Bw==",
-       "e06ea1e70c575b9d4a1fd0a3": "BcX78XmGopkcTpRbJvFYCepGN7qhELCTruR6DGQGKpTfOhk7HRB2p7yKQAYie4tPv6s5uNVIOe3OIT90UOB6Z4A28xwt8gGxR9eo6tub15aQRW8OjIhq6IQPWzGt444uBJlmO1jlx3NNR+nFM4sp8w==",
-       "c2fb817c023d418d3e4a6717": "se9j+90kbWGEvsN6IRWfeVqZQkXsFHbZLrwmix0+GziYqQSPFHc55X4xl3RlCGcFiAuqwf7JWMF7dsbshgu0IIOws9sIkfeg6bxj8gRv4n22gq1HqJCtdqo3awi8S1BXv203SuV0ZhkhVXB4Ljp6cA==",
-       "267607f91ff3594716ccdfa0": "Dpj4Er0DSPr1WrVxT2a1baQ1Hz1/T8kduGpsInYAbj9sNchHGYwrj+u1NedkLwL6uz2GB4KUO3oJSvB4TNSbuyrpiAVDliEJGPGtbfP8MmdJstCfRUb6dkdauvCxFW1Bb95dHdEvTOsnc2PfkovudQ==",
-       "f4af699fc47338abf7ed7858": "618tXWsEJ3k7PISLr6u8dCS4Q+PDzIQmXRUMYPWZCKrdv3ugbxWgKaAxkyPPqtvrzIP3L9P7a0TmvNu/dSJHut0HGrLPzGvT/NisKBBfIop1TuDWXt8AxnyHubLjPtFkU3IVS8t1yh3c/JZZa/Qh",
-       "e848c78374fb9ec7f4d75ad3": "chPqfZ+vsDaltoQ1OxsWsKdXVcQni4zgqWbV1Bj5RrVitTEOtRmTaGfg/ORVbeHguIz56dJ0oZhLVcvpD0LIBzLiAoXAwk1PAbN0YDmhXlj7A7u0+zia5xQ+P5n3DlKZECOUylGsWtpb5l87e6MSAA==",
-       "55fc367896b37b4d45f28037": "ExZHp/ZP9IRF3dobNogL0Jg7wAI1/5z8tDgTOFC1a945jE8KNRSvjNn+ZWer0z2yJQR6avGbmvajz1joz3C8C4ajkw71Jn3DHmzcVhCFwNQk1RXndMJmJDebQ+1U/PMBpEuwwqlLRh6dqkWGiAuv",
-       "09c2ff2486a76a62184f8f22": "p8x6v1TuffMMs9/GOhlUZIYqahihMr6PD8FpBClW8NHMuIVTCJXFQghmI/EZyRQex+A21JX2K2BtMyqlaRplrNKf/msxJzH/LNJPYSQ1CxXm0aHDmYb+/475SvMRhCNrpY/T81tRkHkcLl+m9+Ho",
-       "9b06597848526bfb24e1a230": "lVBmnu/vPVHYdoxr6mF7uRX3XhtoqVQMFIwrMjWbfLv8xby1iuEANG08PKu/kaOuZwX7p7yI58s9lpTYyFojjx9wA3uIGTQ1K1g6E+kj98eMn0W7Nsj2LUvXbSbtXcMZLP72IWODr0AyIjWdzCtb",
-       "e31d8432a62bfa87cf1a8388": "pd6Qge0p1ifKh1nhhLpr1j6xRDE/XzeILnFqi1XMXkIbYPRROnUFG16vwBLdbUzliK1SGikDxV1D452wve0E/XMpFxzraCCelV5vofjQlCB4VLLqrj/fH3l94lzXtwpRalrR7SfWfmfPwNaHdXrD",
-       "24fb1909b71884c81e573a27": "D9bY/xei+iHwVZWBlA1MQznA08U1Q0n/D73hxvEuHD82vtknU+7Kg46w+pYHkQs0fPgeT9NGnkElBJ/apVPph/zR9IdPwrhugmcDY1KPhaugpauirTAkWrMuChbcKOy52zj/wpwjrbCcVnnEv4bZ",
-       "38a92d9a400e5ccc57f75779": "iF5/KA6wwoSIxol6dCmV2iL5MGcQZWoKO9uCgy7Ouc8weszMxHQT6vnUNfbXEebhmTBOjA0Eke4YLrPAJ0Gwq4mZMuU54kqypCYPrEslL8mQDIeVTXkWmOtYXwMf43Qh/3LFkp5LgiYtnaPplX+6zw==",
-       "bdb005a410a75254b51613ed": "WztpjaKmBPKgcaeQMyIgNyQTgOs8CcMIF22+FvdaUihx+S7pxrKiJIr2q8DkozKqH3Y5UENy8+dHoYMjSaF85qxDJwQQ8NArrjxjbQpsZPWK9PLhEIKF74WqgRl+5JQz65m6FIWSIj3aRXxwducBLw==",
-       "153aececb0f12b07a3d0cda6": "pAwkqYcMXHN+0bCRuCX61uB7gIvJdQDQapUBaWVOpFfNfO7zJbnj+4EhiEtnfb6QgrqOH/o8XWFpvzcrELauoNJB7+V16YCPwm4n7NijYEbEZPukbQoYTKaNOfvcn9V9ZjfVl6f2wLBOFEh74BY0",
-       "c2e971c464f309dfc98bbc43": "aH/OuS/HQRw3WIkCCxBiachx1uuCdQ+wDjBbpg+KTdGqI4SkwhjhEXCRjWisZWHXDClMEDW99iLu0xN9IOk1fpg51g2WgZnVL7eFSHICxKubx3oZPhrf1sGp570qfKZeIPkrg0vzfnkGRUZO9CdP",
-       "265c028de28bb47b5f762f75": "Dd8sSEo8j7880Q5vkMwutuNntypi06/2BnpXeP8kOJOsdMCvPMyWf+G3zjFAT3FELnzXsR+sF8IFJZqmjXxde0wpBBFvnJwOvmnRonIFqCU0WtOh11X/AxL0praU4cYpZnBUSLnncC3/Mnz3TiY1",
-       "06f87d1571310459c165be64": "ov9EruEu+gWr3OKQbCBjFhQ890n8mmyJ2+Or62eHe5RIlD7TyGbgkbHIRmgpHSuZk336kKUKH7YanVTICBWuOBkC5jYGn3VKoUPxoSYvtbKQ2dzenabr7m3OeadyaJU/3PzZiT0rPDa6Xo9qr5Au",
-       "280c4563c83bbe5192b6c69c": "/4ulcOSFrfw5+U1mTS/oxkf9kfXL1a+aAoMZki+VpLqxed6CLkU59CssNN9M1jLgSSHWk6R3TybXKVlfMgV5PbHkL3uAVZVBCA7p0xmlurOuoIgQKKRNo0u4Xz3X7EgYRx6dNjPsSYLC+RYq13rX",
-       "79b7dbffb2e526c6a9b38df8": "EwvvMjbNZ6Px04zUzilxSVhWBe4xWn1VWWXqqfF5TUiX9nEp1ayel1iaM+DJnlYSnsbAGwLbYW3wUcFARZFsnuXH32jNgvAILE+bJCILNufwhGVccPjsmFItdm48KVXdsDrLs4IEtdWeZhAys+Zc",
-       "57f9cfd229b7277a8dce2cdb": "0yGypbY5zJJ7SMEtWc4GQL9DIXYi2oGf5gh74FKGy5jEPfw1BqtyQ8yLem4BXrmlqILcFIrvjAc23OONwlygdITrAv7IPib8U1+ZVgnMI4w+aeAS+TTe6VxHJYC68CxTvC1yWZfyjaSOKOtRSuJS",
-       "2600c6287bb88453569cdd47": "4KqGdeQskN9gl97Q6J9f4qaU/6KLfSEhJUIAOz79fJ4bRwL+soBpS5dIa7Blywena4iQSTukR8Q+dbwuDEl9lY98OyU6ouITdzGwsMh1riWiy/5EG0t5DjCOMw0ODOadxUYEsljwrIl+xwHahjUN",
-       "48470161c1454974a2e70c66": "LnYfHd9K5FuFPc7mvQ2xSX9ikPfsv9DH96BMRgiYs9cXjp6MrZLx3ebPwQyx/ISjpeKeA7LVTHJhFkwUGmzFf5Qh+yGG1pEmD1QCXrrwlyQApgNSOUCg2d6f6DxBkNUq5s1/X4wFYRQl8J8yph74",
-       "8a1f08a773c5b6bb3a8b1163": "b27/9DLXtr0MbODNT6T5hEUJ9iVetQ0R+FLH5/jrMsRgWZzTO6kgNHMQto6k2pZPRO9QTg7u/N3FoC5PQ+U0oxISYLts9GEIq/UVnIWwygutnDo5zWRqQNDriPr117qMvw7aERnWZYEtRxdOuSk9",
-       "645fd9f4dec0c0b16f657e03": "gNkaiUvW9XV7txnyiUKmPnAdAvw9WdeP2GNJ5lLtk5IGxGSX49uXNj7qttPcGHajDhuXkntgvXAJuZnffszADCegvQdCNG++CU0js3ipi1ADAIibKAOAk54UoO3tFq7orFSn/oPJ4shK7Ppv1Cwc",
-       "61d394ed9159682481034861": "AnjnwBvQEYfWBX+Ws4jpybwIwKR6dQ7DMLVR6JyI7WUmk0wHbP55/sfchbGVVIxRais7Z9sKzCXwWHgrZBAkP3G7bofBOCbfYVyepTOMjJyoW6xPgZ/LgFot3QG1s9eOaxqpnaM5jJ+2yqDoNiga",
-       "71bd8c070102241748723da4": "wVkQVbpr+CQdlKYVTklb7LydCctauG1th8oJeNdcieA0m4SUh0+Uz8BIpSFO1A5OZgubJ9x/UZMIfg8A3NU1yPQX9H1LlptNO7Y8d62Qes12gkSwKYrD01G78tmeiw+gsY1A4IPIolBXyesDMg2/",
-       "fca2f1fdd83126dfa11debb4": "omSh/jI4hYFFIat8JIJsZnZG0T7He4p9kEAwlLWGsT2klSU545N3uBLTmv/jHiJoNs7W0L+1aDhscBb0WQLREY8mTdcwPGHjGHgbUWGCQQlWjkTpaQctS+gHR2JPjCTqfbNgtb1tCwXs64ouvGG5",
-       "a5d19a187b488d0628b17245": "sEeMWmEdh6fKkICg73Arj61Pqv1PDFoxthIQ7WB7/eir0op2g9Q37gis/dFpnQDywCvMAQ62jXuFvPSTnvj7qL/cFuj/fN6T/gBecnWkiu8aqfnWX3LGj5Bt2szWZx3WOgMDS5t9eRIyWNvqwtr6",
-       "ea05234e0fba13b374eae067": "7HRLfcNMFu/qX5OtUCTEXS2t1/FNkTE/oF1qECZVFpmcLoh8OvDABVOlObuXwKVczOFEdOB6CEiOv57FoBV08bNRylDPtp+rKvtaCcSyVzcXaVHVDz06OYQNjRYVJWucBqk0OpHJuHi9uv8S06lS",
-       "a6f521bcc2a1e0217a33cf69": "CLvSGfrIMoVmAnwzGc/WQ7ayXkUiZkdVkzrgwvubElQpajeO/c3fXGQy2YrBmMpiXbz9fdP0Nryg4swt7H3hG3i9cjDfprM5V7lkn44OqfuMh5woce4beojoVvEsJg20MWBkUclrrVBNT/RXgCFU",
-       "393f3567aa54bf3201660d67": "CWkYbLCQK6beKb/f52i54LfN5ZYa/hspaADdrQcyLKpDlF76ancSlDAiCnM6IMbt174uTbCGiCB3P+DFDYu/MBFVS89Tyi3KfGSUsMW6E0vAHc6clFgdMzutNCGsnlCmJ7zqhXFFf+qkvm9t+0M1",
-       "8dbbff87a53224871c106802": "8tiyq9QXrQHApUqT/w14VEglLyuD1GqVGtckVeBTlCxknWw18d2lzVBIBURX5Hb4aKw5mL6FSm6IugrhmNLIpiXMKprBi6PrxluC5TLQzoDpNELzC07sLDI+RhStKkXnuDpCvLuNguNt2BcGKgKZ",
-       "1f034fe18e2a127ad9052d78": "yeHCtaNDSyb6saKIm8isvvoOhiE9NA6U5peytvnMVkOdaRJ6p7AQRU2Ig2D4dBxJ4ItA5MTFcgywobDdJwnyKWETJXpC/KJkmDxxFV9ZyMi7I/wnBz2WJWNfGsnarsKgnWMhFzbHnY3B1DWbWcc0",
-       "90a5410974916318a43b8ab3": "P4VGtmzOE0tvX3AUULSF+i/G8j/FHzVj2a2J8v4tylHGNSBSlH4DqVnzIXUsZX+1nd+17Oq8gkv8U/hjdFznTYLfWjpyfcANfAHUjRLyq0r6IfnfFXTR1/arAqoaoHFnS2FnTYQhqtP2yURJICBc",
-       "6f4d3f0dd51801cb2419941c": "B7Jo4zooNGrmumxwcBiqbZZxbfLjyTVf4Iu4UKuTVQrtRYeWqx9gxv9zaRWipBTkCt7iubZELRJdiK9S7/tzLZ0v5r2O/zvUxbiwSKMMY4VdeUTNZWTuUin9zA24m8FFdIZ4TiPOlNtevNRyK5Hg",
-       "dcfaebbef25243ace56c02ab": "0c6ibIWoGMKoMdB7k1NdWh4shtf53lYDzTbRfJ+sEysxIbFVNOIUwH4vXM8wmjHxwfyQmRFDEzuxo6Ol7dCpIDTftsKqFRJcvGzRinu3M57+zHu6tNl0Wjindxgma7wiKigvCuFQUkqOizvrSvgm",
-       "60f3193816b5a5d72702bc9d": "ykocrVOUvywLV8gBChER607ZqfyvLvYhFPJGX82M1uaUxYpfEZexnczCTso1bWp5OsQQl6hg3RBrkQDHyUsPIGAq7VSe43m5t+sC91F3iKMshA9DLaM7BawS9U0yBgMzxF6g8VYbX4+Dzb09/vrJ",
-       "3db59429c3fbdf7267f42adb": "ujqDADRTmE2Nofqcs4Jyrkf+FShTIEypeOUykVAK9F0C/MarAU98n1ilemtxpC0L54TqXA7Cg1evFD6c85IrpsYnyq+UhpMM9k7LnhcUp1GmUj94OzIq2/AvWu2cGJ5N3qrGmhJZ4ntAJQm8vdb0",
-       "5943c51c7c9162279ce03329": "jEEEs9QLEahj5YWEbkbngUfBihU1cM84qBOdFRECEO8iJZMCE4bVvZUugeu4jNmTOatDt0ZKk5S5NpnxuLfYE3TKLHcn7Do53uuY8YICFnusBcR5tipkowbGpldiSt0BntYxS+VkMUkNBQtWe3Nk",
-       "a71a2229bebcc0c2995b88b9": "Xb4sWq+IRs50v5xVGeV/H0qcB8qLhZSanSIeVpNkUG3jATXtm2IDJH91S3b3VoFNp08Bpx9vwEmRv/lt8Nh5riioLs+mtVlBg6TyWb90KJ6wFXaLn5WgGmyVUPnbOtI8fCYeSTbpvrveGyCC48HE",
-       "ce8a1c8d25fcb71fcdb1da8c": "cem84OzBtBjfGq3gHZZXslSVuYDiR4x2Cz/2SQq+w9Gq4xTxovTztkKuGRVzhUTndNrHt2J5fkLFIKajrTYzPGOtqVBnoCl5LbJ5hUjVReOuGohNLJNUw8u6BP79ieFjI0i+p/hymYvh2G2EJx74",
-       "d4f5edda4807d1e0857afd7e": "JTfR6wgE187V5TjQ5XKnIIwf/UH9IpxuHT/KiFAJFCyaHRwPQpR4k7AucHYypxInduSpo3T3Z8dcG38KYOtAliSH1ps8b+tU4+XB70DVZaH4XkAhjZGtf+w9SaabApt+Hc0c3jmtXcuAE+pNyMqN",
-       "00623fcefaf347f3b244d315": "/DxW60NKDKqTUsIInHB9NKOe0NK9msioOKFtm0/rll7f2d25Ocf2KuhMvZVlN+vJKNrY5cgDeheiAk2YX6fK9v/EIwnXapXQ8R+i5a2D+cL2WXci7qdnU/tchjYmKz1oohzj11+hckQmucfT4TFa",
-       "7f37db2d14d4b898441ea1c2": "iX1gTOWXWUVqhByWwe/scDkLBHYVP2STcUBlqMPDEcp2AQdZRpkHvqOqIeZSl/azTdf9B97t31zLk+e9g4Z5HmdsW6Yauq+UL7JDnT5x7+LPs1TJjMFEF3x+9YBO4YFr2PWq3UrImMPU8fORY1ax",
-       "e5aed639e105d8b1dc7f9d86": "KO3ZNb26uEgFBTkOMb0x+s6AZ3ImVMksdVtvwOkQJXWV8K9ab09YCnb7vNT8tQFIDmRyRQ4bEAatU+i9LqKb7SomTTXvXIDQH8iqfdCsdCLsV5aG08xOnTBXfRMkMaUU8+6zH1k+XqivSkkM7YWE",
-       "1743d5e00939e40d2085baeb": "WYjfRiXlDFK/Ju/tRjtRqn8bLDbb9LZ+hvFtGgRrB8YIZIuJ9TrjnwltU0ccYH4xrXgP2OPci24tNdFt1gZxOdgK4Z88OCD5gfPKw4ThLIKg41nNHSbs8ChMDfvGcz9w4s4VCyH9GzmNOBLgE9Xg",
-       "e9d894804b5ec1a446a2f67f": "ZmgRM83S8nOFuS/l7o3u8Oeu7pV8xiDH5FO0bPjgwTuVRTU0V6iQWuub3mRCd+mwkD2BxIQiBA0QraawZzyfsixFWq0/8er2FuZAwAJ4WkZvY+W5p4xNlaa57TNY2qRjnRX6x5mr/jdV5GQ9CPZ7",
-       "7b9f21e2a362093e87331a30": "AaO+Fpej4x9tVYJXkzudpgvkqOfnDpDlGdRIvQNzVjUbc/S8aySAxyNC70PtA5WExxHe9DS/Ygzoy+J6A4b3DvtKfkJqE+zU7SlBdwpWZpFqJVf0iOXpuDBKUevoXqJN98XeqzfteqFs4RxBLXtk",
-       "a1ce1916a24af347c27ddd07": "bxnF5Sb38qijoFSoFfO3txaCo4w6xGQW595zWOCHaCvNbHmq0YnHzdwXYdhSBq9RE8GBQGRbVdcnrbTzljYYhrwiQBml5kmbkiw9mXt6BGAVZ6i4bH/db3Mpf3WfMmCT1jxEl9uAJbOk9WKS0USy",
-       "5f0111c2faa67943def6681e": "xHJIHQODaVsYrb+OM7klrCHt6bqu9hyrTiSQbEHLyNvZtc2C7BDJmjKCrJ85bH2ZVlQNqXb+A2ORTnB1UKTvaYxApcM2VPm/pRLyzJQtTaqe8aB7rbI5rJUb34lbTmXffkBfsQcVCBJ9a8eBjlq8",
-       "bd8fab26c9b5570051aaac5a": "QLdGSq8Sd6AaXyQ+3X0XfwKEzpR+WuYrQ6k8g6IRyR1X0YBywggR2UYlQNEYUZCpKgtvYggp47G4pjsL49u9WTQLvR4KzcLZ2r8G2aW0wEkNNg45xud3DNVYOPzUopjIzZhpN0S+R0qDC+eK/xMJ",
-       "bd2d6ae09633371b050d2e6d": "le1nKbaBRubaIjQk7MLOtgAmC0geW4kTJa0sGTAwJS5DlP8qwj8PCJ3H2ZWxtoPzUx+cFjMkyzGVmlWF/Ak1ouuzPdROdTPZj1yIMx/PB+G09i79PbK+EAxt3JAChp/ch4gE5DCFTxwP4rQgSaRF",
-       "16099f11ce7ccbce725f4e9c": "U5ThrdrjijFNSr0791vbGnJP+MdMz8xqOmskplBu12WyiQ8RnMt5qpKsuz6X8eJX7YfUz7f+4Lg8vD6nSh6SG0C12HVioeHg+H3Q6N7oqvw8OMoCZCvKoQ+HpsjgBYYSmXTbzx80hS7j8otN45L4",
-       "a91d3c1192252fe058b14372": "D+aZ32lCsaPsGtNc0Kxb1tSZcEzllWCzaXHfjailNxZ1OjJJgawEHkaU5vHSkiniuXmYEd9aibqtWSdkGeHRyCqNNZuQuf2SoOyODwfhKQvJLm/3lKaMogB8sZPPcsbVYaQBx4PYjtgu5Vw3spIe",
-       "f30abaca578ef3b725f2b1dc": "N18ADkZ81y5M8DPBmTj2u2RNVri9wlcn0R0kUqbwav08g8sTOcQg7A/hYGzlPeki77Ih9Iy8A7QuNDnLhTKtY7leFLve33AhKCBLpZm+8Nmi4r0yAm+PpEcYYuAuIJbxYRzzWSXViNeas4t/7rmt",
-       "c28fd2ce8e0f1380390f43af": "P8GxbVlUSJ4zqQWwE8JKsP0e9mRCF5GNEQb3M4g0SMxnFzIGvR2Q6kQEvC83HnNaoYVPMvLC2zC4nHjZmg1Q5IOBQua2Nw0ax+OnVFcHkOgDpG9TZxD8AviEYAFvSwSdUivlPt8vDa/R9n9dZJ3v"
-      }
-     },
+      "type": "lab",
+      "lab": "pcBuild",
+      "n": 2,
+      "prompt": "電腦組裝師"
+     }
+    ]
+   },
+   {
+    "goal": "🧪 預算剛好只夠最省的組合（🎲）",
+    "rounds": [
      {
-      "who": "🎮 電競玩家小凱",
-      "need": "「我要玩最新的 3A 大作，<b>讀取要快</b>、同時開直播也不能卡。預算 <b>45,000 元</b>。」",
-      "s": "eff2317fee457204",
-      "outcomes": {
-       "7af2d45e7d218e1583056642": "d8y9bNQUntnKEJOr3uEQ4lcr/ADCmAVGBWadDaoctFITWAMD51WMRm9xwC+NVMGdx2VFAbeFyWpAEianXOT86i33FJk7lmP5K0wyRA3VlPi5voqHu2xlpE/irl7+D9tZyk+d9U7AHUunzkBQqaBFe/G4qlZOB2+OJ3P0vu7lIIEXGXsKQR4ODQvSXiqSHhK2EaE0aPmyWoRou5X5k17mrfhR7RXMerIjI92OK6gxa00U0iOOYMB8l93/8L+hcTD/4MJm3QInc5hqzXZaE+8bw+N8/HnVZPi2r30WAJsQGsxWXo3yaRAgjNPB3IyunuRzGLEwJDwMhB7o5ZjxhG2H0r7a+pee",
-       "2332ce1dfd4014abb902e09c": "W1xSOnuxdX2OOp9K3xuPBLeeHbjRr2noHzFJfiVJxPIEfvafiLCIlZvyaTUxe+qzt72REP2YZU06BXxPkmEhO7Ef184QVK+9UB9KssL9pm3WNr6Ups1PjVKFCz/MhAtbGQaed3RGhSEBruqlEJfSmzP8ZKio4oXRUknKuD6eZImZslFCHczwDGIRYmpklj4uBCX/pRbugWsejslyP/oyCTPCsLfWnDmN12TNBkl8pMM9oaHV0FQ3jOIAgxLmUxCBXnmAMpJH",
-       "990b9117590c52651ab44724": "OTP0Kf5RzpdlUD6qoyNki1b5wnScZXINXC3zZfglrqExI4howzcO19K4KQsQLCaTxaNLt76jz6JybWEBVxUuDFIZ3HUpLiv/s/yosY1unmL9hitc3eyS4UqClMA/mPinV/B9smTvD/3hS3xC9y9eBlGdSip5WEgJl/oucE6KWR5eWlu0bw2QbQmBjfyQ+ueDX6R8DX4K8xxJfJTpNefJIgpGwlJTh1BCiJsiR6vCW5/1vNsi/8GPpeuiMAJGsUv8xdL6yBqe",
-       "1af0fb6ddf506f3e75fa8473": "4YV8GcIDadKBHg5DdIgTiwB0IFKooUbwSHMHth/y8JfpRyawYK3j1lg5NBfZsbcSEWNibFsde5SuWvpuD5YkqM0rryLu/8y6KCNnZHIRGZZcOhKrUvy91zqNyjohe6lB6Bsmb88a7vebSFXzHEurKArNVPS4qvJLR6Cgvv6i83QsvZwU/ELx4mVCvzmN0uNWHwSj5xvqg4Pz7MZF6wW+JPzpv9ydFSbXunwV5WZYoNj5lO/zk2txWb3r9c9rU7+cOoufRWPh",
-       "1ebac856ea60b9e2ffce96e6": "6cV3gIve6Rakeb8NqELLd2CFEfRVbagmjrgTOr45MsO86t8vnnMZcMj67am/7KPo/mKBA8gIEbWzvYArPSC+qIcpxI2xGOSqX+aKHexuTWkJECFpPUbREvdbdaaAeZO+fzR/4ZTASIw/WUgkrtLmkxUZjZ1tD+K3AxR9ASfTlR7UkZR2ZrEF36q2ZA7n6ts3KBRiBaokd30FutLn26ZYYnAS8u0ASltzYlxabSo0POwAJofmPGPshDBCf5lhfFh5nPJpCffCEtcLFTnpa4/tjDKl7Yn5iH7nHAlJL7jv4oTKMqb9JCjvrSqEkwB5zfkoQEgSM00rh76IzscBUltRrGkdzvw8",
-       "2ff55552fa9b207c758e076b": "9x51WhooQ45KmTlAyKkfSNUE4ObidRp7w8defa16uzwkTm0fWafHdHuzypF0orIGnsP1WD5Vo7vXw/85sSqLyUOPrZlWBNHRxYHVvOYNAjEDY3h0qdjV9LKyv8m1j/ZS661KpAgusq7tpEV0auA9wI7fJGluEVhaA7Gys4asceujEgBElU0D6Kme9+OXhLiGDVPwxoycS9fj0HS84PdSrNz6bi6IB8nxFaTfmYATosHwGilBB304N5YlwqqkRidkNwrmb3x0pY/FMVj7OER/",
-       "b6c0831087e13b4de50fadb4": "o6lLKNIjZfMCQpOm/bZRINeTbqbjsBRb514GQ8iChDY0/KEPOFBf2NScdRiYLEqzVWdwc9vS52+4GfUFevEqCz2Vsu0+crDoZXznmovDhmzAZn6McSeK5YcBLy4fJ/6PcvEtTa0iXKPiqFAXk4N+ej9KIvQ3xmufea8ziJO9kQ8wagVCCHjoyZitZ6Bwbp3t",
-       "33fbfdba7d28916502f94898": "Du0Cu/6KkXH48mZuQkIFLu9vP/sCxOucLnDCgYgjp76HDvGLdB4eeYHsTlgNuH5fje4Oqyws1d0CW5FMufGt1UD08reI3l9kRzsbYYuqNRasSwqE8yuN2tYzst9G8j7d/Hwz7I0i91KCE2yQNozwodpk0yaPgo2J3W6ykMa+0WKH4DL6SdN7HxrDcgLYWesB",
-       "4ac8c0f1f16b3247410adf1e": "uRk7VCIUInXHMvlKyr7yGs+eZ3BL7BAyX40zZ0vKansGYIED0UnuugsRiBQpeRlXrG8aT3JmbCCtxIZceC317w/rGEF3UMT+GwGXbFP061BpLwlonhL+V5lOEAXI7/cKTw7bIuofEn6RqwbRcG3jeNEA5OQfY1ZERUYRWErO8v6gbbxoa4ZWSBMSFoJfVnc3",
-       "79ef9d669a9deec6e8e10c47": "obOYmLZt/1hdCs7UGWq6yY/sdUjgYUYO1PXHtTgCbzk3wurSYrppqDu3espWM3wjqi161mZYGuH3rAZXH3JsskSaVRTKEYWRsCqZgtByEv5bTXgWdOHCx8e702W7n6fvbOPk9l5/TV8thZOvuUujG0PUlsidFJpqmkLZj31FZHf6Pj5+qrRLwsOJilEOha5UQeg+RVod+0uzMOcuEHk6M0ehKNpRSVgJWAS9nloPCXnBTvO7qPrZLrMifuBKn03J6hDzhmb+bK0o/9y16Ycm",
-       "4aea24a8d3887e1fecb12471": "GRymNOKGlvBza314tTnJt983vFjajaGImGRMO9mwMzIl5bcLyOqlQjJ36NV9vPQsWYWxbIO1pbW1K6iTT+iDbSz+mQPWjmo4fTiVuH0t7KtfbxK8oKeFF85S6RayeIk+CYfbxcu+hPydU6Qo0/S1jF3zADIQr1U2kqsMHNqySNlDXaNuDGYNIS4eiyytb+bzJUl/UzDe6uTGAvtQdK2LxP/cxkjeRrpq8ygs76ilVLMvpMYnW8f44t73efLPz00i/ug1S1fcPVQelp3I9dnJ",
-       "bb893762fa490c643afa7a63": "psTEBLSJYlIpuBTZpcJiEe7ZFNogtoALBrjq2bz6wpAptl1hSP6QT/eTW5U00Nvmr31fO0+aMP3px7kONZDGt9OFqXUAyqNeoGtwXjo8FoFY40O7jTKmwg7YzL2U/joijF6CxTKNbisZJKmvF4WQ9ba6R7jsCLnOna4DuiWeknCGrLakCPpYW8YgxiZ7Qz4/",
-       "094afb5d2535b76488d04559": "kXmJawaOSwJABguwXcXnK+EKeaDxhk8PwnbDBcRBC6J1wB7oSkLA3PY2PedRXeIOnMfi87We5ss+Yv6ebLls5xbRIMIx5dD0hteZ6U1jLGdPkmdzjdMeBWkY0B6FVTrqoxVtcNwYRanBTAoLn/KUXXxYpzHIzmsUdUV4fb7yHT0xfxXdYfEdkmUtOqvr9TBi",
-       "a3e2da8edaf95ba9141d6f8d": "jmuV7UHz9cVSNuuorV8bTLXqe2QVE0ybAncVF27SYkXpkHy7kN5+PiSPNlyzCB/po1fxd0jKWue7GqNXJmm4W5bwL4y322Klp4p5VnAo2sRQuqx+i0zkUZ/AJjgtdE/wmYaWkL2x04uJGZvoLCi347YCKXq2Fz6jed46gqZI7VpbUyKLyv43WWU3wBcc/kEz",
-       "e86ba5bee005409fa4872517": "TXIY+Ly4ZRmDnKIEcDqMTnD7uOX8WS6AERf59/jak+aicr99Tel88nVhWc23ln3AiuS0n/D7DGjSs30f5X5Tib68whSFUtxBvDKohxEsg3GFbrLhBHXLtatf2s2agSXoxwWezxnDw4owVwsghmPzV1fRGUNe+ePrYSOb9rS0K2d5pydovKbC2w5G8uoz6hXosDpRiu2tHR/FDD9b3MCRYU4NKJS0kKz/ceI0K8pYx8tlpcqxrnUZfCFhBFenomXouqGWzQnnGYIjl4VJlnl+",
-       "058d0243bf28f3fea6f370c2": "I1ZJQLDb20iwq0JIR5PNRQr1Tnlman7ad6jQezbltfVSTCquPiqt0fDsMEUXQHe7m6zwFRffkj+U1pBvzG2QcPUjti0bOmSKNMvIsiZB/9oMyzhSwx5Wh2lAlWTXyBqPMYN5zjNe3wcdknpzpqNOjqTyzEWoHICc0/RoB0yUO+5bdFqiMrT7jxWG1O4rvlccTfEN/90lKk3Ne9FFxQpLSkJlWCq1CsVxThShYqyCPP7ApOgqdvnjPyLkBLEXwc6ewKBhZg4xOuMtADCkq0aD42cjRQbgxU+pfbGXZrek7fVx8lweLS2VhHqAVqDYZfhupXEtmfvcpL1+5N5RRA6noWjMo2/7",
-       "c533993cf56344e7e6db78c5": "nl95LFV3FOxWd2eFKKyLrQm8T1m/WhA6uaEk/MF6dRwz7w/GZsh59SzxSdWms8/8QSFfqEUewNdNigF9aLYwV0hlf+q6HMQS+6s2eZ/QCCur2YQ5C4EA1n4xVAhXZcsq8vhIr66flCnOKSXmTub7r4rEQ06697mHzLBYgdvwdBx/fGQEguyfajPzsGX6FyqbPhQQK82mIaEkflP0kpw9MPzpRh5zL/c43GoWCeEg4yS4wweEpNaXuRRDPuBsyiYOVbVJ3lEq",
-       "aa3fe9510ca7d0db7be261de": "uGtbf4a9+KJBp6lkz8VR732fUKNrh2xu3yqH37m3gRZ9gJuY0Ii1DYqLzn7Bmh8jJs9oTEe66OUbKewyu0xlgh36Xv641544yLV3tieFW8eFygcwGyKFHRbHI7LOhcctYyHPqXmUB/XyjA0lxsRcPWILKsdQpBxQi1doOgPVN5qeyYxaM33aJDvHGn1c/rVMaHTBAbJ5Lx+q1T+9ym6z2G34RJT54wQp6RMRGi4J75+LuGKKghksfEwXoy3UCiq56HkOuodR",
-       "aa29da53ca23aa68345e3482": "w1JiGMCpYMnl0J1OWr/FExeWOyRyPMI6y5ld1sxqiUA37wSDbRnMenDbU7r00SzbaaiwtHacnd2xIjbEN7Ajo3NC53UPrjr9xGnnSvZeuJeJgxHykKEg1IgghoFevx6a6md7T1+WxOFEZqCXrUYnqX5kVdxgO41YX5dMthluvgJ/1XY75ZCG105qKaj0iPtyVzesvf2VTzp0JTQB7GqjkHLA6HH/VQbIzYj24RXAlXvQ8Z2m1/pOr1bbvjQgIkOC43MNqUef",
-       "117f9a1d33c13be3b42d1f90": "twwOnPbAcpr8eO2KcP5uC02yyZ80VX5hR/n+4IjrUdabDfbUvkTsiLPSr9TbVz4OkIG+Qfs7u1whpFd7iBqnjdLBStHG9smv500nDJqynyQbmsSg4rtN+Ny+YtlGDDy4gxYatYA2Mr4o4YX1xDtIpoQCs5mvQjFJLdYbs2/QWR7vXVQicU78rcOA0T9Fb8zKOsyYHZ5S2wZ4Cse74ydYbQQUdnAojINyLlR4yXPmrNvUDYSsJevNTKJq/OeVpkayVQMsv51qeMuG0ORS27WOuq6NOtvobjynAA79IMxjIrkjVGfmrPkWJ2dih2i+FKTJ4siCYV9iB/2kLunlRdASdEPTHujm",
-       "1010b40bb08c887acf08a5d9": "PsZ2Z//eFT39mQE6VJJfpCpv5eBiP8+PmPzAhHVExXEUDcJ+6jz0SDG5JOHMajWK1DLR3o6/jaTzbMr1L5PPiFyhlGQ5ttd+qmG+28FenJQ6gaTQ6755Y9o1/dCGbFocV2LA/aRPPdDVvtQLzTuklvaepDwsHhuMtO4nbGI8PII7AN485SO3Q8avENMjDcK3ybPJ9skZdYRUULQQrlAcjAUuaPG3XKYb9moOISmMu/AguhCnJSGgxVUEewjGyN4JaYtE8l+x/3yZ1G9l3FNH",
-       "d8003881bd96a904fd8770bf": "3OnpMuao6eS3Nl71wvmAbi2IQd+mkCNSIgo9+vY6TJJ3DjD0oyugbuGzegVFk4vOH4pMnhlPxemvzY/oVWqacInhrH+128yKmqez0utJrtLQI/t5w5TBHxuAadt9CFU54ur6Zbv3LVV35bhC/Ly8CEDKe60bZrDHBhRL6XLbzLBi+/SjNO2KiUU3yFXyAcp+",
-       "e0cf45fa1bcfa1fcc659055e": "v+EFpPlhrypOZTLmVCDUZyZqg7CizMFIJ0PhDKBYCCHFSwMwIJVHSrusKxZUBl8lLHn7uEldQl/Q5ojttpTe8OdEXp96ncCpNtmK3fzkpGoVzwHYQ9BQ6WSAvvd3UHWvqHwAM/kRY/pjX0pPJS9TAKp6hlDI1dFOY+HobM11WFionUVdKaBfxpsj0MhtRKEC",
-       "7f7b0915bb8fa593ac9cbb6c": "u6AZeWKAZbhuP6mf/PS0H/mdUOOsQazsnOVI97WgpoGRBiDkEmHPlzeAm3NLVqaulfYhJN52yFEcVUCzH+OB1VghtuY/g9Q8WLcW+nNx5KrjXcll9uURuUmHNMWLw07klcxnkSEruvPObaIY0uDAt7bekfNQUeMimF/1QguiBPgjE/RsDSRu0t233ufHZHeC",
-       "9a5a251b652b4c42784d43ba": "aSOZ4r7ltqeH3DRIfxPXMXYmSUenDFiEZg4R+jJqjwC1oC/XIPWLodPOReRFIrFybtxf0UY0Ni5naMErz9I/85pnVSHL5IZnlCpAAxU8rAjVIllGyDjJ4aTtRDdwNa5EBNcgNS5e9/+EGpJpXBp57QYyaKK35AqvA5KBMMqq+xOPbIqkWAQ+sz/YzAjR1JF0mwHGwiIuh6aWhEcvFmPTP14c7rEDZR0LjxVTAWX1iyUFzZqJopTFJRUOMS9BKjFfbjhGf35ChHX67ixFZwWe",
-       "82c44b9248baa64b48f66a1c": "7xieFuLd3Kz7K1Co2nvxDHOmjjdw520TJ9RBWHEIfnqwUpY+6OGMlwQozfXadmFk3vLdB+mFOAzmKyauVDjaKmhkJ2NBnNg+JYpCktzd2U3+X1qsDI/KcMXWldRjTpJLhM1YyuHsdvavl9CViTZN7juTDgn4KC+4KAjpsjdaJz9BrwB702Urc1nbJZsa32G/S/DoW1u9ZZiQJNXlrgS8gyKWhRju8CXzyqwSpoYV+zvy47buCXYXH7hSpWgTexnhCxBiBy2J0CPY8yZ8i7xb",
-       "5a9ca75797e580f5bbea6d7c": "RjGCWPusPKBFAUqJOTnnpzle5528qUqk9ke0PzbeugTnTG8CYAvq05pud+d9gVnQ10ULr2TglDSMTxY3huuOTK+10pm1KdDVNcgWHd4luQ1Fk0v6/K7DX7gP0SXyJ2fywIAgWLMMGh2vPc0Bo8ywOl0Jmd6WEImwiNgFH2hQTvLA8GinV7bF8Xa4X5+NQb9k",
-       "1f5143a9f6a821f1c7aad47c": "ZSGwiPFCtQlQQw7Sn4rRAJWk9iTJWmFoJUsMzcY3fY3VYNxJiWoMqc7IWSvLAgwMphE2/08eDPN67j+yB/jihHX26NkKWhcZR5BMnJ3BDOsbJsy42DrnBJ4nT+20XIofBkVUotD5KuZsZPqmS2vlDy7XdteTzk/sgSfSb95dJJQVxrUPSONEoL8xW6EKijS9",
-       "c93784a842f8ea2c2d3b7334": "kwpXmtie7HnlclYHFt4QYlwnqnOvytAuotm7jJ3MuohJ5KPllfU7BQSkCJC9+EpUjWVAh4hBNb8hwZmdDQY0YoF4yOJQPSPP88c2uZc48sSDw9boaBJ0cGLvTROB20HXz5oNY7WYAWpAPazdl9JEwSOWoJeYB5BlngOYrzzLxz8A5w7EH+NUZyDI369sZ0wl",
-       "ef7e1be421a98f0ea04fa3b3": "IfqGemZFlBs0DAIjMYvD44jBrWRnJKlMlB3H+vmE6hbl+IUs1riGPpMQHmqYrZjWrosjPPJphICHU/EFyouN+d2putlbsygjk0f+pWKZycdj0dbwJFP++KlVd/nB0uXp59mxySsakTIszIWDdcD4IhKdYqgppLaRbmObd4cd110tmRgD2WajHY8cs16DRVA+Ry1oUL58SXMDPtSnPiPikIVWQX5lgTsR6T3/CPKPAb75RezI5Wo6CWzqtBf/EFn9qmpCkAWNC863uuBIh9g8",
-       "c9718a90b5ded9859a918bd9": "MyX8gCWFBTGhh/jmxDVYqZ3T3G+UQzgI1q2C/wASk3YYhlV5AUyQNOSJev6NPMC/FDgia0ulnkd1TKovHzhIEN8OMHkaZjWc7jJcGt3BOAKdiAhQhVwVEFfBzwJ+sB/tNosd+Rhsl4vnpQ93zTAchSI6Q7j8CAzqCLCYuVUPyr27iwoAR8mzCSpycauagepleorVMpnT9gjVISYBzWU1AepwYnS0dg==",
-       "4f99ab46044cb51ef20253fe": "PijpysBQTUtBRiAjj8BnZwFvsNAX7xnPoUAQ85Dx2ypZWqo29QwIbTetbWaxVE6lxP/nogC4YO3BFAThbobUeoxdIM2JpT1cTI67MUcxZ6+IVtrRNuAwOJptwGFu7TcSXnWvjqxYtg==",
-       "a196d9c732f2fcb56c570c40": "NyNb0fi6+rt9UyskAFwS4T5qGzh8zR2CF/DmbrR2Y8CyeeNcZdZlA2XWtgf52kaY5oAK2WIVGPFIbb4HgPUxxpeFY4ZirGpf+Qx8o5J6/7CQCqom3uQdsY5btifJck0wNn7Lo8O+CQ==",
-       "949054930255a58d37af288e": "TjN2LEaVklCaZfBztbTQgDau2qoVRQnOZtEhqEfTp0ejXI+pYePBv51vfOM9HV2mqaW/UF8HNQ1WyX7BNZ5zHMpaJRNGkEb/yE/7iHJmJpNAffw/uBmoCNpced187IB6imXdC9yqzA==",
-       "bf165c7436222fd6843b1816": "5tYGjbEFtc2FpvuGWs3pL0Sckb6CUOidw+iU3T+Yt8lHOtxXJzuIeAmh/cb/KAlwmOl7zS3ajiuLUBJB0qcdf308pz+EJnzoC+chWmEJTP0jZ2xKtt7AKokqvnJ191L4VboivRM3UinwVnIB5Nq5Z4FS0WcFDQKJUmYNBhhGLA5/bYLa5aHm+NkW+IbFf07xbBQSgiDdLYSqtlfrKfKt7a6cMZdG4Q==",
-       "55631c6e6aa483a1984cad33": "HSbABtBpo3/Ium1LZmGsBHyhEn5HpmYNOsYBeIzhilWJlYaEyhSDML1KW/+aKkcAN18f8X+xPKKeMvfwOtKf7FInXG4+Zn2U3zSclyWIDs8vqazKqRocO30UpHpWZFA7gHdvsqSOM7eCeLl8aPuSoQ==",
-       "dadfc0c35c0ce26923e1a0f9": "2PFA37eeldSqMiaOUCT7z6MAbwFFj6DVMFu82c9vmIs8hUtyoxs5qhwp7iSLTB3GSZdinAUcFpuHDBc2rYc5FeuBDnNP6VLTz8JPUq1tdfnz/Z8xJefSEow52+uQTQ3xE67GRdW3vw==",
-       "4c19753f6e37798398015945": "KOOJ7xrh5L6P3pYpn6eIfZqVIRLtS0qnROa0Ev3nZaq3OqluaWJtgsfDACNGUCV2EH92Af5P9pXS7PdT6mczcJ+lEYdrw/2mcPlKFCT1UE/Yxq9+/HEkiFnG0Y35kH9DMMkqk+q9fg==",
-       "08af305349f85795224d5d83": "R2kEUaADXByPdTixR7h7aUWhhQAttL5uD+UzoZfirf2XeH20SiCz5ge5oUoZ5n0b+fe+yCC80uPadmcptUNRDyYmSb65UEvejKBcLlirvMZcfAIYXNTDSRb7apO6dISeZNGtoQOf0g==",
-       "6d93fbf46e065961cc43af4a": "gI/MUmC+2pr6yM0zixHuNBZhPCqhA/OXSQ1FGYY9ohYJjOtdU3G7FvFyEWAeOAbqJ65yD/HTwgl4isx0eKYcnJ0jY372qp7zHp+pUqXs2mHDIlpGfbx/iqQp45ca8vA0/z9jOjkqlNcjzfxgz6ZRsw==",
-       "f92098b4da73b575e6966d9b": "V7gcOy+uGGf8yF2A0lKInlabip8CQEsWXC96ynVN0lW6IV7pQp7f6g3RKvfKsiDd8au8uNN5ybceP04J7sYJfVlvpDSNtZhaBSO5m2Xuh1+Rhg8KwR8mstGPVfw9D3pWEHiNwWXvJmehCisWt2g0Zw==",
-       "7b974fed10ecc6e529dff4e7": "yYfSuhrtRas9zwjCKJ0XNf5fub7XGVJbVH4QKem+TvELenuI055FvPyMvIoBZ9IZ7W3FDX5f2MaUvxARxOPKN1CYdyTUwnx/I1YDIw4NA2YQY73mK+w9gbFoJs+i6j9L7MjCptDjzg==",
-       "fbb0b9a561048eb0a0dc5e84": "jCRu5vQwY1h9iU2oZdf+7dH+LVaoh1zeSRkMC9gonmsmRFaQH1OUFOMSURZ++anFBfqoqnTnmkwCXliLqQDX6j8UZ8tOPpOPvxlHx2sWyg/T+4N+sAHtVk8GeZfmjAzICPLKitivjA==",
-       "60b95e5c5e1e5ab26fd8553a": "dY1udPAAMpZZoCDiMEStVaWWHO5tqnJeVPeI5E5/EE7skXpztjZbxAkxWxC/HKnJ16/vLdW4/2HU7ISO+eRunvtWhLt4PoYYfFBKY9StABcQH0CcSyPL80K1OO5quo6p5rd2n010Vw==",
-       "94762a1b377895a671bc78b9": "kWzk1egBS6Hd19KpmvUKg6SptR/gm/thz0pFHzL2y+uNy8Iwte24bbSISXTTA1DUS99F4pjI5uOrFUzgyrYZTBv/MPH9sV/43xvNhQe1bBIGETxpDXGJBOJQEXtakzcw31JswAWxC41Uva2eXgLomg==",
-       "3c8aa6e3dcbaa4e4154e635d": "S80YjoJxU0eMnDDAAqAPdLMRHr/FAabL/xONDjUM7euyaxdccZh6FVBHzCEoRynbdV1GFqRbNKiAOwqV7ZtnbFJ18NWLgvLr6mmpnj0+RUgnBJTLbKKCSxh1XRy1NeFJpxQt1owXyX2d+CHJ8KeJ+6D63u1LHQ1LCzogZSPBr5M4r2pLUFe/5MG1ATsRuRv59+Rc2h1p3AemkL2M+wn9jd1UFykJBw==",
-       "d72bbc951c13fcce54b73b63": "ZWMhEHXAyedEF26b0KGeQXKja4VXMMQZiCjMTSjvN0B+Z5FeaZ98TMYGZMmuiWdm5gaAq4XCYymefQPj/XAC3Uj0dKMEQCAw8izc5Q4+ajy6Z/24UsJrlmyAggLKITIASAjET29k7A==",
-       "42726a6b4757a5be39bccbb5": "wm9jZI+BKq+2OFLTFHJdAxAGsbBseHu/tNRMn2joHTKrajqQCz8IXuQaAxyYHOuWQ5ETz/osfFyTnyUx1lWvWfsd6r+lawheDM/D6MCqcJKRaV2/qC+7yvSKYdAtLl9u7cJgAAoIZw==",
-       "162d9f97e4a466e3ab69b571": "bbB23ECK9Mm8sWC0ffQALUndESWl2QKr/4R1Kt1Fe03EoGwNuXzw4pQc0+/y1YtA4pEZJ3TKVhZs8SEEbEDIG3/G+C8Ybh46egBo5Ajej1qY55vdowqeu3/YjFhcWC5Gzk2heqXwQQ==",
-       "1a3f50d483efb2ad4633cda2": "NQxa4v8nvNcJYYvi2KsyMrgtWHGs6XLgmRvToK/yqvv5ZHocsihjCRXCmnWhm0ym3vd2qrpW1rZrpVB/CgHArAv9zXKsd4O5D88mud9lxOPgT7vMDfpdO1XOLojWTcBKqUs+tEOQ6irdzbr7m0C2qZlXcLmc/KxGRQgx87YCeJMjyfl3NN2q4eZbZ8K4m75SuciLExH7sefB6jwUssrq3dN7k5kzDQ==",
-       "1e2d92e293f4db7aef81a9c0": "eC/bfEfupsx+PHZgFAarBDxKvYjfGd9y/WQSwC5r+eV2J5AdXAbyl2u1fkFKxh2RCdG+w6nTF9wCAICIaStr3UgxhXwjmCtqBxxHSk9tRQDsQvrQh25h7Nbyda5TokXIT2YAGsbXxMtvWyO6BFstXg==",
-       "97073fcc3613c63db59536c6": "b6McpmVT/1Ppc9x7vmAq+ZFNaMkLWgjvlB2+VSgXjqXVKiR5IJKmmnucqHa6ZGqCWZLlasCtFwxC/eS1vOEoI+tHcnvretzT7B4tiEa/eJcRCAcbquPOk5dZDVB35axciuQ71qkyYw==",
-       "e4233caf0a7d5a067b71c93c": "pjB0J3AIijUHoUCVKEoJhMe+RasL0Lvc2HTR0MvNz38TIumqQtRY0FtmAwYrhxCOOiraXtwn6cvK89nVWeLQcnhI1mNfjkHC17i6tX4+SP2ArI3lfRPkR7B6g6B6nw02b/LL8FRsBw==",
-       "9bf3a212695199e2ecc15b3f": "J8qxP6Y0tHAIhd3hbhUNKQdzXmVWfRl35obDruhzs+hLCol1ejrsMFUO0+Q2vMOjZCKqRg1tYnpkD5mp5uPSvpC1UXpHTQV/aZ2nRNTKM1nYxpmlDyBdrxhn4nUMq1cPC2hWOoyRfQ==",
-       "22fdc83c5be595a7f583a0f4": "1AOb1+GnXeqFPGL6WMM8UYrmHi+3BYOrNfVn2Xo8fljiMWSZx99hYh/YCsut5IRLAIbofARXEUcnWKDuwZTjpTXaIoxZ/DqJvZCP55o7DnCWOypYuQrhlHzi/A9B1qXDX13PqRNuhCmRM3loEwTTjg==",
-       "0699b06c0c75e3c18943132a": "4qDj/VNsitA2SwINmbZXmUFuFiKmCRBWEmqzrhmQIsdherjoCSXaJX4xiuM795mo1ggkDkFuUm0TUMejgclyDf3v7DSwnlYFsUy9PjxlAp/LxfPqRfMbLgiyZXwTpqiaD+hwsqKBXceWZBW0otsSQA==",
-       "e05b99ba51fccc8c3e1e546f": "xNYiT3HeO6RpQ/9/7TLr2aCpBtH40Ppl+8noxb2gwFdBrHDgmxRxd/E8+ttOmdUrUb2qFAQiBxooNjPZ589iF4WcXLgqimostmP9LeY6fVb4AGTGRv1c8dtmeW/7IqV5AmIzyn5nbg==",
-       "6e1d80301a67ec7d6b9abbe6": "6a5NmAoW3BKXEuzq7oh+e1ibJlDZEJhMc4qaThPjKdkEa7C3L+ZH0G0PO0qrmN2QK9lPTJ7cLUY2zd3lk5skrLkpE0dA7nnQiMWjIw7BLCb8FpCbRVXLsOfFuzbKyZ3bwd3o1E0FCA==",
-       "1057d3226ead464dbddce989": "ih1tvoH8VkoxMdeX5cXJDPw65CkdXMlIIan4i1lwVY5Cy097GjgUd+JlFVxMbCGL878Ku4mSdvmhkywlFW1jnb2IZKu0JKTJV+iuhtjfdFvK2LcvMbKAYimX7xZ/7rKRcLnDwmU1UQ==",
-       "5f09eb654159a68382f27f49": "wyS4umqz9dMJM0JB9FBIAPqXwXnIAekOogj8hSBzzifDCe4o/qtyg0ZSDMJvO3N4Ot3Y/5cAhV/ExG2Wlk+lD+5JPyi6q+7xA9new/ylUWDKyXLZS/Ay9nsAJ/3mZPq8jxMXD07lsn7awhz+PI2R6Q=="
-      }
-     },
-     {
-      "who": "🎬 影片剪輯師",
-      "need": "「我剪 4K 影片，一支就好幾十 GB，<b>容量至少要 2TB</b>，算圖要快、素材要開很多。預算 <b>50,000 元</b>。」",
-      "s": "998500f5ba1bc9d0",
-      "outcomes": {
-       "c928a332d7356f93842efd91": "ohG5URGXlWFNonNalC3lMMwfLn5DVsTZ9rQOaPN9f9uIWd0x/kqbbMZObn+z//L/kTLIQZMhcj8dJ41J9O/Kkf0REWqN9BrIXIwsf/8PE8+YnY85UZ1EeG01MKLqZySCg1aqsQ1YhWT2PocdkJDAWMt/1Y+1Qte+H8nePzZQMc3U117zkb/+dbbCceqcJ/J++redvMjG8OPybxe/2bBcYXTxbIVpyT4g0V3y//ori/lCHLHLVyJFQ4sogl3Y5xWs",
-       "d5315cdaf11456c777a5c44e": "pS+QAnpfnCiYngkcPv6/28wYSb9VoCMK3TLZ8g+TfHshzJmxmR1OAW+h093MgCgeEM9mo0i5TDSHZn0EGsiASvqQf1SQ/19VFGBAa2BM1m5DyHysO4C5UNbBgiUSGPODitwN/gRf3Bt+7wcQK5rd1Rcrv0ytWdtoPYM3JdxgplWNAtxdbGJqULASjV7GvbRLrIBNiRUbljudwYUDy/RLBs3fxuvJ6290p9QG5GGI+tRXfkxfTeiSOEfk9OCMz8dj",
-       "6aead871df21c8d6231086d0": "Kp2QrtR3JdjTlZ/iyKpLoN0eojF8O4Jg/d0dTncalce+xbvTlCwe08/DZVJOU6tv43UxS0GsKSFKYOkd0/KLdMUq2tSs3gAY2Ttq5hpTyR5JhS/DuUHKMIsNNDlC9RCQYSRXUGaru8DJj9nIVmUufmc4j1KwuYxG3YFQC3yopPgm+EULdqKsfRmioc0Rpp1kP15fUe4+NFLy9HEyEhigV+oD8ynDpEKTKrmf6Iidx3mfzrK2BBkZwTRA+2UICFTj",
-       "915053a84df0b828bf7103d0": "Pj4LhT9/69ZniPPoXsjTZQ6xVH1/iH34m2HQ4f5JASvyJf1NMOM4BWd6lQT956ikxH9gExdLmJ9odp9SGird60FS73L97d9W3j82KZXd1f910aYSrJ3lEmBSwvd+/7fJWNjmhkTGhLLxPZwS3F8Xst8t/G3y+McHOoMc5uCPhFKFjfhkc0EdOOUh0VFphVDLf8ED",
-       "523f24a3b701e00c8cbad375": "9ZMQBAJD/i61LgGjZDJGRNBphh59uf3fE97k4EBMaAykjM+xyFRel/0VEPvC4ZIiEQ4q4ASgDRWyMVxfGNDZcjkggVA27TpRLfFQ1XzFJfTEzTotZ1nVdagsfxyzFxFZAdapoI9qsIzu88tcehclprm5cahkuPTTAAb8BGn3DN1lUZg/cS6EObbSlGER0ktIfpMV",
-       "66468ef65c8a2f8bb9617a4f": "bfDoR2X8UpuWMNFCiIS3IBbZgEFph9NraYVxyiq5SczSSPG2Pq1cDbF9YjZalVGFJlUUHHvvsAo8u5l3SHoGF8k0tABqj9q4SyWQ+7oH46Qolj8bMGu8UWA/KEBpRT1+Jm1c7BfAdd/A+Gdpg5QyfGyW1NFy72HQcsWEpH5/AQN1TyR1IfAIqOOwnqRYNPFpYjVHEF9l4XoM6hMQXhSBjU/Vdf8EMWwCnU9Q+R3pAWg6xXI77Msc+aYVa7g49uzc",
-       "ff7f8ffdb90bf4fd97eb1d8c": "PYEkUMxpulahrOEp4aG2rjAU9hqb4h+aCFhBOCwm6Baajtba2ZB04U30IbM9NME5L1Yi/ZWct5cDbpmUbxchJrXB1z+2soTYpSlmO/S3QXPSAS++dAoaOyYKecTz8JwzCPK8H53l3zdMRgjDWM3D31IW/uM1y4QuTdyLTEtSA1qrnxj9wieMoRYn3P8569+JoBflSZ7MJKiaDCqF+sg5OKPVOvXUzYmSHiUTUla7WzAwoly7jCOBD8ps2g1e1Eyo",
-       "d6247de18140d983cc751152": "kVoET5fc+k8lfdtTpsm/oA1Pabi4077r+C7+hjQa3GkIqhQpMl1cnGd1KMhJk4c7cjJ32ildPkGOi6NUJcFkIL+yTNWWeaLMdXkRFFqh/MvW2l36qc35FWgZQOVABYVxMpgLzNf6Tqbb/RsgyTdtQY+7zPjUS3SPFVRFGXTRl+cnQ/k3aHQJzWV4ahTuHFKhw0B9avcP+w+0Hwh7eJsmVC8cLKib/446LFitvjq4X7yW1tHE+au15u9HxlABmwep",
-       "367437f4b6efe698739cf7b5": "qBnFiE8jVSGOJg1Xp9BTc9iidZ+zvWINhpBwAOPPU0h02mLZPK2t98J4AOUxLbSYi1aW3aGqvIAtL6JJEUvKmHtbgJzJZ594nvOpQqG0JIURav7lUCMShVw9UnhJGn/FRZ2ouC4HssHkWgAOUqrxs2fNEv2gyYQ/UZUE+dfBYSIROaoerQPuDEJhpoCJx7nFbPCu",
-       "dcc206158439bb4f010d46b7": "7+K7kWG8F8FDZbbiYWT2OqoVU0RddSMjoDP2UOj656hs9bTo4ku1T4o5qUFoTG1O+NESFgqyIlFT4/O4D67LZwzt+qPD+Px3DJ/UpdELnaTtA98VzAdnu7hPUH08rjWTI9pLaSoq+iFKQds1MeaCY57fYtl3JBtcfwdzS5QpiThdJD6N+L9x3Agb+WTRwK+fbuyh",
-       "7797451b8f7f9e400fab003c": "v/JOKcMT3mDbDRAXh45RUR5KrspHgUMOx4SeOxtlgYnkLlvJW8KhtQMvTj6RwEeQGwdX11udlkjkmcM6U5Uk43GlYAekhtc1k+BwkyCTAWLqnL29mQJYesZhNVMKuOCQYyxKZeFVLmAqsGoU8BD4RHEx/X6eceMh92QwwKFucEN3PEEiHgZORIXPCffu4YBZaGyA",
-       "6af124e008320b9c9df5c4a0": "58bj23l6e4Y5uC8Y3oWQQCsdPDhXSF8+FJRjnuSVbNnI44qdZXKSg7G0jndt/TP79xeRLwLfHUst2SGUH7FytNLpWttEy/0oGKglfTj5YJetYmF72Vxy5NhPqFB+n5XzYTxC3/DO2WaMNqBKHVobG59DF5bgPcEGSdMNjn+ggeuYswo9wg5AkyEeaJmuhZQGM786",
-       "2c8e014e23ef8abae857d27c": "wi5h+TBHg2XFJdBPm9payTCdrokzsIEs5iSTG7i5v5Fr5AowCByYvhMqEh5xRsnkUb8cKAtMjPkSdp5wcjPFN5WC8/lF5Mq4qJ9PsCg/MrfqhHdrsj4Ek4M/N48wJ62nqDN+aRXWxSDvoW6aSwOAy5XVsegYf7LEIhYTd7pOfa/pCeooI8X7Lg9yyFKdEJa0QzIc",
-       "11fad5da83545338fd8dd718": "hJE8+riGgygHRu47e/IsqAh5YBnrZujsg1w4Hk5jBMJX7JSMW3TG/xGKlreXBnVqPvza7zpFRXJBcDjwNs/yMYmU+ueBYHOucVPzKbPIxVseEKbHc123d7ThdaojI9a3n1+xRVGu",
-       "5eb53685999ebd0203a98612": "NCPmwR4nS6VJPXouK05cV9fUvPZvkX8JuyjHndwvWsXebIr3ufa7PdvyeaRGwgLqava8WWAjja5uVvJxYKf2qHFEOKalYBhkXeWZTZ6npgnHG5Z2a1S2rx+jLvcvH1lN9E8HvoX7",
-       "06c4b91a898740adfd18cee8": "UtZ8eu3lzsCQnLSd9zxmXVuUEmX3ybcSPzLII2hH1SpU8sVojSmO4cCI2OrmdVAixM4DAZIriQIaOTq3L44mjIBkeEfp2JyWie0/rX7suTkxCu+wB4joRiqjyTlItJB/mCYY+Z600TX/WR80JVy0Xkv0Fslhj0AA61KIsCcV7TcKnZ8ki2eDl0371m9ikQagpigsdm5h6hhEm+vu6ma77Zof4Co+Dl+exLW9sbhpdUnaRE00C7MxNBpyhA0MdbWB",
-       "37c96f720a96db1cba1d4fda": "cyCbD1ciTwbzdnv4+f1WQ2omB9xe7utqNBLlQAQsMYzguqgkbVZwdpJ4c9vL+5UC2KjcOeu7hD38oEz8LXoC0N54JzdjwuLxD1jPaM8zxVYgZx/82xxBczfIjWl+0OpV/mcCid9FAG1ZlBQMM+hIguN5x+SmKAUls4UWN/fbDs6KTfKPz/XWnSC+Vaq9aS3Yg2blrjf46owYWkE2CMDqNEfpCEyUey+Oie0SGxbuVyFFXqDNy/Wth47CW5ZCDFMl",
-       "eeb3b2f54b1af4de0b30723c": "YmrXgIO7GCeMio/BknoQ/0plb+QwInQUWN1r7bVzKz7Q9rs5cw3nO+9s4967EVo0e9bVvbTqTt0s7vkHzX0V02gfdqCCtgKrsGwQRho03+V2lVcW8tD1fw/d9UfqoHCTmwW13vYKSNO/QSMkXKApbFu1DxJkZgo1dHYWd12mOCSy5MH2QFZUXpMhf2D6CAno5eGTduEwhMxVQcECDQ6v7GdUVs+A/nldBytIlJoXtJXfM7glEyGOdWxz1VzpXcC3",
-       "6dda8e179a4d4bee2ae3a80c": "eULBCQKCmIO9JpXt21ZfrL6LlJGUwuvKLtawKfC2QNhWLy/aYIEQayAjHY0ao8oAOblSYW5+74MmNz7TmmJJvNdp5L2FhLbQMQ7GJQ0b1PyYZh1f92NKIKEyl0tv2g8ayWLJ6fN5P5WnYrCPH3leqQ8AM8xUmz+Or7fGe+J0fRMREOmZ+3PuIhaMFmrbB44B+Xed",
-       "49e5dc0d9e9e14a8780ebf92": "lgXzgwMP14VRo3msQnjw6xq/JNoli2vHzDErVX0G+yCDIT8KC/MIh6EpPoCeck3wQElH/1HOmEUNJRjf1LPsIYoR3hC/IJkmCNdK8gRuNgWQspG+bvvFKdPWmDwm1ryhF785wmUDVj7sLf3sC0joNam3LHr216WrL29iumvbRZnv/gEE+TTBAUjrEEFknuUZxmSJ",
-       "b62e021e2baf5875deadf308": "TyqC/gO8OsP6vjDHD6Vv6NxgAYl34m7m2rUVzJ3K/os2KnuNi/g51fP9c7s67490sYEj0HbWSgfSDY9REfQX7Q6rjDrOo8HbeMfDhDVx7ZDrUGk26XjcNC3RN+gHHCspRNfh5lFIaPTgOPHKSNo/7/b9sJZNKiPfwbMvBTCN4bF72+U4aw5D5gROOiBJowJViupcFYWISXjp+aQwW7qY+c2iTxY+QoXNMYg57kGRNyTvlD+rUAUydNb8mIuoeP6O",
-       "3a77a2cef237f416e1ca3e3f": "febqM9nKOi2TVoIda91YIRl0c+0GjarqgJhl6ZHhN/22jO6nxW2jyNF5132sx/n8mR/Hy88GaGUVgtEp7FaO4n3uYQx9P9LYVjCxYaLjrjQkdcAJXrGY9RGlHSEcznzHUkxw3M3dGN+utp1Eu7TARfEzRzU5hFqusU/OHZQp5CjDjU5Nf/bJAkgC/F+MdYET3KBOJtutAMgOwMnbRAoZQjdA/Oqo2OiUJm7vTKBjdUxYHU1/zxwc6V6TIsz8Kb7K",
-       "2b7ad37f923574e1967c8b7c": "M9jOos2frhCobE2MfRb0fg7HJLpySrjdCtg85ATOhxecIPHqwI3erMX1I144ylzihdugq56gy/thwMZzt7Rcfe+ptCDEpJJFGrgAB4tWEPiavV1Jd/+W2O6Nm1Ugh9R02NLdVnXr8WTA14YYCunltsv+2l07Atz/I3b7xqZsN0iL5FjUBVaf3DLTyA4cZ+OXRNOv/4e3ykin74+QKrBNsJoh9oLgk7RRkjdL2U564JhLc3Q4tdWGvQYT0viP6FUt",
-       "bdff47418c16276a3d8bec20": "39qA18GittHdln97642PY3lsZZcNtColeOwgXMo/2eKrKNjMGYHT/GDEGnMLfyCLjBbU5WPHYwnTiYwtzUI315iJi2bCX/FLzKgmU4zyurJoAB6iA6ksTVdECRsPmicHotoJ1aIFi3jjhfFgvhtSXcyc8Oa0rsyw018X0wzXr6RmAoD8eICXQ61AWdmvKOvF5Ycf",
-       "c8115c463ca1008b4cefc4d7": "Ep0VEllNFjvg8OOQQpN8uxkDGvFzqGaXEWwJPI3W5k/Etqr7pUnjnOl1kTYa9Y7fiN5Ul9sXBTfd7CRU1WRwKddAZpEHOTY/KbfkDX4qI8tA6Zy9ObT9hDArpJPgsHPAoz2x8LhUm3feTMV4Q6WUcioGDiS6I6jMAKfXYhSqFO7+27EiB/Ao/ypXSPWPRY42NJYG",
-       "237c21ee7f91e4abb7f2e3ec": "JQDVw8goqWX9DK8jEzR1CwSmPJ1zJN2/P0BJ7vnO5UUajhF8FJLhLSM4z9EGqULGskEFjMQYRfs5zrCDOfXq1wP3crhJ1uI4geyDGEYJLN4fRYrbao/Ch62kkRfgpZzKRg1x/HazsKHTFagnN/wUwxqDAFI25rEpZ63ejuzADjhlFFYvzgiqVPvSrHqm8xZBhIM7",
-       "eef1a5ca6273201978cdec9c": "c8ID0EGUroDuwWkVPrqPQsDVVvPdZHwuj5S94zyznwxb6MxxBjowYn3GCh5O0R1jAqqVtgWv96OZpeQCReQciMT2f4pCK/8VvTSq8fNkC8WJvl8upJcP4kVvjZPq4eBiTGce+vyaYtrEbVK+SQt91g/TTNCeJWQk99LoUx2MyujASw+Bp9yp1LhFcItpQiOa7QKi",
-       "ea5c5f38d6c2dc238fa4eaea": "/tvIASbjvbp1dPeunPIxb5a5vlMpdy541+ro7UFhZWWCmv/rVXp8xBsCKUnFYilRmR4xvf1OEIZDOMmHRlgP81GKDthWta57fbeCALJcvxZLzUIQMfkFvoYq/tBafobxS6vAXAFac8Po9RsVEy3Jt0pHcVgoMBwUL8fn5rapARp+pfazDcEGcQg/Jull2ZSZfyij",
-       "c076d7b860a81cf0aec45eff": "gARc1G7AGRXxxgjfl1AXyj+oQ092d4fmKpwwozfXNaSh6JsLSkLnV51xk563DNsqatBMlOloi+plqdlLaIgBfeL2sy1wwDMihvFyNWNjJocmO5xgFhDvonZ56c1FYMWEjB3iJCYC",
-       "09f04974d4c9b5912fdef0f2": "PuARXGqUQJexvDnOTnAOz9/MworP63XZy2UiLFRZgznN0npRvWZ/ntciDhZUM8mrz0OT5IECqW3Q4BzhC5QAE415y5Xajt2vnHZdvYj6k8C+S8Hb6ucpqcYOc4/DBKQic7u/C70m",
-       "cc20e7001721d13df562c91f": "MU2ICWtvqXtgT2FR56PMw5qUUPYkfo0gkuKFRFuwLqNCp4Eidb8pNj4waPg4xLShM86XBwpdndoSjM5OCblI8e1aTjawf+DCkIZO2FS38r6/QfpMs3ZQJdNEHBr+cncGD/L1mEjY/MgcbySx7BlIYrsdN/+LUU77zBzBUaCMwiDImB0WFgWbZehZFg==",
-       "99b233c06132e87131973f85": "2BwAS+L4fyTSromTqVphjaMOSWFYZiEs9K03kbAau8IMvEGenXTxJkXYsOu+CNlWpEsuolt5Q8IRzKEUGnMTmRJ1WMAGvQsogwuyIgWWzUjQD+dQuEJm1Muvvyd/JiQ6nT3iB1V1WLBo6PDCShhzHE7GtfsETUET5r9pKHzG04ooX6zCJ2j6XpPyVA==",
-       "c1d259f7583dc310ece36ef7": "/xeHnb13s6moBV6QCcCJ4LRlQGirPJldwR+hqSjUmtsDYfNUXe15x9HqcQ2HG/4r17z/Wn8l5eIP7JMmLfAsLsuo2eFug6063SP0TFWMd1TsFT+Pbq27V3NFPS1W7yA3tIx1R0w9+gUeSEhWJXf6F6430mCXgLg7NGpgG9UpcyJVfBkRc3ll0/pe2A==",
-       "0ac5d887600d9d77d6ee2a42": "A+QHkoQpzGUlmCNK1rywnonGTV5xehplkXJh8+0TDT3ts993ZwxjpoK0lwVMTIXEauIqzqaG7Hnjqd0FWOlzUYPZgOA6peUd2dLv5rrJCey0Qgv2u1eGeiKxqdIUWA==",
-       "e32a57cfd256386ef52aac8d": "t9VrU2PwYRIZf0wUM9bXz7o+qdRAp+d9lw5E3UGZEoUQnmttyemN7EMvM0Z/jAdaIYmoBN7vsQ9uyJit8EWV1SCtZPSZywqk16jG6rZoZeaqNhgadqPy/25CdpFD7Q==",
-       "5cf3834e341bfd3f4424bf40": "tZwpe1LybnSm2kF6sFQ1uOvzcQwWQHw3RnArgO0E4w04O1JDYUKUEzYAFGjFBtYl4+99ZAG1eb3si+6VJgwoQMU7OtDwVsy6C7mjMBg/uIX409PYH38YU4ZpKVaNkFPJdbRtpNKz4qi7vzTFyDiSFminWQl3gPGyN2VTEX7cela/9SgOIaioXhlpJw==",
-       "d8b85c38ec5a07b9f9d6b59d": "ySpi3WYXnZKg1rDxYtZ3utbp0j5OSOqlb2KKg8vVU/4gSpcNFfnVAJPA2WALhctHJCl//kceHNW/C4KG6r9hUoH/PQC9xzGXQS2+xDeJrF6yr0WLu10FTz3t2G7WazuVuziHYRwpbMm8izS5rsSMx/dI2sjqIxJ7VdTesJdyxBPHSF0AhSrjBUSKdg==",
-       "0f5bb9554376ee4c90f20d14": "OLS4jHVPu3vJVmAqJ1wxB1gewjfNNIU78z6KQQq6IonZZZn/COBpihM1NUSdarU5zIPUAbC/VG0rz339clRYFSuYIhb97sR0oJTWaFQ00Dm1gJdzEPWAeAPdqTS91NvT8d1D07H9wGGxx7spsgNJL+E3WUa3HR/l598j7sKbx0EjTK7n6L4awHtgUw==",
-       "f46e3ec12f8a1ebfdcdd6b95": "mYSQnV+nkX7+E9u8MW+RPLBd5kM1VcNUZfC1jW/NYweLpUor1ERvbt5mV6g25DmYXM2Vf/atStT2r7doD/4rhbRoPNF4Uc6biSMn8Qh4hk1JpMtBp6HzdinVqY1TZw==",
-       "3fb06525d7e744820b472f23": "IWC/bRpHCFBfKfuxRF8hXhLRinnhQa3zrH8SIrG6aF86YRsMzfxwenWL0ZKitNrnFDTGlB1gYS2NPAr2n9+IE7Rk+vEhCzU4m2TO1sSiwr+E4q9ZGD68P7uiunbioQ==",
-       "b4d846f8b959a61beb9bf12f": "9ukMHc4ZqEnjYhQmmAdFOQtKQCbrTm4iJBb39dmfzvIHgArwzMcQk9aO+AfK8lceiwdMsjz6VwjDe3ALwvxUAyYPp4XhY+qZUOHYXdImbEsqm/kaCPdXfQIqdG4xKQ==",
-       "c477b120852758bf4c8b4a5e": "twfOStoUx27g5SAijAym7cvKKagVUKe27n5Q/2DGgE5fUB+eK7mgy/1uPhFK2hsY4ysKzhX6vjQuXQYT77JeYTMmIuBR3JiunT02GZCFZz1oJSC/NPoTrE6/fTiwlw==",
-       "2ff66f0e7abed4dfc71c9fe6": "kECgJy9PwWAComwwk+KBXCrnqaocKhg+JOWdgl+Gi6a3jFbcBzhA8dvSJWPoai9YasdUSlXFPPCd/7ToBgyPGPyvs/tXUqFcEpWy3ren34knEqcjAJRDSqHZzM6cYw==",
-       "a74a5b154959e0df1418d1b6": "et45mZ5YKIzarWdk0b+A3XAnER5CabdYBIZtC7KOSXHazRnsEm4F7sGYDkdRKpU9FzXgbuxHKPDWDUxPIM87b3hJy9n6o6xzg//6EBoCHznA+Cooz2OKj7ldvc3qwfxZIpUdzFSvmeCNuTE9rjEsT+k6UHwZCZRoIFiUXekWQwWZEbFX+A==",
-       "c343584faf5d8720f477a10e": "jNM1GoFNjymht2iVWXetzufGGp0Tii13CFvB9JDIDQ/dRFE5uDGtRdts3w18iuvKmd7Dqzyo3oHYWomGrOappOKPI81OGmkHAxMPio5YlxJC9drxPNKtQ86jZPBmeV7KJkQMzU9y/hGkBejv1F85nB94wvcCbh0sQb7g7sJl/vKrGq4VFA==",
-       "fc5b1fd005597b809eac844c": "KJa7jnvzlv2BOX7170bAsCkwaCw9TIhb4kjl5XOvEgUeWhe2IGaRlT/ZFNGIsZmmKkOgBz/AQjmg74uDA7+LLJN+2Vvabgz/nNwfbJQ0rgX2uqRzTUzVSa2ZlaLKfLt7YFzoBhhxe78pn21XxQSmernv/VjNECXcn7VByh8VCWCek2Vos90eD54UsA==",
-       "f65747e05e003ca8530b9872": "FohIpvOGBcQhGCFztmeXM6xgQNV7RpLVEgEqH9a4dkpzJ+C2/hlZEADt9izdlWBPlIuM+Ll4yNVu4rBRD3nhuxbRo8U7AGUaVmW0ApyrovOC9nWw/z43GS03/bGJw4EkyJjhb8ufH1wRGE9xmJm4oWcZPGHVpDCbE3EiQKZs8ZvFsKRCxdjOZcvr1A==",
-       "43fef278636829ea413938a2": "7EYTG2grRDddRsHjx6nwza2GeH5+xV7EGxhvmTtxNdEXtAt9RLsr9kVE+UEEUf+TggrUi47AbQwxDuu/nUMTiPUHjlMwMGvqnBTWBydE6xgD4CY7/an5ges7Y/yvxK3vjSssUdh4C6WYRLAyC4bNqQGmbZ51YCXx851cibLWR9WDmLXSH0/vGZsfYg==",
-       "8f86c1c6a7d493e347217a12": "upJ+Yh1KIFvV/VQNRKC4gO9G3mjckZIVnjWe2Hrf4GRq+vgeUV7dLiKot0K3fbpoHpeZKP9FPgCbPrIbCuYdfF274eL+1lCojn2hzfNEZ2iNIS1ck+l4t9KXjZtIDQ==",
-       "4c6e15d37db9119c6244a4dc": "NdlipuZh/02khEtcr9Nv4xpsLZaTdnXnCZvdxUjcFJj5FW4PdBUgc/4uiWlkTuwL6DBTgFoNVpSXUN45+9UwCysl56p5orjBt8AeQkm4n5a9fvEkwxCFtRW6/DIHSw==",
-       "20a034bc1e731552d79850f1": "PspRHbF+FIQRN3mYMQ5jmLXH+6QP2/82yj1pkGEjymFJUcPxM+gamkjXLORoh/ZHkKVG3CtIAbUcxepawmmCftnbjCxAU+30UDfJMF9ie7rTXmRiVAN8jKYLVX3FdWzfCCyqnuzECo7N3+dX151tU5qx2ZkTayYjPU8Mkul8V4Vw6cG+0IYnZk+lCg==",
-       "b687b77b5fab88891924986c": "pRNPUwngmN+FQH6QlkzaYtVyPwTnFaZAiSqyJsjbVeUYiNdZpJzwTKpFhU6wQZjT4cmQq2l4u5dYGMwex8NfOE/zggUDuK05+g5wx5wFA9Dvh6OYKosWwDTSpojcSD9lyTytdTI1HpcmGahzHwXIGhZd3lGs3/CUFw5ZuMycFyRDlwtf6oJIg8WtWw==",
-       "e1849851d5f40c52f6a02705": "XnCATaz6qvdwsXL+yVOPlhILatM1vZwkHf5beK8v448aSGIubGD23I1pJU4cgu61ZWzZcslpahWHxCEVrMxgi3NuLIJawXukXEH1sPjt5T4t2uWOwF9SD2csx+l128TSWayjHE1obLjaloUcpOSCYamMQtoHSxgFclaQNISHs9Z2mdI2A+zNGL2a5A==",
-       "6e0093d3a4aa8a3cc85cbf99": "NLGjhIFR2gT1ekc5Ddcvc97n/EO4BizOMhlBfJR88wd/R/G1T131bWe1kTh1VwiDgpKpXlISzZgFJTevtogWI6q45g5M2n2Lso+cYS4wtqeEkj76gBpR8M4ojm0/9Q==",
-       "9dbda923b29554a9b09d2eb5": "WR9d+gX1GLQnMMfz+42/G5QBAAAQpc2wPDgwvgXqP5Xiy1Kzppul269A9m4qXKBOewn8yWbApfzTyIxutUzTpS8tsf2pxuP6RbjGS0EQDcO1os8tTPQUqxDkw+HrKw==",
-       "08fb3ef63d3d393698975421": "JgMeEtG2wotZOJ0K0hokOyTnvMW15s2jnSmmv0nR11FHjGzxyBOC7PxBSbr1ZNWy2I0y5hsQDTc162BPpmQMf7GSP6X9hJznBWUw36wikJKDRSwS2MtFO2dpoQyi5Q==",
-       "64b4c4958c68774b9ca1b2e2": "alC8dku4QB+GUVY8R0CqeTN5PUBMyMcEHD49H0xoyXVke53DmSN39PYmm3rsbJXdeKSMrBGZ8VxwPUbyaBakxHxcaPcpE0fnLr+fP2F7nbhOThISKDHXNAgdHHlZZA==",
-       "d737874f2bd8b6e68fd735eb": "PPiV+csPfDWhpYodevV8xviJB7R5uTn58r06yLidqNzm5xW8s06f2NFJMoWEqaeuhehkywTh7mR1HDsif5LipptvIQ3mMLOBiCviNT91Lj5pfTbstMQGmibRVmrTSg==",
-       "21f3c3de1fd08f73c5c7de98": "uVsFKUvXr1s7shA5Dt8fRIdOQrfCiu3x2dwki6UexsApyCb7BCJj+znTD/3bBrspIsAUkT2lxx/s29jbO2WWu2UQ+dX4SFoRMSpXhuCt42VsNLRc6kqVzilH4QmjlpXsF/hAxkAcXy/iHbhCosr+VsYQ2tinL5d8b9P5bI7oXHCyFk7U7Q==",
-       "c9b7983566eec9557df87cbe": "3iqDRs/jCpuClwKhuAkhipguyaWAMEhKXNzcS3ss4aX6Xv47a9uYQL+csXxNvLJgvEDIjBB/4bmU6RwsnrKe8V14YwZEKfhmXITuBnZSswJX9bDdIAfVdKf7P2xivw7qYRcazTG4Tcm0sj7I0ecYeW2qAewr/KiLsaAqgjuMQxYZKAuCgg=="
-      }
+      "type": "lab",
+      "lab": "pcBuild",
+      "n": 2,
+      "prompt": "電腦組裝師：挑戰",
+      "hard": true
      }
     ]
    }
@@ -661,140 +841,170 @@ window.PF_LEVELS = [
   "title": "作業系統總管",
   "book": "3-1 電腦作業系統",
   "learn": "<b>作業系統（OS）</b>是使用者、應用軟體和硬體之間的「總管」：你下指令給應用軟體，應用軟體透過作業系統，才能使用 CPU、記憶體、硬碟等硬體。<ul><li>⏱️ <b>處理器管理</b>：好幾個程式同時要用 CPU，排好輪流的順序</li><li>🧩 <b>記憶體管理</b>：分配 RAM 給程式、用完收回來</li><li>🗃️ <b>檔案管理</b>：存檔、開檔、資料夾、刪除</li><li>🔌 <b>裝置管理</b>：鍵盤、印表機等設備（靠<span class=\"hl\">驅動程式</span>溝通）</li></ul>軟體分成兩大類：<b>系統軟體</b>（作業系統、系統工具程式、軟體開發工具）和<b>應用軟體</b>（文書、遊戲、導航…）。",
-  "rounds": [
+  "stages": [
    {
-    "type": "sort",
-    "prompt": "作業系統要用哪一項功能來處理？",
-    "buckets": [
+    "goal": "作業系統的四大管理＋系統／應用軟體（題庫隨機抽）",
+    "rounds": [
      {
-      "id": "cpu",
-      "label": "處理器管理",
-      "icon": "⏱️"
+      "type": "sort",
+      "prompt": "作業系統要用哪一項功能來處理？",
+      "pick": 5,
+      "buckets": [
+       {
+        "id": "cpu",
+        "label": "處理器管理",
+        "icon": "⏱️"
+       },
+       {
+        "id": "mem",
+        "label": "記憶體管理",
+        "icon": "🧩"
+       },
+       {
+        "id": "file",
+        "label": "檔案管理",
+        "icon": "🗃️"
+       },
+       {
+        "id": "dev",
+        "label": "裝置管理",
+        "icon": "🔌"
+       }
+      ],
+      "items": [
+       {
+        "t": "音樂和瀏覽器同時開著，輪流分配 CPU 時間",
+        "icon": "🎵",
+        "s": "09841c101490cfd5",
+        "e": "qsIzf7sLr3tPBRz+hwLEiieAVL7VtQRQvND/+EHGstoNVgvhHlGqmpnw9eej9ThZqOfXxX4y6Bm0g7r7sm/m3+vrFLHF5HJRMMZjFq6ERqZKS7VsdIMQ5aA2vEtJOQKZ"
+       },
+       {
+        "t": "開新分頁時，找一塊空的 RAM 給它",
+        "icon": "➕",
+        "s": "3dea7258ae014ade",
+        "e": "0pcPsub4/TWTDH09kwpN8iXdMgvSdAHyi0lle75Xcx4h86QxKU8UWrv6A8jcW0x8aBnTtgH+ij84Y09kxBxOG4saQdc1Tw=="
+       },
+       {
+        "t": "關掉遊戲後，把它佔用的記憶體收回來",
+        "icon": "♻️",
+        "s": "a1a4687dd324ee7a",
+        "e": "+2R7DGbkBLGswYLUA1k8PpQ6cTCChiMSKJbZr3A+P+m3Q2uG2IDVTEYxknttgClc/5QwJnFufLR3eb7ywpLxfxqQfYRcv+mZPn/PO9ABR1w2JUUdbCQCT1NXnJXd7w=="
+       },
+       {
+        "t": "把作業存成「報告.docx」放進資料夾",
+        "icon": "💾",
+        "s": "2134f12f5024571f",
+        "e": "U31O2sInpzyKwTX2b+bJ+G5/D7kicd0HGC3nhkHZX3exBVnV3gRDrd3kXsO0EijFUfSXYuXix2TewufCgCRtiRy0ALaxFKMRdiNPBwM="
+       },
+       {
+        "t": "刪除檔案、移到資源回收筒",
+        "icon": "🗑️",
+        "s": "9c2ae9b95dd4c1e5",
+        "e": "Q9/awUZSUn7ZHx5/e3KVAu5gGVrzr+ltYaedm9RWeqSVMEwytY0eU56psWz4QJAYiJknLNc7Q3LhO2UdagYQy9d1dJvswYlcHGkRH8w="
+       },
+       {
+        "t": "插上新印表機，自動安裝驅動程式",
+        "icon": "🖨️",
+        "s": "8621114f175173b5",
+        "e": "JeEYTxsOgJtwWyBUocgl5KqufnfnnthgDufvVPhSQqIe0ben9iInNC6ssBSWprGHK/gqMEndrkQTbMwXU3k7Mvmzx6uOUjTdabN6CIYeJMS4nMrkS73B4wK+jGxnxiiqvS9I6CU="
+       },
+       {
+        "t": "把鍵盤按鍵的訊號交給正在打字的程式",
+        "icon": "⌨️",
+        "s": "f04574e86fe1564c",
+        "e": "yNyaZzurcKcyroCFD3d5j54LppUVg4iQIVdySlInvrH8miSfUlTIvf2IddkRaaeL5tK5X8NvTs5QwLV4cz+EOWXsrBEtTRrodKRLBiu+IZU="
+       }
+      ]
      },
      {
-      "id": "mem",
-      "label": "記憶體管理",
-      "icon": "🧩"
-     },
-     {
-      "id": "file",
-      "label": "檔案管理",
-      "icon": "🗃️"
-     },
-     {
-      "id": "dev",
-      "label": "裝置管理",
-      "icon": "🔌"
-     }
-    ],
-    "items": [
-     {
-      "t": "音樂和瀏覽器同時開著，輪流分配 CPU 時間",
-      "icon": "🎵",
-      "s": "dec9a55f70d648d2",
-      "e": "bC8EZxrk1WEeCiJvnnVB0zRGAozi3D9Eji47Y0cpenyKBHSRZ4gPcAbhTaEnL/ee/m4/9FRY+n/myPBXigAwlrrXnTwPTesyS5OVjvk8HCNLhS/awod3P6gqLC5ROjgp"
-     },
-     {
-      "t": "開新分頁時，找一塊空的 RAM 給它",
-      "icon": "➕",
-      "s": "46c5ba97b509af10",
-      "e": "hPep9n9esVAHBZrwYJRn263PXs5Z6CjdsvaVB/0QAVPaRvxWu9VytcnCzEveC0a0ldKhOJPUijD+455t6aURjdyOI+vbFg=="
-     },
-     {
-      "t": "關掉遊戲後，把它佔用的記憶體收回來",
-      "icon": "♻️",
-      "s": "d5924c266531906e",
-      "e": "LxuTLpw85t3FY1JJ3k91SGjyWLCfb23sXjHSxEhk2JP9gQXH9Q5S8kMvuGaicP6OHlYxKd0cccCjSvimUTTk5QMoBmPIHeI6Da0HkGHnrLBCdb0fLatkAYs9uy059w=="
-     },
-     {
-      "t": "把作業存成「報告.docx」放進資料夾",
-      "icon": "💾",
-      "s": "98887c8438c7518d",
-      "e": "f9tKiQCYgWt3WeLT2NQAO4UcNJQm6Lg97TKZ80y3YlChUItyULXLEprn55vyNnM6Bk/kITc81d7HJim5OL8oB88FVyoyVanZ1kZ7My4="
-     },
-     {
-      "t": "刪除檔案、移到資源回收筒",
-      "icon": "🗑️",
-      "s": "3fafea7e5f601ca1",
-      "e": "/cat5Q13XRo56DC5xbx3UdmOH3Srd0cwDD/yM9Jlu0Tcs5+hNXLCyYZimZPBmKOFfLHxLHlkXZoyhD8uf71iXKZkYVJG6Oix+uLZFUs="
-     },
-     {
-      "t": "插上新印表機，自動安裝驅動程式",
-      "icon": "🖨️",
-      "s": "7cd485c36f9039d3",
-      "e": "ECqufT1iinW+fccQ7Y3HNLZQFoSG0/sQTGbE+uyZ8Xd+tFhZh/IawIISr1Lb97bJfw+StkhjmHvVctCd4H6vLbY5YB2/u4FYQe3IuOzNpC27qc1smOxGkoMPpjYuIuo6tV822Ik="
-     },
-     {
-      "t": "把鍵盤按鍵的訊號交給正在打字的程式",
-      "icon": "⌨️",
-      "s": "e44e700bf2b1ec55",
-      "e": "Wbi8jINf2DxgI38WfaxoPAtBVzV2L6KV7b/R76vxV4OHW03gmtQY25XmuW4UaF5sFtrn0Iiy0Ad87TZqO8ZmDNR4FDapOkV5WkGy8kF4RSk="
+      "type": "sort",
+      "prompt": "這是系統軟體，還是應用軟體？",
+      "pick": 5,
+      "buckets": [
+       {
+        "id": "sys",
+        "label": "系統軟體",
+        "icon": "⚙️"
+       },
+       {
+        "id": "app",
+        "label": "應用軟體",
+        "icon": "📲"
+       }
+      ],
+      "items": [
+       {
+        "t": "Windows 11",
+        "icon": "🪟",
+        "s": "74b76c895f86fc45",
+        "e": "AeCFnLehnjIFoS64HhQlR2i9Lw2BtGFKS1IlTJp5tjND35zRfYrD3sS0fLLe+ooEfz/kDnuQ8u5yRICnPFsJbSepgZg="
+       },
+       {
+        "t": "Android",
+        "icon": "🤖",
+        "s": "031cbc252be4111b",
+        "e": "b226wgtnIAQsiZlvU9RpYLqtvorxKKm5z+6oPpjaGP62nJDe8gRNwy+t8bcrJiqa9sDb6sPSUBtkhv3izG6PoNycEvkNukSuyJKLLRUlTcETue0="
+       },
+       {
+        "t": "磁碟清理工具",
+        "icon": "🧹",
+        "s": "c577de57d319bcb8",
+        "e": "tpDxGitX7m11AaSNgAezQg3WQ0Pq7bg5dmUtUkPHOkg58f/YjOEmhxCUNN7mwI/cSfiwZXk7TsIyed12cLu5f3Qc3/YzXAg0kuoHk6YJBqEstrRWaIGeo7jnKgPIVShEN0ULgYCEaniGal/FPvCCIFfpAkWnA28="
+       },
+       {
+        "t": "工作管理員",
+        "icon": "📊",
+        "s": "47d5a6f12e78547f",
+        "e": "ISyYK2/l7vmWmbcio8xBa8ZVEpUyZf3nUoKxtIRKr7/bVebYi2lkXxMCYVgTyGL3aNNrRy3oX805KoKpcablyr6xbLx7YvtxCGjWuLwu+NE="
+       },
+       {
+        "t": "Python 開發工具",
+        "icon": "🐍",
+        "s": "9b81a5a6665268cc",
+        "e": "jk+M8R8XDZQWOQLq59BrYR69C/5WVECyPuFG4H8fuGPy1gH07xXXOq5Ajvpwx9DpUyaOXxf29ynpKmsgshK6HdlYPAUufawB+YPVSECp+BkX1t6iCEyaz4fcB+cgsTTCnRZS6EVxPn7xppLzHx0="
+       },
+       {
+        "t": "Word 文書處理",
+        "icon": "📝",
+        "s": "28c7988ecac77689",
+        "e": "B7FSNhqUkZgt7LomfkhuTUKU9gFF2Nb1icwqxusToZoa9olamxHJEpg0EV5NPQLkEmQl5yXSlLunYhwYF5i+XfA4nxRvG5wlnlKitUsVyz25fRqbhXRfC380vuKlS6quzWk="
+       },
+       {
+        "t": "LINE",
+        "icon": "💬",
+        "s": "bfb22404c09acd85",
+        "e": "HeLigu32LrqWPxkFptdGaVKZgAE0YPCMjAGF/0Sz0FLu7kX3fuJl+QaB4/g9m8Oz0dYA8F71mo4dmyaLKKrHOrw="
+       },
+       {
+        "t": "Minecraft",
+        "icon": "⛏️",
+        "s": "194989e2e7c8b76d",
+        "e": "weEQnc980aaQ82VvQ+LBtO9HffnXbYB0CLWxrgmQvyLr97rE2eEq+isjKL2y0+1qCFXANBmo9Po4TTRMw50="
+       }
+      ]
      }
     ]
    },
    {
-    "type": "sort",
-    "prompt": "這是系統軟體，還是應用軟體？",
-    "buckets": [
+    "goal": "🧪 作業系統總管：RAM 不夠時關掉「需要關」的程式，沒存檔的先存（🎲 程式每次不同）",
+    "rounds": [
      {
-      "id": "sys",
-      "label": "系統軟體",
-      "icon": "⚙️"
-     },
-     {
-      "id": "app",
-      "label": "應用軟體",
-      "icon": "📲"
+      "type": "lab",
+      "lab": "osManager",
+      "n": 1,
+      "prompt": "作業系統總管"
      }
-    ],
-    "items": [
+    ]
+   },
+   {
+    "goal": "🧪 有程式不能關、而且要關最少個（🎲）",
+    "rounds": [
      {
-      "t": "Windows 11",
-      "icon": "🪟",
-      "s": "2d587f0ccda254c7",
-      "e": "Ev2mCQ0hHEOVX7mqqDAuIppNNhtXuPfYMhHeQcvGsPgyGgVFnA64mrfoGHMnv4HTS1Pbyr8iqVj9yIa8Tp+n+vEuWyU="
-     },
-     {
-      "t": "Android",
-      "icon": "🤖",
-      "s": "8b5be149315782bf",
-      "e": "dVk0HgMGQ3LXNpOVzdjZqrpJ4FYK8QM+CsIHi8diX9fz6SKZkxjNw8iu/ER7XLU73Wr8r7QWlHwEZmbnK/HDc1BHJ3n1LIOm0QG/6jaOwkjL7dU="
-     },
-     {
-      "t": "磁碟清理工具",
-      "icon": "🧹",
-      "s": "9fdb32056cd3c245",
-      "e": "VmkEKQYcsGH5CJ+/ZjyHaiJpKNaoqyMvY1hLoGedEmnIfKxLvsp392jKtTX3gJsPSLHB1yaEVvKxk9CJIoJtii9SGXLNWITya916uoYo+QmXdaNHsWR+Qv7SU9Lwe5WQoHLF/XVZv73c21EPoymV2owdilwxAN4="
-     },
-     {
-      "t": "工作管理員",
-      "icon": "📊",
-      "s": "e5e02a40d52353a4",
-      "e": "45Aqu/Ht1cM0GasHtgmMwtZ2ZZUzwjQEBa2I/Cw3qEw3lEuRbA2rdqkSlEwGcFPfhOBjfM9cnYWFNzDYhJWgKhrsd/ENtj1GGLn6yg+xzCc="
-     },
-     {
-      "t": "Python 開發工具",
-      "icon": "🐍",
-      "s": "d94ebcd0b06e7320",
-      "e": "7vwn6uChEyRZhS2uae14Zr7pPAuPSELH0pxEwAU9dv4UK7zRzyqzFB6D6jKcH8IUcuB7YVKNVGXI9KRTKvbm9c3W9XjjMNuTFXseZJ1kXTQ4PTtuDYtliUEzZuduHtGEt7lS0QEojYMKKeKJDFg="
-     },
-     {
-      "t": "Word 文書處理",
-      "icon": "📝",
-      "s": "1091904f6634ff99",
-      "e": "vrqiWFpMARe7eFefXlf3LPr/KjCvkchxGxh10TtnUOjkOTjD64xtjB4MCCr424sBNyskHkMHWMaOsDu4mGCe8aEwdulKXNfeLAe86PcJeg1azeW54OkBddXqXhDBXgPgz28="
-     },
-     {
-      "t": "LINE",
-      "icon": "💬",
-      "s": "76134168075eeef5",
-      "e": "WYs2O+nTPOYjpSEum0YtwZ0G8Fosm9jLowJvwE9cE3n/YEs2wK46gHF9V9fU3atDaE1q3kEHGOPoK6+44ZZCgL4="
-     },
-     {
-      "t": "Minecraft",
-      "icon": "⛏️",
-      "s": "d5f199e9af8a5339",
-      "e": "Im8DztYqZCUwB2YvZ1oS5uvqS+PuE6pp5YNJlF7bFT6+z4Mde34LfK0E+ozvbEw5YBjp9iCqY/TJiN53DWw="
+      "type": "lab",
+      "lab": "osManager",
+      "n": 2,
+      "prompt": "作業系統總管：挑戰",
+      "hard": true
      }
     ]
    }
@@ -806,90 +1016,119 @@ window.PF_LEVELS = [
   "title": "電腦急診室",
   "book": "3-1 電腦系統維護",
   "learn": "電腦也需要保養。常見的維護方法：<ul><li>🧹 <b>磁碟清理</b>：刪除暫存檔、清出硬碟空間</li><li>🗑️ <b>解除安裝</b>不常用的程式</li><li>🔄 <b>系統更新</b>：修補漏洞，<span class=\"hl\">比較不容易被病毒攻擊</span></li><li>🧱 <b>防火牆</b>：擋住來路不明的網路連線</li><li>📋 <b>工作管理員</b>：結束當掉、沒有回應的程式</li><li>💾 <b>備份</b>：重要檔案多存一份，硬碟壞了也不怕</li></ul>",
-  "rounds": [
+  "stages": [
    {
-    "type": "sort",
-    "prompt": "這位病人該用哪一招？",
-    "buckets": [
+    "goal": "這位病人該用哪一招（題庫隨機抽）",
+    "rounds": [
      {
-      "id": "clean",
-      "label": "磁碟清理",
-      "icon": "🧹"
-     },
-     {
-      "id": "uninst",
-      "label": "解除安裝",
-      "icon": "🗑️"
-     },
-     {
-      "id": "update",
-      "label": "系統更新",
-      "icon": "🔄"
-     },
-     {
-      "id": "fw",
-      "label": "防火牆",
-      "icon": "🧱"
-     },
-     {
-      "id": "task",
-      "label": "工作管理員",
-      "icon": "📋"
-     },
-     {
-      "id": "backup",
-      "label": "備份",
-      "icon": "💾"
+      "type": "sort",
+      "prompt": "這位病人該用哪一招？",
+      "pick": 6,
+      "buckets": [
+       {
+        "id": "clean",
+        "label": "磁碟清理",
+        "icon": "🧹"
+       },
+       {
+        "id": "uninst",
+        "label": "解除安裝",
+        "icon": "🗑️"
+       },
+       {
+        "id": "update",
+        "label": "系統更新",
+        "icon": "🔄"
+       },
+       {
+        "id": "fw",
+        "label": "防火牆",
+        "icon": "🧱"
+       },
+       {
+        "id": "task",
+        "label": "工作管理員",
+        "icon": "📋"
+       },
+       {
+        "id": "backup",
+        "label": "備份",
+        "icon": "💾"
+       }
+      ],
+      "items": [
+       {
+        "t": "C 槽只剩 1GB，裡面一堆暫存檔",
+        "icon": "💽",
+        "s": "f91f83a5bcef5919",
+        "e": "zNjLl7o3Rimd/q9mWcQwCkLC3gz6btpWyZgc1IEhXZXzvYlKs0vR64opUYtp+KO+SZIYcypkuhpeKGcDEWqG1Br4w7HJacUV2b901EI6MsGtF7OGreJUYabT3Cs="
+       },
+       {
+        "t": "下載資料夾塞滿三年前的安裝檔",
+        "icon": "📥",
+        "s": "9604444c5c12b96d",
+        "e": "rAqHoSpNJbzReCNkqxM7EPQVKrXFcSw7SZM0FSxL0DIZNZwtHe+CT1p3g67FGPnun52is4xZtHBQX2+h4IRgOHwMVheF/jwyCMzESZc43XX4ZJrPGm+fb7A="
+       },
+       {
+        "t": "開機好慢，裝了一堆從來沒用過的試用軟體",
+        "icon": "🐢",
+        "s": "c5689dfe7b55c409",
+        "e": "N/AXpzBV6DC6G4+XTm/Bt+bsiTAhvLFqggoeoToRrP9zhB3qGSc/ha6lcNwNwc2RHUIk31OYzyqCo9YWCUSvjo20kMeuRFiJ6/X8f96FlJ/CZ4umFmlF3hdliuUY5eROvWKq8Xo="
+       },
+       {
+        "t": "新聞說有新病毒利用系統漏洞攻擊",
+        "icon": "🦠",
+        "s": "d5cdc29fb004c7e0",
+        "e": "pZvCOKFO49QA8OiqsTQOUncY685sx+bu7BG7rbDeGQ5cg6guaKpuyhxi/tsKOAmUlyJ0o9RuD9vURBCkvihFLC6RbRSb+Bj+NVKKMwRlaGlbVlVQ8lDeGV2gy7672/W+0gJYsWGsR/3DqA=="
+       },
+       {
+        "t": "右下角跳出「有可用的安全性更新」",
+        "icon": "🔔",
+        "s": "31036a64cb961528",
+        "e": "/N184nQcby2xwhcUnE3OUI6Wj7DBcxQ+fFZflXzzyHjWr1VOuKJ0BbQIkmSYgb8rh+pHCWsa0KVYrLDADkX355TbSEQ8YKs="
+       },
+       {
+        "t": "有陌生連線一直想從網路連進你的電腦",
+        "icon": "🕳️",
+        "s": "39df14ccdbc52e3e",
+        "e": "n2Gz7tqKk2uEJ1wfXTgDXN9J8kB69NX40DZ8HBrdGK0YzftoYp77R+aqWcKYCalgjtJpWHPFF/TET37TmlRcew6wXI0TWDWaGox+UrPtneU="
+       },
+       {
+        "t": "某個程式當掉，按什麼都沒反應",
+        "icon": "🥶",
+        "s": "6b261f29ba33836e",
+        "e": "HjVObZ4VenWjkHNh8OBjlsw4qB3vFuVHoHYbIEICWlsdcILN93L6M/LP4NJsrLJRCPoswBy/3TNfVDGNFrsTX0jVwVoPSsO3MIJoQElgg/Lyq9b1+tJufRr6WpaB/VfIGyHMhR+Xu5Q="
+       },
+       {
+        "t": "明天要交專題報告，怕硬碟突然壞掉",
+        "icon": "😰",
+        "s": "51d877c177816fac",
+        "e": "yqoiifcxEhUHv8FmUN1YUMwl2brq+Lo2Y8F65ERxDjZwaJui/KkkU3zdUv5JMWXWANVLPxxKKjiOxWjvLAKea37xU2bRnAZ23B0we5KvOCIxTg2agS7dNVIWjTIe0PMDakjk6DgYm3I="
+       }
+      ]
      }
-    ],
-    "items": [
+    ]
+   },
+   {
+    "goal": "🧪 電腦急診室：看狀態列、用對工具修好電腦，別動正常的東西（🎲 病症每次不同）",
+    "rounds": [
      {
-      "t": "C 槽只剩 1GB，裡面一堆暫存檔",
-      "icon": "💽",
-      "s": "310df86d042213fc",
-      "e": "4VTaCJbId6X61vw7sFllXZpDPSo39LyKosNXmT+Ic+NDMz4ufswQoJT5MSXsFFtN1Z0jYYsVaPLvo9Y2+UFbujjROkrbMm3wjSusjs6J1OKXg42J2zRPAxC9myg="
-     },
+      "type": "lab",
+      "lab": "pcDoctor",
+      "n": 1,
+      "prompt": "電腦急診室"
+     }
+    ]
+   },
+   {
+    "goal": "🧪 一次四種病症（🎲）",
+    "rounds": [
      {
-      "t": "下載資料夾塞滿三年前的安裝檔",
-      "icon": "📥",
-      "s": "6d699d7cc96d2f14",
-      "e": "WAoYtmcDFirMb/GZY3BxxypVtxIgHf8lkPv6JX/8YvTE+1TziNpMW1+Rq9s4hdaiNKKHX+7HxYkFWN4ErpezDruUkst1zykwL3eYty4LLqIR1GtixES0F1o="
-     },
-     {
-      "t": "開機好慢，裝了一堆從來沒用過的試用軟體",
-      "icon": "🐢",
-      "s": "e801c8e2ef369d5c",
-      "e": "fEhxmsKs48HRpREYYnf95trO1tYAiZbXTy7kJY9O+yj65mcNHctRigx+C3pPsvKcQptNo0TCCymNcGwougSrf/82PdZ/vhb2PdpkBFgCrI0oucCMIv1anEjrL/tQBFPDeua5Jb8="
-     },
-     {
-      "t": "新聞說有新病毒利用系統漏洞攻擊",
-      "icon": "🦠",
-      "s": "28bd9c2a096e5d46",
-      "e": "2qA0BLbpQ8oFuggB9728jPmX674wS/lbREfIAKy5dmsNkYNBFVg4kEjaN/Rdsnj7OJjGSinqPh30IAto91uzUxzxSDfXvK9sOLy7HaBe6vHHFFRO6ikj9RwteM/rUy+g33YaifDuBudFGA=="
-     },
-     {
-      "t": "右下角跳出「有可用的安全性更新」",
-      "icon": "🔔",
-      "s": "9b5032a048ca311a",
-      "e": "Zmy8YRJE2zzCniMTFzz9FNupv84Ri3Sp1WoLHgo12bhKF0w3dXVVc6vW6kMzGqSB06v0HIpWMfhBXAmrLDy8b7gZw9jD8Bo="
-     },
-     {
-      "t": "有陌生連線一直想從網路連進你的電腦",
-      "icon": "🕳️",
-      "s": "efe69b41d77d4338",
-      "e": "y9bVCiz2qKph5FwZBaQGFlCPFyhY68O/7+Rm9FqL6s1DfvA0E1k6XIjcKkKGjwBhEJ03zI1gqaD+QH23iK478WHlVQxmFsIz8pfMj5WknwM="
-     },
-     {
-      "t": "某個程式當掉，按什麼都沒反應",
-      "icon": "🥶",
-      "s": "4ab4453f48f03984",
-      "e": "8kDRSU1i3zTLTghJVZCtAoLHFuXeM+MW7omCUSM9WcEh/QTgf50+BQS+7bhqP5AWObkzhvjBpREYZl9NhNk9EgYy/YtLHwce4kwsCsV14fTjNlUinMR3Cn7wTS8O1yo0lO4on6p0Uk8="
-     },
-     {
-      "t": "明天要交專題報告，怕硬碟突然壞掉",
-      "icon": "😰",
-      "s": "edf21bff8a2a225a",
-      "e": "fRr9PUTl/vk6RAznm4ZWgU/QE8eAJx/gwkWJYyt/cva48Az0IwoTVQboRj4ekmY/++hJ7PmYf8/vdZ1AioIN/qSnXUUlBhXbkZASLGplfOtiLkNOU4jTrO8qg1ZTk9ME4gMniza7RDg="
+      "type": "lab",
+      "lab": "pcDoctor",
+      "n": 1,
+      "prompt": "電腦急診室：挑戰",
+      "hard": true
      }
     ]
    }
@@ -901,81 +1140,110 @@ window.PF_LEVELS = [
   "title": "雲端披薩店",
   "book": "3-2 雲端系統平臺",
   "learn": "雲端服務依「幫你做到哪裡」分成三種，用開披薩店來比喻：<ul><li>🏗️ <b>基礎設施即服務 IaaS</b>：只租給你<span class=\"hl\">廚房和設備</span>（伺服器、網路、儲存空間），其他自己來</li><li>🧰 <b>平臺即服務 PaaS</b>：廚房、烤箱、現成餅皮都準備好，你<span class=\"hl\">專心做自己的口味</span>（API、雲端資料庫，給開發者用）</li><li>🍕 <b>軟體即服務 SaaS</b>：直接吃到做好的披薩 —— <span class=\"hl\">打開瀏覽器就能用</span>（Gmail、Google 文件）</li></ul>",
-  "rounds": [
+  "stages": [
    {
-    "type": "sort",
-    "prompt": "這是哪一種雲端服務？",
-    "buckets": [
+    "goal": "IaaS／PaaS／SaaS 分一分（題庫隨機抽）",
+    "rounds": [
      {
-      "id": "iaas",
-      "label": "IaaS 租設備",
-      "icon": "🏗️"
-     },
-     {
-      "id": "paas",
-      "label": "PaaS 給平臺",
-      "icon": "🧰"
-     },
-     {
-      "id": "saas",
-      "label": "SaaS 直接用",
-      "icon": "🍕"
+      "type": "sort",
+      "prompt": "這是哪一種雲端服務？",
+      "pick": 8,
+      "buckets": [
+       {
+        "id": "iaas",
+        "label": "IaaS 租設備",
+        "icon": "🏗️"
+       },
+       {
+        "id": "paas",
+        "label": "PaaS 給平臺",
+        "icon": "🧰"
+       },
+       {
+        "id": "saas",
+        "label": "SaaS 直接用",
+        "icon": "🍕"
+       }
+      ],
+      "items": [
+       {
+        "t": "租一間有烤箱、水電的廚房，麵糰配料自己準備",
+        "icon": "🏠",
+        "s": "f30f4920220d8ed2",
+        "e": "6QB+FIhJyNOOOcXPToiK89FD230NUIP9nQOAjggqNybMD+S4uFF0unhgcAAl5r2BnQsURc5Ts6bK0BL4/C830VzhfxY84S2HISslti9nQHE19CBpHV9QKa1FQwhD7MUI0Q=="
+       },
+       {
+        "t": "廚房、烤箱、餅皮都備好，你只要設計自己的口味",
+        "icon": "👩‍🍳",
+        "s": "e5ae276861313b32",
+        "e": "lFEJeYC7S4CTdANoT/HvTPziwgbW2anYmaLFL/SumhjhOnpmrJOAqvDLwVO+bn1nMqNiQwPt0idM5srUj1A8tF01H0kqTZDOyohB+iURqNt5EoOMcEWUAMmAYrakwH1UHqB8EUFs51dZMeJB48I="
+       },
+       {
+        "t": "直接點一份做好的披薩",
+        "icon": "🍕",
+        "s": "d96d468134d37b12",
+        "e": "kjWTtY8Qo65CihOz/L/G4lUb3GgNjnc5LbLd7eQI6uGnM5DCv4Lj7FhocFm+3UGMr7m0mUucKquf93U6b/+36ZgnsLORqA=="
+       },
+       {
+        "t": "用 Gmail 收發信",
+        "icon": "📧",
+        "s": "e1a30db49b7cfaf1",
+        "e": "UAdQcB9VR5+eUIdyOoygGQ7cQ8E2LkmN/vFKwDStDNyZYjJ04I0ybi7FIPcypZal67CHa5yKxXWN+yyA9qzvLFlhOPqnxaGpvNrKUvxAQY1R5b9ZJ4nXpkSCsGU="
+       },
+       {
+        "t": "用 Google 文件寫報告",
+        "icon": "📄",
+        "s": "b591ec261c08e701",
+        "e": "xWUtzOJp3GFytOfPQy6CStU6jgg4gtG7mzpDRln+vB0pahTsrKFhEIh0eW6zcLEP7okBMEFv5tA6AUiCqI/Vcj+69W/hn0WWPu1XyQtM+Rk="
+       },
+       {
+        "t": "工程師在自己的網站裡套用雲端「翻譯 API」",
+        "icon": "🔤",
+        "s": "41e68f4f558edf03",
+        "e": "1j82jPh39oa4SFxRR6WtIcGYgFEyqLX0YD8iR6EHRTEghoukKn/Qr2AYjWs2YNBpJSxQUM5/PsfBrfqDewbKJg9S3eSOWxFammNVi3MWGQAsutqFgMaTIqNWBgPQzqYoBe1HBFu4ZA=="
+       },
+       {
+        "t": "用雲端資料庫存放 App 的會員資料",
+        "icon": "🗄️",
+        "s": "ef06ea7afe17c442",
+        "e": "te2aTHi1AAHXW9Lm/BLyWWWiJGxlSAZZ9J2C13a7rKl2hJ88t6rTqr94Q3pxsOY3hgGkWDxkXIwQW7GuFqzZiW0RZsOCMILq9R4TzMvmqySaHERcRQKqimWC1vwVn689cC5/TV8="
+       },
+       {
+        "t": "公司租用雲端虛擬主機，架設內部管理系統",
+        "icon": "🏢",
+        "s": "75b80f52dcb74373",
+        "e": "StOVndHCKlOpa4yYa+GvsvYZsTpIj2TmBkJdrc7BjNkI+uKr4K3n5ndRoTbSw5cuAbGnZu4Q7hkJAAqWVSMZjwlQEw9ZW5cFneCvkwzviO+DaUpL1l49rJ9aRgY59po++/RV3RkL0Lo="
+       },
+       {
+        "t": "租用雲端機房的伺服器和網路頻寬",
+        "icon": "🔌",
+        "s": "00d30dd502f66dcb",
+        "e": "y1OUXBlqyChYbwzFJ15na/ajdOPex2tlcHjLsaiiSH8LZLBU1Z6mrUtmnMKTp+IEdC7GLI+1iOlIHTHttLwhub655kOONkkFvsQQXB0="
+       }
+      ]
      }
-    ],
-    "items": [
+    ]
+   },
+   {
+    "goal": "🧪 雲端披薩店：選服務，再標出每一層誰負責（🎲 客人每次不同）",
+    "rounds": [
      {
-      "t": "租一間有烤箱、水電的廚房，麵糰配料自己準備",
-      "icon": "🏠",
-      "s": "cf07c2c0477dfaf7",
-      "e": "MMvhHEH2u+h68ZjM7M/wPNHbjlysCpBCk63htRnm/0bXBPqoB+IqK6pgYzwiRdhs+zGFxOBv1msnEMCLybaDCXoPFosdgdBrsn4H8AT2zLZM+250zF/J1aKenuqaGVBXaA=="
-     },
+      "type": "lab",
+      "lab": "cloudPizza",
+      "n": 2,
+      "prompt": "雲端披薩店"
+     }
+    ]
+   },
+   {
+    "goal": "🧪 真實情境更難判斷（🎲）",
+    "rounds": [
      {
-      "t": "廚房、烤箱、餅皮都備好，你只要設計自己的口味",
-      "icon": "👩‍🍳",
-      "s": "68f03b21de7abd11",
-      "e": "SxRwBZJsA9mqS19ls4W9fNPwQD2/Uhx1DYnIqMBF5YGQb8ZFZPIDb58MtylJeCIqqGOl+GU2rn7YvcR/1DzvxCAGLds6p1TseQR3jRbGlJR2NcvcRGOy6Xdhx5Bflopzt5btnXeqPsAkUmiOBqw="
-     },
-     {
-      "t": "直接點一份做好的披薩",
-      "icon": "🍕",
-      "s": "4a8e9b4f3d767157",
-      "e": "6vWxPdqKZYLlYYq18TCqrX0wVPJ2C0gOpueEUjnNfp2lrE8uMddEkaDHb/XQMhQafVQ3kw8jICqUEpDGcx4Xphtus3Pr3w=="
-     },
-     {
-      "t": "用 Gmail 收發信",
-      "icon": "📧",
-      "s": "de324c70869aa5ae",
-      "e": "iXC4SrJFt3DOmHnSbKHLm7tyhoRhi3q1Sn8y/at+byKFt+RZy8cm7shH/q4MAiyf+lT0nPoDkBaurmGf+qULWW89384frS+Ykjh8EX+PRVV0GQ9D2fwcdmUksJw="
-     },
-     {
-      "t": "用 Google 文件寫報告",
-      "icon": "📄",
-      "s": "ef62df4cb7bf22f0",
-      "e": "48j+VjvLvMgeIsk/Q1gCf5fQ731z094MSH6yjjFxv6kNeShfjR6DwZSkFV73RA+a1b21LofBHKWwTueydl0pixpb0vPrjkTZSODFbjshifY="
-     },
-     {
-      "t": "工程師在自己的網站裡套用雲端「翻譯 API」",
-      "icon": "🔤",
-      "s": "817d8248ae0f9e4e",
-      "e": "oaTERBdo7sKEc7JjzMAoZZhyPdm54fgZAqgOfUUgA4MGF1L3oojIEo/SgyVNkVOaMNJ/XSyhecU50mT/qhHyo99tV+afXSgeZZiHFEck8iDB8Dh9Gi5ngrRVtFKHkk4bF3FDWcEMAg=="
-     },
-     {
-      "t": "用雲端資料庫存放 App 的會員資料",
-      "icon": "🗄️",
-      "s": "9efefaf1097c9e94",
-      "e": "QGNuxbLB15HUnFO9Ned06OEpNO9E336EXrO1L8MCv3tpQbQvGM4G3NOG/V2sItMK+4dSGZxh84tdIMGDwo5FIloeuP6pHLB8Ib1aYG8pLueANVWcQkzNtpkFB4R05q14beujSPI="
-     },
-     {
-      "t": "公司租用雲端虛擬主機，架設內部管理系統",
-      "icon": "🏢",
-      "s": "3beb1fdb75108005",
-      "e": "nPEHsE9qGvtvAh22lrKvAG8isMtlZZk5eA5Cok8OZFS3tk4VBIKV+FMGI2S+j40VPD79lzRfbnw5CYN2x1b2Osqsu8otTdqNBrEtlYpS1tbYhy+s7LWM/2O1SbaFSGucx5yOiwVwkZs="
-     },
-     {
-      "t": "租用雲端機房的伺服器和網路頻寬",
-      "icon": "🔌",
-      "s": "5e4f04a07f390b60",
-      "e": "Fdodz3zGNiVSNSY2B0xY/yUuuQ9e2mzYzKJ0teQyyz4bn5NPK9jrIRDCfIUVWTp1lmu5uvTxi9OPFyGb9G0mbYk3fBP+5vfddFttzHM="
+      "type": "lab",
+      "lab": "cloudPizza",
+      "n": 3,
+      "prompt": "雲端披薩店：挑戰",
+      "hard": true
      }
     ]
    }
@@ -987,179 +1255,207 @@ window.PF_LEVELS = [
   "title": "嵌入式工程師",
   "book": "3-2 嵌入式系統平臺",
   "learn": "<b>嵌入式系統</b>把電腦「嵌」進裝置裡，<span class=\"hl\">只執行預先設定好的工作</span>，所以硬體比較簡單，常用<b>微控制器</b>（一顆晶片就包含 CPU、記憶體和輸入輸出）。<br>它的工作流程幾乎都是：<b>感測器（輸入）→ 微控制器（判斷）→ 致動器（輸出，例如馬達、燈、加熱器）</b>。",
-  "rounds": [
+  "stages": [
    {
-    "type": "sort",
-    "prompt": "這個東西裡面有嵌入式系統嗎？",
-    "buckets": [
+    "goal": "哪些東西有嵌入式系統＋幫裝置選零件",
+    "rounds": [
      {
-      "id": "yes",
-      "label": "有",
-      "icon": "🔌"
+      "type": "sort",
+      "prompt": "這個東西裡面有嵌入式系統嗎？",
+      "buckets": [
+       {
+        "id": "yes",
+        "label": "有",
+        "icon": "🔌"
+       },
+       {
+        "id": "no",
+        "label": "沒有",
+        "icon": "⚙️"
+       }
+      ],
+      "items": [
+       {
+        "t": "會自動保溫的電鍋",
+        "icon": "🍚",
+        "s": "91a7387859e91e22",
+        "e": "7exdtft+npfmlN11yG2L04hk0pmvjGOErD50tSL94LpzfraQcdggF1OI1xsj5B6PSE/WStufdNpGcp6X7qwrzQxnLJprG50bNYCELZwSZNeWsOw+D7WX898="
+       },
+       {
+        "t": "感應開關的自動門",
+        "icon": "🚪",
+        "s": "f472341891fe29d9",
+        "e": "biJBE3vU17qXC0ZrSQ7VdKkEDkF7PLHo76iA82IZEeswTxhlabhusSSsWDZB32ysNcsKOQNdXveVaH3Ojb8bQ0hP9LuNbhAoOsF3A8QmXZ0rx0svKa8="
+       },
+       {
+        "t": "可以選洗衣模式的洗衣機",
+        "icon": "🧺",
+        "s": "55ddada37621f943",
+        "e": "M+bW99U5PFzw8Pz4KErxqkoLF5vDUOHq9XQ7aBES89/xcp/xo6j1triPMbxjunxM95VgRw7cjMBGO2Jc/12ycrgzf3R2yeFOVQ3ys+krnDq06ODObbWCEZqsSvUm4JanuH0="
+       },
+       {
+        "t": "數位相機",
+        "icon": "📷",
+        "s": "37129f93e629fea0",
+        "e": "bHxRHUxrmDFKBBo7iyRPboMg59CpLco0i55pxRsvar5MqumgqUnSTvmcUjK6HJxYLDiGEgKjvMA0jJLU/0w3KexOZ6TMZy2MkbBCrvW7ZLEue3Ajw+ye7gxhSpem62nzEBNVaIg="
+       },
+       {
+        "t": "上發條的機械鬧鐘",
+        "icon": "⏰",
+        "s": "2a70296a9d51538c",
+        "e": "Jhrsk4t5Pwa1v34lTzjIzQtUWdoBSJVhEysYpmurEuiS0k7g5RfFMuhoo4cUGM9OBA29POGqlBwHFez++OcStR7DHJPmtaodgl6Gs/2xZCbupcs="
+       },
+       {
+        "t": "手搖削鉛筆機",
+        "icon": "✏️",
+        "s": "12814b1eaf2b662f",
+        "e": "Z1Epe0ZbIEtgJ8RzHScMGE2eQUPJll3/x/DVeiqKO66FaiwN4Lj8dSU8xUJH/K5mX9GNdah4GYxv21oFq/rt5KThiJlbSVB3FsdWccsTGWU="
+       }
+      ]
      },
      {
-      "id": "no",
-      "label": "沒有",
-      "icon": "⚙️"
-     }
-    ],
-    "items": [
-     {
-      "t": "會自動保溫的電鍋",
-      "icon": "🍚",
-      "s": "f94588423ae8fa58",
-      "e": "Px6kUTZvWU5QIfrkCq9L/B81cYDjpSvvI4/gsOh1+6QUnkSd65sa/kfJ80ff62xTJ8DNRcEJ/egSJihaUhofYtTGwyLTjgSBbaKb29jG4X3I+BcCQpS/hOU="
-     },
-     {
-      "t": "感應開關的自動門",
-      "icon": "🚪",
-      "s": "1db4b211ffa9435f",
-      "e": "OyZXZ3det3l5j75K2HVcf73bmOHXM7n6BVgcc/VJ1DphLFbFVZ9Qjz7r9F828AMNyv0gcxoSdmy9R9s4lbGy5dUvRboRKMTi9wrFBHBvQ4dD/zMwH2s="
-     },
-     {
-      "t": "可以選洗衣模式的洗衣機",
-      "icon": "🧺",
-      "s": "6deffaba84e27ca1",
-      "e": "T+easqfISCZ6j0vk4egmgTfv5gWSsIXRQtGShQIXd88goCiX7fy+Gx70n+3uilhf8awoixcbuNB4LSabYDtzGrJhzxj2AAJH2FOZ14u3ddhq28TWU/z70A20hjxlbmDxtzo="
-     },
-     {
-      "t": "數位相機",
-      "icon": "📷",
-      "s": "322c207b55d8dc98",
-      "e": "BnXCexJCpu6zT59SxI+7qk72BKt3ciNzw/7v3CcI52vcPYhU5FvfskFF1ITI/APAWgaqa0wh63nLNIT316GPUFz20JaA3E2tVVFT8f285eFqkUpqDvS6+9FBflyUTZ1dzBUpMUM="
-     },
-     {
-      "t": "上發條的機械鬧鐘",
-      "icon": "⏰",
-      "s": "82ed9c43dd8f17f2",
-      "e": "/B3h4eN4zemlnwrgMJZhzfKdb1EgSBiJoP/rxdJYxoihzzkrcmaNtU8LR6U1ODPdQHdy/dmJpMGlontH71hVdmEJNCi2LlDbbMDh8OM19+KhlzE="
-     },
-     {
-      "t": "手搖削鉛筆機",
-      "icon": "✏️",
-      "s": "0a1306e528ac1fc9",
-      "e": "jZJNP2yVFQA6/0CUkiRlpBM3X24MI/l3JOuFUE71uSmmW1epRnHj1IdJzsEFMlfrqW79Mv9OI+WFVjWMmQxctUSkUZp0flE5A6pmMKCFGKk="
+      "type": "build",
+      "title": "幫三個裝置選零件",
+      "slots": [
+       {
+        "id": "sensor",
+        "label": "感測器（輸入）",
+        "options": [
+         {
+          "id": "light",
+          "label": "💡 光感測器"
+         },
+         {
+          "id": "temp",
+          "label": "🌡️ 溫度感測器"
+         },
+         {
+          "id": "sonic",
+          "label": "🦇 超音波距離感測器"
+         },
+         {
+          "id": "mic",
+          "label": "🎤 麥克風"
+         }
+        ]
+       },
+       {
+        "id": "act",
+        "label": "致動器（輸出）",
+        "options": [
+         {
+          "id": "motor",
+          "label": "⚙️ 馬達"
+         },
+         {
+          "id": "led",
+          "label": "🔆 LED 燈"
+         },
+         {
+          "id": "heater",
+          "label": "🔥 加熱器"
+         },
+         {
+          "id": "buzzer",
+          "label": "🔔 喇叭"
+         }
+        ]
+       }
+      ],
+      "customers": [
+       {
+        "who": "🚪 自動門",
+        "need": "有人走近時，門要自己打開。",
+        "s": "b3d5959a4ed22fac",
+        "outcomes": {
+         "30001aaa400584f9b37a42e0": "BEkW/H86pnjk0ywAS/m1fDQv6t0XcNllyLRBzw6f9GSOG9Gvr1/CZSfEy08PIHOFoRYoy/Bl4JBBMs9hZa6pcsqWHQj/frNVYXX1zNN+dAWCN58SiVJ3DLi0lUnSVtB0BPfyeYKh/P7gsU5OGD571GM=",
+         "89776f74370b7fb224e5b7c2": "hpFvJZl/QwZplCGL82gtoBlrlwHVaOk5TaMiMYu49DLWlPIDQCX0O8gldX3SQkwzRVYFKuIbvANJF/xx6cFXbkeIKX5TlNCCzS+g8A/JI4Yae9ydoYOe+tDMTmlSoGLbFKgPkpct46uvkXUrJZjRzUlZUrRE+G/jPWDDP5jSvVyfDNG1tqJVaLHkhjjlUrSfsHqNLHQ=",
+         "a6076da5bb7761e1f88d0c83": "PY1VUPH6yFYsy6jTFbGGZ0MfAekJwj5yL6ymiZlinWRXn/AS2OZn3S4MSBtxaIzt4zQAmQZ+UvdzzShwmy1PsyOeu7HyIf03VU+pqR8ztByAqBqLrDI4+U3rtnjfcP9zXWJ9Ra7bkROztMG9oHUoTU+44H+/ejrBFdz9O5722mGiHgqgezzBtdHmnbX9eDVKdggkA3I=",
+         "6ebc67050605e6b5948f63a4": "YbAM+hMxMURGnvnXOfUVJDjY1wP+Zt4mE3qsOXgYQTaELfPzccUgpeFDvNHB5CFMaI/poyoFl1J8JxDzHC0rHyNxI3k0J3SBiglSTAwRzccNb8vdXq1I2DO1PyUT42BU0IL1wN1rmaz7xDI673abibQ2hBAhC4lHzC5JVc/Coe4NAaE7/HqodJyPj+jPPghXSshnZNo=",
+         "9f6109deb6d0ae05b295c67f": "uStyUcObtX++nCypSWZ3ODl2Gj0rZccLfIByEtNAPenzt0tkKlIjN3CGw6dmRxW8ldyTXVLqBoZUtGF1NaUkGjsSj98HhK57P4pMzYXJD2ZkPpZm9ZGZ514KjkGbHdWO51ZxpGxE2acn0xJvfxVsBVI=",
+         "2de847e8868c3a7df50ebdb7": "F0ORi1TjHa7l33EEY46P6YJ1vIasxStKjG7SVINk2KC53JyGNMpvfQj39EQbScm/bbMLeBD/saqznP/+nOuM/sSDSBxSKXq5Hgqy37FMm30zcRfXPB/h91tC1Zrj1PnycP0lyOael+SiyZxd3RweRUo1uEQOOu48bImR+er3GkvmH5mf9/0FCNLNhVfNngO5qercXAg=",
+         "f44b95200a82c7baae3262c2": "HOkBfSjZY40OtczRNIzP53gayh+deMOcE4K8sCoW0UDRSDsdn0EESr2XARUdXvyNBxbeHDQ6owFGIMqPyWmV+BCoAiaGMxkJDjSkHRF/OsVQEcBxNKWtyKAHLP4gHEivgcYzn96i83QVwVMLfVnv0u+IlELT8qtTGDlKiVdpMRRvf7v60YV4Jknz6KUp0dE4TdVkM/M=",
+         "c3f9857625f7013069ca9cf9": "YjOWRjEgHzibR8/qBpaOFq6WFUvVUnlQQhN0oni9oWXqqbZ1Dg2OJ/4nc57Y5J4ZJKZFL2klomD2QH+Z39nJJISGcZ4Z/gF3astOMLKahoH/FNgh7okcUrZZDwwS8hD8b3TK6/Nfu5lkD5wUlx5bXZt/GbRqbw2va8o5aCJF4PqmlHme1UDnTlLr7gpEIOOKd4vGKIo=",
+         "b1bfdabd54549d2f81af52de": "HAdPVVT+eBcTnrvBMQ3pifp4CIgUWbPx+XSuTEIXlVc2+SM0t0zoCe3WMnNcPMu/TVTKUTUg03k0zF/LP1kT1EUYTAi9En9MButvkiPgjbumexldDaTzqDYiGg==",
+         "aa6bb0bfd8c66d8ee1157e05": "LSc3f7sU5CjZpmNkJKMaGDD0dglqcf9AY/9jLm/ecSgyQZdxI/NmdAFsytPWXLgQOWNfGlim+hjIra9xBejxBRWo9vsoO6PxgedNoLKG3wBj5XjdFQ==",
+         "3dc8fd855357be1a29fa6725": "bBj2yKja0IkvaxZPO61a8U0D8x8SgO68tPZb0eEY6XdO4VL1nvbLy0NwH61TsWAQUzYGeN1AXOj2cdBZuDHXj641vyT03gGns+Hk4L3/jCDhahJgIg==",
+         "57d9e1c180e7140ce63c70f6": "qw5sXmcYLNyDqxnOJFVNVseBFmCxzVA3kYEfg9reKzCyg2EjOJWKYFGnVIL1NCcRm1jR18EtGKDNt5e8DIXxde9afeUh11ifYWAqdYVxr7JnVfcLVw==",
+         "33a12862e357253320337ebe": "AotKP48WcJqME7GdFUEUTb9XvytVgZs4saUaREd4ORlE7jVnlSwlf80a2m7724L/9nVS/9U5UYynEF90TtUEftFtzJuf6skZ1vHxr9fzP4zOl0EQl5DsVNdp770yCCU3xrUHqGOPKwg9j0Z/07mfwnE=",
+         "e115426086ebfeec308e675f": "eBRSPp4sg5DpE7g7dMkaOtIFvn8LmvTBq+sIEm4z1CbRySDy7EPEDLR0v64431ggw3QClcfq6nSEh7QEF6AfnUvwDedTNRyI/euNrWt8K3bpmbQooY9g+1K+PPfckIMoi6t+v1Y5GJtSha/UT3fwZJ8Nq2uEbLFyg43hC3kCbRQXWCRldyLXc8S8SAouug4y/oR6tdY=",
+         "91a874101c94d7de3d068896": "J1gW9KHODvRoEhiSM7d/IeDYzywfGV57GaFkCFDDIh36EoKMYLVG9dPVClMe37QaMe81UMoHVyH66EuwqfHedEZq3L2gHidk2iSXDafuz6XQwu8vTID870atv/S3hPPJsb5yV/e4oXd+hqQBTLtELk3ORh927XZeicMKikkrsWUTrvV5o973DBcy+MIVXaFle3QfwDY=",
+         "5d714d4c0a6230f537e0c15f": "8K7qal6UjhXXsZvNUqh35auODHLoumYwoJWUvqtY5XtLvVcK+J0l6mwE/WNd+oxNpj8jzgAQce+YbdKiw0SH2+eLZ/z27QJxF7dn91uoYf5IE5NplCfIkUfe33aDHDu0i5fFoRdjslZpEdykq3eEqnHMGmanKFKfifZPOgMzr2p3/+OAjIMZ03de/UpBfw0iqQtGqrs="
+        }
+       },
+       {
+        "who": "🌃 自動路燈",
+        "need": "天黑了自己亮，天亮了自己關。",
+        "s": "0ced1d5a1c84930b",
+        "outcomes": {
+         "5aaa18fadc26c95d80e74b71": "JgwTMLcjiJN/kWg83wA/wtyh6XBSCpjZvntyfOeg11whf16Lv35ERbCYaordlqTzR8kA/vXbQ7otZD0GzHAOWPkfEoB25030P+lZ+zgiUmgKGzzc",
+         "815179c1a9d8822c32c3ba07": "2hxXhupIGps0oNkfCEue7W4123rcrTHLAg+PepuZUf/Nk5gqGMr3VNoH4f9akM1ABfZc3Tbnse7pyJUaCyPTKsD2AK1IHCdeiU9RXVrCTBKugN8vs6I=",
+         "0134caa1c75490294c0280f7": "UwAfb9r3IJR51nFK3Hy+u2DtRIqS/iA5OpHLgrTp4syDaUBd2fG3/SfyX00GtJNK3q0TQZGlXiJOsWPBQvOja9A1JNI39JmlJAFJd8CD+X2GP8AT",
+         "46f25fc4d2c6d01363af5c7b": "FR5X4tY6NxWkNKG1ZhV1x6jAJH/cN3BSImT+KdRwMyb7Zry+YgygMOKgTnFjHlOK+j0Zn6Kf46Uig8RlXqn0Sz2xE4ceC/egOXoPL6sU+aEkgZMq",
+         "c97f60006844503f05fe5c2b": "K/MN87Xnofq+H5zpq2h8oj/vORHA9fMUy/ac9tJcgEUZ2wBRRCyVuWyZdBoyOj1orEYkAA8suKnuorsG4QrRbWrY/F5CMkywpKpj2v0h2VrMI0nLvDSPxmT1zmfdHw0YSpuPXoDndWkolPIp/2n3c1myLP5go/XibTGRV3QhIPpXEbNB",
+         "1a7341a35915d9acd50796bb": "hMQq/bWwa05ZxhDDc+50bOXsTRxhHDAMCBVu56QUEG6P96xLtXASzQL4dSRM85kMT/Q336u4Rgl3ZbbaFseOxDEc4C5wd8PR/qauG7ENjCUDrKvQ7yQUWMHXeiuc6k8/Ow==",
+         "9e1647ad9e308ef95f832359": "YwhzdyG+pZ1OTeSG5iBgaiAse3Ucly3GhbygtNK8k2043AEklJuW3Uh0m2q9jhRa8lDf9V8gmKzM4VZd8gIPmfuFupJ16E8ABPbhGoao4PRWawq/QNs9Rb5z13OcUxo4ymr5NCeQgf8hVXjEhalRxWY1XpUsmAKPhMcNdm1sKmgIuIi/",
+         "9dc61994c2b06e2ed526e644": "mVn/OidBZ3n0AuimO4oiAC8/pM8tCqdpHTAfTTbDHVz7ywBPOMv7+ZXxvUp/hV17mu/KBHWHN9g2xZCRPMbP1ITlq/dZOneJQGs12Rad7Zu/2xoX54LDgnirbimFbT3pdvovlGGACY8XeHqSu5kjs4zRCWQQJNTYgjHN88TnbjbxaSNz",
+         "3d0fd2c4134d2ba2ac58fd0a": "pGffAdoxTV3jhxr3gLJ8xbrRrxl50AmP8cSR0OLsdM8jpI70QHWSReD3pd+8qjtlOBgEmhZrNUEHBIR3bQaNGRkdKO1SC9ywFD46XFky0k2JCFnRlqP1Kuft4ZTRpDlCxOvdnVuecitZ88c4SJB0ztK2aNjbk/qV4tnDa780Y9Tubu4g",
+         "594c6589317a7d771e929798": "q5VP1S+j+tfKWqqJuUCqPORsR2u0NBqExNXUrvtpu0mXwxo74YSELh63xFlS3r7d8zSqjo6P1nUKrBUfxrNpmmjy0GTT2w3oVnJUxV2wOnVNf9iZS9ef2QF/P17pcxUWOQ==",
+         "f364948f1e43369cf450f7ca": "8wEAuT+fQYNFovzX23GyMboUqIwN1+l+kkARpWWIsOnSDi5z/yMVwV6d1lb04x5xTvnaNvm3hM7Y5rNtUCvEBLHjx0eu4IwYDyoE0jL3pOtMKhjAmF94R+j+EjHhINo2qSw1B2XwHXkWa8N9+87BTPp5cz+ZVzf7prX+syVNZOucbXF7",
+         "6db557c63248ac3494004b1c": "LnHig+5LFY3kvkyjBRlYnmFavjAG/68MnJ97XXZIZHzCvbUMr8sitlxtThMK8kSf66aOgZC5nqUmoV4qwgrQraJ6XHiGv2I++KYIogIQcVdNm/5etHUV+RSwE4TQ8fRyeO2DPgZlDHfEm2Sw4p8Fu9gtOzoPIbjNKYhIYYKuy6TbhjwW",
+         "bd4ac6768381b530bdbce14a": "dRPMCZ+0QjH6au+viR081IIQ/9RYdTfURwpaKcMKPdddmszVktQtElhIxvsTRkH7vE70t57IOgGLyYLxzoaEW8iMsVCKioJYd8aO5aYd89Rm4vYOPanmyjLAdT4iIdgK5jfdZ4B//riP0hIMp2293vHZ3CQX0BIxIvLj6mOOX/3weAlr",
+         "8121ff055adfd73ad5608d1a": "MfPLZu5XZdtbu8c+z5wijS+8YsaBzE6ph0SJgSp1+XY+FTH374q400Ir8VpGNez5w7lDBYOpa7ZK43xT38MoHMOBIzld2bPX5v9rxdArioQK/ChDLPS9r7vswd6fiZP8iQ==",
+         "4855ff8b7ca0cc9e54590a54": "09IdSVNj/G3Wotk/e7nG38TTqFows83LTQQzOgdmIAmoCrYSs3KyYdID2epjyo/TaZ4VvlCNOivaLbLbebkJOK9AbPEJ2bV27a8bjFxwDeC3ydvqnLCfhhC2Uax/2FiheqPqpZatdK7xTyJn8vgkarJNQ7UTyeZqdd51LBDd8YLraC4N",
+         "03d6cd73fd0425db5fe23e33": "Z9dXD2Vr3Ip/na7+IYoxuzII+KqgzqC1iTQFh8qoMjDv0pKf4AnbdVE9buV6VGh4n8ybapPafNtsh1PRMononuWcP/HU5Rq5nuAPNoPELJB0WZJRlXT1rrwriGRz1n8H+Iyyo4caw6qo0CdmdrCW2JcDhLNADslKbMuGywqFr2klnQpU"
+        }
+       },
+       {
+        "who": "🍚 智慧電鍋",
+        "need": "溫度太低時自動加熱，保持飯是熱的。",
+        "s": "6b03f94888d5940d",
+        "outcomes": {
+         "acba3a30ce2fce1564e55c1e": "pCeKInzXXMJe7N+auUD8mPdjz8V3fo1+4/Rxle57u/jEjbxQPJX9OClMkFTMlsfMOvfUuqLkgs5Lw0Q1yVvFZLbEosRrnE2NoTDEhK6zRNuKoNaroLMK8ZcpICUvALZ8H5Eyii5mPnxT3X5Sn4IpC08pNfq8Hcvcm3THWk+TcavL1HeJS/0UMSMv2w==",
+         "b3de2553bbff62e8c44e0c5c": "haYH64ynaJuq882DGidOxtYhGsjKn430iK0bf7/tUucYkBUL27l1+CvL1k+YgQF4fHj2pVSSUlzQvSR6fWDcapSWCpsI+GdKvpHveFRJQ2+1g3t1BLlqN/tVZxHfXmhc6bINvkitmYyO1DfYa/yRq8K0sZfoLokqoatNehviNAaiI7a+Oxikg9T5wQ==",
+         "c0436b6520acb8fd57097e93": "B7kJCqHnZ1ppVW/fOfpp+wpxC41Ze7LMjXk2vXZdDI53HdU1vFyovByfhYLEX4vL6u8dgbidlqukypT9vYE1lJnkLD+4ySEcV3S9g1ezN/qN2jXcZn1vEZ8eRgK6w92u9/BF0w==",
+         "803499cb4f8265db2aba298a": "8oKzoBkxH2RHWYH3ook03QLSj3MaT1v/UpWotX3GzqXeIu/BQINhhqEHzn9ykmwIdLg8+c9bHb4U7Vt+ff0coF9P8xTZQUNxcoNQXJLFREmA4C/JuVc1sDVc6ixHYLBrnc5lOf5XBt6y/sJ4gRAu7bvqKbjwUmnX2+v/woaM2X1LW+7xGOFDeFa0Rg==",
+         "9f905fa4117229e6e77bf1a9": "VAkHfluzyZvFZnffCx7ppNIex5AAcS2qPdZgMLqPrY/N3/CJnRnddYgjfcZCFDc5kpkukhQDQjoymbIeETG90yGk2CINm+0k2j3zJWdSBjx2r2tZIxcmgw==",
+         "2c57132e6b5a0f61fa1ace15": "X8o4rftk+DHQ7rggYOagj7i29xj/4lVEFj6djEHMK4lIMoKcL6HeWkNHux9pZEJ6YrWZrOALIwxjEydvwKthWYTz93baZUYOj8Coaggwwgda0FoPLx0/fw==",
+         "160f5c74b63d4bc616b2a0a7": "rNrr2MykyN8i0PXasseWtjHO6X4DkkVHZEufD2Vsrgeh4DMO1hPvSY6KcAgAT2EyBDJIX7r2oTe9dy6TyJM5r666pZucbRw+njBMIF78RCeXZ1MvHbmRGSjWA89XsVkEXEWZ2g==",
+         "ea17a1abc5fcce7381d3d43f": "VowdJE6PpVIuBxm53LytFrHKAenVLirJ79Slf8yI69dbr7zh6G8mDZ0wuSuWn6YPkpB7WCXc7c/BO8dbMqekUL835c0fqzbWFpdEzh26Mn6a2/bvpYv0IA==",
+         "a994b38ca67ecbc1d9ed6b87": "Tw/HeBqUxsWA1VsYa77YfAv5LtmEJdPCZJRT3nljD0ekOwpiO/ZY+cK7+XYMQQjVsZicNxC2VWTEd01QY7BmdYA+PTjCXyq10XmANJLUW6TPpdPZQxMA7OSm34aK+5TCJWiWWtLrUHExgruAi11ZX9xZ2UTva8e1M0tDR0IEcQE7oxC2C36d4Laicw==",
+         "d47abd029f41a2eae0bcafb4": "ymWBiLVW/sdn6fWpy2tCEP4/a5tP1cHNLWCsB/392JFTcJhnbmIknfj3mvcW+HfogPYleWFQCaKR4clYvrMt0dXQHKcYJlGVd7NoC3cQ396pIVrRWDM8R2jKEOga6J71kZ1O0yibLrphNPHNOsJn2YKeJxyT6eMHbHoTiULkFj9J/fiBoCbZIljnQg==",
+         "c176e7146a2f9cf2333d6055": "Ogx9EsO9BJbK40M8F/1iDxTwNuF+euwTUhZ4GkZTUzKW2T9uKz5UbGS/DIA9SLv+N7o0Eeh+Cmpzwvw+aP+DEHg+k3HoW6P3UIGB4C1QaqG1amyzE+46iB2eHAWZaMktvmjY5w==",
+         "79b384d4a61d1512f031925d": "zHe86H2guqkD8I6m34aGCB3IPe8b24qbz6gQf6MXHGi6LMrE9D8lUFG3DIIw8tohL8iGeBg2vfRMTs9zfQbN9/h7aa+W9UoGAcLTF5vOSia9VxZemkjEri6/2Cm8fnDU7ACR6o+rNRpfEQa4aZaw6fpE5e3seMLjzKlvDZEccUnvGjT+a+CWsL8p7A==",
+         "bf8ce57d425c73e3a86ac790": "eqWA3Yh0UsfPWGj09cc7J7NKYstUAxcBG0mVE9Pfn6muSbj2AcfKXsYgGw8E5eEwpKDVv8Bg7PMHy2txND38UXHdxX28bngbGRmn1sTEq26ZIpEafVxiBjeIMnrXoP1PepZSrgJDNZREJwqPJhDeGBUiqTN+HXe7aVxeVQOEipqoQs/SQm3JodtTLQ==",
+         "b442cd7457fead9c2c873b7c": "FeWPHbkCLvNgZTDUbXfVaWYR7RegJuboJbCa2BgmOiDmuwub+GvypH/LblbLu3ZChaNf9DkOlqLkcrfcZ0fvmcBTiHfk6oI5zCOTLubpT5Svb+1S75avauwEnq8zOm959j64gS0TTD2ZYK4Km+bcphCIjVxSmvee9fsmzij1U9QmQWPqpBvxu8oWjA==",
+         "00aa8a024db98c0f13c134f4": "FRnacnC2xEPDU1yHo6IHoaPIojhVDAGnOs1iqOHVD0kZewsHECVglX87Y+tWdzbm2E4Pm9QxM6f6/f0PwS5iAqdkw98aLKC1upJ5ICnM1Urm5RQD79FTvm7G8AA4ptWkzzvbxg==",
+         "72e2979b2f33495c53b653f7": "ycKJBrb3JeDOqMjFUiQW2ezOaWPiLYl3o4KwAegLUYg6LgAlQ4EJvPxh6IXk7w4ABHoe7WLGrgXThn5vm7LCePMsewIltf5A5j+iyyM+kqqi53OcmtEZHVqx1YrrOwuIwSI1xxYp+H+sHKCxvEsVxkf1Q3vztHyasnhqexWkzrXJtuKqdvwVQ9IfXg=="
+        }
+       }
+      ]
      }
     ]
    },
    {
-    "type": "build",
-    "title": "幫三個裝置選零件",
-    "slots": [
+    "goal": "🧪 嵌入式工程師：用積木寫出「如果…那麼…否則」，跑測試（🎲 裝置和數值每次不同）",
+    "rounds": [
      {
-      "id": "sensor",
-      "label": "感測器（輸入）",
-      "options": [
-       {
-        "id": "light",
-        "label": "💡 光感測器"
-       },
-       {
-        "id": "temp",
-        "label": "🌡️ 溫度感測器"
-       },
-       {
-        "id": "sonic",
-        "label": "🦇 超音波距離感測器"
-       },
-       {
-        "id": "mic",
-        "label": "🎤 麥克風"
-       }
-      ]
-     },
-     {
-      "id": "act",
-      "label": "致動器（輸出）",
-      "options": [
-       {
-        "id": "motor",
-        "label": "⚙️ 馬達"
-       },
-       {
-        "id": "led",
-        "label": "🔆 LED 燈"
-       },
-       {
-        "id": "heater",
-        "label": "🔥 加熱器"
-       },
-       {
-        "id": "buzzer",
-        "label": "🔔 喇叭"
-       }
-      ]
+      "type": "lab",
+      "lab": "embedded",
+      "n": 2,
+      "prompt": "嵌入式工程師"
      }
-    ],
-    "customers": [
+    ]
+   },
+   {
+    "goal": "🧪 「以下（含）」「反過來說」的條件怎麼寫（🎲）",
+    "rounds": [
      {
-      "who": "🚪 自動門",
-      "need": "有人走近時，門要自己打開。",
-      "s": "46f3a9b72b5641cf",
-      "outcomes": {
-       "6b42781f94a26d0603e62f68": "JIC4BjGWSXxSgvpUZYXybR1d5qnw9DbZfhhKrcnrNUnSdxr0KXMtQkc1XBzO3O8bhplHhjxCdgGYJub9AVm22pT+jQ808fVmzCBxLR7WwIQXsWCcsch7O9v30vMOzFiRLS/+BVuoRZWTO09Q2UU8adM=",
-       "08cacd026b923706ec088f08": "KmyO76B3ciARQ6MBhK/RR6Cq0uhVWRbN/Pb4+pI7O1vQ0HZB3eJI+v2ApcJsHWMlATVo725Ea+MoNhopYx9CLlWh+jwsJmThEj/5w7MysBpkNVj/c9zgzIf+GoOkHodJFSicjsbqIFSGeNkCdXDkly1rYEfPhqctdi1bFS9ouOOnCu6pMyZEdErKa9C44lUTYltdyG4=",
-       "1be994533e5e392ab4545e64": "Ts+M3LGuQMzOSOiDyxG2wWKMFmsc85X4pN9uc1AZXwcpK3iKym76LCghWZDq4/TCPkywJZy3wfCsoUyWmCw5jWEjFfUwbHykFr0TnkPGFeYmOZI0VVFpvm30EEOFyeoIAoJVQLUFefPhx5M+0cgY+UEUfuL05A/8K1JDJOpYOWjGJwa2RjCFKBJFsE/z9PktjGadvUI=",
-       "8ffc4f181e7f72758c3f0974": "VM0cH+K8lgbmD57H49ZRBGDKmYri/Nmdo95q3g+M4c1TwxTh8/OB9SMT3ENfkou/Zi8p0d+ngbh7JvoKRk7UzboodrlC7DZ7wJ9Wlgid+co/WpbRsLTRSS2y/MzkVIGBuwUqPib0kfv5QvyrfAx6S2bAl7vU6XbnEYOFPTupILDCqM8+pog9Di+7yPgok4RRV4MpBNs=",
-       "d70ca9e6af4be1847e9d04f0": "yNNDycqq+qUgwKexgq+seu6a74gu/xzHYunW+DK3/VtE9Ve7XtpM1JeqTJVyTmQU/tDb6zmFNPt81vgOCQxy1IYZHy5B8U+UAeZ2jh8qftsxxKZCUY96FTzawk2K6VBzApkucoq5Pe0IUjonlnAffqk=",
-       "3449394eaed95df6dfee3618": "10WM7LiaDjeJ7uCXWRkIWMY1qHrLse1mJQPLcKukQYcw2wIeDUPpcNLNFsQ/dKWdi5xsipfN1i6AXQxokNjbDUpRAQNO6qyrRAHgXtIjx9I6L0OuE6a6VFV+GcT85MPEwojxFOLS/TcatAjI4VE8Jyd6ZUw8W9G1l9Cxd502M6idCTu8JL/axgAE4ALRBzl24BBhFMA=",
-       "6ae6fa2aea213bd1d742537a": "MOBRAgOfZRVAU7STucAFojdflM1vtLpjNB9szsM1LRNECH8jVSYmY1BmApdaoiadNegRZoEfA40NotFn3Gfi0PGqaFKiSS542AtmruVd9jCZSKV/gepI5+q/9nDk5IUZPuQkdXt+hmN/dj3+rUBzIiGd8RDQViAELyYrDYV4QNL4MnTGr+rG9vvHzYsBo53k1wK6Rac=",
-       "73440a898ed51fe5cf4e3d84": "Nx8CjHrlmXOtQY1zyc8q7sBshd3sKqjmkXyaBLy9xi7jjR6/7036jBDgiO2FLO5u+4n4+cL9Ra8XnpIiOCLvvPDqXSpfvsx8QLY3/HN/N0wfWukspJ9qeR8+XrtaGTnTjHOkFGdVSHRBEA1n6MerK4QR3iwq2ZtyIeGm8FXHplc29XxYHqbq9pQZGEaQJS0XG242RMQ=",
-       "e250c69e0ddba00631a291fd": "NPGjReHyAIrDqgHJ8IVbFGHoHJMpvOyYuomLuf7teP6KZgOAIEKllFZwI+CFqZJwCwvf+IoJGlfeq6ALjqU7eTU+hiLAEd7f1ImTRd8VpT8biBFEt2t5fJWFuA==",
-       "9e0c13291044133ed93f301d": "1aANe93dFvoICKMS2UfIxaJ/avsbsy2YcwRosm6niqd7aSR9mPpNGK0OEIqsfHsbu76fJ/667pCYFL45dBh/DykYn9cC3b59h2jfZQNdiqPQXKcIgQ==",
-       "713761b40885e7b104266c67": "3rOUTY8wXPVDLQzS5rnjEm0JnBT/jIs87nL4gMm9YS4VPjVjV1pCRZT2wYN8oMd19FsQRbevqGdrHAlYoc4tiH3bd4ZPxGzBdq4jb/CzcNa5M2/u3g==",
-       "a00bfc8475d93532a4352a50": "/HsbFr1MVXA0kXTX6QAaLBjSRXobKjTBpTn6Mda7AedKbx2MljMGFSSrgE4qjCj7SFcZ2SvQ66OFhXOq6mNZj+xWN+rmgX189nLIrdAIPJdd0UQZDA==",
-       "9b674b83d8e71ab4bbc2f983": "z7mC/DIUNCUdcj8Ab2NP8PaHN0EAOtWgYLimAFEs7zVVz+qTvxmSNJUWraEfA39Be22taUBbCuPyGoGiI+/R4U+U/VLcmDljg4Vaz4048p7ZYb/LYWebq187w6mrsH15c5dPKLgOAlfukUmvJs2iKy0=",
-       "671fc7ad110d189b7af5f838": "lZweD41+kwgJg0iCIiJsovbu4gDDBZQ7GbNKx4LdPyPNYglp8+MJXEc351m0A1Y8R8Qx82K47IS0Dq8pIqQmXWiNMK9be2jb/B5D77y4xnL37N0QWPmCoeGZJyVrqWRJgQuKW4rJLE44mVBttJ/Gk0O1HtOJBzVuhSXlp/6doyv9w/1TEs3jKF4ZI9n2sq86ekx/Zas=",
-       "5123490b886c248a64e2a3c9": "uS2S0boE2lwL7kzQbYnFj6ApzA0/JMDPyzu7gbFgvd/V/LG3xi57avU2gmrRz+MQ9a12whvHQpijTFpMZ1S19r44EFPOZ3OXhHgkPWsVhTwnsmdmklmBXGcdrHHfkaDbvrlKdXdNucrLtzPHmYom2cHXoEfhNR8Gf7mEGYuhKxv/q/jimDEKqpnxC0lub6ePkKUUCkk=",
-       "fa2e42cac84b3aaba93b096e": "+gObyRLcPTFFkMY9+vDyMOykCaF9hL52q7FNxp3PExEBEKfh9/Z5OrWA1CJqbYKxnTvriDsjxcX4fYhqKP5qRzZh2OZUoNQw1ZTzob0cMNe67sJyyammWG7fdZOkoAGm74bIAdKz+Cti4mKybo6jPDm1hiLQ+ZhNi8YBAXIss/EiSfiZuvVkyitZNsTaQOEhlL2nOcM="
-      }
-     },
-     {
-      "who": "🌃 自動路燈",
-      "need": "天黑了自己亮，天亮了自己關。",
-      "s": "f019911acbdef052",
-      "outcomes": {
-       "3cba1d91d6a2c1c4ee1d8c5c": "vBCDadYKrgsAMjIGZB8ZNkSPHpbv1YIAJ+paFDp1dW5MILzTAoKZ1/GBfom9qf50P7pAntDTyWFKS4xIacfJHo64O77OuPgkTXF2dkMNxpTG0Du+",
-       "ee9a54ee1781dd595febefec": "cNPH72WRywOJZN4WTvcRBPo0TMsmgdjZ8ujF0+Tq21Zt2XYklcy1ptQESTfJqjrr3eVDTixiqaoaYr8kx9RTgr5Y5Fn/lRVAvS80ZEdZW+v8by8OfD8=",
-       "3a3494e14ee414d09bb18ad1": "50d7LdEMiVUoVDdSo8nMuFmEBu+CYZtWzAWyPaKmuTBnv2S5kxNHb0ljBIhCtqwmWD/hLx1pLdkDhkNyC9kVxj/ig4fDru8+mn8PzMh59LQOzc3c",
-       "63189aa9e95bc7bbd88fc0b9": "dVIzuf+dUX8ABLkwYb7s3gogvHnJXWATlwcKEBU2m4SkE00BWnMtIlnNzz/G+wLQaxiBseCJsOYcvBV3g6gSgN8bi1O2/GNt0FltrG1LZsndTvC7",
-       "202360bdcd8168b27889a92a": "8x/4UQRXansgDS4UBU58lAZoU4mIU+iepbsiuRI4n6r/irvOZ2am/ulDxYR4q0h6WfSHJfpANskzEc0unY7KS+TKPCwg7HtccIlZDs+6N1SIJARvn/giH/rhsashYSMkDMXhDnyvL+gUjPKLRZHD/1QSDnK1HKxf6h1tLvFK3N5yJvgi",
-       "f5b8ff0c955db1b9eb36dbe2": "EBWbh9JpcaYvqvtJ2JQzBTaI+RUP/+cSBWs6/3iYOxFSYYDUcwXBN0lh2Gx6vMNZAAE984wqgBYAD8XKAJHxp71Br8wVNng1z7WcYiffHEosVmGbcE+T9PrtXwYGe94nCQ==",
-       "3c64e3e14d9deeee85c30fcb": "shESFt8y4h4UV9G7VKgdaQSVEbSa+Ek7XH/DEx4NTMC8XX6JCJujjSqZnRO200XC6twOaO0EdD0z54DsQ48o/ryIfoCglCGk6GdfT8q52HimGOkjZJ9sMC5dzm9aplg3RrKTp0BLlK4t50lhahNdOlKjprKGm/ojCxAIZ4OoR1oVKowS",
-       "14ed382a2e3839809700811c": "Tg1CEtVZmsCZzmfz8fcGfmnLlndMCFQf0R3MLtuejEqvdCSh2KhWNdXGcBg1TKBR13uXipcEgI4Ys+mef1cgAQ72nGGhHIbblOlvm5WsljzZnHH26vl1YTkmhYq6L7YyHB3Ov3D+286HCPo7P8XaOqXDfKx9K2DvTzPy1sxfp5FN6ZOT",
-       "94dd37fa0378462f453091a3": "xiRnwJe9aghSRQu7TZxHF7APfVHGT6VnRZ3+G1taz9qupYJL8MAZdKa/vuk3X8WrrqtoMMUjpskedhJwab9e1Zdei8BCudozW9kgSF8HBIu9hlIGYNodl2MeqIgVn/uw1Hv+kbtwsJxEXIHxWmjrqYWjEToDnetKy5nLrBjknkn1gB/Z",
-       "b0bc182035ac9e41156f373e": "AIVNr887sy/pLezDSYAd8JSzvPetbiixJuaoN8QhgMRfJTiPDNwlYfXKDqXurH32xBKWL3pHlybcUqzEyfF7AzEVYVNzVGAPO4jdKzbERPifNMzsTRQRnZVTkDwb9VkPcw==",
-       "ad070890590774cf90e66150": "gioheC8vV5hghsK44/qZeNfahEffnwBkXTYeY4eO+YCC3XxeBntzEEguAxNCiPG75H8/a8EGv0o8FgyYp02SfjvSg9OnK+gOCduarnSBIOioP7OSDSAV8yd5Xn0GqnhQaBlq/UT4uSreSsicH+Vij3Ozfb126j3/YBccKN9UK7Puhyee",
-       "9f1c5c07be95b677269a5cff": "Tfc3C8AMMhxeV3pzttgcBRIOZ5E79X29vvJhB98ZFQkk7LZPGFj8M1v1AdQywkaS5BsTYpzdNVnnD5++DdqwJFNnMpMjoq8i2qfL4xFjs4aGUIoB0lnk2YXEV/t42vYeHQZ5ZPEKmHKs1Idt5vRsJtkydmN9U1aCuCxgAqpr9ldbxYWE",
-       "33130e0719b6259de5f00a40": "473n/mhdmcnNgxphsYMoNUIOHMyrmfimX+pq3KNHAuzaRM1x+v6DKVawD7kJFx+R4qKHKLGWDP5sfogC4ulLVG51LtRaT56ksJXxC5czC2n+Jaiw4p01stmE7RvUTfgQ/SWqRY/t6q0riodZs+EggJ0JE21/mcBGvg2fb7MIMBEmoYnf",
-       "cbe22614a0345c23aba4bcae": "AgME1Jz3Oum4QQmNWg2Tnk3Gp3O9cleVnVS4wjn4Gm3IWzvlWPd+bQwqBwRCCbN9Z/5QIR+TUndSEQx6JHZK2N5yBZydtApGUnYawP1GbHZFoP2cEBvL1QnGyFpAsr/DiQ==",
-       "314dcde09d9956938cf386ba": "37eWjc1kPBkCRORq5VL5BC06FP966jd5DZiHCd8aDyGE44+dsPXq12qx/AOT6Mh+g1vLywHEA3lreQFXBd/BgvJDiZwl45N4tks15Zi+QJLjrNXIxmKYHz6vuKEOnomM5SOOW/iumUgpOlmsS7wK9/OxfH/qQrDr5VNlKXd7LXFJfU0X",
-       "9d31b52c76bed15d2586df01": "x5w/BNdm2HR7Go6xZwRZiX4XKgVtKzmw4ULZCUirPL6vkoJBb/7jBnBFOR73g5FZ11YJ/NWRuZj/mvpXz8S0QWGH4yLf/e8o0M/cqH8lRyyRCNl4QNz9fAljxJERmJT1brenfW1X0xl/W9HH+24EG/XDp3dWKrQk4ElBpvKSsjdlSIQP"
-      }
-     },
-     {
-      "who": "🍚 智慧電鍋",
-      "need": "溫度太低時自動加熱，保持飯是熱的。",
-      "s": "45d7646682561cc7",
-      "outcomes": {
-       "2e5b1ef05dac775264619546": "PEbC5wzk3U5O5YnSBAoUFNJfu/QaKX3xA8ZVqo65liWSLh2vRlMP3FTmkzALPLdBOUHoAH34X26QnFMTv4cSCR9p7SMGSr2oP1QKJjXYGLEpxSbvtaUBRyejtW6sb/WDS2f/UL4vfqsIU69+96/J3rUDcVZpwvIMAFvmBIOjVnatSq/yD7ffHCZ2UQ==",
-       "60c98c2115fc65615a2b9da6": "o7a9uiBQUX4YVNuEfcocW0REsuMHBKVGlsyjlDC5DYLPG1DJsZpgf36AtY+eWwvgTxdPNZY2+uqEqeHaZec4GHzrxtqteo9tPhhVdjNAEqNe+/3wa/AElnMxS/PfbBqOQyBcZoocivlZDnNGpOn0r0qvlWKC0/cMUxwVJ0kWcMy+dnhivUQpgQitlQ==",
-       "6a42979b29710cc55f59b2a0": "cnaptHgElpr6K6QrTNyUAdA1gnWkwAoa8WzNkYgWoBk7Q+5/lI0/yNW+HvEY2O4dXQ1NMl8Zr5254CUAlhQnfoi+tbaEre0Gyr/BPpPUcHjHhejVzmO6edA/JD0K+HzuniL5qg==",
-       "64051f0ae4303b9f50286ccf": "VMJvHN8dQ2xcGEeJtUX7NUyDhbj+6162W2OvBkwyuA/yz0NJ23w8k4w99uKDM1654BB7XRZ6XxvzJH4mnB3hb39BtHFN8ukI6QulDbW7DEgL7tI0x56yYIGrC1krIlsUewwMMNf5F1beqV55eYMzTGVSRTb1FmMRmzUHTEQ0UfNIQB8Vb/QTqQw6mg==",
-       "abc66dc9d22f9f3dced566a4": "Hh5058QBx9axfRQRcMKh7ba28C12Cl9Ief0IA30xrGQw1/0Qx/ywof9FKi2Ho/e1C45neRqedRIcuAJesrAXgJY4Rumua2qSdGCgQzeFjBbCSEXyRxc7Lw==",
-       "4086467e224fdb4580a00fe5": "J9gyaQtyfa2jREeqJRU2slPsQ/7/gt4Najr5gkmYxoXeveoV9beN1202TgN6vYRIJgAxZBAR9CpJoHBzMNccuqcWvBjpx070hdwXi2zoRm0sn0WVu2sREA==",
-       "3ce3f3cf57cc4ccd92a647a7": "okRWTGJtfTXxKiNrmXfve0dePZoFOc9kpSntYQh3+VlkAnZKxTex+mkjA3a2k3ddB9NEQakXlo/kcGEejkwNTMYAtZHjlvMcNl6n8PPjFl1yHBn622jEZBJZqsAHJgPov2sLGQ==",
-       "29e32ab93ed83103fe7fd044": "bF6+L0KDHIuKZWCCH/irmLQhj2sLEU3/sSdm6SDn+8XkAU5Gnr9VaSyWnParobP5d93lBbNlOqse0cYEFITX65UPdo527S5QdYJakzctzjmdwnbQdDWg9g==",
-       "79c3224d272e12b4930025bb": "BqPe6H/fRGsYDM2ViPhlRg0odQpFKURvY6Uhglc7aO5Gab0KIYxr4rCyklnDe8v0at0NLZYRYDLjwh6keugvdwMmBAuBwElzcxT7By4DS5MiDpenvnKC4gvVu0wYSLX2+lQXXbqocmz7zhyqHSAvyysHpVfR2N+Tw+qx8s4ewzTI9XtAqmoyqeREew==",
-       "868b22e88769a765a1a565b7": "FZgjCc0dH8D1tYRtpq558/yp7h2kRKvXy7LWPKlEntQnMRDsxlcdgZertzDIv5ll/MpjICY1/wJWZVAkpc1la7ipZ0Mbz7oA+wfjVea5JyuJq6YtPTNC+LCPnicjh+Kn4SQqx0V+xeo6yJTKh6bUC86+vmV2r3HAwDQTQijfTtO4vlbEdpZ8UWUlSw==",
-       "925bb1314bf201817dc895a8": "GPJvplzb4ABl4WUFmi2O9Hx4FuzYwJWeKVDuV4LSh3u4I9rsB5w1MoAl9ozC1uMPQ2iIt/EtixFr+KPqwuM88b9l3qTyQLTMJDxFogYxxgKc2lHYnoF5Y7wkGWedEm8mYSAipg==",
-       "dd495bb837e42b0456915eb5": "qm69wOsiP/CV2qNtbqqTyH+XfB2R3uXAoiwuBYXye31B40CnKxcl0Z9dV9laOcnMNiSOncz55GjfrmzTbMapUaCEk/V0g0WC1ZTEIYjEHH8Txby6NJWlGlHmTxsFDwtvzGbLcRvrpIKAynrtOijo65RHimBV4YfKXVk5Zy9R5rYw07taoWiaRPxjsA==",
-       "c8e7077457aa2e9bfb894105": "2NcMTsXCBy/f1Ttd8x2xfPzNkmeNvLrKHfc20+pe1JyJVC8zFG6kC5VTdFRw56Ybc5OIP1SpC173k0jr8s6wGc+0lTtmBNfk6IaaYwLmg4FrmxhOFLufubuHQZZ+VWRzQ+Raj2aAFP4J3P5hhUDbmFPprYShf4OsxW0AUNdf0gBGJjpIKG2CmpEIqg==",
-       "5f45c76fdc0228f59d7b49ee": "r5fizSDKBxDmKbs+FjXyqZgzpzmkaLX3CFqngPmNQ20YU8jPnQ9WA2LUAbz104/Eql0Gd4KDlaf1bD4hb88or9WaAaMr/X8BdG4W9EbXA3JaTnXfy5w4qOYBJNAIYNzs2fAddRUVbjpE/SnrA0sRfTG/M5sHeUF4/0ZTyJGhIsQFmnLlMflpMyFhdw==",
-       "548a6752f1d2a447e4edb5fa": "mR71sAyHbi4A9Wy96put81hjibuRk5NjqqqjZs+jO2kHbEy9C4DnPeCG6fi96aA/7UFXv+zXJ46A5Bd1aQgogDXdhOhdfJlhpucdPwW5mbdyucgwGQc2lNwNdLWLchSBxcKuZg==",
-       "85ee3a9ee347b4e4cbf186a6": "4SiAWcAvf5gm+q04JkFG4Bj7kn4NbXVedzxAY8eBtcd9GPbCFFCeuh5+Xs8GJpdGk4yRtTeHrGgDn6fc/yqA7yH5WtUolr2LZo8NOKxxwclzqTmc65p37uTCnyZAOuT9G5B8YqTrepABJB/woMVlPMMU/rANeL9MHZXasv3jln4r5+/r2NDUXnunQw=="
-      }
+      "type": "lab",
+      "lab": "embedded",
+      "n": 2,
+      "prompt": "嵌入式工程師：挑戰",
+      "hard": true
      }
     ]
    }
