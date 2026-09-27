@@ -69,7 +69,7 @@ window.PYAPP = { mount: function (opts) {
       '<article class="card pop"><div class="tape"></div>' +
       '<div class="row between"><div class="row"><span style="font-size:2.2rem">' + lv.icon + '</span><div>' +
       '<p class="kicker">任務 ' + (i + 1) + ' / ' + L.length + ' · ' + esc(lv.book) + '</p>' +
-      '<h2 class="black" style="font-size:1.5rem">' + esc(lv.title) + '</h2></div></div>' +
+      '<h2 class="black" style="font-size:1.5rem">' + esc(lv.title) + '</h2>' + (window.K12 ? K12.chips(lv.id) : '') + '</div></div>' +
       '<div class="center"><span class="chip" style="background:var(--unit-bg);border-color:transparent;color:var(--ink)">' + esc(lv.concept) + '</span>' +
       '<div class="mt1" id="lv-best">' + UI.stars(best ? best.stars : 0) + '</div></div></div>' +
       '<p class="mt2">' + lv.story + '</p>' +

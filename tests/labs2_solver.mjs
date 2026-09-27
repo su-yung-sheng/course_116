@@ -2,11 +2,11 @@
 // 只看畫面上的題目、el.dataset 裡的情境描述，照課本規則算出正確操作（和學生一樣），不讀答案資料。
 
 /** 🎲 密碼特務的出題器：看題目算答案；不是密碼題就回傳 null */
-export async function cipherAnswer(page) {
-  return page.evaluate(() => {
-    if (!window.CARDGAME || !CARDGAME.cipher || !document.querySelector('.qcard .txt') || !document.querySelector('#ans')) return null;
+export async function cipherAnswer(page, S = { txt: '.qcard .txt', sub: '.qcard .small', ans: '#ans' }) {
+  return page.evaluate(S => {
+    if (!window.CARDGAME || !CARDGAME.cipher || !document.querySelector(S.txt) || !document.querySelector(S.ans)) return null;
     const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', C = CARDGAME.cipher;
-    const t = document.querySelector('.qcard .txt').textContent.trim(), sub = (document.querySelector('.qcard .small') || {}).textContent || '';
+    const t = document.querySelector(S.txt).textContent.trim(), sub = (document.querySelector(S.sub) || {}).textContent || '';
     let m;
     if (/把整個單字換成編號/.test(sub)) return t.split('').map(c => A.indexOf(c)).join(',');
     if (/這串編號是哪一個英文單字/.test(sub)) return t.split(' ').map(x => A[+x]).join('');
@@ -23,15 +23,16 @@ export async function cipherAnswer(page) {
     if ((m = sub.match(/維吉尼亞解密，金鑰依序 ([\d、]+)/))) return C.vig(t, m[1].split('、').map(Number), -1);
     if ((m = sub.match(/金鑰依序 ([\d、]+)/))) return C.vig(t, m[1].split('、').map(Number), 1);
     const cells = [...document.querySelectorAll('#tool [data-i] .black')];
-    if (!cells.length) return null;
-    const ans = cells.map(e => e.textContent.replace('✔', '').trim()), key = sub.match(/正解是 ([A-D])/)[1];
+    const km = sub.match(/正解是 ([A-D])/);
+    if (!cells.length || !km) return null;
+    const ans = cells.map(e => e.textContent.replace('✔', '').trim()), key = km[1];
     if (/答對的有幾人/.test(t)) return String(ans.filter(x => x === key).length);
     if (/答錯的有幾人/.test(t)) return String(ans.filter(x => x !== key).length);
     if (/錯誤選項.*最多人選/.test(t)) { const c = {}; ans.filter(x => x !== key).forEach(x => c[x] = (c[x] || 0) + 1); return Object.keys(c).sort((a, b) => c[b] - c[a])[0]; }
     if ((m = t.match(/選 ([A-D]) 的有幾人/))) return String(ans.filter(x => x === m[1]).length);
     if (/答對率/.test(t)) return String(Math.round(ans.filter(x => x === key).length / ans.length * 100));
     return null;
-  });
+  }, S);
 }
 
 export const LABS2 = ['resFrame', 'flipbook', 'timeline', 'licenseCheck', 'dataToInfo', 'cleanLab', 'rleLab', 'blackBox', 'trainer', 'robotAlgo', 'nextWord', 'promptLab', 'fakeSpot'];
@@ -79,18 +80,18 @@ export async function solveLab2(page) {
     for (const [i, id] of s.mats.entries()) await page.click(`.lc-a[data-m="${id}"][data-a="${v[i]}"]`);
     return page.click('#lc-ok');
   }
-  if (await page.$('.dl')) {   // 🔎 dataToInfo
-    const x = JSON.parse(d.d), put = (k, v) => page.fill(`.dl-n[data-k="${k}"]`, String(v));
+  if (await page.$('.di')) {   // 🔎 dataToInfo
+    const x = JSON.parse(d.d), put = (k, v) => page.fill(`.di-n[data-k="${k}"]`, String(v));
     if (x.kind === 'temp') {
       const fever = x.temps.filter(t => t >= 37.5).length;
       await put('fever', fever); await put('max', x.temps.indexOf(Math.max(...x.temps)) + 1);
-      await page.click(`.dl-yn[data-k="act"][data-v="${fever ? 'y' : 'n'}"]`);
+      await page.click(`.di-yn[data-k="act"][data-v="${fever ? 'y' : 'n'}"]`);
     } else {
       const a1 = x.w1.reduce((a, b) => a + b) / 7, a2 = x.w2.reduce((a, b) => a + b) / 7;
       await put('a1', a1); await put('a2', a2); await put('pct', Math.round((a2 - a1) / a1 * 100));
-      await page.click(`.dl-yn[data-k="act"][data-v="${a2 > a1 ? 'y' : 'n'}"]`);
+      await page.click(`.di-yn[data-k="act"][data-v="${a2 > a1 ? 'y' : 'n'}"]`);
     }
-    return page.click('#dl-ok');
+    return page.click('#di-ok');
   }
   if (await page.$('.cl-k')) {   // 🧹 cleanLab 基本
     const rows = JSON.parse(d.rows), k = await page.evaluate(rows => rows.map(r => CARDGAME.labs._d.judge(r)), rows);

@@ -12,6 +12,43 @@ window.CONFIG = {
   TERM_START: '2027-08-30',
   HUB_PAGE: 'hub.html',
 
+  /* 📚 108 課綱對照（代碼條文在 shared/k12.js）：關卡 id → 學習內容、學習表現代碼
+     概念小卡上會顯示；docs/06_課綱對照.md 是整理好的總表。 */
+  CURRICULUM: {
+    x1: ['資D-IV-1', '資D-IV-2', '運t-IV-1'], u1: ['資D-IV-1', '資D-IV-2', '運t-IV-1'],
+    x2: ['資D-IV-2', '運t-IV-1'], u2: ['資D-IV-2', '運t-IV-1'],
+    x3: ['資D-IV-1', '運t-IV-1'], u3: ['資D-IV-1', '運t-IV-1'],
+    x4: ['資D-IV-1', '資D-IV-3', '運t-IV-1'], u4: ['資D-IV-1', '資D-IV-3', '運t-IV-1'],
+    P1: ['資P-IV-1', '運t-IV-4'], P2: ['資P-IV-1', '運t-IV-4'], P3: ['資P-IV-1', '運t-IV-4'], P4: ['資P-IV-1', '資P-IV-2', '運t-IV-4'],
+    P5: ['資A-IV-1', '資P-IV-2', '運t-IV-4'], P6: ['資A-IV-1', '資P-IV-2', '運t-IV-4'], P7: ['資A-IV-1', '資P-IV-2', '運t-IV-4'],
+    P8: ['資A-IV-1', '資P-IV-2', '運t-IV-4'], P9: ['資A-IV-1', '資P-IV-2', '運t-IV-4'], P10: ['資A-IV-1', '資P-IV-2', '運t-IV-3', '運t-IV-4'],
+    G1: ['資S-IV-1', '運t-IV-1'], G2: ['資S-IV-2', '運t-IV-1'], G3: ['資S-IV-2', '運t-IV-1'], G4: ['資S-IV-2', '運t-IV-1'],
+    G5: ['資S-IV-2', '運t-IV-2'], G6: ['資S-IV-2', '資H-IV-3', '運t-IV-2'], G7: ['資S-IV-1', '資S-IV-4', '運t-IV-1'], G8: ['資S-IV-2', '資A-IV-1', '運t-IV-4'],
+    S1: ['資T-IV-2', '運t-IV-3', '運c-IV-2'], S2: ['資T-IV-2', '運t-IV-3', '運c-IV-2'], S3: ['資T-IV-2', '運t-IV-3', '運c-IV-2'], S4: ['資T-IV-2', '運t-IV-3', '運c-IV-2'], S5: ['資T-IV-2', '運t-IV-3', '運p-IV-1']
+  },
+
+  /* 📅 本週任務（闖關地圖最上面）：w＝從第幾週開始，levels＝這週要完成的關卡，href＝「前往」連結
+     依 docs/01 的建議節次；段考週、放假週請自己把後面的 w 往後挪。 */
+  WEEKS: [
+    { w: 1, t: '系統說明、登入；單元一 1-1 二進位', levels: ['x1', 'u1'], href: 'digital/1.html' },
+    { w: 2, t: '單元一 1-2 文字數位化', levels: ['x2', 'u2'], href: 'digital/2.html' },
+    { w: 3, t: '單元一 1-3 音訊數位化', levels: ['x3', 'u3'], href: 'digital/3.html' },
+    { w: 4, t: '單元一 1-4 影像數位化', levels: ['x4', 'u4'], href: 'digital/4.html' },
+    { w: 5, t: '單元二 Python：print() 輸出、input() 與變數', levels: ['P1', 'P2'], href: 'python.html' },
+    { w: 6, t: 'Python：型態轉換與算術運算', levels: ['P3'], href: 'python.html' },
+    { w: 7, t: 'Python：BMI（float）、if／else', levels: ['P4', 'P5'], href: 'python.html' },
+    { w: 8, t: 'Python：if／elif／else 自動購票機', levels: ['P6'], href: 'python.html' },
+    { w: 9, t: 'Python：and／or、for 迴圈', levels: ['P7', 'P8'], href: 'python.html' },
+    { w: 10, t: 'Python：while 條件迴圈', levels: ['P9'], href: 'python.html' },
+    { w: 11, t: 'Python 魔王關：猜數字', levels: ['P10'], href: 'python.html' },
+    { w: 12, t: '單元三 系統平臺：四種平臺、五大單元', levels: ['G1', 'G2'], href: 'platform.html' },
+    { w: 13, t: '系統平臺：記憶體、硬碟與組電腦', levels: ['G3', 'G4'], href: 'platform.html' },
+    { w: 14, t: '系統平臺：作業系統、電腦急診室', levels: ['G5', 'G6'], href: 'platform.html' },
+    { w: 15, t: '系統平臺：雲端服務、嵌入式系統', levels: ['G7', 'G8'], href: 'platform.html' },
+    { w: 16, t: '5016B 專題', levels: ['S1', 'S2'], href: '5016b.html' },
+    { w: 18, t: '5016B 專題', levels: ['S3', 'S4', 'S5'], href: '5016b.html' }
+  ],
+
   /* Python 執行環境（Pyodide）
      ⚠️ 學校網路擋 CDN 時：把 pyodide 整包放到 shared/pyodide/，
         這裡改成 '../shared/pyodide/'（結尾要有斜線）。 */

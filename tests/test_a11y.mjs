@@ -9,7 +9,7 @@ const pages = process.argv.slice(2).length ? process.argv.slice(2) : ['index.htm
   '11602/hub.html', '11602/media.html', '11602/media.html#W3', '11602/media.html#ai', '11602/network.html', '11602/network.html#N4', '11602/unit6.html', '11602/data.html', '11602/sheet.html#T2', '11602/sheetref.html', '11602/cipher.html', '11602/5016b.html',
   // 🧪 實驗站（@階）：先把前面記成通過再打開
   '11602/data.html#D1@2', '11602/data.html#D2@2', '11602/data.html#D3@2', '11602/media.html#M1@1', '11602/media.html#M2@1', '11602/media.html#M3@2', '11602/media.html#M4@2',
-  '11602/media.html#A1@2', '11602/media.html#A2@2', '11602/media.html#A3@2', '11602/media.html#A4@2', '11602/media.html#A5@2', '11602/media.html#A6@2', '11602/cipher.html#K1'];
+  '11602/media.html#A1@2', '11602/media.html#A2@2', '11602/media.html#A3@2', '11602/media.html#A4@2', '11602/media.html#A5@2', '11602/media.html#A6@2', '11602/cipher.html#K1', '11602/challenge.html', '11602/review.html'];
 const agg = {}; let total = 0; const other = {};
 for (const u of pages) {
   if (u.includes('@')) {

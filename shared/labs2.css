@@ -41,9 +41,9 @@
 .lc-row small{display:block;font-size:.75rem;color:var(--ink-soft);font-weight:700}
 
 /* 🔎 資料 → 資訊 */
-.dl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:.8rem;align-items:start}
-.dl-t td,.dl-t th{padding:.3rem .45rem;text-align:center}
-@media (max-width:640px){.dl-grid{grid-template-columns:minmax(0,1fr)}}
+.di-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:.8rem;align-items:start}
+.di-t td,.di-t th{padding:.3rem .45rem;text-align:center}
+@media (max-width:640px){.di-grid{grid-template-columns:minmax(0,1fr)}}
 /* 🧹 清潔隊 */
 .cl-t td{vertical-align:middle}
 .cl-empty{color:#b91c1c;font-style:normal;font-weight:800}

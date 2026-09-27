@@ -11,6 +11,44 @@ window.CONFIG = {
   //   第 1 週的星期一（⚠️ 依 116 學年度行事曆確認後再改）
   TERM_START: '2028-02-14',
   HUB_PAGE: 'hub.html',
+  CHALLENGE_PAGE: 'challenge.html',
+  REVIEW_PAGE: 'review.html',         // 🎓 會考前總複習（上下學期混合抽題）：闖關地圖最下面有連結   // 🏁 課堂挑戰（小組搶答，老師投影）：闖關地圖最下面有連結
+
+  /* 📚 108 課綱對照（代碼條文在 shared/k12.js）：關卡 id → 學習內容、學習表現代碼
+     概念小卡上會顯示；docs/06_課綱對照.md 是整理好的總表。 */
+  CURRICULUM: {
+    M1: ['資D-IV-1', '運t-IV-1'], M2: ['資D-IV-1', '資D-IV-3'], M3: ['資T-IV-2', '運c-IV-3'], M4: ['資H-IV-2', '資H-IV-5', '運a-IV-2'],
+    A1: ['資H-IV-6', '運t-IV-1'], A2: ['資D-IV-3', '資H-IV-4', '運a-IV-2'], A3: ['資A-IV-1', '運t-IV-4'], A4: ['資H-IV-4', '資H-IV-6'],
+    A5: ['資H-IV-4', '運p-IV-1', '運a-IV-1'], A6: ['資H-IV-1', '資H-IV-5', '運a-IV-2'],
+    W1: ['資T-IV-2', '運p-IV-1'], W2: ['資T-IV-2', '運p-IV-1'], W3: ['資T-IV-2', '運c-IV-3'], W4: ['資T-IV-2', '資H-IV-2'], W5: ['資T-IV-2', '資H-IV-2', '運c-IV-3'],
+    N1: ['資S-IV-3', '運t-IV-1'], N2: ['資S-IV-3'], N3: ['資S-IV-3', '運t-IV-1'], N4: ['資S-IV-3', '資D-IV-2'], N5: ['資S-IV-3', '資D-IV-2'],
+    N6: ['資S-IV-4'], N7: ['資S-IV-4', '運p-IV-2'], N8: ['資S-IV-3'], N9: ['資S-IV-3', '運t-IV-4'], N10: ['資D-IV-2', '資H-IV-6'],
+    D1: ['資D-IV-3', '資T-IV-1'], D2: ['資D-IV-3', '運t-IV-4'], D3: ['資D-IV-3'], D4: ['資H-IV-3', '資A-IV-1'],
+    T1: ['資T-IV-1', '運p-IV-3'], T2: ['資T-IV-1'], T3: ['資T-IV-1', '運t-IV-4'], T4: ['資D-IV-3', '資T-IV-1'], T5: ['資T-IV-1', '運p-IV-1'],
+    K1: ['資D-IV-2', '運t-IV-4'], K2: ['資A-IV-1', '運t-IV-4'], K3: ['資H-IV-3', '資A-IV-1'], K4: ['資H-IV-3', '資A-IV-1'], K5: ['資H-IV-3', '資A-IV-1'], K6: ['資T-IV-1', '資D-IV-3'],
+    S1: ['資S-IV-3', '資T-IV-2'], S2: ['資S-IV-3', '資T-IV-2'], S3: ['資S-IV-3', '資T-IV-2'], S4: ['資H-IV-3', '資T-IV-2'], S5: ['資T-IV-2', '運c-IV-2']
+  },
+
+  /* 📅 本週任務（闖關地圖最上面）：w＝從第幾週開始，levels＝這週要完成的關卡，href＝「前往」連結
+     依 docs/01 的建議節次；段考週、放假週請自己把後面的 w 往後挪。 */
+  WEEKS: [
+    { w: 1, t: '單元四 概念闖關：畫質、格式、時間軸、後製與著作權（＋看示範）', levels: ['M1', 'M2', 'M3', 'M4'], href: 'media.html' },
+    { w: 2, t: 'AI 前導關：AI 是什麼、機器真的能學習嗎', levels: ['A1', 'A2'], href: 'media.html#ai' },
+    { w: 3, t: 'AI 前導關：演算法、生成式 AI 怎麼寫句子', levels: ['A3', 'A4'], href: 'media.html#ai' },
+    { w: 4, t: 'AI 前導關：好好問、用心查；AI 倫理', levels: ['A5', 'A6'], href: 'media.html#ai' },
+    { w: 5, t: '廣告工作站 第 1 節：決定主題、三句文案', levels: ['W1', 'W2'], href: 'media.html#W1' },
+    { w: 6, t: '廣告工作站 第 2 節：拍攝重點＋實拍', levels: ['W3'], href: 'media.html#W3' },
+    { w: 7, t: '廣告工作站 第 3 節：配樂', levels: ['W4'], href: 'media.html#W4' },
+    { w: 8, t: '廣告工作站 第 4 節：剪輯、試看、說明卡', levels: ['W5'], href: 'media.html#W5' },
+    { w: 9, t: '單元五 網路世界：範圍與設備、線材、封包', levels: ['N1', 'N2', 'N3'], href: 'network.html' },
+    { w: 10, t: '網路世界：IP、IPv6、網址與 DNS', levels: ['N4', 'N5', 'N6'], href: 'network.html' },
+    { w: 11, t: '網路世界：電子郵件、無線網路', levels: ['N7', 'N8'], href: 'network.html' },
+    { w: 12, t: '網路世界收尾＋資料偵探開始', levels: ['N9', 'N10', 'D1', 'D2'], href: 'network.html' },
+    { w: 13, t: '資料偵探＋試算表實作', levels: ['D3', 'D4', 'T1', 'T2'], href: 'unit6.html' },
+    { w: 14, t: '試算表實作：COUNTIF、清理、統計', levels: ['T3', 'T4', 'T5'], href: 'sheet.html' },
+    { w: 15, t: '密碼特務（上）＋5016B 守護站 2.0', levels: ['K1', 'K2', 'K3', 'S1', 'S2'], href: 'cipher.html' },
+    { w: 16, t: '密碼特務（下）＋5016B 守護站 2.0', levels: ['K4', 'K5', 'K6', 'S3', 'S4', 'S5'], href: 'cipher.html' }
+  ],
 
   /* 學校指定的 AI 工具（廣告工作站「和 AI 討論」用）
      ⚠️ 網站本身不是 AI、也不連任何 AI 服務：學生按「📋 複製」網站寫好的提示詞，

@@ -66,6 +66,7 @@ window.CARDGAME = { mount: function (opts) {
       '<section class="card pop"><div class="tape"></div>' +
       '<p class="kicker">第 ' + (i + 1) + ' 關 · ' + esc(lv.book) + '</p>' +
       '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
+      (window.K12 ? K12.chips(lv.id) : '') +
       '<div class="note mt2 learn"><b>📖 概念小卡</b><div class="mt1">' + lv.learn + '</div></div>' +
       (lv.stages ? stageCards(lv) +
         '<div class="row mt2"><button class="btn" id="back">← 關卡選單</button></div></section>'

@@ -33,7 +33,7 @@
         var mx = Math.max.apply(null, temps);
         if (temps.filter(function (t) { return t === mx; }).length === 1) break;
       }
-      table = '<table class="t mono dl-t"><tr><th>座號</th><th>姓名</th><th>體溫 °C</th></tr>' + names.map(function (nm, i) { return '<tr><td>' + (i + 1) + '</td><td>' + nm + '</td><td>' + temps[i].toFixed(1) + '</td></tr>'; }).join('') + '</table>';
+      table = '<table class="t mono di-t"><tr><th>座號</th><th>姓名</th><th>體溫 °C</th></tr>' + names.map(function (nm, i) { return '<tr><td>' + (i + 1) + '</td><td>' + nm + '</td><td>' + temps[i].toFixed(1) + '</td></tr>'; }).join('') + '</table>';
       ask = [{ k: 'fever', t: '體溫 37.5°C（含）以上算發燒，有幾人發燒？', inp: 'num' },
         { k: 'max', t: '體溫最高的是幾號？', inp: 'num' },
         { k: 'act', t: '所以，今天要不要通報？', inp: 'yn' }];
@@ -50,7 +50,7 @@
         if (Math.abs(pct) >= 3) break;
       }
       var days = ['一', '二', '三', '四', '五', '六', '日'];
-      table = '<div class="scroll-x"><table class="t mono dl-t"><tr><th>哪一週</th>' + days.map(function (x) { return '<th>週' + x + '</th>'; }).join('') + '</tr>' +
+      table = '<div class="scroll-x"><table class="t mono di-t"><tr><th>哪一週</th>' + days.map(function (x) { return '<th>週' + x + '</th>'; }).join('') + '</tr>' +
         '<tr><th>上週</th>' + w1.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '</tr><tr><th>這週</th>' + w2.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '</tr></table></div>';
       ask = [{ k: 'a1', t: '上週平均每天走幾步？', inp: 'num' }, { k: 'a2', t: '這週平均每天走幾步？', inp: 'num' },
         { k: 'pct', t: '這週比上週多（或少）幾 %？（少了就打負的，四捨五入到整數）', inp: 'num' },
@@ -58,21 +58,21 @@
       el.dataset.d = JSON.stringify({ kind: 'steps', w1: w1, w2: w2 });
       calc = { a1: a1, a2: a2, pct: pct, act: a2 > a1 ? 'y' : 'n' };
     }
-    el.innerHTML = '<div class="dl"><p class="small">左邊是一堆<b>原始資料</b>：看不出結論。把它整理、計算，變成<b>能幫我們做決定的資訊</b>。</p>' +
+    el.innerHTML = '<div class="di"><p class="small">左邊是一堆<b>原始資料</b>：看不出結論。把它整理、計算，變成<b>能幫我們做決定的資訊</b>。</p>' +
       tip(api, api.hard ? '平均 ＝ 七天加起來 ÷ 7；成長率 ＝（這週 − 上週）÷ 上週 × 100。' : '一個一個看，37.5 以上的就數 1。') +
-      '<div class="dl-grid"><div>' + table + '</div><div class="stack">' + ask.map(function (a, i) {
+      '<div class="di-grid"><div>' + table + '</div><div class="stack">' + ask.map(function (a, i) {
         return '<div class="card soft-bg" style="padding:.55rem .75rem"><p class="small bold">' + (i + 1) + '. ' + esc(a.t) + '</p><div class="mt1">' +
-          (a.inp === 'yn' ? '<span class="row" style="gap:.3rem"><button type="button" class="btn sm dl-yn" data-k="' + a.k + '" data-v="y">' + (api.hard ? '📈 有' : '📢 要通報') + '</button><button type="button" class="btn sm dl-yn" data-k="' + a.k + '" data-v="n">' + (api.hard ? '📉 沒有' : '🙆 不用') + '</button></span>'
-            : '<input class="input dl-n" data-k="' + a.k + '" inputmode="numeric" style="max-width:9rem;margin:0" aria-label="' + esc(a.t) + '">') + '</div></div>';
-      }).join('') + '</div></div><div class="row mt2"><button type="button" class="btn go" id="dl-ok">✅ 確認</button></div></div>';
+          (a.inp === 'yn' ? '<span class="row" style="gap:.3rem"><button type="button" class="btn sm di-yn" data-k="' + a.k + '" data-v="y">' + (api.hard ? '📈 有' : '📢 要通報') + '</button><button type="button" class="btn sm di-yn" data-k="' + a.k + '" data-v="n">' + (api.hard ? '📉 沒有' : '🙆 不用') + '</button></span>'
+            : '<input class="input di-n" data-k="' + a.k + '" inputmode="numeric" style="max-width:9rem;margin:0" aria-label="' + esc(a.t) + '">') + '</div></div>';
+      }).join('') + '</div></div><div class="row mt2"><button type="button" class="btn go" id="di-ok">✅ 確認</button></div></div>';
     var yn = {};
-    el.querySelectorAll('.dl-yn').forEach(function (b) { b.onclick = function () { yn[b.dataset.k] = b.dataset.v; el.querySelectorAll('.dl-yn[data-k="' + b.dataset.k + '"]').forEach(function (x) { x.classList.toggle('on', x === b); }); }; });
-    el.querySelector('#dl-ok').onclick = function () {
+    el.querySelectorAll('.di-yn').forEach(function (b) { b.onclick = function () { yn[b.dataset.k] = b.dataset.v; el.querySelectorAll('.di-yn[data-k="' + b.dataset.k + '"]').forEach(function (x) { x.classList.toggle('on', x === b); }); }; });
+    el.querySelector('#di-ok').onclick = function () {
       var got = {};
       for (var i = 0; i < ask.length; i++) {
         var a = ask[i];
         if (a.inp === 'yn') { if (!yn[a.k]) return warn(api, '每一題都要作答'); got[a.k] = yn[a.k]; }
-        else { var v = el.querySelector('.dl-n[data-k="' + a.k + '"]').value.trim().replace('%', '').replace('−', '-'); if (v === '') return warn(api, '每一題都要作答'); got[a.k] = +v; }
+        else { var v = el.querySelector('.di-n[data-k="' + a.k + '"]').value.trim().replace('%', '').replace('−', '-'); if (v === '') return warn(api, '每一題都要作答'); got[a.k] = +v; }
       }
       var H = { fever: ['發燒人數不對。', '37.5 也算發燒（含）。'], max: ['體溫最高的不是這一號。', '從上到下比一遍，記住最大的。'], act: ['結論和你算出來的資訊對不上。', api.hard ? '平均變大就是有比較多。' : '有人發燒就要通報。'],
         a1: ['上週平均算錯了。', '七天加起來再除以 7。'], a2: ['這週平均算錯了。', '七天加起來再除以 7。'], pct: ['成長率算錯了。', '（這週 − 上週）÷ 上週 × 100，四捨五入；變少就是負的。'] };

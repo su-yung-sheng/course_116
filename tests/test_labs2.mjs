@@ -24,8 +24,8 @@ const done = async (id, s) => { await solveLab2(page); await page.waitForSelecto
 /* D1 資料 → 資訊：結論和算出來的資訊不一致 */
 await open('D1', 1);
 { const d = JSON.parse((await ds()).d), fever = d.temps.filter(t => t >= 37.5).length;
-  await page.fill('.dl-n[data-k="fever"]', String(fever)); await page.fill('.dl-n[data-k="max"]', String(d.temps.indexOf(Math.max(...d.temps)) + 1));
-  await page.click(`.dl-yn[data-k="act"][data-v="${fever ? 'n' : 'y'}"]`); await page.click('#dl-ok');
+  await page.fill('.di-n[data-k="fever"]', String(fever)); await page.fill('.di-n[data-k="max"]', String(d.temps.indexOf(Math.max(...d.temps)) + 1));
+  await page.click(`.di-yn[data-k="act"][data-v="${fever ? 'n' : 'y'}"]`); await page.click('#di-ok');
   ok(await fb('結論和你算出來的資訊對不上'), '🔎 D1：結論和資訊不一致 → 擋下'); await passCool(page);
   await page.screenshot({ path: SHOTS + 'lab2-D1.png', fullPage: true }); await done('D1', 1); }
 /* D2 挑戰：把雜訊留著 */
