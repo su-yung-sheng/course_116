@@ -158,23 +158,30 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "幫教室、家裡接上網路：依序點出設備（🎲 每次電腦台數不同）",
+    "goal": "🧪 教室拉線：把光纖孔、數據機、路由器、交換器、電腦一條一條接起來（🎲 電腦台數每次不同）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "netChain",
-      "n": 3,
-      "prompt": "幫這個地方接上網路"
+      "type": "lab",
+      "lab": "wireRoom",
+      "n": 2,
+      "prompt": "教室拉線"
      }
     ]
    },
    {
-    "goal": "算算看：最少要幾台交換器（🎲 每次數字不同）",
+    "goal": "🧪 電腦很多的教室（要用到交換器）＋算最少要幾台交換器（🎲）",
     "rounds": [
+     {
+      "type": "lab",
+      "lab": "wireRoom",
+      "n": 1,
+      "prompt": "教室拉線：挑戰",
+      "hard": true
+     },
      {
       "type": "gen",
       "gen": "portsCalc",
-      "n": 3,
+      "n": 2,
       "prompt": "網路孔夠不夠？"
      }
     ]
@@ -478,37 +485,32 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "重組亂序的封包、找出遺失的封包（🎲 每次訊息不同）",
+    "goal": "🧪 封包快遞模擬器：看封包走不同路線、亂序抵達，重組訊息、請求重送（🎲 訊息每次不同）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "packetOrder",
+      "type": "lab",
+      "lab": "packetSim",
       "n": 2,
-      "prompt": "封包重組"
-     },
-     {
-      "type": "gen",
-      "gen": "packetLost",
-      "n": 2,
-      "prompt": "要重送幾號？"
+      "prompt": "封包快遞模擬器"
      }
     ]
    },
    {
-    "goal": "封包多、有遺失也有重複收到的（🎲）",
+    "goal": "🧪 更長的訊息、遺失 2 個、還有重複收到的（🎲）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "packetLost",
-      "n": 3,
-      "prompt": "要重送哪幾號？",
+      "type": "lab",
+      "lab": "packetSim",
+      "n": 1,
+      "prompt": "封包快遞模擬器：挑戰",
       "hard": true
      },
      {
       "type": "gen",
-      "gen": "packetOrder",
-      "n": 1,
-      "prompt": "封包重組"
+      "gen": "packetLost",
+      "n": 2,
+      "prompt": "要重送哪幾號？",
+      "hard": true
      }
     ]
    }
@@ -1276,23 +1278,30 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "依距離、要不要上網、有沒有基地臺，選無線技術（🎲）",
+    "goal": "🧪 Wi-Fi 覆蓋地圖：放基地臺、幫每個裝置選頻段（🎲 房間和裝置每次不同）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "wirelessPick",
-      "n": 4,
-      "prompt": "選哪一種無線技術？"
+      "type": "lab",
+      "lab": "wifiMap",
+      "n": 2,
+      "prompt": "Wi-Fi 覆蓋地圖"
      }
     ]
    },
    {
-    "goal": "條件更多、有干擾選項（🎲）",
+    "goal": "🧪 牆更多、兩台 4K 電視＋有干擾條件的技術選擇（🎲）",
     "rounds": [
+     {
+      "type": "lab",
+      "lab": "wifiMap",
+      "n": 1,
+      "prompt": "Wi-Fi 覆蓋地圖：挑戰",
+      "hard": true
+     },
      {
       "type": "gen",
       "gen": "wirelessPick",
-      "n": 4,
+      "n": 3,
       "prompt": "選哪一種無線技術？",
       "hard": true
      }

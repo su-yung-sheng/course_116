@@ -147,6 +147,8 @@ async function sealRounds(lv, list) {
           items.push({ t: it.t, sub: it.sub, icon: it.icon, ph: it.ph, hint: it.hint, toolShift: it.toolShift, s, e });
         }
         rounds.push({ type: 'type', prompt: rd.prompt, tool: rd.tool, shuffle: rd.shuffle, items });
+      } else if (rd.type === 'lab') {
+        rounds.push({ ...rd });   // 🧪 實驗站：情境隨機產生、由實驗站自己判斷，不用封存
       } else if (rd.type === 'gen') {
         rounds.push({ ...rd });   // 隨機出題：沒有固定答案，不用封存（出題器參數原樣帶過去）
       } else throw new Error('不認得的回合：' + rd.type);

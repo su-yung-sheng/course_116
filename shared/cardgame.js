@@ -169,6 +169,45 @@ window.CARDGAME = { mount: function (opts) {
     else if (rd.type === 'build') playBuild(rd);
     else if (rd.type === 'type') playType(rd);
     else if (rd.type === 'gen') playGen(rd);
+    else if (rd.type === 'lab') playLab(rd);
+  }
+
+  /* lab：🧪 視覺化實驗站（CARDGAME.labs[名稱](el, api)）── 學生在畫面上動手做，按「確認／測試」時由實驗站判斷。
+     api.submit(對不對, 說明, 提示, 步驟提示)：對 → 顯示說明與「下一題」；錯 → 扣心、給提示，同一個情境繼續修改。
+     api.hard（挑戰版）、api.practice（修復站：先給提示）。情境每次隨機產生。 */
+  function playLab(rd) {
+    var make = CARDGAME.labs && CARDGAME.labs[rd.lab], n = rd.n || 1, k = 0;
+    if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到實驗站：' + esc(rd.lab) + '</p></section>'; return; }
+    function one() {
+      var tries = 0, done = false;
+      app.innerHTML = '<section class="card">' + hud() +
+        '<p class="small soft bold mt2">🧪 ' + esc(rd.prompt) + (n > 1 ? '（' + (k + 1) + ' / ' + n + '）' : '') + '</p>' +
+        '<div id="lab" class="lab mt1"></div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
+      bindQuit();
+      var el = document.getElementById('lab'), fb = document.getElementById('fb');
+      make(el, { hard: !!rd.hard, practice: !!G.practice,
+        submit: function (ok, why, hint, hint2) {
+          if (done) return false;
+          var alive = hit(ok); refreshHud();
+          if (ok) {
+            done = true; el.classList.add('lab-done');
+            fb.innerHTML = '<div class="note ok pop"><b>✅ 成功！</b> ' + esc(why || '') + '</div>' +
+              '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < n ? '下一題 →' : '完成這回合 →') + '</button></div>';
+            var nx = document.getElementById('nx'); nx.focus();
+            nx.onclick = function () { k++; if (k < n) one(); else nextRound(); };
+            return true;
+          }
+          if (!alive) { done = true; el.classList.add('lab-done'); outOfHearts(fb, '#lab button'); return false; }
+          tries++;
+          var h = tries >= 2 && hint2 ? hint2 : hint;
+          fb.innerHTML = '<div class="note bad pop">❌ ' + esc(why || '還不對') + (h ? '<br>' + (tries >= 2 && hint2 ? '🔍 ' : '💡 ') + esc(h) : '') +
+            (tries >= 2 ? '<br><span class="tiny">還是卡住？按上面的「📖 小卡」回去看重點。</span>' : '') + '</div>';
+          return true;
+        },
+        say: function (html) { fb.innerHTML = html; }
+      });
+    }
+    one();
   }
 
   function hit(ok) {
@@ -565,16 +604,16 @@ window.CARDGAME = { mount: function (opts) {
   /* 🩹 修復站：❤️ 用完後，針對卡住的那一回合先練 2 題（不扣心、先給提示），才能重新挑戰 */
   function gameOver() {
     var i = G.i, s = G.st, rd = G.deadRd || G.rounds[G.r];
-    var canDrill = rd && (rd.type === 'gen' || rd.type === 'sort');
+    var canDrill = rd && (rd.type === 'gen' || rd.type === 'sort' || rd.type === 'lab');
     app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">' + (s != null ? '第 ' + (s + 1) + ' 階的' : '') + '愛心用完了</h2>' +
       '<p class="soft mt1">先到 <b>🩹 修復站</b> 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
       '<div class="note mt2" style="text-align:left">🩹 卡住的回合：<b>' + esc(rd ? (rd.prompt || rd.title || '這一回合') : '這一回合') + '</b><br>' +
-      (canDrill ? '練 2 題：不扣心、題目上方先給提示，答完看解說。' : '先把概念小卡讀一遍（看著畫面 10 秒）。') + '</div>' +
+      (canDrill ? (rd.type === 'lab' ? '在實驗站再做 1 次：不扣心、先給提示。' : '練 2 題：不扣心、題目上方先給提示，答完看解說。') : '先把概念小卡讀一遍（看著畫面 10 秒）。') + '</div>' +
       '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="repair-go">🩹 進入修復站</button></div></section>';
     var go = document.getElementById('repair-go'); go.focus();
     go.onclick = function () {
       if (!canDrill) return readCard();
-      var prd = Object.assign({}, rd, rd.type === 'gen' ? { n: 2 } : { pick: 2 });
+      var prd = Object.assign({}, rd, rd.type === 'gen' ? { n: 2 } : rd.type === 'lab' ? { n: 1 } : { pick: 2 });
       G = { i: i, lv: G.lv, st: s, rounds: [prd], r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0, practice: true };
       round();
     };

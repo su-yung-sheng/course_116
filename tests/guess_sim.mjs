@@ -11,7 +11,7 @@ const r = n => Math.floor(Math.random() * n), fact = n => n <= 1 ? 1 : n * fact(
 function stage(rounds) {
   let e = 0; const bad = () => ++e >= 3;
   for (const rd of rounds) {
-    if (rd.type === 'type') return false;
+    if (rd.type === 'type' || rd.type === 'lab') return false;   // 打字題、🧪 實驗站都猜不到
     if (rd.type === 'sort') {
       const n = rd.pick || rd.items.length, k = rd.buckets.length;
       for (let i = 0; i < n; i++) { if (k <= 3) { while (r(k) !== 0) if (bad()) return false; } else { e += r(k); if (e >= 3) return false; } }

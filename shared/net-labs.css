@@ -1,0 +1,38 @@
+/* 🧪 網路世界・視覺化實驗站（net-labs.js） */
+.lab-done{pointer-events:none;opacity:.85}
+.lab .btn.on{border-color:var(--unit);background:var(--unit-soft)}
+/* 📦 封包快遞 */
+.pk-net{display:grid;gap:.4rem;background:var(--unit-soft);border:2px dashed var(--unit-line);border-radius:1rem;padding:.6rem}
+.pk-lane{display:grid;grid-template-columns:7.5rem 1fr;align-items:center;gap:.5rem}
+.pk-lab{font-weight:900;font-size:.85rem;display:flex;flex-direction:column}.pk-lab small{font-weight:700;color:var(--ink-soft);font-size:.7rem}
+.pk-track{position:relative;height:2.2rem;background:#fff;border-radius:999px;border:2px solid var(--line);overflow:hidden}
+.pk-track::before{content:'📤';position:absolute;left:.3rem;top:.25rem}.pk-track::after{content:'📥';position:absolute;right:.3rem;top:.25rem}
+.pk-fly{position:absolute;left:1.6rem;top:.25rem;background:var(--unit);color:#fff;font-weight:900;font-size:.8rem;border-radius:.5rem;padding:.15rem .4rem}
+.pk-fly.lost{background:transparent;font-size:1.2rem;opacity:.9}
+.pk-tray,.pk-slots{display:flex;flex-wrap:wrap;gap:.45rem;min-height:3rem;align-items:center}
+.pk-pkt,.pk-slot{font:inherit;cursor:pointer;border:2px solid var(--line);background:#fff;border-radius:.7rem;padding:.3rem .55rem;display:flex;flex-direction:column;align-items:center;min-width:3rem}
+.pk-pkt{font-weight:900;font-size:.8rem;color:var(--unit)}.pk-pkt b{font-size:1.2rem;color:var(--ink)}
+.pk-pkt.on{border-color:var(--unit);background:var(--unit-soft);transform:translateY(-2px)}
+.pk-slot small{font-weight:800;color:var(--ink-soft)}.pk-slot b{font-size:1.2rem}
+.pk-slot.full{border-color:var(--unit)}.pk-slot.want{border-color:var(--warn);background:#fff7ed}
+@media (max-width:560px){.pk-lane{grid-template-columns:1fr}.pk-lab{flex-direction:row;gap:.4rem}}
+/* 📶 Wi-Fi 覆蓋地圖 */
+.wf{--wf-3:#86efac;--wf-2:#bbf7d0;--wf-1:#ecfccb}
+.wf-map{width:100%;max-width:40rem;height:auto;display:block;border:3px solid var(--ink);border-radius:.6rem;background:#fff;touch-action:manipulation}
+.wf-c{cursor:pointer}.wf-c:hover{stroke:var(--unit);stroke-width:2}
+.wf-w{stroke:var(--ink);stroke-width:6;stroke-linecap:round}
+.wf-devs{display:grid;gap:.45rem}
+.wf-dev{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;background:#fff;border:2px solid var(--line);border-radius:.8rem;padding:.45rem .6rem}
+.wf-dev .ic{font-size:1.4rem}.wf-bands{margin-left:auto;display:flex;gap:.3rem}
+/* 🔌 教室拉線 */
+.wr-board{position:relative;background:var(--unit-soft);border:2px dashed var(--unit-line);border-radius:1rem;padding:.7rem}
+.wr-lines{position:absolute;inset:0;pointer-events:none;z-index:2}
+.wr-row{display:flex;flex-wrap:wrap;gap:.6rem;position:relative;z-index:1}
+.wr-pcs{margin-top:2.2rem}
+.wr-node{background:#fff;border:2px solid var(--line);border-radius:.8rem;padding:.4rem .5rem}
+.wr-node.lit{border-color:var(--ok);background:var(--ok-bg)}.wr-node.dead{border-color:var(--bad);background:var(--bad-bg)}
+.wr-t{font-weight:900;font-size:.85rem;display:flex;align-items:center;gap:.3rem}.wr-t .ic{font-size:1.2rem}
+.wr-ports{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.3rem}
+.wr-port{position:relative;z-index:3;font:inherit;font-size:.7rem;font-weight:800;cursor:pointer;border:2px solid #94a3b8;background:#f8fafc;border-radius:.4rem;padding:.15rem .35rem;min-width:1.9rem}
+.wr-port.on{background:#1e293b;color:#fff;border-color:#1e293b}.wr-port.sel{background:var(--warn);color:#fff;border-color:var(--warn)}
+.wf-legend{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.35rem;font-weight:700;color:var(--ink-soft)}.wf-legend i{display:inline-block;width:.9rem;height:.9rem;border:1px solid #cbd5e1;border-radius:.2rem;vertical-align:-2px;margin-right:.25rem}

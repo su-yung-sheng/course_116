@@ -2,7 +2,7 @@
 import { launch, login, BASE, SHOTS } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 import { priv, passCool } from './harness.mjs';
-import { solve as netSolve, answer as netAnswer } from './net_solver.mjs';
+import { solve as netSolve, answer as netAnswer, solveLab } from './net_solver.mjs';
 
 const { browser, context } = await launch();
 const page = await context.newPage();
@@ -47,6 +47,14 @@ let genWrongTried = false;
 async function playRounds(rounds) {
   for (const rd of rounds) {
     if (rd.type === 'gen') { await playGen(); continue; }
+    if (rd.type === 'lab') {   // 🧪 實驗站：一題一題做出正確結果
+      for (let q = 0; q < (rd.n || 1); q++) {
+        await solveLab(page);
+        await page.waitForSelector('#nx', { timeout: 8000 }).catch(async () => { throw new Error('🧪 實驗站沒過：' + (await page.textContent('#fb'))); });
+        await page.click('#nx');
+      }
+      continue;
+    }
     await playSealed(rd);
   }
 }
@@ -110,6 +118,29 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
   }
   for (let i = 0; i < levels.length; i++) { const s = await playCard(levels, i); ok(s.startsWith('3'), file, levels[i].id, s); }
 }
+/* ── 🧪 實驗站：做錯會扣心、告訴你哪裡錯；做對才過 ── */
+{
+  await page.goto(`${BASE}/11602/network.html?r=7#N1`); await page.click('.stage[data-s="1"]'); await page.waitForSelector('.wr-port');
+  await page.click('[data-p="wall.out"]'); await page.click('[data-p="router.wan"]');   // 光纖孔直接接路由器：錯
+  await page.waitForTimeout(1600); await page.click('#wr-test'); await page.waitForSelector('#fb .note');
+  ok((await page.textContent('#fb')).includes('數據機') && (await page.$$('.hud .hearts .off, .hud .hearts [data-off]')).length >= 0, '🔌 拉線：接錯會說明（光纖孔要先接數據機）');
+  await passCool(page);
+  await page.click('#wr-clear');
+  await solveLab(page); await page.waitForSelector('#nx'); ok(true, '🔌 拉線：照規則接好就通過');
+  await page.screenshot({ path: SHOTS + 'lab-wire-ok.png' });
+  await page.goto(`${BASE}/11602/network.html?r=8#N8`); await page.click('.stage[data-s="1"]'); await page.waitForSelector('.wf-c');
+  const lay = JSON.parse(await page.$eval('#lab', e => e.dataset.layout));
+  const far = await page.evaluate(() => { const lay = JSON.parse(document.getElementById('lab').dataset.layout), W = CARDGAME.labs._wifi, tv = lay.devs.find(d => d.need5);
+    for (let x = 0; x < 12; x++) for (let y = 0; y < 8; y++) if (W.sig(lay, { x, y }, tv, 'g5') <= 0 && !lay.devs.some(d => d.x === x && d.y === y)) return { x, y }; });
+  await page.click(`.wf-c[data-x="${far.x}"][data-y="${far.y}"]`);
+  for (let i = 0; i < lay.devs.length; i++) await page.click(`.wf-b[data-i="${i}"][data-b="g5"]`);
+  await page.waitForTimeout(1600); await page.click('#wf-ok'); await page.waitForSelector('#fb .note');
+  ok((await page.textContent('#fb')).includes('收不到'), '📶 Wi-Fi：電視收不到 5GHz 會說明');
+  await passCool(page);
+  await solveLab(page); await page.waitForSelector('#nx'); ok(true, '📶 Wi-Fi：放對位置、選對頻段就通過');
+  await page.screenshot({ path: SHOTS + 'lab-wifi-ok.png' });
+}
+
 /* ── 防亂猜與強化：📖 小卡、🧊 冷靜一下（離開畫面重算）、🩹 修復站 ── */
 {
   await page.goto(`${BASE}/11602/network.html?r=9#N4`); await page.click('.stage[data-s="0"]');

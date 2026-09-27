@@ -94,3 +94,44 @@ export async function answer(page, sol, wrong) {
     await page.locator('.gfol').nth(i).click();
   }
 }
+
+/** 🧪 實驗站：照畫面上的狀態做出正確結果（封包重組、Wi-Fi 基地臺位置、拉線） */
+export async function solveLab(page) {
+  const lab = await page.$eval('#lab', e => e.dataset.lab);
+  if (lab === 'packetSim') {
+    await page.click('#pk-send');
+    await page.waitForSelector('#pk-ok:not([disabled])', { timeout: 15000 });
+    const n = (await page.$$('.pk-slot')).length;
+    const have = new Set(await page.$$eval('.pk-pkt', bs => bs.map(b => +b.dataset.n)));
+    for (let i = 1; i <= n; i++) if (!have.has(i)) {
+      await page.click(`.pk-slot[data-s="${i - 1}"]`); await page.click('#pk-re');
+      await page.waitForSelector(`.pk-pkt[data-n="${i}"]`, { timeout: 8000 });
+    }
+    for (let i = 1; i <= n; i++) { await page.locator(`.pk-pkt[data-n="${i}"]`).first().click(); await page.click(`.pk-slot[data-s="${i - 1}"]`); }
+    await page.click('#pk-ok');
+  } else if (lab === 'wifiMap') {
+    const plan = await page.evaluate(() => {
+      const lay = JSON.parse(document.getElementById('lab').dataset.layout), W = CARDGAME.labs._wifi;
+      for (let x = 0; x < 12; x++) for (let y = 0; y < 8; y++) {
+        const ap = { x, y };
+        if (lay.devs.some(d => d.x === x && d.y === y)) continue;
+        const bands = lay.devs.map(d => d.need5 ? 'g5' : W.sig(lay, ap, d, 'g24') > 0 ? 'g24' : 'g5');
+        if (lay.devs.every((d, i) => W.sig(lay, ap, d, bands[i]) > 0)) return { ap, bands };
+      }
+      return null;
+    });
+    if (!plan) throw new Error('Wi-Fi 地圖找不到解');
+    await page.click(`.wf-c[data-x="${plan.ap.x}"][data-y="${plan.ap.y}"]`);
+    for (const [i, b] of plan.bands.entries()) await page.click(`.wf-b[data-i="${i}"][data-b="${b}"]`);
+    await page.click('#wf-ok');
+  } else if (lab === 'wireRoom') {
+    const pcs = +(await page.$eval('#lab', e => e.dataset.pcs)), nsw = pcs <= 4 ? 0 : pcs <= 10 ? 1 : 2;
+    const pairs = [['wall.out', 'modem.in'], ['modem.out', 'router.wan']];
+    let pc = 1;
+    for (let s = 1; s <= nsw; s++) pairs.push(['router.l' + s, 'sw' + s + '.up']);
+    for (let l = nsw + 1; l <= 4 && pc <= pcs; l++) pairs.push(['router.l' + l, 'pc' + pc++ + '.nic']);
+    for (let s = 1; s <= nsw; s++) for (let p = 1; p <= 7 && pc <= pcs; p++) pairs.push(['sw' + s + '.p' + p, 'pc' + pc++ + '.nic']);
+    for (const [a, b] of pairs) { await page.click(`[data-p="${a}"]`); await page.click(`[data-p="${b}"]`); }
+    await page.click('#wr-test');
+  } else throw new Error('不認得的實驗站 ' + lab);
+}
