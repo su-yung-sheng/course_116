@@ -2,14 +2,15 @@
    Python 闖關頁（PYAPP）── 兩學期共用
    ---------------------------------------------------------------------
    PYAPP.mount({ root:'#pyapp', levels: PY_LEVELS, mod:'python',
-                 title, kicker, subtitle, finale })
+                 title, kicker, subtitle, finale, ref })
+   ref：語法小抄的網址（例如 'pyref.html'），有給就在頁首和每一關顯示「📚」連結（開新分頁）
    引擎：pyrunner.js（執行、評分、錯誤翻譯）；關卡內容：各學期 content/*.js
    依序開放：上一關 ≥ 2⭐ 才開下一關（HUB.openAll() 可暫時全開）
    ===================================================================== */
 window.PYAPP = { mount: function (opts) {
   var L = opts.levels, esc = UI.esc, MOD = opts.mod || 'python';
   var root = typeof opts.root === 'string' ? document.querySelector(opts.root) : opts.root;
-  root.innerHTML = '<div class="row between" style="margin-top:-.5rem;margin-bottom:1rem">\n    <p class="small soft bold">' + esc(opts.subtitle || '') + '</p>\n    <span id="engine" class="engine">⏳ Python 引擎載入中…</span>\n  </div>\n\n  <div class="py-grid">\n    <aside class="card" style="padding:.8rem">\n      <p class="kicker" style="margin:.2rem .2rem .6rem">任務清單 · 2⭐ 開下一關</p>\n      <div class="lv-prog"><span>進度</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>\n      <nav id="lv-list" class="lv-list" aria-label="關卡"></nav>\n      <p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過<br>3⭐ 再加上程式結構要求</p>\n    </aside>\n\n    <section id="stage" class="stack"></section>\n  </div>\n';
+  root.innerHTML = '<div class="row between" style="margin-top:-.5rem;margin-bottom:1rem">\n    <p class="small soft bold">' + esc(opts.subtitle || '') + '</p>\n    <span class="row" style="gap:.5rem">' + (opts.ref ? '<a class="btn sm" id="ref-link" href="' + opts.ref + '" target="_blank" rel="noopener">📚 語法小抄</a>' : '') + '<span id="engine" class="engine">⏳ Python 引擎載入中…</span></span>\n  </div>\n\n  <div class="py-grid">\n    <aside class="card" style="padding:.8rem">\n      <p class="kicker" style="margin:.2rem .2rem .6rem">任務清單 · 2⭐ 開下一關</p>\n      <div class="lv-prog"><span>進度</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>\n      <nav id="lv-list" class="lv-list" aria-label="關卡"></nav>\n      <p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過<br>3⭐ 再加上程式結構要求</p>\n    </aside>\n\n    <section id="stage" class="stack"></section>\n  </div>\n';
   var cur = null;                 // 目前關卡
   var session = { inputs: [], seed: 116 };
   var running = false;
@@ -73,7 +74,8 @@ window.PYAPP = { mount: function (opts) {
       '<details class="mt2"><summary class="bold small" style="cursor:pointer">🐱 和 Scratch 積木對照</summary>' +
       '<div class="scroll-x mt1"><table class="t map-t"><tr><th>Scratch 積木</th><th>Python</th></tr>' +
       lv.scratch.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table></div></details>' +
-      '<div class="row mt2"><button class="btn sm" id="btn-hint">💡 提示（0 / ' + (lv.hx ? lv.hn : lv.hints.length) + '）</button></div><div id="hints" class="stack mt1"></div>' +
+      '<div class="row mt2"><button class="btn sm" id="btn-hint">💡 提示（0 / ' + (lv.hx ? lv.hn : lv.hints.length) + '）</button>' +
+      (opts.ref ? '<a class="btn sm" id="btn-ref" href="' + opts.ref + '#' + lv.id + '" target="_blank" rel="noopener">📚 這關用到的語法</a>' : '') + '</div><div id="hints" class="stack mt1"></div>' +
       '</article>' +
 
       '<article class="card">' +
