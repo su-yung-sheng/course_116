@@ -11,3 +11,9 @@ table.sheet select{font:inherit;font-size:.82rem;padding:.2rem;border-radius:.4r
 .fbar .input{margin:0;border:0;background:transparent;padding:.35rem}
 .fbar:focus-within{border-color:#93c5fd}
 .hint{background:#fffbeb;border:1px dashed #f59e0b;border-radius:.7rem;padding:.55rem .8rem}
+
+/* 錯誤說明：❌ 常見錯誤寫法／✅ 正確寫法 */
+.sx-ex{display:flex;flex-wrap:wrap;gap:.35rem .8rem;margin:.3rem 0 .15rem;font-size:.85rem}
+.sx-ex code{font-family:ui-monospace,Consolas,monospace;background:#fff;border:1px solid var(--line);border-radius:.35rem;padding:.05rem .4rem;white-space:pre-wrap}
+.sx-ex span:first-child code{border-color:#fecaca}.sx-ex span:last-child code{border-color:#bbf7d0;background:#f0fdf4}
+.fbar .btn{flex:none}

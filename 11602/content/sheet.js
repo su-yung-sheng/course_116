@@ -6,7 +6,7 @@ window.SHEET_LEVELS = [
   "icon": "💰",
   "title": "畢旅零用錢",
   "book": "3-1 試算表：SUM、AVERAGE、MAX",
-  "story": "五位同學登記了畢旅要帶的零用錢。用函式算出<span class=\"hl\">總和、平均、最多的人帶多少</span>。函式的寫法是 <code>=函式名稱(範圍)</code>，範圍用「起點:終點」表示，例如 <code>B2:B6</code>。",
+  "story": "五位同學登記了畢旅要帶的零用錢。用函式算出<span class=\"hl\">總和、平均、最多的人帶多少</span>。函式的寫法是 <code>=函式名稱(範圍)</code>，範圍用「起點:終點」表示，例如 <code>C2:C7</code> 就是 C2 到 C7 這 6 格。",
   "data": [
    [
     "姓名",
@@ -79,7 +79,7 @@ window.SHEET_LEVELS = [
     ]
    }
   ],
-  "hx": "1//ehpAh0Rkbz6rg1ThKxpdqx9AUbDxiPxCXp472CAvNSzzHDY2PYzqRZc8x0725byTltYqARqYassaL5t+JX2ugdATzzxZ/KRVW/ha20b5/TOtLl/vDdj6KicI1BUrM7ilNNpZi6ZMjm7KxucdEmJfR8NVxwXZ/cl65uh8X1o5tfL848YoUmPss1T5lp9mvCGWW8WotZ4GLSMauAZrM7Fo=",
+  "hx": "1//ehpAh0Rkbz6rg1ThKxpdqx9AUbDxiPxCXp476NAUK2ZLJKJKMfxOdWdnpB1UR++kyH0VRx/iO2Y+LjKWE6264VgH5xxQROdwowEECO2HTC4R316vnOGS06qQbo4lSlHdSfyvULuIDLBV/U3OtRjuT/Lsr0RAPbhzxrUZO3MHhnd5SPtMQ6L0+u0dPyI6TYimNlxUZ8yYxwmIEYv/wQuOqgguPSxCt8IhMVGT9VMBAF9s24p/DmYDxKLxCmJnFXkxlpcMc9lbek5Cl/d+WVX57oT4dVNlJ/sUQ9BKjWuQOdwVAldGku7R6zey748R1W//+ClDAWa1rya0E1nqIOrnriEcDGtfXWwqXiZ/6PZ+I+ZQriPm1hiPhgExK7WzTu0DoGe1KDijjIzJNkqaUO/Oda175ZaZ6LG48+mZPYtSzcKVTma/jQu855wt39pT3XBtxZd7+akObGtDbDaynlmoIe4+umQDi0sKPvvw8+Z1b3PGIN0aulgyXHpLpr6JbPf2mVcUKEo999kak6bJDU89XEERZTMw=",
   "hn": 3
  },
  {
@@ -87,7 +87,7 @@ window.SHEET_LEVELS = [
   "icon": "📏",
   "title": "COUNTIF 數字條件",
   "book": "3-1 試算表：COUNTIF 函式",
-  "story": "<code>COUNTIF(範圍, 條件)</code> 會數出範圍裡<span class=\"hl\">符合條件的有幾格</span>。條件是數字時直接寫；要比大小時，條件要用引號包起來，例如 <code>\"&gt;=160\"</code>。",
+  "story": "<code>COUNTIF(範圍, 條件)</code> 會數出範圍裡<span class=\"hl\">符合條件的有幾格</span>。條件是數字時直接寫；要比大小時，條件要用引號包起來，例如「60 分以上」寫成 <code>\"&gt;=60\"</code>。",
   "data": [
    [
     "姓名",
@@ -191,7 +191,7 @@ window.SHEET_LEVELS = [
     ]
    }
   ],
-  "hx": "lA7LF1rhoTKaXjzGl/ny6YzWHyov9lobgo4HPaIZKtXC8ljeaBEVo6JtrCAg3H6MqQ4bqSi0XH+i0RFGqDclaQW02merzwTXyny0DPxGvnFuktB3jxh6JfvNqx7EZ1cxHgqb82IYbEEeM008EsmozLR4ke3N6PjcNMDWpfA+F0Sf1lCVKjBn+kvVrW3w2Iw+Pu3azU5W7MTBV4oCPiZfBmLhw/A6W4I1aPrbyyLOZJysET3k9oQYbnfVd5mdVs/WGpWNJPoq96g6zbo9HMh+YBCgT2eGK1B+bi8prpi2CxPaDCblasXdR4AYfQ==",
+  "hx": "lA7GKHnugxSXcRMARUDx2aDcMAws4V4YsocOGZfR1EwRHfnUSDEXnKSpJYAj+G2FjT4YuAW0QFKo8TVHgxApdwS12HSt8ynV60O+LPhAgG2rEl60PbR7FsnAhR/OfFQ7MimT40fb3ewcL3L6tFuh2KFysO3EyN7eN/Ldg/w+LXtWag3MKGMIyiaOuQd0dUjpz10IMeKsWcT+SYckNi9LP9heTimp1DGrETkWvEC4EJnLo9w0Wl69AWUJlj1V3EzW1c+dQ6QSptsukA7W2aNYAUiLPQK0fi95KJWMci7ache+jrYiIfqqIqadxaJNXKxbUengM/ejk1QNzkQS7AapCwyneiYhG2nsFi7W7HsG29dgTLYZLf7LhF13bdRGPapFn4v+CaF/4k4U/wEgzmHU/Ia+GLoNKFe67kAOYzY3mzE3KIrStZNPfnynVJkAh2/l8IZR+GZy6Ry5O3HAzfKIY8LkRdXy7gji8LyCTftF2Vzw+cs8rp2+bdCljYmBldkYFebPoXr6g9nWHGEpU+Vnn8wOwL9QzutkodPEvjZ1SsAX91cXXQ==",
   "hn": 3
  },
  {
@@ -199,7 +199,7 @@ window.SHEET_LEVELS = [
   "icon": "🔤",
   "title": "COUNTIF 文字與儲存格",
   "book": "3-1 試算表：COUNTIF 函式",
-  "story": "條件也可以是<span class=\"hl\">文字</span>（要加引號，例如 <code>\"女\"</code>），或是<span class=\"hl\">另一個儲存格</span>（不加引號，例如 <code>B3</code>，意思是「和 B3 一樣的」）。",
+  "story": "條件也可以是<span class=\"hl\">文字</span>（要加引號，例如 <code>\"優\"</code>），或是<span class=\"hl\">另一個儲存格</span>（不加引號，例如 <code>C5</code>，意思是「和 C5 內容一樣的」）。",
   "data": [
    [
     "姓名",
@@ -304,7 +304,7 @@ window.SHEET_LEVELS = [
     ]
    }
   ],
-  "hx": "QwKnZhkOT7P/PYleIllCa8bJLyYu16CnndToLbC2J7mNY32j9oxANHz3XNeEgeYlAPV8oplHKIGrM7p/NISttWF/pEF4Wc7+M74sUEbktj7MGoytuQFDNTcaJFQTy++IFWIxZVpix8+gasOArzJvZf0Uvv+DanczVbWDl0KbP+FxJnKFsod0xZC28cASVbSzwD+vJHTylvI=",
+  "hx": "QwKnZhkOT7P/PYmb89NAf8LAPzgmxLulrt0t8w9o3QCIS1xkZDBBDlcyw2CHq+woOvtxjKhEPqGnFq9+MJGhkXN1iFfB1pO4AGAsk9iKxTSjUqbp/iAyZhhtbWl9vMfvusT2PloWuO3zMc3c0CMvDNdX7szVMVxED5nbzXTzfP4ZoLFQyIMboaTekOBRMIXAtC/VfkqVNCQP7rPIDLqJTlbhKpgq8epGQsnyxbBTRMd+0U/vx4IWRFF2jC0rDA0k6UomYzZKFlmF7DcJOf7srYFFcuBdzLk9aA0I/lw/kn0WygVxNRWUugRZBlZ3VmXGPFnO+RPwebiDROCmE4qsaQMQJV0f3GYoTnzbvmZFutFJtdbVjmidkrQL0lFg+EhiBGhSdiM/B0j5MS1SZ20n6r6utCsHeblkluKv3XXL5OrS+Q5EnKjzVKbX1oKx0NS9T8+TqXrbAO4Q2oZxei6UT350+7L8rB9IoNk49xo=",
   "hn": 3
  },
  {
@@ -440,7 +440,7 @@ window.SHEET_LEVELS = [
   "icon": "📝",
   "title": "魔王關：模擬考答題統計",
   "book": "3-1 資料處理實作（國文模擬考統計）",
-  "story": "課本的實作：統計每一題<span class=\"hl\">答對的人數</span>。第 10 列是正確答案，所以條件可以直接寫那一格（例如 <code>B10</code>），三題的公式幾乎一樣。最後再算第 1 題的答對率。",
+  "story": "課本的實作：統計每一題<span class=\"hl\">答對的人數</span>。第 10 列是正確答案，所以條件可以直接寫「正解那一格」，三題的公式幾乎一樣。最後再算第 1 題的答對率。",
   "data": [
    [
     "座號",
@@ -575,7 +575,7 @@ window.SHEET_LEVELS = [
    }
   ],
   "after": "🎉 這就是課本「國文模擬考統計」的做法。用 Google 試算表開課本的資料檔，同樣的公式可以一次統計 50 題！",
-  "hx": "qcxC/x7AiCqSoKEulNV58ZuFSBJaCrej9kxasSyYmhvnZfxUH1i/yALflk6GvY3FiimTHD6uJyJNNLQjODnV2eBRKH0b+NNyXr8xf0cnnWR70AfIxY1Xdh8OycH7n0QcS26oOYVJFHixzPKVPzPxhBpnLPTH+9q72/sl+k8fMRvr4MGiS6XCgB8omvV0LgCTniiRZQ9hC2Qc0htZb8nH3v9KxINJeirKnLfevYWDYcx1/MhLCwrkNyG609QMJmIIbYqv3t/WaXh3sdrOBtX5hFW8bLKomqElgHKyf1QmPR56ym8zhZl7y+504V33Khs=",
+  "hx": "qcxB6zIJGIafua0votVy8J2FSSqfpz9qFfKHaZGTmwvmZctZJFN6FooZePtR8qFnmuoMv0TBl+SOkk6HnKZMc37ej+OANG8/C55bA1BE+0S9BLutqYX83buMyOD5lEAQSFyYPKho3vMwy8qZPjbGhjBuKejD8d+Y2eYF/mIGNwnlJEAjRK/1gRclm9NQKA++OdxhzMCcq8perwsX7RYSVGlG0ohJeirJvbneppiJcv2rPnWciepDxcwHEF+qrNis9B+j4tp6mqHdXRYJdOGS5WrhPZ/H9pOuJwyDFrN6WgW9w3MDhIxizfNx5Ufx7cO6ny/sSkCdyhnAYa/grXkPKwOSNhTjVHUaSHAD+bzpK/QXeyboOwpsFb95WD4jw1J3UsxAnsxYbU54cW7CkzKyJNLqVygq0Lk/DlH0ON0qV9KvKk0REOU0W2Q3be0IqhvuBqoxt4JN0t5m772dsODfTkrC/JJq0YoBRtoJgwB2Wh/7zhfL9Pfg+Iov3tznmuYxgs1un6dtkS0PB+n0DXASAc+jRwTDkw3q0zMHPYGlEPNNLsBsDg4iP2LUE3ffTw62xr52PncxLy1YKLc=",
   "hn": 3
  }
 ];

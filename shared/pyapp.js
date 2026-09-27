@@ -4,14 +4,14 @@
    PYAPP.mount({ root:'#pyapp', levels: PY_LEVELS, mod:'python',
                  title, kicker, subtitle, finale, ref })
    ref：語法小抄的網址（例如 'pyref.html'），有給就在頁首、每一關、「我的程式」旁顯示「📚」按鈕，
-        按了在這一頁開一個浮動視窗（可拖曳、調整大小、縮小），一邊看語法一邊寫程式
+        按了在這一頁開浮動視窗（shared/refpanel.js，頁面要先載入它），一邊看語法一邊寫程式
    引擎：pyrunner.js（執行、評分、錯誤翻譯）；關卡內容：各學期 content/*.js
    依序開放：上一關 ≥ 2⭐ 才開下一關（HUB.openAll() 可暫時全開）
    ===================================================================== */
 window.PYAPP = { mount: function (opts) {
   var L = opts.levels, esc = UI.esc, MOD = opts.mod || 'python';
   var root = typeof opts.root === 'string' ? document.querySelector(opts.root) : opts.root;
-  root.innerHTML = '<div class="row between" style="margin-top:-.5rem;margin-bottom:1rem">\n    <p class="small soft bold">' + esc(opts.subtitle || '') + '</p>\n    <span class="row" style="gap:.5rem">' + (opts.ref ? '<a class="btn sm" id="ref-link" data-ref="all" href="' + opts.ref + '" target="_blank" rel="noopener">📚 語法小抄</a>' : '') + '<span id="engine" class="engine">⏳ Python 引擎載入中…</span></span>\n  </div>\n\n  <div class="py-grid">\n    <aside class="card" style="padding:.8rem">\n      <p class="kicker" style="margin:.2rem .2rem .6rem">任務清單 · 2⭐ 開下一關</p>\n      <div class="lv-prog"><span>進度</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>\n      <nav id="lv-list" class="lv-list" aria-label="關卡"></nav>\n      <p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過<br>3⭐ 再加上程式結構要求</p>\n    </aside>\n\n    <section id="stage" class="stack"></section>\n  </div>\n';
+  root.innerHTML = '<div class="row between" style="margin-top:-.5rem;margin-bottom:1rem">\n    <p class="small soft bold">' + esc(opts.subtitle || '') + '</p>\n    <span class="row" style="gap:.5rem">' + (opts.ref ? '<a class="btn sm" id="ref-link" data-refp="all" href="' + opts.ref + '" target="_blank" rel="noopener">📚 語法小抄</a>' : '') + '<span id="engine" class="engine">⏳ Python 引擎載入中…</span></span>\n  </div>\n\n  <div class="py-grid">\n    <aside class="card" style="padding:.8rem">\n      <p class="kicker" style="margin:.2rem .2rem .6rem">任務清單 · 2⭐ 開下一關</p>\n      <div class="lv-prog"><span>進度</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>\n      <nav id="lv-list" class="lv-list" aria-label="關卡"></nav>\n      <p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過<br>3⭐ 再加上程式結構要求</p>\n    </aside>\n\n    <section id="stage" class="stack"></section>\n  </div>\n';
   var cur = null;                 // 目前關卡
   var session = { inputs: [], seed: 116 };
   var running = false;
@@ -27,52 +27,9 @@ window.PYAPP = { mount: function (opts) {
   });
   PYRUN.init(CONFIG.PYODIDE_URL).catch(function () {});
 
-  /* ── 📚 語法小抄：浮動視窗（iframe 載入 pyref.html?embed=1）───────
-     不擋住操作：可以拖曳標題列移動、拖右下角調整大小、縮成一條標題列；位置和大小記在這台電腦。
-     切換關卡時，打開著的小抄會跟著換成那一關用到的語法。 */
-  var refP = null, refLv = 'all';
-  root.addEventListener('click', function (e) {
-    var a = e.target.closest('[data-ref]'); if (!a || !opts.ref || e.ctrlKey || e.metaKey || e.shiftKey) return;   // Ctrl＋點一下 還是可以開新分頁
-    e.preventDefault(); refOpen(a.dataset.ref);
-  });
-  function refSrc(h) { return opts.ref + (opts.ref.indexOf('?') >= 0 ? '&' : '?') + 'embed=1#' + h; }
-  function refSave() { try { var r = refP.getBoundingClientRect(); localStorage.setItem('pyref-float', JSON.stringify({ x: r.left, y: r.top, w: r.width, h: r.height })); } catch (e) {} }
-  function refPlace(x, y) {
-    var w = refP.offsetWidth, vw = document.documentElement.clientWidth;
-    refP.style.left = Math.max(0, Math.min(x, vw - Math.min(w, vw))) + 'px'; refP.style.top = Math.max(0, Math.min(y, innerHeight - 44)) + 'px';
-    refP.style.right = 'auto';
-  }
-  function refOpen(h) {
-    refLv = h || 'all';
-    if (!refP) {
-      refP = document.createElement('aside');
-      refP.className = 'refp'; refP.setAttribute('role', 'dialog'); refP.setAttribute('aria-label', 'Python 語法小抄');
-      refP.innerHTML = '<div class="refp-hd" title="按住這裡可以拖曳移動"><b>📚 語法小抄</b>' +
-        '<a class="btn sm" id="refp-new" target="_blank" rel="noopener" title="開新分頁">↗</a><button class="btn sm" id="refp-min" title="縮小／展開">－</button><button class="btn sm" id="refp-x" title="關閉">✕</button></div>' +
-        '<iframe class="refp-if" title="Python 語法小抄" allow="clipboard-write"></iframe>';
-      document.body.appendChild(refP);
-      try { var s = JSON.parse(localStorage.getItem('pyref-float') || 'null'); if (s && s.w > 200) { refP.style.width = s.w + 'px'; refP.style.height = s.h + 'px'; refPlace(s.x, s.y); } } catch (e) {}
-      var hd = refP.querySelector('.refp-hd'), ifr = refP.querySelector('iframe'), drag = null;
-      hd.addEventListener('pointerdown', function (e) {
-        if (e.target.closest('a,button') || innerWidth <= 760) return;
-        var r = refP.getBoundingClientRect(); drag = { sx: e.clientX, sy: e.clientY, x: r.left, y: r.top };
-        hd.setPointerCapture(e.pointerId); refP.classList.add('drag'); e.preventDefault();
-      });
-      hd.addEventListener('pointermove', function (e) { if (drag) refPlace(drag.x + e.clientX - drag.sx, drag.y + e.clientY - drag.sy); });
-      hd.addEventListener('pointerup', function () { if (drag) { drag = null; refP.classList.remove('drag'); refSave(); } });
-      refP.addEventListener('mouseup', function () { if (!refP.classList.contains('min')) refSave(); });   // 拖右下角調整大小後記下來
-      refP.querySelector('#refp-x').onclick = function () { refP.classList.add('hidden'); };
-      refP.querySelector('#refp-min').onclick = function () { var m = refP.classList.toggle('min'); this.textContent = m ? '＋' : '－'; };
-      window.addEventListener('resize', function () { if (refP.style.left) refPlace(parseFloat(refP.style.left), parseFloat(refP.style.top)); });
-      ifr.src = refSrc(refLv);
-    } else {
-      var w = refP.querySelector('iframe').contentWindow;
-      try { w.location.hash = refLv; } catch (e) { refP.querySelector('iframe').src = refSrc(refLv); }
-    }
-    refP.querySelector('#refp-new').href = opts.ref + '#' + refLv;
-    refP.classList.remove('hidden', 'min'); refP.querySelector('#refp-min').textContent = '－';
-  }
-  function refFollow(id) { if (refP && !refP.classList.contains('hidden') && refLv !== 'all') refOpen(id); }
+  /* ── 📚 語法小抄：同一頁的浮動視窗（shared/refpanel.js）── */
+  if (opts.ref && window.REFPANEL) REFPANEL.bind(root, { url: opts.ref, title: '📚 語法小抄' });
+  function refFollow(id) { if (opts.ref && window.REFPANEL) REFPANEL.follow(id); }
 
   /* ── 關卡解鎖 ─────────────────────────────────── */
   function stars(id) { var r = STORE.level(MOD, id); return r ? (r.stars || 0) : 0; }
@@ -124,12 +81,12 @@ window.PYAPP = { mount: function (opts) {
       '<div class="scroll-x mt1"><table class="t map-t"><tr><th>Scratch 積木</th><th>Python</th></tr>' +
       lv.scratch.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table></div></details>' +
       '<div class="row mt2"><button class="btn sm" id="btn-hint">💡 提示（0 / ' + (lv.hx ? lv.hn : lv.hints.length) + '）</button>' +
-      (opts.ref ? '<a class="btn sm" id="btn-ref" data-ref="' + lv.id + '" href="' + opts.ref + '#' + lv.id + '" target="_blank" rel="noopener">📚 這關用到的語法</a>' : '') + '</div><div id="hints" class="stack mt1"></div>' +
+      (opts.ref ? '<a class="btn sm" id="btn-ref" data-refp="' + lv.id + '" href="' + opts.ref + '#' + lv.id + '" target="_blank" rel="noopener">📚 這關用到的語法</a>' : '') + '</div><div id="hints" class="stack mt1"></div>' +
       '</article>' +
 
       '<article class="card">' +
       '<div class="row between"><h3 class="bold">✏️ 我的程式</h3><span class="row" style="gap:.5rem"><span class="tiny soft">Tab 縮排 4 格 · Ctrl＋Enter 試跑</span>' +
-      (opts.ref ? '<a class="btn sm" id="btn-ref2" data-ref="' + lv.id + '" href="' + opts.ref + '#' + lv.id + '" target="_blank" rel="noopener">📚 不知道怎麼寫？查語法</a>' : '') + '</span></div>' +
+      (opts.ref ? '<a class="btn sm" id="btn-ref2" data-refp="' + lv.id + '" href="' + opts.ref + '#' + lv.id + '" target="_blank" rel="noopener">📚 不知道怎麼寫？查語法</a>' : '') + '</span></div>' +
       '<div class="ed mt1"><div class="gut" id="gut">1</div><textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Python 程式碼"></textarea></div>' +
       '<p id="fw" class="small bold mt1" style="color:var(--warn);min-height:1.3em" aria-live="polite"></p>' +
       '<div class="row"><button class="btn primary" id="btn-run" disabled>▶ 試跑</button>' +

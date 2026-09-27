@@ -1,7 +1,9 @@
 /* =====================================================================
    迷你試算表關卡引擎（SHEET）
    ---------------------------------------------------------------------
-   SHEET.mount({ app:'#app', levels: SHEET_LEVELS, mod:'sheet' })
+   SHEET.mount({ app:'#app', levels: SHEET_LEVELS, mod:'sheet', ref:'sheetref.html' })
+     ref：函式小抄的網址；有給就顯示「📚」按鈕，在同一頁開浮動視窗（要先載入 shared/refpanel.js）
+   SHEET.explain(公式, 錯誤)       → { title, tip, bad, good, ref } 國中生看得懂的錯誤說明（小抄頁也用它）
    SHEET.evaluate(formula, grid)   → 數值／字串，錯誤時丟出 { code:'#NAME?', msg }
 
    支援：= 開頭的公式、+ - * / 與括號、儲存格 B2、範圍 B2:B9、
@@ -159,16 +161,69 @@
     return { cells: g, get: function (ref) { return g[ref]; }, set: function (ref, v) { g[ref] = v; } };
   }
 
+  /* ── 錯誤說明：把錯誤翻成國中生看得懂的話，附「❌ 常見錯誤寫法／✅ 正確寫法」 ──
+     explain(公式, 錯誤)  錯誤是 evaluate 丟出的 { code, msg }，或評分用的 { code:'empty'|'noeq'|'number'|'must'|'value', fn, v }
+     回傳 { title, tip, bad, good, ref }；ref 是函式小抄裡對應的那一張（#countif…）
+     ⚠️ 範例刻意用 C2:C7、">=60" 這類和關卡無關的寫法，不能變成答案 */
+  var FN_HELP = {
+    SUM: ['=SUM(範圍)', '把範圍裡的數字全部加起來', '=SUM(C2:C7)', 'sum'],
+    AVERAGE: ['=AVERAGE(範圍)', '算範圍裡數字的平均', '=AVERAGE(C2:C7)', 'average'],
+    MAX: ['=MAX(範圍)', '找出範圍裡最大的數字', '=MAX(C2:C7)', 'maxmin'],
+    MIN: ['=MIN(範圍)', '找出範圍裡最小的數字', '=MIN(C2:C7)', 'maxmin'],
+    COUNT: ['=COUNT(範圍)', '數範圍裡有幾格是「數字」', '=COUNT(C2:C7)', 'count'],
+    COUNTA: ['=COUNTA(範圍)', '數範圍裡有幾格「不是空白」', '=COUNTA(C2:C7)', 'count'],
+    ROUND: ['=ROUND(數字, 小數位數)', '四捨五入到指定的小數位數', '=ROUND(C8, 1)', 'round'],
+    COUNTIF: ['=COUNTIF(範圍, 條件)', '數出範圍裡「符合條件」的有幾格', '=COUNTIF(C2:C9,">=60")', 'countif']
+  };
+  function explain(f, e) {
+    var c = e && e.code, m = (e && e.msg) || '', X = function (title, tip, bad, good, ref) { return { title: title, tip: tip, bad: bad, good: good, ref: ref || 'errors' }; };
+    var q = (/「([^」]*)」/.exec(m) || [])[1] || '';
+    switch (c) {
+      case 'empty': return X('還沒寫公式', '點這個黃色格子，在上面的公式列（fx）輸入公式，再按 Enter。', null, null, 'formula');
+      case 'noeq': return X('公式要用「=」開頭', '沒有 = 開頭，試算表會把它當成一般文字，不會計算。', 'SUM(C2:C7)', '=SUM(C2:C7)', 'formula');
+      case 'number': return X('不要直接打答案，要用公式從表格裡的資料算出來', '直接打數字，資料一改就錯了。公式裡要用儲存格或範圍（例如 C2:C7），讓試算表自己算。', '=4200', '=SUM(C2:C7)', 'range');
+      case 'must': var h = FN_HELP[e.fn] || ['=' + e.fn + '(…)', '', '', 'errors'];
+        return X('這一格要用 ' + e.fn + ' 函式', e.fn + ' 的功用是「' + h[1] + '」，寫法：' + h[0], null, h[2], h[3]);
+      case 'value':
+        var head = /[A-Z]1\b(?!\d)/.test(half(f).toUpperCase().replace(/"[^"]*"/g, ''));
+        return X('算出來是 ' + e.v + '，和正確結果不一樣',
+          head ? '範圍包含了第 1 列的標題！資料從第 2 列開始，範圍要從第 2 列選到最後一列。' :
+            '一項一項檢查：① 範圍選對欄了嗎？有沒有從第 2 列選到最後一列？② 比較符號對嗎？「以上（含）」是 >=、「未滿」是 <。③ 條件的文字和表格裡的一模一樣嗎？',
+          head ? '=AVERAGE(C1:C7)' : null, head ? '=AVERAGE(C2:C7)' : null, 'range');
+      case '#NAME?': return X('#NAME?：試算表不認識「' + q + '」這個函式', '函式名稱拼錯了嗎？這個單元會用到：SUM、AVERAGE、MAX、MIN、COUNT、COUNTA、COUNTIF、ROUND。', '=SUMM(C2:C7)\n=AVERGE(C2:C7)', '=SUM(C2:C7)\n=AVERAGE(C2:C7)');
+      case '#DIV/0!': return X('#DIV/0!：' + (/沒有數字/.test(m) ? '範圍裡沒有數字，平均算不出來' : '除以 0 了'),
+        /沒有數字/.test(m) ? 'AVERAGE 的範圍是不是選到文字欄（例如姓名）或空白格？' : '除數那一格是 0 或空白。檢查 / 後面的儲存格位址。', /沒有數字/.test(m) ? '=AVERAGE(A2:A7)   ← A 欄是姓名' : '=C8/D8   ← D8 是空白', /沒有數字/.test(m) ? '=AVERAGE(C2:C7)' : '=C8/COUNTA(C2:C7)');
+      case '#VALUE!':
+        if (/範圍不能直接/.test(m)) return X('#VALUE!：範圍不能直接拿來加減乘除', '範圍（一整串格子）要先放進函式變成一個數字，例如用 SUM 加總之後再除。', '=C2:C7/2', '=SUM(C2:C7)/2', 'sum');
+        if (/第一個引數要是範圍/.test(m)) return X('#VALUE!：COUNTIF 的第一個要寫範圍', 'COUNTIF(範圍, 條件)：先寫「在哪裡數」，再寫「數什麼」，順序不能反過來。', '=COUNTIF(">=60",C2:C9)', '=COUNTIF(C2:C9,">=60")', 'countif');
+        if (/只能是一個值/.test(m)) return X('#VALUE!：COUNTIF 的條件只能是一個值', '條件可以是一個數字、一段文字（加引號）或「一格」儲存格，不能是一整個範圍。', '=COUNTIF(C2:C9,D2:D9)', '=COUNTIF(C2:C9,D10)', 'countif-cell');
+        return X('#VALUE!：「' + q + '」不是數字，不能拿來計算', '算式用到了文字格子（例如標題列）。檢查公式裡的儲存格位址是不是指到數字。', '=C1*2   ← C1 是標題', '=C2*2', 'range');
+      case '#N/A': return X('#N/A：COUNTIF 要寫兩樣東西', 'COUNTIF(範圍, 條件)：範圍和條件中間用半形逗號隔開，兩樣都要有。', '=COUNTIF(C2:C9)', '=COUNTIF(C2:C9,">=60")', 'countif');
+      case '#REF!': return X('#REF!：儲存格位址寫錯了', '位址是「欄的英文字母＋列的數字」，例如 C2；範圍是「起點:終點」，兩邊都要寫完整。', '=SUM(C2:7)', '=SUM(C2:C7)', 'range');
+      case '#ERROR!':
+        if (/少了「\)」/.test(m)) return X('括號沒有關起來', '每一個 ( 都要有一個 ) 對應。', '=SUM(C2:C7', '=SUM(C2:C7)', 'formula');
+        if (/少了「\(」/.test(m)) return X('函式名稱後面要接小括號', '函式的寫法是「函式名稱(…)」，括號緊跟在名稱後面。', '=SUM C2:C7', '=SUM(C2:C7)', 'formula');
+        if (/沒寫完/.test(m)) return X('公式沒寫完', '看看最後面是不是少了範圍、數字或右括號。', '=SUM(', '=SUM(C2:C7)', 'formula');
+        if (/不該出現「(>=|<=|<>|>|<|=)」/.test(m)) return X('比大小的條件要放在雙引號裡', '條件裡有 >、<、>= 這些符號時，整個條件要用半形雙引號包起來。', '=COUNTIF(C2:C9,>=60)', '=COUNTIF(C2:C9,">=60")', 'countif-cmp');
+        if (/^;/.test(q)) return X('要用逗號，不是分號', '函式裡兩樣東西之間用半形逗號 , 隔開；範圍中間用冒號 :', '=COUNTIF(C2:C9;">=60")', '=COUNTIF(C2:C9,">=60")', 'countif');
+        if (/^["']/.test(q) || /^'/.test(q)) return X('引號要用半形雙引號 " "，而且要成對', '文字和條件要用一對半形雙引號包起來；單引號 \' 在試算表裡不能用。', "=COUNTIF(C2:C9,'優')", '=COUNTIF(C2:C9,"優")', 'countif-text');
+        if (/[一-鿿]/.test(q)) return X('文字要用半形雙引號包起來', '公式裡的中文或英文文字（不是儲存格位址）要加雙引號，試算表才知道它是「文字」。', '=COUNTIF(C2:C9,優)', '=COUNTIF(C2:C9,"優")', 'countif-text');
+        return X('公式寫法有問題（看不懂「' + q + '」）', '檢查這幾個地方：函式名稱、括號有沒有成對、範圍用冒號、條件用逗號隔開、文字加雙引號。', null, null);
+    }
+    return X((c || '') + ' ' + m, '', null, null);
+  }
+
   /* ── 評分 ─────────────────────────────────── */
   function gradeTarget(t, grid) {
     var f = String(grid.get(t.cell) || '').trim(), F = half(f).toUpperCase();
-    if (!f) return { ok: false, why: '還沒寫公式' };
-    if (F[0] !== '=') return { ok: false, why: '公式要用「=」開頭' };
+    function no(e) { var x = explain(f, e); return { ok: false, why: x.title, x: x }; }
+    if (!f) return no({ code: 'empty' });
+    if (F[0] !== '=') return no({ code: 'noeq' });
     var v;
-    try { v = evaluate(f, grid); } catch (e) { return { ok: false, why: e.code + ' ' + e.msg }; }
-    if (!/[A-Z]+\d+/.test(F.slice(1))) return { ok: false, why: '不要直接打答案，要用公式從表格裡的資料算出來' };
+    try { v = evaluate(f, grid); } catch (e) { return no(e); }
+    if (!/[A-Z]+\d+/.test(F.slice(1))) return no({ code: 'number' });
     var miss = (t.must || []).filter(function (fn) { return F.indexOf(fn + '(') < 0; });
-    if (miss.length) return { ok: false, why: '這一格要用 ' + miss.join('、') + ' 函式' };
+    if (miss.length) return no({ code: 'must', fn: miss[0] });
     var okv;
     if (t.ok) {   // 封存版：標準答案只剩「可接受數值（小數第 2 位）」的雜湊
       okv = typeof v === 'number' && t.ok.indexOf(SEAL.h(t.s, SEAL.num2(v))) >= 0;
@@ -176,7 +231,7 @@
       var want = evaluate(t.ref, grid), tol = t.tol == null ? 0.01 : t.tol;
       okv = [want].concat(t.alt || []).some(function (w) { return typeof w === 'number' ? Math.abs(num(v) - w) <= tol : String(v) === String(w); });
     }
-    if (!okv) return { ok: false, why: '算出來是 ' + fmt(v) + '，和正確結果不一樣' + (t.tx ? '（' + SEAL.reveal(t.s, t.tx) + '）' : (t.tip ? '（' + t.tip + '）' : '')) };
+    if (!okv) { var r = no({ code: 'value', v: fmt(v) }), lt = t.tx ? SEAL.reveal(t.s, t.tx) : t.tip; if (lt) r.x.tip = '💬 ' + lt + '。' + r.x.tip; return r; }
     return { ok: true, v: v };
   }
 
@@ -186,7 +241,15 @@
   function mount(opts) {
     var L = opts.levels, MOD = opts.mod || 'sheet', esc = UI.esc, HEARTS = 3;
     var app = typeof opts.app === 'string' ? document.querySelector(opts.app) : opts.app;
-    var S = null;
+    var S = null, REF = opts.ref && window.REFPANEL ? opts.ref : null;
+    if (REF) REFPANEL.bind(app, { url: REF, title: '📚 函式小抄' });
+
+    /* 一個錯誤的說明：標題、提示、❌／✅ 對照、📚 看小抄 */
+    function xHTML(x, brief) {
+      return '<b>' + esc(x.title) + '</b>' + (x.tip ? '<div class="small">💡 ' + esc(x.tip) + '</div>' : '') +
+        (x.bad || x.good ? '<div class="sx-ex">' + (x.bad ? '<span>❌ <code>' + esc(x.bad) + '</code></span>' : '') + (x.good ? '<span>✅ <code>' + esc(x.good) + '</code></span>' : '') + '</div>' : '') +
+        (REF && !brief ? '<a class="tiny bold" data-refp="' + x.ref + '" href="' + REF + '#' + x.ref + '" target="_blank" rel="noopener">📚 看小抄怎麼寫</a>' : '');
+    }
 
     function best(id) { var r = STORE.level(MOD, id); return r ? (r.stars || 0) : 0; }
 
@@ -195,7 +258,8 @@
       var total = L.reduce(function (s, lv) { return s + best(lv.id); }, 0);
       app.innerHTML = '<section class="card pop"><div class="tape"></div><div class="row between"><div>' +
         '<p class="kicker">' + L.length + ' 關 · 在網頁裡直接寫公式</p><h2 class="black" style="font-size:1.35rem">點黃色格子 → 在公式列輸入 → 按「檢查」</h2>' +
-        '<p class="small soft mt1">每關 3 顆 ❤️，檢查時有錯扣一顆，剩幾顆就拿幾顆 ⭐。學會之後，到 Google 試算表做課本的實作。</p></div>' +
+        '<p class="small soft mt1">每關 3 顆 ❤️，檢查時有錯扣一顆，剩幾顆就拿幾顆 ⭐。學會之後，到 Google 試算表做課本的實作。</p>' +
+        (REF ? '<a class="btn sm mt1" id="ref-link" data-refp="all" href="' + REF + '" target="_blank" rel="noopener">📚 函式小抄（公式怎麼寫都在這裡）</a>' : '') + '</div>' +
         '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
         '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
           return '<button class="card lvcard pop" data-i="' + i + '"><div class="row between"><span style="font-size:2rem">' + lv.icon + '</span>' + UI.stars(best(lv.id)) + '</div>' +
@@ -207,6 +271,7 @@
     function start(i) {
       var lv = L[i];
       try { history.replaceState(null, '', '#' + lv.id); } catch (e) {}
+      if (REF) REFPANEL.follow(lv.id);
       S = { i: i, lv: lv, hearts: HEARTS, stage: lv.clean ? 'clean' : 'calc', sel: null, marks: {} };
       S.grid = lv.clean ? makeGrid(lv.data, {}) : makeGrid(lv.data, lv.labels);
       draw();
@@ -239,11 +304,13 @@
         (S.stage === 'clean' ? '<div class="note warn mt1 small">' + lv.clean.prompt + '</div>' :
           '<ol class="small mt1" style="padding-left:1.3rem">' + lv.targets.map(function (t) { return '<li><b class="mono">' + t.cell + '</b>：' + esc(t.label) + '</li>'; }).join('') + '</ol>') +
         (S.stage === 'calc' ? '<div class="fbar mt2"><span class="mono bold" style="min-width:2.6rem">' + (S.sel || '') + '</span><span class="mono bold">fx</span>' +
-          '<input id="fx" class="input mono" autocomplete="off" spellcheck="false" placeholder="' + (selT ? '輸入公式，例如 =' + (selT.must && selT.must[0] || 'SUM') + '(…)' : '先點一個黃色格子') + '"' + (selT ? '' : ' disabled') + ' value="' + esc(selT ? (grid.get(S.sel) || '') : '') + '"></div>' +
-          '<p id="fwarn" class="tiny bold mt1" style="color:var(--warn);min-height:1.1em"></p>' : '') +
+          '<input id="fx" class="input mono" autocomplete="off" spellcheck="false" placeholder="' + (selT ? '輸入公式，例如 =' + (selT.must && selT.must[0] || 'SUM') + '(…)' : '先點一個黃色格子') + '"' + (selT ? '' : ' disabled') + ' value="' + esc(selT ? (grid.get(S.sel) || '') : '') + '">' +
+          (REF ? '<a class="btn sm" id="btn-ref2" data-refp="' + lv.id + '" href="' + REF + '#' + lv.id + '" target="_blank" rel="noopener" title="不知道怎麼寫？查函式">📚 查函式</a>' : '') + '</div>' +
+          '<p id="fwarn" class="tiny bold mt1" style="color:var(--warn);min-height:1.1em"></p><div id="fxplain"></div>' : '') +
         '<div class="scroll-x mt1"><table class="sheet">' + head + rows + '</table></div>' +
         '<div class="row mt2"><button class="btn go" id="check">✅ 檢查</button>' +
-        (lv.hx || lv.hints ? '<button class="btn sm" id="hint">💡 提示</button>' : '') + '</div>' +
+        (lv.hx || lv.hints ? '<button class="btn sm" id="hint">💡 提示</button>' : '') +
+        (REF ? '<a class="btn sm" id="btn-ref" data-refp="' + lv.id + '" href="' + REF + '#' + lv.id + '" target="_blank" rel="noopener">📚 這關用到的函式</a>' : '') + '</div>' +
         '<div class="fb mt2" id="fb" aria-live="polite"></div></section>';
       document.getElementById('quit').onclick = function () { if (confirm('離開這一關？這次的進度不會保留。')) menu(); };
       app.querySelectorAll('td[data-ref]').forEach(function (td) {
@@ -258,6 +325,14 @@
         fx.onblur = function () { if (S && S.sel) S.grid.set(S.sel, fx.value.trim()); };   // 只存值不重畫：重畫會把「檢查」的回饋洗掉
         fx.oninput = function () { document.getElementById('fwarn').textContent = /[！-～“”]/.test(fx.value) ? '⚠️ 有全形符號（＝，（）＂）—— 真正的試算表會出錯，請切換成半形' : ''; };
         fx.oninput();
+        // 剛輸入的公式算不出來（#NAME? 之類）→ 馬上在公式列下面說明，不扣心
+        var raw = S.sel && grid.get(S.sel);
+        if (raw) {
+          var ex = null;
+          if (half(String(raw)).trim()[0] !== '=') ex = explain(raw, { code: 'noeq' });
+          else { try { evaluate(raw, grid); } catch (e) { ex = explain(raw, e); } }
+          if (ex) document.getElementById('fxplain').innerHTML = '<div class="note warn small pop">' + xHTML(ex) + '</div>';
+        }
       }
       var hb = document.getElementById('hint');
       if (hb) hb.onclick = function () { S.hint = Math.min((S.hint || 0) + 1, lv.hx ? lv.hn : lv.hints.length); showHints(); };
@@ -293,7 +368,7 @@
       var bad = res.filter(function (x) { return !x.r.ok; });
       if (bad.length) {
         return miss('<div class="note bad pop"><b>❌ 還有 ' + bad.length + ' 格不對</b><ul style="margin:.3rem 0 0;padding-left:1.2rem">' +
-          bad.map(function (x) { return '<li><b class="mono">' + x.t.cell + '</b>：' + esc(x.r.why) + '</li>'; }).join('') + '</ul></div>');
+          bad.map(function (x) { return '<li class="mt1"><b class="mono">' + x.t.cell + '</b>：' + xHTML(x.r.x) + '</li>'; }).join('') + '</ul></div>');
       }
       finish();
     }
@@ -345,5 +420,5 @@
     return { menu: menu, start: start };
   }
 
-  window.SHEET = { mount: mount, evaluate: function (f, data) { return evaluate(f, data && data.get ? data : makeGrid(data || [[]])); }, makeGrid: makeGrid, grade: gradeTarget, fmt: fmt };
+  window.SHEET = { mount: mount, evaluate: function (f, data) { return evaluate(f, data && data.get ? data : makeGrid(data || [[]])); }, makeGrid: makeGrid, grade: gradeTarget, fmt: fmt, explain: explain, FN: FN_HELP };
 })();
