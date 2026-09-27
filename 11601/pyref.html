@@ -12,6 +12,7 @@
 <script src="../shared/store.js"></script>
 <script src="../shared/ui.js"></script>
 <script src="../shared/pyrunner.js"></script>
+<script>/* ?embed=1：放在 Python 闖關頁的浮動視窗裡（只留查詢需要的部分） */ if (/[?&]embed=1/.test(location.search)) document.documentElement.classList.add('embed');</script>
 <style>
   /* 📚 Python 語法小抄（這一頁專用） */
   .rf-intro{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
@@ -84,6 +85,16 @@
     .rf-quick td{display:inline;border:0!important;padding:0 .4rem 0 0!important}.rf-quick td:first-child{display:block;font-weight:800;margin-bottom:.2rem}
     .rf-quick td:nth-child(2){white-space:normal}.rf-quick td code{white-space:normal;word-break:break-word}
   }
+  /* 嵌在闖關頁的浮動視窗裡 */
+  .embed .topbar,.embed .rf-intro,.embed #pager,.embed [data-try],.embed #cats,.embed .rf-lv{display:none!important}
+  .embed body{background:#fafaf9}
+  .embed .wrap-wide{padding:.5rem .7rem 2rem}
+  .embed .rf-bar{position:sticky!important;padding:.45rem 0 .4rem;margin-bottom:.6rem}
+  .embed .rf-chips{margin-top:.35rem}
+  .embed .rf-chip{padding:.18rem .5rem;font-size:.75rem}
+  .embed .rf-card{scroll-margin-top:6.5rem;padding:1rem}
+  .embed .rf-cat{scroll-margin-top:6.5rem;font-size:1.1rem;margin:1.2rem 0 .6rem}
+  .embed .rf-head h3{font-size:1.05rem}
   @media print{.rf-bar,.rf-tools,.rf-lab,.topbar .back{display:none!important}.rf-card{break-inside:avoid}}
 </style>
 </head>
@@ -453,13 +464,14 @@ window.PYREF_ERRORS = [
   /* ── 網址 #P5 → 只看第 5 關用到的；#for → 跳到那一種語法 ── */
   function fromHash() {
     var h = decodeURIComponent(location.hash.slice(1));
-    if (LV[h]) { state.lv = h; state.cat = ''; render(); return; }
+    if (LV[h] || h === 'all') { state.lv = LV[h] ? h : ''; state.cat = ''; render(); window.scrollTo(0, 0); return; }
     render();
     var el = h && document.getElementById(h);
     if (el && el.classList.contains('rf-card')) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
     else if (h && REF.some(function (r) { return r.id === h; })) { state = { cat: '', lv: '', q: '' }; document.getElementById('q').value = ''; fromHash(); }
   }
   window.addEventListener('hashchange', fromHash);
+  if (document.documentElement.classList.contains('embed')) document.getElementById('quick').open = false;   // 浮動視窗裡先收起速查表，直接看語法
   fromHash();
 
   /* ── 📋 複製、🧪 試試看 ── */

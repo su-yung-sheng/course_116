@@ -1,4 +1,4 @@
-// 📚 Python 語法小抄：篩選、搜尋、#P5 只看那一關、🧪 試試看（真的用 Pyodide 跑，含輸入）、Python 闖關頁的連結、手機寬度
+// 📚 Python 語法小抄：篩選、搜尋、#P5 只看那一關、🧪 試試看（真的用 Pyodide 跑，含輸入）、Python 闖關頁的浮動小抄、手機寬度
 import { launch, login, BASE, SHOTS } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 const { browser, context } = await launch();
@@ -53,10 +53,31 @@ await page.screenshot({ path: SHOTS + 'pyref-lab.png' });
   await page.click('#lab-min'); await page.click('#lab-x'); ok(await page.$eval('#lab', e => e.classList.contains('hidden')), '🧪 可以關閉');
   ok(!(await page.$('#engine')), '不再顯示「Python 就緒」標籤（狀態改顯示在執行按鈕上）'); }
 
-/* Python 闖關頁：頁首和每一關都有連結 */
+/* Python 闖關頁：📚 按鈕在同一頁開浮動視窗（嵌入版小抄），邊看語法邊寫程式 */
 await page.goto(BASE + '/11601/python.html'); await page.waitForSelector('#ref-link');
-await page.click('.lv[data-i="0"]').catch(() => {}); await page.waitForSelector('#btn-ref');
-ok((await page.getAttribute('#btn-ref', 'href')) === 'pyref.html#P1' && (await page.getAttribute('#btn-ref', 'target')) === '_blank', '闖關頁：「📚 這關用到的語法」→ pyref.html#P1（新分頁）');
+await page.evaluate(() => { HUB.openAll = () => true; });
+await page.click('.lv[data-i="0"]').catch(() => {}); await page.waitForSelector('#btn-ref2');
+ok((await page.getAttribute('#btn-ref', 'href')) === 'pyref.html#P1', '闖關頁：每一關有「📚 這關用到的語法」、「我的程式」旁有「📚 查語法」');
+await page.click('#btn-ref2'); await page.waitForSelector('.refp:not(.hidden) iframe');
+const fr = page.frameLocator('.refp iframe');
+await fr.locator('.rf-card').first().waitFor();
+ok(await fr.locator('#print').count() === 1 && await fr.locator('#for').count() === 0 && await fr.locator('.topbar').isHidden(), '浮動視窗裡是嵌入版小抄：只列第 1 關用到的語法、沒有頁首');
+ok(await page.locator('#code').isVisible() && await page.locator('#code').isEditable(), '小抄開著，「我的程式」照樣可以打字');
+await page.fill('#code', "print('hi')"); ok((await page.inputValue('#code')) === "print('hi')", '邊看小抄邊輸入程式');
+await page.screenshot({ path: SHOTS + 'pyref-float.png' });
+{ const b0 = await page.$eval('.refp', e => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width }; });
+  ok(b0.w < 560, '是浮動視窗（不是整頁）', JSON.stringify(b0));
+  await page.mouse.move(b0.x + 60, b0.y + 16); await page.mouse.down(); await page.mouse.move(b0.x - 500, b0.y + 120, { steps: 6 }); await page.mouse.up();
+  const b1 = await page.$eval('.refp', e => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y }; });
+  ok(b1.x < b0.x - 400 && b1.y > b0.y + 80, '拖曳標題列可以移動', JSON.stringify(b1));
+  await page.click('.lv[data-i="4"]'); await page.waitForTimeout(600);
+  ok(await fr.locator('#if').count() === 1 && await fr.locator('#print').count() === 0, '換到第 5 關 → 小抄跟著換成第 5 關的語法');
+  await page.click('#refp-min'); ok(await page.$eval('.refp', e => e.getBoundingClientRect().height < 70), '可以縮小成標題列');
+  await page.click('#refp-min'); await page.click('#refp-x'); ok(await page.$eval('.refp', e => e.classList.contains('hidden')), '可以關閉');
+  await page.click('#ref-link'); await page.waitForTimeout(600);
+  ok(await fr.locator('#for').count() === 1 && await fr.locator('#print').count() === 1, '頁首「📚 語法小抄」→ 全部語法');
+  const b2 = await page.$eval('.refp', e => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y }; });
+  ok(Math.abs(b2.x - b1.x) < 2, '關掉再打開，位置還在', JSON.stringify(b2)); }
 
 /* 手機 */
 const m = await context.newPage(); await m.setViewportSize({ width: 375, height: 760 });
@@ -66,6 +87,9 @@ await m.screenshot({ path: SHOTS + 'pyref-m.png' });
 await m.click('#for [data-try]'); await m.waitForSelector('#lab:not(.hidden)');
 { const r = await m.$eval('#lab', e => { const b = e.getBoundingClientRect(); return { l: b.left, r: b.right }; }); ok(r.l >= 0 && r.r <= 375, '手機：試試看視窗在畫面內', JSON.stringify(r)); }
 await m.screenshot({ path: SHOTS + 'pyref-m-lab.png' });
+await m.goto(BASE + '/11601/python.html#P1'); await m.waitForSelector('#btn-ref2'); await m.click('#btn-ref2'); await m.waitForSelector('.refp:not(.hidden)');
+{ const r = await m.$eval('.refp', e => { const b = e.getBoundingClientRect(); return { l: b.left, r: b.right, h: b.height }; }); ok(r.l >= 0 && r.r <= 375 && r.h < 500, '手機：小抄是下方的浮動視窗，上面還看得到程式', JSON.stringify(r)); }
+await m.frameLocator('.refp iframe').locator('.rf-card').first().waitFor(); await m.screenshot({ path: SHOTS + 'pyref-float-m.png' });
 await m.screenshot({ path: SHOTS + 'pyref-m-full.png', fullPage: true });
 console.log('errors', errors);
 await browser.close();
