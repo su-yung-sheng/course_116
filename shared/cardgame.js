@@ -102,8 +102,19 @@ window.CARDGAME = { mount: function (opts) {
   function start(i, s) {
     var lv = L[i], st = lv.stages ? (s || 0) : null;
     G = { i: i, lv: lv, st: st, rounds: lv.stages ? lv.stages[st].rounds : lv.rounds, r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0 };
-    round();
+    count(); round();
   }
+  /* 題號是「整個關卡（這一階）」連續算的：第 1～10 題，不會每一回合又從 1 開始 */
+  function sizeOf(rd) {
+    if (rd.type === 'sort') return rd.pick || rd.items.length;
+    if (rd.type === 'type') return rd.items.length;
+    if (rd.type === 'build') return rd.customers.length;
+    if (rd.type === 'gen') { if (rd.n) return rd.n; var g = CARDGAME.gens && CARDGAME.gens[rd.gen]; return g ? g(rd).length : 1; }
+    if (rd.type === 'lab') return rd.n || 1;
+    return 1;
+  }
+  function count() { G.base = 0; G.qk = 0; G.qtotal = G.rounds.reduce(function (a, rd) { return a + sizeOf(rd); }, 0); }
+  function cnt(k) { G.qk = k; return '（第 ' + (G.base + k + 1) + ' / ' + G.qtotal + ' 題）'; }
 
   function hud() {
     var lv = G.lv;
@@ -111,7 +122,7 @@ window.CARDGAME = { mount: function (opts) {
     return '<div class="hud"><button class="btn sm" id="quit">✕ 離開</button>' +
       '<b>' + lv.icon + ' ' + esc(lv.title) + '</b>' +
       (G.practice ? '<span class="chip repair-chip">🩹 修復站 · 不扣心</span>' : (G.st != null ? '<span class="chip stage-chip">' + '⭐'.repeat(G.st + 1) + ' ' + STAGE[G.st].n + '</span>' : '') +
-      '<span class="chip">回合 ' + (G.r + 1) + ' / ' + G.rounds.length + '</span>') +
+      '<span class="chip qprog" title="這一關的進度"><span class="qbar"><i style="width:' + Math.round((G.base + (G.qk || 0)) / Math.max(1, G.qtotal) * 100) + '%"></i></span>' + (G.base + (G.qk || 0)) + ' / ' + G.qtotal + ' 題</span>') +
       '<button class="btn sm" id="peek" type="button">📖 小卡</button>' +
       '<span style="margin-left:auto" class="combo">' + (G.combo >= 2 ? '🔥 連對 ' + G.combo : '') + '</span>' + (G.practice ? '' : UI.hearts(G.hearts, HEARTS)) + '</div>';
   }
@@ -180,8 +191,9 @@ window.CARDGAME = { mount: function (opts) {
     if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到實驗站：' + esc(rd.lab) + '</p></section>'; return; }
     function one() {
       var tries = 0, done = false;
+      G.qk = k;
       app.innerHTML = '<section class="card">' + hud() +
-        '<p class="small soft bold mt2">🧪 ' + esc(rd.prompt) + (n > 1 ? '（' + (k + 1) + ' / ' + n + '）' : '') + '</p>' +
+        '<p class="small soft bold mt2">🧪 ' + esc(rd.prompt) + cnt(k) + '</p>' +
         '<div id="lab" class="lab mt1"></div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
       bindQuit();
       var el = document.getElementById('lab'), fb = document.getElementById('fb');
@@ -224,8 +236,10 @@ window.CARDGAME = { mount: function (opts) {
   var swapStage = function () { return G.st != null && !G.practice; };   // 三星三階才「答錯換一題」
 
   function nextRound() {
+    G.base += sizeOf(G.rounds[G.r]); G.qk = 0;
     G.r++;
-    if (G.r >= G.rounds.length) finish(); else round();
+    if (G.r >= G.rounds.length) finish();
+    else { var nx = G.rounds[G.r]; UI.toast('✅ 這一組完成！接下來換一種題目：' + (nx.prompt || nx.title || ''), 2600); round(); }
   }
 
   /* ⚠️ 下面四種回合用的都是「封存版」內容（tools/build.mjs 產生）：
@@ -247,8 +261,9 @@ window.CARDGAME = { mount: function (opts) {
     var k = 0;
     function card() {
       var it = items[k];
+      G.qk = k;
       app.innerHTML = '<section class="card">' + hud() +
-        '<p class="small soft bold mt2">' + esc(rd.prompt) + '（' + (k + 1) + ' / ' + items.length + '）</p>' +
+        '<p class="small soft bold mt2">' + esc(rd.prompt) + cnt(k) + '</p>' +
         (it.scene ? '<p class="scene mt1">' + esc(it.scene) + '</p>' : '') +
         '<div class="qcard mt1 pop"><div class="big">' + it.icon + '</div><div class="txt">' + esc(it.t) + '</div></div>' +
         '<div class="buckets mt2">' + rd.buckets.map(function (b) {
@@ -296,8 +311,9 @@ window.CARDGAME = { mount: function (opts) {
   /* order：依序點選 */
   function playOrder(rd) {
     var shown = shuffle(rd.items), got = 0, n = rd.items.length;
+    G.qk = 0;
     app.innerHTML = '<section class="card">' + hud() +
-      '<p class="bold mt2">🔢 ' + esc(rd.prompt) + '</p><p class="tiny soft">' + esc(rd.hint || '依序點選：先點排第一的。') + '</p>' +
+      '<p class="bold mt2">🔢 ' + esc(rd.prompt) + ' <span class="small soft">' + cnt(0) + '</span></p><p class="tiny soft">' + esc(rd.hint || '依序點選：先點排第一的。') + '</p>' +
       '<div class="order-grid mt2">' + shown.map(function (x) {
         return '<button class="pick order-btn" data-t="' + esc(x.t) + '"><div style="font-size:2rem">' + x.icon + '</div><div>' + esc(x.t) + '</div></button>';
       }).join('') + '</div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
@@ -333,8 +349,9 @@ window.CARDGAME = { mount: function (opts) {
     var c = 0;
     function customer() {
       var cu = rd.customers[c], chosen = {};
+      G.qk = c;
       app.innerHTML = '<section class="card">' + hud() +
-        '<p class="small soft bold mt2">' + esc(rd.title || '接單組裝') + '（' + (c + 1) + ' / ' + rd.customers.length + '）</p>' +
+        '<p class="small soft bold mt2">' + esc(rd.title || '接單組裝') + cnt(c) + '</p>' +
         '<div class="note mt1 pop"><b style="font-size:1.1rem">' + esc(cu.who) + '</b><p class="mt1">' + cu.need + '</p></div>' +
         rd.slots.map(function (s) {
           return '<div class="slot"><b>' + esc(s.label) + '</b><div class="opts">' + s.options.map(function (o) {
@@ -399,8 +416,9 @@ window.CARDGAME = { mount: function (opts) {
     }
     function q() {
       var it = qs[k];
+      G.qk = k;
       app.innerHTML = '<section class="card">' + hud() +
-        '<p class="small soft bold mt2">' + esc(rd.prompt) + '（' + (k + 1) + ' / ' + qs.length + '）</p>' +
+        '<p class="small soft bold mt2">' + esc(rd.prompt) + cnt(k) + '</p>' +
         '<div class="qcard mt1 pop"><div class="big">' + (it.icon || '✏️') + '</div><div class="txt">' + esc(it.t) + '</div>' +
         (it.sub ? '<div class="small soft bold mt1">' + esc(it.sub) + '</div>' : '') + '</div>' +
         (rd.tool ? '<div class="mt2" id="tool"></div>' : '') +
@@ -444,8 +462,9 @@ window.CARDGAME = { mount: function (opts) {
     function hintOf(it, v, tries) { var h = tries >= 2 && it.hint2 ? it.hint2 : it.hint; return typeof h === 'function' ? h(v) : h; }
     function q() {
       var it = qs[k], tool = it.tool || rd.tool, kind = it.kind || 'input', val = null, tries = 0;
+      G.qk = k;
       app.innerHTML = '<section class="card">' + hud() +
-        '<p class="small soft bold mt2">🎲 ' + esc(it.prompt || rd.prompt) + '（' + (k + 1) + ' / ' + qs.length + '）</p>' +
+        '<p class="small soft bold mt2">🎲 ' + esc(it.prompt || rd.prompt) + cnt(k) + '</p>' +
         '<div class="qcard mt1 pop"><div class="big">' + (it.icon || '✏️') + '</div><div class="txt' + (it.mono === false ? '' : ' mono') + '">' + esc(it.t) + '</div>' +
         (it.sub ? '<div class="small soft bold mt1">' + esc(it.sub) + '</div>' : '') + (it.html ? '<div class="mt1">' + it.html + '</div>' : '') + '</div>' +
         (G.practice && it.hint ? '<div class="note small mt2">💡 提示：' + esc(hintOf(it, '', 1)) + '</div>' : '') +
@@ -615,7 +634,7 @@ window.CARDGAME = { mount: function (opts) {
       if (!canDrill) return readCard();
       var prd = Object.assign({}, rd, rd.type === 'gen' ? { n: 2 } : rd.type === 'lab' ? { n: 1 } : { pick: 2 });
       G = { i: i, lv: G.lv, st: s, rounds: [prd], r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0, practice: true };
-      round();
+      count(); round();
     };
   }
   function readCard() {

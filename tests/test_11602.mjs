@@ -17,10 +17,8 @@ await login(page);
 
 /* ── 遊戲：照正解玩完每一關 ───────────────── */
 /* 🎲 gen 回合：看畫面算答案（net_solver.mjs）；每一回合的第一題故意先答錯一次，確認會扣心、可以重答 */
-async function playGen() {
-  for (let guard = 0; guard < 20; guard++) {
-    const head = await page.textContent('#app .card > p.small');
-    const [k, n] = (head.match(/（(\d+) \/ (\d+)）/) || []).slice(1).map(Number);
+async function playGen(n) {
+  for (let k = 1; k <= n; k++) {
     const sol = await netSolve(page);
     let use = sol;
     if (k === 1 && !genWrongTried) {
@@ -40,13 +38,12 @@ async function playGen() {
     await netAnswer(page, use, false);
     await page.waitForSelector('#nx', { timeout: 5000 }).catch(async () => { throw new Error('🎲 答不對：' + (await page.textContent('.qcard')) + ' → ' + JSON.stringify(sol) + ' ' + (await page.textContent('#fb'))); });
     await page.click('#nx');
-    if (k === n) return;
   }
 }
 let genWrongTried = false;
 async function playRounds(rounds) {
   for (const rd of rounds) {
-    if (rd.type === 'gen') { await playGen(); continue; }
+    if (rd.type === 'gen') { await playGen(rd.n); continue; }
     if (rd.type === 'lab') {   // 🧪 實驗站：一題一題做出正確結果
       for (let q = 0; q < (rd.n || 1); q++) {
         await solveLab(page);
@@ -110,7 +107,11 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
   await page.goto(`${BASE}/11602/${file}.html`);
   await page.waitForSelector('.lvcard');
   const levels = priv('11602/content/' + file + '.js')[varName];   // 正解從 private 讀
-  if (file === 'network') {   // ⭐ 三星三階：一開始只開第 1 階
+  if (file === 'network') {   // ⭐ 三星三階：一開始只開第 1 階；題號整階連續算
+    await page.click('.lvcard[data-i="0"]'); await page.click('.stage[data-s="0"]');
+    const t0 = await page.textContent('#app .card > p.small');
+    ok(/（第 1 \/ 10 題）/.test(t0), '題號整階連續：第 1 / 10 題', t0);
+    await page.click('#quit'); await page.waitForSelector('.lvcard');
     await page.click('.lvcard[data-i="0"]');
     ok(!(await page.$eval('.stage[data-s="0"]', b => b.disabled)) && await page.$eval('.stage[data-s="1"]', b => b.disabled) && await page.$eval('.stage[data-s="2"]', b => b.disabled), '三星三階：一開始只開放第 1 階');
     await page.screenshot({ path: SHOTS + 'net-stages.png', fullPage: true });
