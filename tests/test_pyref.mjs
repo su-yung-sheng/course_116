@@ -44,6 +44,14 @@ ok((await page.textContent('#lab-err')).includes('文字和數字'), '🧪 改�
 await page.fill('#lab-code', "print（'hi'）"); await page.waitForTimeout(100);
 ok((await page.textContent('#lab-fw')).includes('全形'), '🧪 全形符號即時提醒');
 await page.screenshot({ path: SHOTS + 'pyref-lab.png' });
+{ const r0 = await page.$eval('#lab', e => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width }; });
+  ok(r0.w < 700 && r0.x > 400, '🧪 試試看是浮動視窗（不是整條底部）', JSON.stringify(r0));
+  await page.mouse.move(r0.x + 60, r0.y + 18); await page.mouse.down(); await page.mouse.move(r0.x - 300, r0.y - 200, { steps: 5 }); await page.mouse.up();
+  const r1 = await page.$eval('#lab', e => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y }; });
+  ok(r1.x < r0.x - 250 && r1.y < r0.y - 150, '🧪 拖曳標題列可以移動', JSON.stringify(r1));
+  await page.click('#lab-min'); ok(await page.$eval('#lab', e => e.getBoundingClientRect().height < 80), '🧪 可以縮小成標題列');
+  await page.click('#lab-min'); await page.click('#lab-x'); ok(await page.$eval('#lab', e => e.classList.contains('hidden')), '🧪 可以關閉');
+  ok(!(await page.$('#engine')), '不再顯示「Python 就緒」標籤（狀態改顯示在執行按鈕上）'); }
 
 /* Python 闖關頁：頁首和每一關都有連結 */
 await page.goto(BASE + '/11601/python.html'); await page.waitForSelector('#ref-link');
@@ -55,6 +63,9 @@ const m = await context.newPage(); await m.setViewportSize({ width: 375, height:
 await m.goto(BASE + '/11601/pyref.html#for'); await m.waitForSelector('.rf-card'); await m.waitForTimeout(600);
 ok(await m.evaluate(() => document.documentElement.scrollWidth) <= 375, '手機沒有橫向捲動');
 await m.screenshot({ path: SHOTS + 'pyref-m.png' });
+await m.click('#for [data-try]'); await m.waitForSelector('#lab:not(.hidden)');
+{ const r = await m.$eval('#lab', e => { const b = e.getBoundingClientRect(); return { l: b.left, r: b.right }; }); ok(r.l >= 0 && r.r <= 375, '手機：試試看視窗在畫面內', JSON.stringify(r)); }
+await m.screenshot({ path: SHOTS + 'pyref-m-lab.png' });
 await m.screenshot({ path: SHOTS + 'pyref-m-full.png', fullPage: true });
 console.log('errors', errors);
 await browser.close();

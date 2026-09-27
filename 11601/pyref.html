@@ -60,12 +60,22 @@
   .rf-err .card{padding:1rem}
   .rf-empty{padding:2rem;text-align:center;color:var(--ink-soft)}
   /* 🧪 試試看 */
-  .rf-lab{position:fixed;inset:auto 0 0 0;z-index:900;background:#fff;border-top:3px solid var(--unit);box-shadow:0 -10px 30px rgba(15,23,42,.18);max-height:78vh;overflow:auto;padding:1rem}
-  .rf-lab .inner{max-width:80rem;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem}
-  .rf-lab textarea{width:100%;min-height:12rem;font:14.5px/1.6 ui-monospace,Consolas,monospace;border:2px solid var(--line);border-radius:.7rem;padding:.6rem;resize:vertical;tab-size:4}
-  .rf-lab .console{min-height:10rem;max-height:40vh}
+  /* 🧪 試試看：浮動視窗（拖曳標題列移動、拖曳右下角調整大小、可縮小） */
+  .rf-lab{position:fixed;right:1.2rem;bottom:1.2rem;width:min(40rem,calc(100vw - 2rem));height:min(36rem,calc(100vh - 2rem));min-width:20rem;min-height:14rem;z-index:900;
+    background:#fff;border:2px solid var(--unit);border-radius:1rem;box-shadow:0 18px 50px rgba(15,23,42,.28);display:flex;flex-direction:column;overflow:hidden;resize:both}
+  .rf-lab.min{height:auto!important;min-height:0;resize:none}
+  .rf-lab.min .rf-lab-body{display:none}
+  .rf-lab-hd{display:flex;align-items:center;gap:.5rem;padding:.5rem .6rem .5rem .9rem;background:var(--unit-bg);cursor:move;user-select:none;touch-action:none;flex:none}
+  .rf-lab-hd b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.92rem}
+  .rf-lab-hd .btn{cursor:pointer}
+  .rf-lab-body{flex:1;min-height:0;overflow:auto;padding:.8rem;display:flex;flex-direction:column;gap:.5rem}
+  .rf-lab textarea{width:100%;flex:none;height:11rem;font:14.5px/1.6 ui-monospace,Consolas,monospace;border:2px solid var(--line);border-radius:.7rem;padding:.6rem;resize:vertical;tab-size:4}
+  .rf-lab .console{min-height:7rem;flex:none}
+  .rf-lab #lab-fw:empty{display:none}
   @media (max-width:760px){
-    .rf-body,.rf-lab .inner,.rf-intro{grid-template-columns:1fr}
+    .rf-body,.rf-intro{grid-template-columns:1fr}
+    .rf-lab{left:.5rem!important;right:.5rem!important;top:auto!important;bottom:.5rem!important;width:auto!important;height:min(34rem,80vh)!important;min-width:0;resize:none}
+    .rf-lab-hd{cursor:default}
     .rf-bar{position:static}.rf-bar .input{max-width:none}
     .rf-card{scroll-margin-top:1rem}
     .rf-sc{grid-template-columns:1fr;gap:.15rem}.rf-sc .ar{display:none}
@@ -115,21 +125,17 @@
   <nav id="pager" class="pager"></nav>
 </main>
 
-<aside class="rf-lab hidden" id="lab" aria-label="試試看">
-  <div class="row between" style="max-width:80rem;margin:0 auto .6rem">
+<aside class="rf-lab hidden" id="lab" role="dialog" aria-label="試試看">
+  <div class="rf-lab-hd" id="lab-hd" title="按住這裡可以拖曳移動">
     <b>🧪 試試看：<span id="lab-t"></span></b>
-    <div class="row"><span id="engine" class="engine">⏳ Python 引擎還沒載入</span><button class="btn sm" id="lab-x">✕ 關閉</button></div>
+    <button class="btn sm" id="lab-min" title="縮小／展開">－</button><button class="btn sm" id="lab-x" title="關閉">✕</button>
   </div>
-  <div class="inner">
-    <div>
-      <textarea id="lab-code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Python 程式碼"></textarea>
-      <p id="lab-fw" class="small bold" style="color:var(--warn);min-height:1.2em"></p>
-      <div class="row"><button class="btn primary" id="lab-run" disabled>▶ 執行</button><button class="btn sm" id="lab-reset">↺ 換回範例</button><span class="tiny soft">隨便改改看，改壞了也沒關係</span></div>
-    </div>
-    <div>
-      <div id="lab-out" class="console" aria-live="polite">按「▶ 執行」看看結果。</div>
-      <div id="lab-err" class="mt1"></div>
-    </div>
+  <div class="rf-lab-body">
+    <textarea id="lab-code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Python 程式碼"></textarea>
+    <p id="lab-fw" class="small bold" style="color:var(--warn);margin:0"></p>
+    <div class="row"><button class="btn primary" id="lab-run" disabled>⏳ 準備 Python 中…</button><button class="btn sm" id="lab-reset">↺ 換回範例</button><span class="tiny soft">Ctrl＋Enter 也能執行</span></div>
+    <div id="lab-out" class="console" aria-live="polite">按「▶ 執行」看看結果。</div>
+    <div id="lab-err"></div>
   </div>
 </aside>
 
@@ -457,7 +463,7 @@ window.PYREF_ERRORS = [
   fromHash();
 
   /* ── 📋 複製、🧪 試試看 ── */
-  var lab = document.getElementById('lab'), ta = document.getElementById('lab-code'), eng = document.getElementById('engine'), cur = null, inputs = [], busy = false, booted = false;
+  var lab = document.getElementById('lab'), ta = document.getElementById('lab-code'), engState = 'idle', cur = null, inputs = [], busy = false, booted = false;
   document.getElementById('list').addEventListener('click', function (e) {
     var b = e.target.closest('[data-copy],[data-try]'); if (!b) return;
     var key = (b.dataset.copy || b.dataset.try).split(':'), ex = REF[+key[0]].ex[+key[1]];
@@ -473,21 +479,44 @@ window.PYREF_ERRORS = [
     document.getElementById('lab-t').textContent = r.t.replace(/^\S+\s/, '') + ' · ' + ex.t;
     ta.value = ex.code; onEdit(); inputs = [];
     document.getElementById('lab-out').textContent = '按「▶ 執行」看看結果。'; document.getElementById('lab-err').innerHTML = '';
-    document.body.style.paddingBottom = lab.offsetHeight + 'px';
-    if (!booted) {
+    lab.classList.remove('min'); document.getElementById('lab-min').textContent = '－';
+    if (!booted) {   // 第一次打開才載入 Python（約 10 秒）；狀態直接顯示在「執行」按鈕上
       booted = true;
-      PYRUN.onStatus(function (s, info) {
-        if (s === 'loading') { eng.className = 'engine'; eng.textContent = '⏳ Python 引擎載入中…（第一次約 10 秒）'; }
-        if (s === 'ready') { eng.className = 'engine ok'; eng.textContent = '✅ Python ' + info + ' 就緒'; setBusy(false); }
-        if (s === 'fail') { eng.className = 'engine bad'; eng.textContent = '❌ 引擎載入失敗：請檢查網路後重新整理'; }
-      });
+      PYRUN.onStatus(function (s) { engState = s; setBusy(busy); });
       PYRUN.init(CONFIG.PYODIDE_URL).catch(function () {});
     }
     ta.focus();
   }
-  document.getElementById('lab-x').onclick = function () { lab.classList.add('hidden'); document.body.style.paddingBottom = ''; };
+  document.getElementById('lab-x').onclick = function () { lab.classList.add('hidden'); };
+  document.getElementById('lab-min').onclick = function () { var m = lab.classList.toggle('min'); this.textContent = m ? '＋' : '－'; };
+
+  /* 拖曳標題列移動視窗（位置記在這台電腦，下次打開還在同一個地方） */
+  (function () {
+    var hd = document.getElementById('lab-hd'), sx, sy, ox, oy, drag = false;
+    try { var pos = JSON.parse(localStorage.getItem('pyref-lab-pos') || 'null'); if (pos) place(pos.x, pos.y); } catch (e) {}
+    function place(x, y) {
+      var w = lab.offsetWidth || 320, h = lab.offsetHeight || 60;
+      x = Math.max(0, Math.min(x, innerWidth - Math.min(w, innerWidth))); y = Math.max(0, Math.min(y, innerHeight - 48));
+      lab.style.left = x + 'px'; lab.style.top = y + 'px'; lab.style.right = 'auto'; lab.style.bottom = 'auto';
+    }
+    hd.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('button') || innerWidth <= 760) return;
+      var r = lab.getBoundingClientRect(); drag = true; sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top;
+      hd.setPointerCapture(e.pointerId); e.preventDefault();
+    });
+    hd.addEventListener('pointermove', function (e) { if (drag) place(ox + e.clientX - sx, oy + e.clientY - sy); });
+    hd.addEventListener('pointerup', function () {
+      if (!drag) return; drag = false;
+      try { localStorage.setItem('pyref-lab-pos', JSON.stringify({ x: parseFloat(lab.style.left), y: parseFloat(lab.style.top) })); } catch (e) {}
+    });
+    window.addEventListener('resize', function () { if (lab.style.left) place(parseFloat(lab.style.left), parseFloat(lab.style.top)); });
+  })();
   document.getElementById('lab-reset').onclick = function () { if (cur) { ta.value = cur.code; onEdit(); } };
-  function setBusy(b) { busy = b; document.getElementById('lab-run').disabled = b || eng.className.indexOf('ok') < 0; }
+  function setBusy(b) {
+    busy = b; var btn = document.getElementById('lab-run');
+    btn.disabled = b || engState !== 'ready';
+    btn.textContent = engState === 'fail' ? '❌ Python 載入失敗，請重新整理' : engState !== 'ready' ? '⏳ 準備 Python 中…（第一次約 10 秒）' : b ? '⏳ 執行中…' : '▶ 執行';
+  }
   function onEdit() { var fw = PYRUN.fullwidthOutsideStrings(ta.value); document.getElementById('lab-fw').textContent = fw.length ? '⚠️ 第 ' + fw[0].line + ' 行有全形符號「' + fw[0].ch + '」—— 程式符號要用半形' : ''; }
   ta.addEventListener('input', onEdit);
   ta.addEventListener('keydown', function (e) {
