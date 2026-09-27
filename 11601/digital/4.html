@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1-4 · 數位時代 · 116-1</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../../shared/theme.css">
     <link rel="stylesheet" href="course-components.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* ========================================== */
@@ -17,12 +15,12 @@
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
         .galaxy-card { background-color: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--line); }   /* 116：改成全站卡片樣式 */
         .nav-btn { position: relative; overflow: hidden; transition: all 0.2s ease-in-out; border-radius: 999px; border: 2px solid transparent; text-decoration: none; display: flex; align-items: center; justify-content: center; }
-        .nav-active { background-color: #3b82f6; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+        .nav-active { background-color: #2563eb; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
         .nav-inactive { background-color: #ffffff; color: #64748b; border-color: #e2e8f0; }
         .nav-inactive:hover { background-color: #f8fafc; color: #3b82f6; border-color: #bae6fd; }
         .course-nav { scrollbar-width: none; }
         .course-nav::-webkit-scrollbar { display: none; }
-        .theme-rose .nav-active { background-color: #e11d48; box-shadow: 0 8px 20px rgba(225, 29, 72, 0.3); }
+        .theme-rose .nav-active { background-color: #be123c; box-shadow: 0 8px 20px rgba(225, 29, 72, 0.3); }
         .section-hidden { display: none; }
         
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -81,6 +79,8 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         #img-game-overlay { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
     </style>
+    <!-- 116：Tailwind 改成固定的 CSS（tools/build-tailwind.sh 產生；不再連 cdn.tailwindcss.com） -->
+    <link rel="stylesheet" href="tailwind.css">
 </head>
 <body class="theme-rose" data-unit="4">
     
@@ -123,7 +123,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-low" class="w-full aspect-square bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">低解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">明顯鋸齒，像素方塊極大</p></div></div>
                             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-mid" class="w-full aspect-square bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">中解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">輪廓漸清晰，邊緣仍可見方塊</p></div></div>
-                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><img id="res-img-high" src="images/unit4-1.png" class="w-full h-auto max-h-80 bg-white rounded-xl shadow-inner border border-slate-200 object-contain" crossorigin="anonymous"><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-500 text-white rounded-full text-xs font-bold uppercase tracking-widest">高解析度 (原圖)</span><p class="text-[11px] text-slate-500 mt-2 font-medium">細膩平滑，幾乎看不出像素點</p></div></div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><img id="res-img-high" src="images/unit4-1.webp" alt="高解析度的小男孩跳躍圖（原圖）" class="w-full h-auto max-h-80 bg-white rounded-xl shadow-inner border border-slate-200 object-contain" crossorigin="anonymous"><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-500 text-white rounded-full text-xs font-bold uppercase tracking-widest">高解析度 (原圖)</span><p class="text-[11px] text-slate-500 mt-2 font-medium">細膩平滑，幾乎看不出像素點</p></div></div>
                         </div>
                     </div>
                     
@@ -311,7 +311,7 @@
                         <!-- 換下一張按鈕 -->
                         <div class="mt-6 flex justify-center">
                             <button id="pe-btn-l2-next" onclick="peNextLevel2Image()" class="px-8 py-3 bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold rounded-xl transition-colors shadow-sm text-sm flex items-center gap-2">
-                                我觀察好了，看下一張 <i class="fas fa-arrow-right"></i>
+                                我觀察好了，看下一張 →
                             </button>
                         </div>
 
@@ -453,7 +453,7 @@
                             <h3 class="text-xl font-bold text-indigo-800 mb-3 flex items-center gap-2"><span>🎨</span> 色彩量化 (Quantization)：決定顏色的精細度</h3>
                             <p class="text-slate-700 font-medium mb-4 leading-relaxed">決定每個格子可以塗上什麼顏色。這個決定顏色『精細度』的過程，就叫做<strong>量化 (Quantization)</strong>。<br><span class="text-indigo-600 font-bold">量化的位元 (bits) 數越高，顏色就越豐富、越真實，但佔用的記憶體空間也會越高。</span></p>
                             <div class="flex flex-col lg:flex-row gap-6 items-center bg-white p-5 rounded-xl shadow-inner mb-4">
-                                <div class="w-full lg:w-1/2 flex justify-center"><img src="images/unit4-2.png" alt="1-bit, 8-bits, 24-bits 比較圖" class="max-w-full h-auto rounded-lg shadow-sm border border-slate-200"></div>
+                                <div class="w-full lg:w-1/2 flex justify-center"><img src="images/unit4-2.webp" alt="1-bit, 8-bits, 24-bits 比較圖" class="max-w-full h-auto rounded-lg shadow-sm border border-slate-200"></div>
                                 <div class="w-full lg:w-1/2 space-y-4">
                                     <div class="border-l-4 border-slate-400 pl-3"><h4 class="font-bold text-slate-800">【1-bit：非黑即白的世界】</h4><p class="text-sm text-slate-600 mt-1">「請看最左邊的小娃。這裡我們只給電腦 1 bit 的空間，也就是 2<sup>1</sup> = 2 種選擇。電腦只能在『黑』與『白』之間二選一。雖然你看得出這是一個小男孩，但所有的陰影、皮膚色、衣服顏色全部都消失了，只剩下輪廓。」</p></div>
                                     <div class="border-l-4 border-blue-400 pl-3"><h4 class="font-bold text-slate-800">【8-bits：復古的 256 色】</h4><p class="text-sm text-slate-600 mt-1">「中間的小娃進步了，我們給它 8 bits，2<sup>8</sup> = 256 種顏色。大家可以發現顏色變豐富了，有膚色、有藍色衣服。但仔細看（指向陰影處），顏色的過渡看起來一塊一塊的，不夠自然。這就像是只有 24 色的彩色筆，想畫出細膩的日落會有點困難。」</p></div>

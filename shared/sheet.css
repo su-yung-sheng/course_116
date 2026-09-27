@@ -17,3 +17,4 @@ table.sheet select{font:inherit;font-size:.82rem;padding:.2rem;border-radius:.4r
 .sx-ex code{font-family:ui-monospace,Consolas,monospace;background:#fff;border:1px solid var(--line);border-radius:.35rem;padding:.05rem .4rem;white-space:pre-wrap}
 .sx-ex span:first-child code{border-color:#fecaca}.sx-ex span:last-child code{border-color:#bbf7d0;background:#f0fdf4}
 .fbar .btn{flex:none}
+table.sheet td.corner{background:#f1f5f9;border:1px solid #cbd5e1;min-width:2rem;padding:0}

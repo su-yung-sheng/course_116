@@ -46,7 +46,7 @@
 /* 🔌 嵌入式（Scratch 積木樣式） */
 .em-code{display:grid;gap:.25rem;margin-top:.5rem;overflow-x:auto}
 .blk{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.35rem;color:#fff;font-weight:900;font-size:.85rem;padding:.4rem .6rem;border-radius:.5rem;width:fit-content;max-width:100%;box-sizing:border-box}
-.blk.ctl{background:#ffab19}.blk.act{background:#4c97ff}
+.blk.ctl{background:#b45309}.blk.act{background:#2563eb}
 .blk .input{margin:0;padding:.2rem .35rem;font-size:.8rem;width:auto;max-width:14rem;color:var(--ink)}
 .blk .em-n{width:4.5rem}
 .em-in{padding-left:1.2rem;border-left:.6rem solid #ffab19;margin-left:.3rem}

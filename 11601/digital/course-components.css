@@ -1,8 +1,8 @@
 .course-end-unit { margin-top: 2.5rem; border: 1px solid var(--course-border); border-radius: 1.5rem; padding: 1.5rem; background: linear-gradient(90deg, var(--course-soft), #fff); }
 .course-theme-blue { --course-accent: #2563eb; --course-border: #bfdbfe; --course-soft: #eff6ff; }
 .course-theme-indigo { --course-accent: #4f46e5; --course-border: #c7d2fe; --course-soft: #eef2ff; }
-.course-theme-teal { --course-accent: #0d9488; --course-border: #99f6e4; --course-soft: #f0fdfa; }
-.course-theme-rose { --course-accent: #e11d48; --course-border: #fecdd3; --course-soft: #fff1f2; }
+.course-theme-teal { --course-accent: #0f766e; --course-border: #99f6e4; --course-soft: #f0fdfa; }
+.course-theme-rose { --course-accent: #be123c; --course-border: #fecdd3; --course-soft: #fff1f2; }
 .course-kicker { color: var(--course-accent); font-size: .75rem; font-weight: 900; letter-spacing: .16em; }
 .course-reflections, .course-questions { display: grid; gap: .75rem; margin-top: 1.25rem; }
 .course-reflections, .course-questions { grid-template-columns: repeat(3, minmax(0, 1fr)); }

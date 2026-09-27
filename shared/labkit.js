@@ -45,9 +45,9 @@ window.LABKIT = {
         (isDone(s.id) ? '<span class="chip" style="background:var(--ok-bg);color:var(--ok)">✅ 已完成</span>' : '') + '</div>' +
         '<p class="mt2">' + esc(s.desc) + '</p>' +
         '<div class="grid g3 mt2 mini">' +
-        '<div class="card soft-bg" style="padding:.8rem"><h4>🏠 生活應用</h4><ul>' + s.apps.map(li).join('') + '</ul></div>' +
-        '<div class="card soft-bg" style="padding:.8rem"><h4>🎯 學習目標</h4><ul>' + s.objectives.map(li).join('') + '</ul></div>' +
-        '<div class="card soft-bg" style="padding:.8rem"><h4>🧰 材料</h4><ul>' + s.materials.map(li).join('') + '</ul></div></div></article>' +
+        '<div class="card soft-bg" style="padding:.8rem"><h3 style="font-size:1rem">🏠 生活應用</h3><ul>' + s.apps.map(li).join('') + '</ul></div>' +
+        '<div class="card soft-bg" style="padding:.8rem"><h3 style="font-size:1rem">🎯 學習目標</h3><ul>' + s.objectives.map(li).join('') + '</ul></div>' +
+        '<div class="card soft-bg" style="padding:.8rem"><h3 style="font-size:1rem">🧰 材料</h3><ul>' + s.materials.map(li).join('') + '</ul></div></div></article>' +
         '<article class="card"><h3 class="bold">' + (s.id === 'S5' ? '📝 專題設計單' : '🔬 模擬器') + '</h3><div class="sim mt1" id="sim"></div></article>' +
         (s.blocks ? '<article class="card"><h3 class="bold">🧩 積木 ↔ 🐍 Python</h3><div class="grid g2 mt1"><div class="blocks">' +
           s.blocks.map(function (b) { return '<span class="blk ' + b[0] + '">' + esc(b[1]) + '</span>'; }).join('') + '</div>' +

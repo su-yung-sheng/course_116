@@ -6,8 +6,9 @@
     "test": "node leak_scan.mjs && node guess_sim.mjs && node test_python.mjs && node pyref_check.mjs && node test_pyref.mjs && node test_platform.mjs && node test_5016b.mjs && node test_digital.mjs && node test_pyui.mjs && node test_errors.mjs && node test_11602.mjs && node test_11602b.mjs && node test_media15.mjs && node test_media_spark.mjs && node test_sheetref.mjs && node test_mobile.mjs && node test_nav.mjs"
   },
   "devDependencies": {
+    "@tailwindcss/browser": "^4.0.0",
+    "axe-core": "^4.13.0",
     "playwright": "^1.55.0",
-    "pyodide": "0.26.4",
-    "@tailwindcss/browser": "^4.0.0"
+    "pyodide": "0.26.4"
   }
 }

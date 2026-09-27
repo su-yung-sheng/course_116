@@ -45,7 +45,7 @@
       (p ? '<p class="soft bold mt1">' + esc(p.name) + '，歡迎回來！</p>' : '') + '</div>' +
       '<div class="center" style="min-width:12rem">' +
       '<div class="black" style="font-size:1.35rem">' + esc(rk.cur[1]) + '</div>' +
-      '<div class="small soft bold">平均完成度 <span class="black" id="avg-pct" style="color:var(--star);font-size:1.2rem">' + avg + '%</span></div>' +
+      '<div class="small soft bold">平均完成度 <span class="black" id="avg-pct" style="color:var(--star-ink);font-size:1.2rem">' + avg + '%</span></div>' +
       '<div class="bar mt1"><i style="width:' + avg + '%"></i></div>' +
       '<div class="tiny soft mt1">⭐ 總星數 ' + total + ' / ' + max + ' · ' + (rk.next ? '平均再 ' + toNext + '% 升級為 ' + esc(rk.next[1]) : '已達最高稱號！') + '</div>' +
       '<div class="tiny faint">每個單元各算完成 %，再取平均</div>' +

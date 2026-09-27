@@ -12,19 +12,19 @@
   /* ── 設計代號（design tokens）── 全站只在這裡定義顏色，規則見 docs/04_設計系統.md ── */
   /* 紙與墨：底紙、文字、卡片 */
   --paper-bg:#e7e5e4; --paper-line:rgba(120,113,108,.07); --paper-size:26px;
-  --ink:#1e293b; --ink-soft:#64748b; --ink-faint:#94a3b8;
+  --ink:#1e293b; --ink-soft:#475569; --ink-faint:#64748b;   /* 投影可讀性：淡字加深（對比 ≥ 4.5） */
   --card:#fff; --line:#e2e8f0; --soft:#f8fafc;
   --tape:rgba(250,204,21,.32); --marker:rgba(250,204,21,.55); --marker-b:rgba(147,197,253,.7);
   /* 回饋色：對、錯、提醒、星星（全站固定，不跟單元變） */
-  --brand:#2563eb; --ok:#059669; --ok-bg:#ecfdf5; --bad:#dc2626; --bad-bg:#fef2f2;
-  --warn:#d97706; --warn-bg:#fffbeb; --star:#f59e0b;
+  --brand:#2563eb; --ok:#047857; --ok-bg:#ecfdf5; --bad:#dc2626; --bad-bg:#fef2f2;
+  --warn:#b45309; --warn-bg:#fffbeb; --star:#f59e0b; --star-ink:#b45309;   /* ⭐ 圖示用 --star；數字文字用 --star-ink */
   --radius:1rem; --radius-lg:1.25rem; --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04);
   /* 單元色：依「在這學期的第幾個單元」決定，兩學期規則相同
        第 1 個單元（一／四）藍 u1、第 2 個（二／五）綠 u2、第 3 個（三／六）紫 u3、延伸挑戰 5016B 靛 u4
      每個顏色四階：主色、淡底 -bg、極淡 -soft、框線 -line */
-  --u1:#2563eb; --u1-bg:#dbeafe; --u1-soft:#eff6ff; --u1-line:#bfdbfe;
-  --u2:#16a34a; --u2-bg:#dcfce7; --u2-soft:#f0fdf4; --u2-line:#bbf7d0;
-  --u3:#9333ea; --u3-bg:#f3e8ff; --u3-soft:#faf5ff; --u3-line:#e9d5ff;
+  --u1:#1d4ed8; --u1-bg:#dbeafe; --u1-soft:#eff6ff; --u1-line:#bfdbfe;
+  --u2:#15803d; --u2-bg:#dcfce7; --u2-soft:#f0fdf4; --u2-line:#bbf7d0;
+  --u3:#7e22ce; --u3-bg:#f3e8ff; --u3-soft:#faf5ff; --u3-line:#e9d5ff;
   --u4:#4f46e5; --u4-bg:#e0e7ff; --u4-soft:#eef2ff; --u4-line:#c7d2fe;
   /* 這一頁的單元色：UI.topbar 依 config.js 自動設定（--unit = 所屬單元的 --uN），元件一律用 --unit */
   --unit:var(--u1); --unit-bg:var(--u1-bg); --unit-soft:var(--u1-soft); --unit-line:var(--u1-line);
@@ -95,7 +95,7 @@ img{max-width:100%}
 .btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}
 .btn.primary:hover{background:#334155}
 .btn.go{background:var(--ok);border-color:var(--ok);color:#fff}
-.btn.go:hover{background:#047857}
+.btn.go:hover{background:#065f46}
 .btn.big{font-size:1.05rem;padding:.8rem 1.3rem}
 .btn.sm{font-size:.8rem;padding:.35rem .7rem;border-radius:.6rem}
 .btn:focus-visible,.pick:focus-visible,.ucard:focus-visible{outline:3px solid var(--unit-line);outline-offset:2px}

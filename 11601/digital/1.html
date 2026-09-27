@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1-1 · 數位時代 · 116-1</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../../shared/theme.css">
     <link rel="stylesheet" href="course-components.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -13,14 +12,15 @@
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
         .galaxy-card { background-color: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--line); }   /* 116：改成全站卡片樣式 */
         .nav-btn { position: relative; overflow: hidden; transition: all 0.2s ease-in-out; border-radius: 999px; border: 2px solid transparent; text-decoration: none; display: flex; align-items: center; justify-content: center; }
-        .nav-active { background-color: #3b82f6; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+        .nav-active { background-color: #2563eb; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
         .nav-inactive { background-color: #ffffff; color: #64748b; border-color: #e2e8f0; }
         .nav-inactive:hover { background-color: #f8fafc; color: #3b82f6; border-color: #bae6fd; }
         .course-nav { scrollbar-width: none; }
         .course-nav::-webkit-scrollbar { display: none; }
         .bit-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); user-select: none; border: 1px solid transparent; }
         .bit-on { background: linear-gradient(145deg, #3b82f6, #2563eb); color: #ffffff; transform: scale(1.05); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); border-color: #60a5fa; }
-        .bit-off { background-color: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .bit-off { background-color: #f1f5f9; color: #475569; border-color: #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .bit-off .opacity-70 { opacity: 1; }   /* 投影可讀性：關掉的位元，權值小字也要看得清楚 */
         .gem-btn { transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1); touch-action: none; }
         .gem-selected { transform: scale(0.85) !important; box-shadow: 0 0 0 4px #3b82f6, 0 0 15px rgba(59, 130, 246, 0.5) !important; z-index: 10; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -34,6 +34,8 @@
         .quiz-toggle-box.bit-1 { background-color: #3b82f6; color: white; border-color: #2563eb; }
         .quiz-toggle-box.dec-box { background-color: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
     </style>
+    <!-- 116：Tailwind 改成固定的 CSS（tools/build-tailwind.sh 產生；不再連 cdn.tailwindcss.com） -->
+    <link rel="stylesheet" href="tailwind.css">
 </head>
 <body data-unit="1">
 

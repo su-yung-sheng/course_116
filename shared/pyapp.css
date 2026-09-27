@@ -23,7 +23,7 @@
   /* 編輯器 */
   .ed{display:flex;border:2px solid #cbd5e1;border-radius:.85rem;overflow:hidden;background:#fff}
   .ed:focus-within{border-color:#86efac}
-  .gut{background:#f1f5f9;color:#94a3b8;text-align:right;padding:.75rem .5rem;font:15px/1.6 ui-monospace,Consolas,monospace;user-select:none;min-width:2.6rem;overflow:hidden;white-space:pre}
+  .gut{background:#f1f5f9;color:#475569;text-align:right;padding:.75rem .5rem;font:15px/1.6 ui-monospace,Consolas,monospace;user-select:none;min-width:2.6rem;overflow:hidden;white-space:pre}
   .gut b{color:#fff;background:var(--bad);border-radius:.25rem;padding:0 .2rem}
   #code{flex:1;border:0;outline:none;resize:vertical;min-height:15rem;padding:.75rem;font:15px/1.6 ui-monospace,Consolas,monospace;tab-size:4;white-space:pre;overflow:auto;color:#0f172a;background:#fff}
   .io-in{background:#fde68a;color:#78350f;border-radius:.2rem;padding:0 .2rem}

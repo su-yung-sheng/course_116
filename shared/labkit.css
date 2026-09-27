@@ -16,7 +16,7 @@
   .code .on{background:rgba(250,204,21,.25);outline:1px solid rgba(250,204,21,.6);border-radius:.2rem}
   .blocks{display:flex;flex-direction:column;gap:.35rem}
   .blk{display:inline-block;padding:.35rem .7rem;border-radius:.5rem;font-weight:800;font-size:.88rem;color:#fff;width:fit-content}
-  .b-ev{background:#f59e0b}.b-ctl{background:#f97316}.b-op{background:#22c55e}.b-var{background:#f97316;filter:hue-rotate(-15deg)}.b-hw{background:#6366f1}.b-sense{background:#0ea5e9}
+  .b-ev{background:#b45309}.b-ctl{background:#c2410c}.b-op{background:#15803d}.b-var{background:#c2410c;filter:hue-rotate(-15deg)}.b-hw{background:#4338ca}.b-sense{background:#0369a1}   /* 投影可讀性：積木顏色取深一階，白字對比 ≥ 4.5 */
   .indent{margin-left:1.4rem}
   .fan{width:7rem;height:7rem;margin:0 auto;display:block}
   .step{display:flex;gap:.6rem;align-items:flex-start}

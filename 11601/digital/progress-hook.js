@@ -108,11 +108,11 @@
     var ID = 'x' + unit, rec = STORE.level('digital', ID) || {}, got = Object.assign({}, (rec.extra || {}).tasks || {});
     // 任務卡：放在課程小卡下面（捲動時課程小卡會固定在上方，任務卡跟著內容走）
     var nav = $('ucards'), anchor = nav && (nav.closest('.ucards-ph') || nav);
-    var box = document.createElement('section'); box.className = 'card labtasks'; box.id = 'lab-tasks';
+    var box = document.createElement('section'); box.className = 'card labtasks'; box.id = 'lab-tasks'; box.setAttribute('aria-label', '本課實驗任務');
     if (anchor) anchor.insertAdjacentElement('afterend', box);
     function draw() {
       var n = tasks.filter(function (t) { return got[t.k]; }).length;
-      box.innerHTML = '<div class="row between"><div><p class="kicker">🧪 本課實驗任務 · 每完成一項 1⭐</p><h3 class="bold">動手玩下面的實驗，完成這三項任務</h3></div>' +
+      box.innerHTML = '<div class="row between"><div><p class="kicker">🧪 本課實驗任務 · 每完成一項 1⭐</p><h2 class="bold" style="font-size:1.05rem">動手玩下面的實驗，完成這三項任務</h2></div>' +
         '<span class="chip" id="lab-stars">' + n + ' / 3 ⭐</span></div><div class="grid g3 mt1">' +
         tasks.map(function (t) { return '<div class="labtask' + (got[t.k] ? ' done' : '') + '" data-k="' + t.k + '"><span class="ck">' + (got[t.k] ? '✅' : '⬜') + '</span><span>' + UI.esc(t.t) + '</span></div>'; }).join('') +
         '</div><p class="tiny soft mt1">再加上最後的「快速檢核」（最多 3⭐），這一課最多 6⭐。</p>';

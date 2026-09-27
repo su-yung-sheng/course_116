@@ -260,7 +260,7 @@
         '<p class="kicker">' + L.length + ' 關 · 在網頁裡直接寫公式</p><h2 class="black" style="font-size:1.35rem">點黃色格子 → 在公式列輸入 → 按「檢查」</h2>' +
         '<p class="small soft mt1">每關 3 顆 ❤️，檢查時有錯扣一顆，剩幾顆就拿幾顆 ⭐。學會之後，到 Google 試算表做課本的實作。</p>' +
         (REF ? '<a class="btn sm mt1" id="ref-link" data-refp="all" href="' + REF + '" target="_blank" rel="noopener">📚 函式小抄（公式怎麼寫都在這裡）</a>' : '') + '</div>' +
-        '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
+        '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star-ink)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
         '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
           return '<button class="card lvcard pop" data-i="' + i + '"><div class="row between"><span style="font-size:2rem">' + lv.icon + '</span>' + UI.stars(best(lv.id)) + '</div>' +
             '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">' + esc(lv.book) + '</p></button>';
@@ -282,7 +282,7 @@
       var clean = S.stage === 'clean';
       var nRows = clean ? data.length : Math.max(data.length, maxRow(lv)), nCols = clean ? data[0].length : Math.max(data[0].length, maxCol(lv));
       var tmap = {}; if (S.stage === 'calc') lv.targets.forEach(function (t) { tmap[t.cell] = t; });
-      var head = '<tr><th></th>' + COLS.slice(0, nCols).split('').map(function (c) { return '<th>' + c + '</th>'; }).join('') + (S.stage === 'clean' ? '<th>🧹 判斷</th>' : '') + '</tr>';
+      var head = '<tr><td class="corner" aria-hidden="true"></td>' + COLS.slice(0, nCols).split('').map(function (c) { return '<th>' + c + '</th>'; }).join('') + (S.stage === 'clean' ? '<th>🧹 判斷</th>' : '') + '</tr>';
       var rows = '';
       for (var r = 1; r <= nRows; r++) {
         rows += '<tr><th>' + r + '</th>';

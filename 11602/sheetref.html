@@ -258,7 +258,7 @@ window.SREF_CATS = [
   function sheetHTML(ex, k, j) {
     var g = gridOf(ex), nR = ex.data.length, nC = ex.data[0].length, fx = {};
     ex.f.forEach(function (f) { var p = /([A-Z])(\d+)/.exec(f[0]); fx[f[0]] = 1; nR = Math.max(nR, +p[2]); nC = Math.max(nC, COLS.indexOf(p[1]) + 1); });
-    var h = '<table class="sheet mini" data-k="' + k + ':' + j + '"><tr><th></th>' + COLS.slice(0, nC).split('').map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr>';
+    var h = '<table class="sheet mini" data-k="' + k + ':' + j + '"><tr><td class="corner" aria-hidden="true"></td>' + COLS.slice(0, nC).split('').map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr>';
     for (var r = 1; r <= nR; r++) {
       h += '<tr><th>' + r + '</th>';
       for (var c = 0; c < nC; c++) {

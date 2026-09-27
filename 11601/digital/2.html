@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1-2 · 數位時代 · 116-1</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../../shared/theme.css">
     <link rel="stylesheet" href="course-components.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -13,7 +12,7 @@
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
         .galaxy-card { background-color: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--line); }   /* 116：改成全站卡片樣式 */
         .nav-btn { position: relative; overflow: hidden; transition: all 0.2s ease-in-out; border-radius: 999px; border: 2px solid transparent; text-decoration: none; display: flex; align-items: center; justify-content: center; }
-        .nav-active { background-color: #3b82f6; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+        .nav-active { background-color: #2563eb; color: #ffffff; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
         .nav-inactive { background-color: #ffffff; color: #64748b; border-color: #e2e8f0; }
         .nav-inactive:hover { background-color: #f8fafc; color: #3b82f6; border-color: #bae6fd; }
         .course-nav { scrollbar-width: none; }
@@ -28,6 +27,8 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
     </style>
+    <!-- 116：Tailwind 改成固定的 CSS（tools/build-tailwind.sh 產生；不再連 cdn.tailwindcss.com） -->
+    <link rel="stylesheet" href="tailwind.css">
 </head>
 <body class="theme-indigo" data-unit="2">
 
@@ -109,7 +110,7 @@
                     </div>
                     <div class="lg:col-span-6 bg-white border border-slate-200 p-6 rounded-3xl shadow-sm flex flex-col">
                         <div class="flex justify-between items-end mb-4 border-b border-slate-100 pb-2"><h4 class="text-slate-800 font-bold">摩斯密碼全表 (36 個符號)</h4></div>
-                        <div id="morse-full-table" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 text-[11px] md:text-xs font-mono-code max-h-64 overflow-y-auto pr-2 custom-scrollbar flex-grow content-start"></div>
+                        <div id="morse-full-table" tabindex="0" aria-label="摩斯電碼對照表（可捲動）" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 text-[11px] md:text-xs font-mono-code max-h-64 overflow-y-auto pr-2 custom-scrollbar flex-grow content-start"></div>
                     </div>
                 </div>
 
@@ -126,8 +127,8 @@
                     <div><h3 class="text-xl font-bold text-slate-800 mb-1">密碼本大對決：ASCII vs Big-5 vs Unicode</h3><p class="text-sm text-slate-500">輸入一段文字，觀察它們在不同編碼系統底下所需要的二進位資料與佔用空間！</p></div>
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                         <div class="md:col-span-4 space-y-4">
-                            <div class="bg-slate-50 border border-slate-100 p-5 rounded-3xl"><label class="block text-xs text-slate-400 font-bold mb-2 uppercase">Input Text / 輸入明文</label><input type="text" id="cipher-input-text" value="A哈!" oninput="runMultiCodec()" class="w-full bg-white border border-slate-200 rounded-2xl p-4 text-slate-800 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all shadow-inner"><p class="text-[11px] text-slate-500 mt-3">同時輸入中英文 (例如 "A哈")，觀察右側的編碼大小變化。</p></div>
-                            <div class="bg-slate-50 border border-slate-100 p-5 rounded-3xl"><label class="block text-xs text-slate-400 font-bold mb-3 uppercase">Single Char / 單字元偵測</label><div class="flex items-center gap-4"><input type="text" id="text-input" maxlength="1" value="A" oninput="convertText()" class="w-14 h-14 bg-white border border-slate-200 rounded-2xl text-2xl text-center text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 font-mono-code uppercase shadow-inner"><div class="text-xs space-y-1"><div class="text-slate-500">ASCII 十進位：<span id="ascii-result" class="text-slate-800 font-bold">65</span></div><div class="text-slate-500">二進位：<span id="binary-text-result" class="text-indigo-600 font-bold font-mono-code">01000001</span></div></div></div></div>
+                            <div class="bg-slate-50 border border-slate-100 p-5 rounded-3xl"><label class="block text-xs text-slate-400 font-bold mb-2 uppercase">Input Text / 輸入明文</label><input type="text" id="cipher-input-text" aria-label="輸入明文" value="A哈!" oninput="runMultiCodec()" class="w-full bg-white border border-slate-200 rounded-2xl p-4 text-slate-800 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all shadow-inner"><p class="text-[11px] text-slate-500 mt-3">同時輸入中英文 (例如 "A哈")，觀察右側的編碼大小變化。</p></div>
+                            <div class="bg-slate-50 border border-slate-100 p-5 rounded-3xl"><label class="block text-xs text-slate-400 font-bold mb-3 uppercase">Single Char / 單字元偵測</label><div class="flex items-center gap-4"><input type="text" id="text-input" aria-label="單字元偵測：輸入一個字" maxlength="1" value="A" oninput="convertText()" class="w-14 h-14 bg-white border border-slate-200 rounded-2xl text-2xl text-center text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 font-mono-code uppercase shadow-inner"><div class="text-xs space-y-1"><div class="text-slate-500">ASCII 十進位：<span id="ascii-result" class="text-slate-800 font-bold">65</span></div><div class="text-slate-500">二進位：<span id="binary-text-result" class="text-indigo-600 font-bold font-mono-code">01000001</span></div></div></div></div>
                         </div>
                         <div class="md:col-span-8 space-y-3">
                             <div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4"><div class="w-28 flex-shrink-0"><div class="text-slate-700 font-bold">ASCII</div><span class="text-[10px] text-slate-400">純英文 1 Byte</span></div><div class="flex-grow font-mono-code text-sm text-slate-600 truncate" id="codec-ascii-bin">01000001 ...</div><div class="text-right flex-shrink-0 bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><span class="text-xs text-slate-400">容量: </span><span id="codec-ascii-size" class="text-slate-700 font-bold text-sm">1 Byte</span></div></div>
