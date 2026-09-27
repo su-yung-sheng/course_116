@@ -142,6 +142,42 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
   await page.screenshot({ path: SHOTS + 'lab-wifi-ok.png' });
 }
 
+/* ── 🧪 其他實驗站：做錯會說明錯在哪裡 ── */
+{
+  const open = async (id, s, q) => { await page.goto(`${BASE}/11602/network.html?w=${q}#${id}`); await page.click(`.stage[data-s="${s}"]`); await page.waitForSelector('#lab'); await page.waitForTimeout(1600); };
+  const fbHas = async (t, msg) => { await page.waitForSelector('#fb .note'); ok((await page.textContent('#fb')).includes(t), msg); await passCool(page); };
+  await open('N2', 1, 1);   // 長距離用雙絞線
+  const spots = JSON.parse(await page.$eval('#lab', e => e.dataset.spots));
+  for (let i = 0; i < spots.length; i++) await page.click(`.cp-c[data-i="${i}"][data-c="${spots[i].kind === 'tv' ? 'coax' : 'tp'}"]`);
+  await page.click('#cp-ok'); await fbHas('太遠', '🧵 佈線：超過 100 公尺用雙絞線會被擋');
+  await open('N5', 2, 2); await page.click('#v6-ok'); await fbHas('更短', '✂️ IPv6：沒壓到最短會被擋');
+  await open('N7', 1, 3);
+  await page.click('.mt-s[data-s="pcB"]'); await page.click('.mt-p[data-p="SMTP"]'); await page.click('#mt-go'); await fbHas('不會送到', '📨 郵件：跳站會被擋');
+  await open('N9', 1, 4);
+  await page.click('.dl-p[data-id="p50"]'); await page.click('.dl-a[data-id="w4"]');
+  const slow = await page.evaluate(() => { const sc = JSON.parse(document.getElementById('lab').dataset.sc), D = CARDGAME.labs._dl; return D.time(D.PLAN[0], D.APS[0], sc.n, sc.mb) > sc.T; });
+  if (slow) { await page.click('#dl-go'); await fbHas('超過', '🚀 下載：太慢會被擋'); }
+  await open('N6', 1, 5);
+  for (let k = 0; k < 4; k++) await page.selectOption(`.dn-part select[data-i="${k}"]`, ['host', 'org', 'cat', 'area'][k]);
+  await page.click('#dn-1'); await page.waitForSelector('.dn-row');
+  const dom = await page.$eval('#lab', e => e.dataset.dom);
+  await page.locator('.dn-row').filter({ hasNotText: dom }).first().click(); await fbHas('不一樣', '🌐 DNS：點到很像的網址會被擋');
+  // 偷看者：http 會被看到密碼
+  await page.goto(`${BASE}/11602/network.html?w=6#N7`); await page.click('.stage[data-s="1"]'); await page.waitForSelector('#lab');
+  await solveLab(page); await page.waitForSelector('#nx'); await page.click('#nx'); await page.waitForSelector('.sp-m');
+  await page.waitForTimeout(1600); await page.click('.sp-m[data-m="http"]'); await page.click('#sp-go');
+  ok((await page.textContent('#sp-see')).includes('password='), '🕵️ 偷看者：http 送出看得到密碼'); await passCool(page);
+  await page.click('.sp-m[data-m="https"]'); await page.click('#sp-go'); await page.waitForSelector('#nx');
+  ok(!(await page.textContent('#sp-see')).includes('password='), '🕵️ 偷看者：https 只看到亂碼');
+  // 手機寬度：每個實驗站都沒有橫向捲動
+  const m = await context.newPage(); await m.setViewportSize({ width: 375, height: 800 });
+  for (const [id, s] of [['N1', 1], ['N2', 1], ['N3', 1], ['N4', 1], ['N5', 2], ['N6', 1], ['N7', 1], ['N8', 1], ['N9', 1], ['N10', 1], ['N10', 2]]) {
+    await m.goto(`${BASE}/11602/network.html?mm=${id}${s}#${id}`); await m.click(`.stage[data-s="${s}"]`); await m.waitForSelector('#lab'); await m.waitForTimeout(300);
+    const w = await m.evaluate(() => document.documentElement.scrollWidth); ok(w <= 375, '📱 手機 ' + id + ' 實驗站沒有橫向捲動', w);
+  }
+  await m.close();
+}
+
 /* ── 防亂猜與強化：📖 小卡、🧊 冷靜一下（離開畫面重算）、🩹 修復站 ── */
 {
   await page.goto(`${BASE}/11602/network.html?r=9#N4`); await page.click('.stage[data-s="0"]');

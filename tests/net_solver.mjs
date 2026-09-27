@@ -133,5 +133,49 @@ export async function solveLab(page) {
     for (let s = 1; s <= nsw; s++) for (let p = 1; p <= 7 && pc <= pcs; p++) pairs.push(['sw' + s + '.p' + p, 'pc' + pc++ + '.nic']);
     for (const [a, b] of pairs) { await page.click(`[data-p="${a}"]`); await page.click(`[data-p="${b}"]`); }
     await page.click('#wr-test');
+  } else if (lab === 'cablePlan') {
+    const spots = JSON.parse(await page.$eval('#lab', e => e.dataset.spots));
+    for (const [i, sp] of spots.entries()) await page.click(`.cp-c[data-i="${i}"][data-c="${sp.kind === 'tv' ? 'coax' : sp.dist > 100 ? 'fiber' : 'tp'}"]`);
+    await page.click('#cp-ok');
+  } else if (lab === 'ipPanel') {
+    const d = await page.$eval('#lab', e => ({ t: e.dataset.target, t3: e.dataset.t3, t4: e.dataset.t4 }));
+    const v = d.t ? d.t.split('.').map(Number) : [172, 16 + Math.floor(Math.random() * 16), +d.t3, +d.t4];
+    for (let o = 0; o < 4; o++) { const b = v[o].toString(2).padStart(8, '0'); for (let j = 0; j < 8; j++) if (b[j] === '1') await page.click(`.ip-bit[data-o="${o}"][data-j="${j}"]`); }
+    await page.click('#ip-ok');
+  } else if (lab === 'v6Press') {
+    const orig = (await page.$eval('#lab', e => e.dataset.orig)).split(':');
+    for (let i = 0; i < 8; i++) { let x = orig[i]; while (x.length > 1 && x[0] === '0') { await page.click(`.v6-ch[data-g="${i}"][data-j="0"]`); x = x.slice(1); } }
+    const s = orig.map(x => x.replace(/^0+/, '') || '0'); let best = -1, bl = 1, i = 0;
+    while (i < 8) { if (s[i] === '0') { let j = i; while (j < 8 && s[j] === '0') j++; if (j - i > bl) { bl = j - i; best = i; } i = j; } else i++; }
+    if (best >= 0) { for (let k = best; k < best + bl; k++) await page.click(`.v6-pick[data-g="${k}"]`); await page.click('#v6-col'); }
+    await page.click('#v6-ok');
+  } else if (lab === 'dnsBook') {
+    const dom = await page.$eval('#lab', e => e.dataset.dom);
+    const want = ['host', 'org', 'cat', 'area'];
+    for (let k = 0; k < 4; k++) await page.selectOption(`.dn-part select[data-i="${k}"]`, want[k]);
+    await page.click('#dn-1'); await page.waitForSelector('.dn-row');
+    const rows = await page.$$eval('.dn-row', trs => trs.map(t => [t.children[0].textContent, t.children[1].textContent]));
+    const ip = rows.find(r => r[0] === dom)[1];
+    await page.click(`.dn-row:has(td:text-is("${dom}"))`); await page.waitForSelector('.dn-s');
+    await page.click(`.dn-s[data-ip="${ip}"]`);
+  } else if (lab === 'mailTrip') {
+    for (const [st, p] of [['mA', 'SMTP'], ['mB', 'SMTP'], ['pcB', 'POP3']]) { await page.click(`.mt-s[data-s="${st}"]`); await page.click(`.mt-p[data-p="${p}"]`); await page.click('#mt-go'); }
+  } else if (lab === 'spy') {
+    await page.click('.sp-m[data-m="https"]'); await page.click('#sp-go');
+  } else if (lab === 'dlSim') {
+    const best = await page.evaluate(() => {
+      const sc = JSON.parse(document.getElementById('lab').dataset.sc), D = CARDGAME.labs._dl; let b = null;
+      for (const p of D.PLAN) for (const a of D.APS) if (D.time(p, a, sc.n, sc.mb) <= sc.T && (!b || D.cost(p, a) < b.c)) b = { p: p.id, a: a.id, c: D.cost(p, a) };
+      return b;
+    });
+    await page.click(`.dl-p[data-id="${best.p}"]`); await page.click(`.dl-a[data-id="${best.a}"]`); await page.click('#dl-go');
+  } else if (lab === 'barcodeScan') {
+    await page.click('#bc-scan'); await page.waitForSelector('#bc-ok:not([disabled])', { timeout: 6000 });
+    const b = (await page.$$eval('.bc-code i', is => is.map(i => i.className === 'k' ? '1' : '0'))).join('');
+    await page.fill('#bc-ans', String(parseInt(b, 2))); await page.click('#bc-ok');
+  } else if (lab === 'barcodePrint') {
+    const d = +(await page.$eval('#lab', e => e.dataset.d)), b = d.toString(2).padStart(8, '0');
+    for (let j = 0; j < 8; j++) if (b[j] === '1') await page.click(`.bc-cell[data-i="${j}"]`);
+    await page.click('#bc-pok');
   } else throw new Error('不認得的實驗站 ' + lab);
 }

@@ -342,23 +342,30 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "幫每一段線路選線材（🎲 每次抽不同的線路）",
+    "goal": "🧪 佈線工程師：每段線路選線材，合規又不超出預算（🎲 距離、預算每次不同）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "cableAssign",
-      "n": 2,
-      "prompt": "選線材"
+      "type": "lab",
+      "lab": "cablePlan",
+      "n": 1,
+      "prompt": "佈線工程師"
      }
     ]
    },
    {
-    "goal": "更多段線路、一次全對才算（🎲）",
+    "goal": "🧪 更多段線路、預算更緊＋線材配對（🎲）",
     "rounds": [
+     {
+      "type": "lab",
+      "lab": "cablePlan",
+      "n": 1,
+      "prompt": "佈線工程師：挑戰",
+      "hard": true
+     },
      {
       "type": "gen",
       "gen": "cableAssign",
-      "n": 2,
+      "n": 1,
       "prompt": "選線材：挑戰",
       "hard": true
      }
@@ -557,43 +564,31 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "點位元湊出數字、把 8 個位元換成十進位（🎲）",
+    "goal": "🧪 IP 設定面板：用 32 個位元開關調出指定位址（🎲 位址每次不同）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "octetBits",
+      "type": "lab",
+      "lab": "ipPanel",
       "n": 2,
-      "prompt": "一組 IPv4 ＝ 8 個位元"
-     },
-     {
-      "type": "gen",
-      "gen": "bitsToDec",
-      "n": 2,
-      "prompt": "換成十進位"
+      "prompt": "IP 設定面板"
      }
     ]
    },
    {
-    "goal": "公有還是私有（含邊界陷阱）、整串 32 位元換成 IP（🎲）",
+    "goal": "🧪 自己決定第 2 組、設定私有位址＋公有私有陷阱（🎲）",
     "rounds": [
+     {
+      "type": "lab",
+      "lab": "ipPanel",
+      "n": 1,
+      "prompt": "IP 設定面板：挑戰",
+      "hard": true
+     },
      {
       "type": "gen",
       "gen": "ipPrivate",
-      "n": 5,
+      "n": 4,
       "prompt": "公有還是私有？"
-     },
-     {
-      "type": "gen",
-      "gen": "ipBinary",
-      "n": 1,
-      "prompt": "32 個位元換成 IPv4"
-     },
-     {
-      "type": "gen",
-      "gen": "octetBits",
-      "n": 1,
-      "prompt": "不看總和湊出數字",
-      "hard": true
      }
     ]
    }
@@ -744,7 +739,7 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "位元換十六進位、用規則 1、2 省略（🎲 每次位址不同）",
+    "goal": "🧪 IPv6 壓縮機：刪開頭的 0、合併 ::，壓到最短（🎲）",
     "rounds": [
      {
       "type": "gen",
@@ -753,21 +748,21 @@ window.NET_LEVELS = [
       "prompt": "4 個位元 → 1 個十六進位數字"
      },
      {
-      "type": "gen",
-      "gen": "v6short",
-      "n": 2,
-      "prompt": "IPv6 省略"
+      "type": "lab",
+      "lab": "v6Press",
+      "n": 1,
+      "prompt": "IPv6 壓縮機"
      }
     ]
    },
    {
-    "goal": "寫出最短寫法、把 :: 還原（🎲）",
+    "goal": "🧪 兩段連續的 0：:: 要用在最長的那段＋把 :: 還原（🎲）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "v6short",
+      "type": "lab",
+      "lab": "v6Press",
       "n": 2,
-      "prompt": "IPv6 最短寫法",
+      "prompt": "IPv6 壓縮機：挑戰",
       "hard": true
      },
      {
@@ -963,30 +958,31 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "把網址拆成主機、機構、類別、地區（🎲 每次網址不同）",
+    "goal": "🧪 DNS 電話簿：拆網址 → 查 DNS → 連到正確的伺服器（🎲）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "urlSlots",
+      "type": "lab",
+      "lab": "dnsBook",
       "n": 2,
-      "prompt": "網址拆解"
+      "prompt": "DNS 電話簿"
      }
     ]
    },
    {
-    "goal": "看網址判斷是哪一國的什麼機構（🎲，含各國不同寫法）",
+    "goal": "🧪 電話簿裡有很像的網址＋判斷各國網站（🎲）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "urlRead",
-      "n": 4,
-      "prompt": "這是誰的網站？"
+      "type": "lab",
+      "lab": "dnsBook",
+      "n": 1,
+      "prompt": "DNS 電話簿：挑戰",
+      "hard": true
      },
      {
       "type": "gen",
-      "gen": "urlSlots",
-      "n": 1,
-      "prompt": "網址拆解"
+      "gen": "urlRead",
+      "n": 3,
+      "prompt": "這是誰的網站？"
      }
     ]
    }
@@ -1098,36 +1094,37 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "信件怎麼寄、怎麼收；每件事用哪個協定（🎲）",
+    "goal": "🧪 郵件旅程：一站一站送信、選對協定；🕵️ 偷看者：http 和 https 差在哪（🎲）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "mailFlow",
+      "type": "lab",
+      "lab": "mailTrip",
       "n": 1,
-      "prompt": "一封 email 的旅程"
+      "prompt": "郵件旅程"
      },
      {
-      "type": "gen",
-      "gen": "protoSlots",
+      "type": "lab",
+      "lab": "spy",
       "n": 1,
-      "prompt": "配對協定"
+      "prompt": "偷看者"
      }
     ]
    },
    {
-    "goal": "什麼時候一定要加密（🎲）",
+    "goal": "🧪 多了干擾的伺服器＋什麼時候一定要加密（🎲）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "httpsJudge",
-      "n": 4,
-      "prompt": "要不要 https？"
+      "type": "lab",
+      "lab": "mailTrip",
+      "n": 1,
+      "prompt": "郵件旅程：挑戰",
+      "hard": true
      },
      {
       "type": "gen",
-      "gen": "protoSlots",
-      "n": 1,
-      "prompt": "配對協定"
+      "gen": "httpsJudge",
+      "n": 3,
+      "prompt": "要不要 https？"
      }
     ]
    }
@@ -1460,30 +1457,31 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "把 Mbps 換成 MB/s、算下載時間（🎲 每次數字不同）",
+    "goal": "🧪 下載模擬器：選網路方案和基地臺，在時間內下載完（🎲 檔案大小、人數、限時每次不同）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "download",
-      "n": 3,
-      "prompt": "網速計算"
+      "type": "lab",
+      "lab": "dlSim",
+      "n": 1,
+      "prompt": "下載模擬器"
      }
     ]
    },
    {
-    "goal": "速度被哪一段卡住、大家平分頻寬（🎲）",
+    "goal": "🧪 還要花費最少＋頻寬計算（🎲）",
     "rounds": [
+     {
+      "type": "lab",
+      "lab": "dlSim",
+      "n": 1,
+      "prompt": "下載模擬器：挑戰",
+      "hard": true
+     },
      {
       "type": "gen",
       "gen": "bottleneck",
       "n": 2,
       "prompt": "網速計算：挑戰"
-     },
-     {
-      "type": "gen",
-      "gen": "download",
-      "n": 1,
-      "prompt": "網速計算"
      }
     ]
    }
@@ -1614,23 +1612,29 @@ window.NET_LEVELS = [
     ]
    },
    {
-    "goal": "當掃描器：把黑白條碼讀成數字（🎲 每次條碼不同）",
+    "goal": "🧪 條碼掃描器：雷射劃過條碼、讀出 1 和 0、換成數字（🎲）",
     "rounds": [
      {
-      "type": "gen",
-      "gen": "barcode",
+      "type": "lab",
+      "lab": "barcodeScan",
       "n": 2,
-      "prompt": "簡化版條碼解碼"
+      "prompt": "條碼掃描器"
      }
     ]
    },
    {
-    "goal": "倒著掃的條碼、算 RFID 省多少時間（🎲）",
+    "goal": "🧪 自己印條碼（不給總和）＋倒著掃＋RFID 結帳比一比（🎲）",
     "rounds": [
+     {
+      "type": "lab",
+      "lab": "barcodePrint",
+      "n": 1,
+      "prompt": "印一張條碼"
+     },
      {
       "type": "gen",
       "gen": "barcode",
-      "n": 2,
+      "n": 1,
       "prompt": "簡化版條碼解碼：挑戰",
       "hard": true
      },
