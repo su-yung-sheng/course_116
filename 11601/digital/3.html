@@ -23,7 +23,6 @@
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; border-radius: 999px; height: 10px; border: 1px solid #cbd5e1; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: #ffffff; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 2px solid #3b82f6; }
         .video-wrapper { position: relative; width: 100%; overflow: hidden; background: #000; border-radius: 1rem; }
-        .sniper-mask { position: absolute; inset: 0; background: #000; z-index: 20; pointer-events: auto; cursor: pointer; mask-image: radial-gradient(circle 35px at calc(100% - 85px) calc(100% - 55px), transparent 35px, black 35px); -webkit-mask-image: radial-gradient(circle 35px at calc(100% - 85px) calc(100% - 55px), transparent 35px, black 35px); clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, calc(100% - 85px) 0%, calc(100% - 120px) calc(100% - 90px), calc(100% - 120px) calc(100% - 20px), calc(100% - 50px) calc(100% - 20px), calc(100% - 50px) calc(100% - 90px), calc(100% - 120px) calc(100% - 90px), calc(100% - 85px) 0%); }
         .full-mask { position: absolute; inset: 0; background: #000; z-index: 20; pointer-events: auto; clip-path: none; mask-image: none; -webkit-mask-image: none; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
@@ -156,7 +155,7 @@
                                 <button class="scene-btn flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-2.5 rounded-xl font-bold text-sm transition-transform active:scale-95" data-url="https://youtu.be/BytrOCk_U98?si=jOoA0SKFtUAJvlBn&t=43">場景二</button>
                                 <button class="scene-btn flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-2.5 rounded-xl font-bold text-sm transition-transform active:scale-95" data-url="https://youtu.be/kqR-ibYu4cQ?si=TsLYoIzwpYgJyzD0&t=240">場景三</button>
                             </div>
-                            <div id="videoContainer" class="video-wrapper aspect-video mb-4 shadow-inner border border-slate-200"><div id="yt-player"></div><div id="maskLayer" class="sniper-mask hidden"></div></div>
+                            <div id="videoContainer" class="video-wrapper aspect-video mb-4 shadow-inner border border-slate-200"><div id="yt-player"></div><div id="maskLayer" class="full-mask hidden"></div></div>
                             <div class="grid grid-cols-4 gap-2 mb-2">
                                 <button id="ctrlPlay" class="bg-emerald-500 hover:bg-emerald-400 text-white py-2.5 rounded-xl font-bold text-xs transition-transform active:scale-95 uppercase">Play</button>
                                 <button id="ctrlReload" class="bg-sky-500 hover:bg-sky-400 text-white py-2.5 rounded-xl font-bold text-xs transition-transform active:scale-95 uppercase">Reload</button>
@@ -265,12 +264,12 @@
             const videoContainer = document.getElementById('videoContainer');
             if(!videoContainer) return;
             if (ytPlayerObj && typeof ytPlayerObj.destroy === 'function') ytPlayerObj.destroy();
-            videoContainer.innerHTML = '<div id="yt-player"></div><div id="maskLayer" class="sniper-mask"></div>';
+            videoContainer.innerHTML = '<div id="yt-player"></div><div id="maskLayer" class="full-mask"></div>';
             const newMaskLayer = document.getElementById('maskLayer');
             if(newMaskLayer) bindMaskEvents(newMaskLayer);
-            ytPlayerObj = new YT.Player('yt-player', { height: '100%', width: '100%', videoId: info.id, playerVars: { 'autoplay': 1, 'start': info.start, 'rel': 0, 'enablejsapi': 1, 'origin': '*' }, events: { 'onReady': () => { if(statusEl) statusEl.textContent = "Ready to Play (右下角圓孔可點擊略過廣告)"; } } });
+            ytPlayerObj = new YT.Player('yt-player', { height: '100%', width: '100%', videoId: info.id, playerVars: { 'autoplay': 1, 'start': info.start, 'rel': 0, 'enablejsapi': 1, 'origin': '*' }, events: { 'onReady': () => { if(statusEl) statusEl.textContent = "Ready to Play（畫面全黑，按 Play 開始聽；遇到廣告可按「顯示畫面」略過）"; } } });
             const ctrlToggle = document.getElementById('ctrlToggle');
-            if(ctrlToggle) ctrlToggle.textContent = "隱藏畫面";
+            if(ctrlToggle) ctrlToggle.textContent = "顯示畫面";
         }
 
         /* 116：四個小步驟的結尾「← 上一步／下一步 →」（全站共用 UI.pager 的樣式） */
