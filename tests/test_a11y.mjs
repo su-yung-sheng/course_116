@@ -6,11 +6,19 @@ const { browser, context } = await launch();
 const p = await context.newPage();
 await p.goto(BASE + '/11601/hub.html'); await login(p);
 const pages = process.argv.slice(2).length ? process.argv.slice(2) : ['index.html?stay', '11601/hub.html', '11601/digital/index.html', '11601/digital/1.html', '11601/digital/2.html', '11601/digital/3.html', '11601/digital/4.html', '11601/python.html#P1', '11601/pyref.html', '11601/platform.html', '11601/platform.html#G3', '11601/5016b.html',
-  '11602/hub.html', '11602/media.html', '11602/media.html#W3', '11602/media.html#ai', '11602/network.html', '11602/network.html#N4', '11602/unit6.html', '11602/data.html', '11602/sheet.html#T2', '11602/sheetref.html', '11602/cipher.html', '11602/5016b.html'];
+  '11602/hub.html', '11602/media.html', '11602/media.html#W3', '11602/media.html#ai', '11602/network.html', '11602/network.html#N4', '11602/unit6.html', '11602/data.html', '11602/sheet.html#T2', '11602/sheetref.html', '11602/cipher.html', '11602/5016b.html',
+  // 🧪 實驗站（@階）：先把前面記成通過再打開
+  '11602/data.html#D1@2', '11602/data.html#D2@2', '11602/data.html#D3@2', '11602/media.html#M1@1', '11602/media.html#M2@1', '11602/media.html#M3@2', '11602/media.html#M4@2',
+  '11602/media.html#A1@2', '11602/media.html#A2@2', '11602/media.html#A3@2', '11602/media.html#A4@2', '11602/media.html#A5@2', '11602/media.html#A6@2', '11602/cipher.html#K1'];
 const agg = {}; let total = 0; const other = {};
 for (const u of pages) {
-  await p.goto(BASE + '/' + u); await p.waitForTimeout(1300);
-  if (/#G3|#N4/.test(u)) { await p.click('.stage[data-s="0"]').catch(() => {}); await p.waitForTimeout(600); }
+  if (u.includes('@')) {
+    const [url, st] = u.split('@'), id = url.split('#')[1], mod = url.includes('data') ? 'data' : 'media';
+    await p.goto(BASE + '/' + url); await p.evaluate(([m, id]) => STORE.saveLevel(m, id, { stars: 3 }), [mod, id]);
+    await p.goto(BASE + '/' + url.replace('#', '?a=' + st + '#')); await p.click(`.stage[data-s="${st}"]`); await p.waitForTimeout(700);
+  } else await p.goto(BASE + '/' + u);
+  await p.waitForTimeout(1300);
+  if (/#G3|#N4|#K1$/.test(u)) { await p.click('.stage[data-s="0"]').catch(() => {}); await p.waitForTimeout(600); }
   await p.addScriptTag({ content: AXE });
   const r = await p.evaluate(async () => { const r = await axe.run(document, { resultTypes: ['violations'] }); return r.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => ({ t: n.target.join(' '), d: (n.any[0] || {}).data })) })); });
   for (const v of r) for (const n of v.nodes) {

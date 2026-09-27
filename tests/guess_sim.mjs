@@ -6,7 +6,8 @@ import { priv } from './harness.mjs';
 const FOLLOW = { ipValid: 4, ipPrivate: 4, wirelessPick: 3, httpsJudge: 3 };   // 追問有幾個選項
 const GEN = { netChain: ['order', 5], portsCalc: ['input'], cableAssign: ['slots', 3, 4], packetOrder: ['order', 4], packetLost: ['input'], ipValid: ['choice', 2], octetBits: ['input'],
   bitsToDec: ['input'], ipPrivate: ['choice', 2], ipBinary: ['input'], hexBits: ['input'], v6short: ['input'], v6expand: ['input'], urlSlots: ['slots', 4, 3], urlRead: ['choice', 4],
-  mailFlow: ['order', 5], protoSlots: ['slots', 3, 4], httpsJudge: ['choice', 2], wirelessPick: ['choice', 3], download: ['input'], bottleneck: ['input'], barcode: ['input'], checkout: ['input'] };
+  mailFlow: ['order', 5], protoSlots: ['slots', 3, 4], httpsJudge: ['choice', 2], wirelessPick: ['choice', 3], download: ['input'], bottleneck: ['input'], barcode: ['input'], checkout: ['input'],
+  letterNum: ['input'], wrap: ['input'], caesarEnc: ['input'], caesarDec: ['input'], bruteForce: ['input'], vigEnc: ['input'], vigDec: ['input'], tally: ['input'] };
 const r = n => Math.floor(Math.random() * n), fact = n => n <= 1 ? 1 : n * fact(n - 1);
 function buildP(rd, cu) {
   let combos = [[]];
@@ -31,7 +32,7 @@ function stage(rounds) {
     }
     else if (rd.type === 'gen') {
       const g = GEN[rd.gen]; if (!g) throw new Error('guess_sim 不認得出題器 ' + rd.gen + '：請加進 GEN');
-      for (let q = 0; q < rd.n; q++) {
+      for (let q = 0; q < (rd.n || 1); q++) {
         if (g[0] === 'input') return false;
         if (g[0] === 'choice') for (;;) { if (r(g[1]) !== 0) { if (bad()) return false; continue; } if (FOLLOW[rd.gen] && r(FOLLOW[rd.gen]) !== 0) { if (bad()) return false; continue; } break; }
         if (g[0] === 'order') { const p = 1 / fact(g[1]); while (Math.random() > p) if (bad()) return false; }
@@ -42,7 +43,9 @@ function stage(rounds) {
   return true;
 }
 let fail = 0, worst = 0;
-const L = priv('11602/content/network.js').NET_LEVELS.concat(priv('11601/content/platform.js').PF_LEVELS);
+const MP = priv('11602/content/media.js');
+const L = priv('11602/content/network.js').NET_LEVELS.concat(priv('11601/content/platform.js').PF_LEVELS, priv('11602/content/data.js').DATA_LEVELS,
+  MP.MEDIA_LEVELS, MP.MEDIA_AI_LEVELS, priv('11602/content/cipher.js').CIPHER_LEVELS);
 for (const lv of L) {
   if (!lv.stages) continue;
   const ps = lv.stages.map(st => { let ok = 0; const N = 40000; for (let i = 0; i < N; i++) if (stage(st.rounds)) ok++; return ok / N; });

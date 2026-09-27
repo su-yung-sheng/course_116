@@ -1,7 +1,8 @@
 // 116-2 下學期：多媒體專題（概念闖關、看示範、AI 前導關、30 秒廣告工作站）、5016B 守護站 2.0、闖關地圖
 import { launch, login, BASE, SHOTS } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
-import { priv } from './harness.mjs';
+import { priv, passCool } from './harness.mjs';
+import { solveLab2 } from './labs2_solver.mjs';
 
 const { browser, context } = await launch();
 const page = await context.newPage();
@@ -19,33 +20,44 @@ await page.goto(BASE + '/11602/media.html');
 await page.waitForSelector('#games .lvcard');
 const MP = priv('11602/content/media.js'), ML = MP.MEDIA_LEVELS, AL = MP.MEDIA_AI_LEVELS;
 // 照正解玩完一組關卡（sort／order／type／build）
+async function playRound(rd) {
+  if (rd.type === 'sort') for (let k = 0; k < (rd.pick || rd.items.length); k++) {
+    const txt = (await page.textContent('.qcard .txt')).trim();
+    const hit = rd.items.find(x => x.t === txt);
+    await page.click(`.bucket[data-b="${hit.a}"]`); await page.click('#nx');
+  }
+  else if (rd.type === 'order') { for (const [k, it] of rd.items.entries()) { await page.click(`.order-btn[data-t="${it.t}"]`); await page.waitForFunction(n => document.querySelectorAll('.order-btn.right').length >= n, k + 1); } await page.click('#nx'); }
+  else if (rd.type === 'type') for (let k = 0; k < rd.items.length; k++) {
+    const txt = (await page.textContent('.qcard .txt')).trim();
+    const hit = rd.items.find(x => x.t === txt);
+    await page.fill('#ans', hit.a[0]); await page.press('#ans', 'Enter'); await page.click('#nx');
+  }
+  else if (rd.type === 'build') for (const cu of rd.customers) {
+    for (const r of cu.rules) await page.click(`.opt[data-s="${r.pick}"][data-o="${r.is}"]`);
+    for (const sl of rd.slots) if (!cu.rules.some(r => r.pick === sl.id)) await page.click(`.opt[data-s="${sl.id}"]`);
+    await page.click('#submit'); await page.click('#nx');
+  }
+  else if (rd.type === 'lab') for (let q = 0; q < (rd.n || 1); q++) {   // 🧪 實驗站：照規則做對
+    await solveLab2(page);
+    await page.waitForSelector('#nx', { timeout: 8000 }).catch(async () => { throw new Error('🧪 ' + rd.lab + ' 沒過：' + (await page.textContent('#fb'))); });
+    await page.click('#nx');
+  }
+}
+// ⭐ 三星三階：基礎（題庫）→ 操作（🧪 實驗站）→ 挑戰（🧪 較難版）
 async function playAll(root, levels, tag) {
   for (let i = 0; i < levels.length; i++) {
     const lv = levels[i];
-    await page.click(`${root} .lvcard[data-i="${i}"]`); await page.click('#go');
-    for (const rd of lv.rounds) {
-      if (rd.type === 'sort') for (let k = 0; k < (rd.pick || rd.items.length); k++) {
-        const txt = (await page.textContent('.qcard .txt')).trim();
-        const hit = rd.items.find(x => x.t === txt);
-        await page.click(`.bucket[data-b="${hit.a}"]`); await page.click('#nx');
-      }
-      else if (rd.type === 'order') { for (const [k, it] of rd.items.entries()) { await page.click(`.order-btn[data-t="${it.t}"]`); await page.waitForFunction(n => document.querySelectorAll('.order-btn.right').length >= n, k + 1); } await page.click('#nx'); }
-      else if (rd.type === 'type') for (let k = 0; k < rd.items.length; k++) {
-        const txt = (await page.textContent('.qcard .txt')).trim();
-        const hit = rd.items.find(x => x.t === txt);
-        await page.fill('#ans', hit.a[0]); await page.press('#ans', 'Enter'); await page.click('#nx');
-      }
-      else if (rd.type === 'build') for (const cu of rd.customers) {
-        for (const r of cu.rules) await page.click(`.opt[data-s="${r.pick}"][data-o="${r.is}"]`);
-        for (const sl of rd.slots) if (!cu.rules.some(r => r.pick === sl.id)) await page.click(`.opt[data-s="${sl.id}"]`);
-        await page.click('#submit'); await page.click('#nx');
-      }
+    await page.click(`${root} .lvcard[data-i="${i}"]`); await page.click('.stage[data-s="0"]');
+    for (let s = 0; s < 3; s++) {
+      if (s > 0) await page.click('#up');
+      for (const rd of lv.stages[s].rounds) await playRound(rd);
+      await page.waitForSelector('.end-star');
     }
-    await page.waitForSelector('.end-star');
     ok((await page.$eval('.end-star .stars', e => e.getAttribute('aria-label'))).startsWith('3'), tag, lv.id);
     await page.click('#menu');
   }
 }
+ok(ML.concat(AL).every(l => l.stages && l.stages.length === 3 && l.stages[1].rounds.every(r => r.type === 'lab') && l.stages[2].rounds.every(r => r.hard)), '概念闖關＋AI 前導關十關都是三星三階：操作＝實驗站、挑戰＝較難版');
 await playAll('#games', ML, 'media');
 
 /* ── 多媒體：看示範、AI 前導關 ─────────────── */
@@ -61,8 +73,8 @@ await page.click('#tab-pager .next');
 await page.waitForSelector('#ai-games .lvcard');
 ok((await page.$$('#ai-games .lvcard')).length === 6 && (await page.textContent('#ai')).includes('Day of AI') && (await page.$$('#ai .rule')).length === 5, 'AI 前導關：6 關＋五守則＋教材出處');
 // 先答錯一題：A1 第一回合把「計算機」丟進「有用 AI」
-await page.click('#ai-games .lvcard[data-i="0"]'); await page.click('#go');
-{ const txt = (await page.textContent('.qcard .txt')).trim(); const hit = AL[0].rounds[0].items.find(x => x.t === txt);
+await page.click('#ai-games .lvcard[data-i="0"]'); await page.click('.stage[data-s="0"]');
+{ const txt = (await page.textContent('.qcard .txt')).trim(); const hit = AL[0].stages[0].rounds[0].items.find(x => x.t === txt);
   await page.click(`.bucket[data-b="${hit.a === 'ai' ? 'rule' : 'ai'}"]`); await page.waitForSelector('#fb .note');
   ok(!(await page.textContent('#fb')).includes(hit.why), 'AI 關卡答錯不公布正解'); }
 await page.click('#quit').catch(() => {}); await page.goto(BASE + '/11602/media.html#ai'); await page.waitForSelector('#ai-games .lvcard');
