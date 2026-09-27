@@ -12,6 +12,11 @@ window.CONFIG = {
   TERM_START: '2028-02-14',
   HUB_PAGE: 'hub.html',
 
+  /* 學校指定的 AI 工具（廣告工作站「和 AI 討論」用）
+     ⚠️ 網站本身不是 AI、也不連任何 AI 服務：學生按「📋 複製」網站寫好的提示詞，
+        按「↗ 開啟」到這個工具（用學校帳號登入）貼上，再把回答貼回網站。換工具只要改這裡。 */
+  AI_TOOL: { name: 'Gemini 教育版', url: 'https://gemini.google.com/app', login: '學校 Google 帳號' },
+
   /* Python 執行環境（Pyodide）—— 下學期的密碼特務改成不寫程式的互動版，目前沒有頁面用到；保留給之後擴充
      ⚠️ 學校網路擋 CDN 時：把 pyodide 整包放到 shared/pyodide/，
         這裡改成 '../shared/pyodide/'（結尾要有斜線）。 */

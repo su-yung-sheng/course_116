@@ -9,6 +9,10 @@ const ok = (c, ...m) => { if (!c) bad++; console.log(c ? '  ✔' : '  ✘', ...m
 await page.goto(BASE + '/11602/hub.html'); await login(page, '903', '7', '短片生');
 await page.goto(BASE + '/11602/media.html#W1'); await page.waitForSelector('#w1-obj');
 ok(await page.$eval('[data-ver="30"]', b => b.classList.contains('on')), '預設是 30 秒標準版');
+{ const how = await page.textContent('#studio .aihow');
+  ok(how.includes('這個網站不是 AI') && how.includes('Gemini 教育版') && how.includes('學校 Google 帳號'), '工作站說明：網站不是 AI，到 Gemini 教育版貼上');
+  ok((await page.getAttribute('#studio .aihow a', 'href')) === 'https://gemini.google.com/app' && (await page.getAttribute('#studio .aihow a', 'target')) === '_blank', '「↗ 開啟 Gemini 教育版」開新分頁');
+  ok((await page.$$eval('#body [data-copy] + a', a => a.map(x => x.textContent))).every(t => t.includes('Gemini 教育版')), '每個提示詞旁邊都有「↗ 開啟 Gemini 教育版」'); }
 ok((await page.textContent('#panel .chip')).includes('第 1 節'), '每一步標出建議節次（W1：第 1 節）');
 await page.click('[data-ver="15"]'); await page.waitForSelector('[data-ver="15"].on');
 ok((await page.textContent('#studio h2')).includes('15 秒') && (await page.textContent('#w1-idea')).includes('15 秒廣告'), '選 15 秒：標題、提示詞跟著換');
@@ -20,6 +24,7 @@ await page.click('#w1-sv'); await page.waitForSelector('#w2-open');
 ok(await page.evaluate(() => (STORE.level('media', 'W1') || {}).extra.ver === 15), '版本記在學習紀錄（W1.ver = 15）');
 const w2note = await page.textContent('#body .note');
 ok(w2note.includes('15 秒') && w2note.includes('4–11 秒') && w2note.includes('12–15 秒'), 'W2：三句的時段換成 15 秒版', w2note.replace(/\s+/g, ' ').slice(0, 80));
+ok((await page.inputValue('#w2-tool')) === 'Gemini 教育版', 'W2「用了哪個 AI 工具」預先填好 Gemini 教育版');
 await page.fill('#w2-mine', '雨天也可以很酷'); await page.fill('#w2-tool', '沒有用 AI');
 await page.fill('#w2-open', '下雨天，你在等誰？'); await page.fill('#w2-feat', '一按，就撐開一片天'); await page.fill('#w2-end', '雨天，換我陪你');
 await page.fill('#w2-edit', '自己想的，改短一點');
