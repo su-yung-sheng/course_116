@@ -132,7 +132,7 @@ await page.click('#sv');
 ok((await page.textContent('#msg')).includes('核心特色至少拍 2 個鏡頭'), 'W3 核心特色沒拍到會擋');
 for (const [i, p] of plan.entries()) if (p[2] === 0) await page.selectOption(`select[data-k="feat"][data-i="${i}"]`, '0');
 await page.screenshot({ path: SHOTS + 'media-W3.png', fullPage: true });
-await page.click('#body details summary');   // 打開「AI 建議紀錄」
+await page.click('#body details:has(#w3-ait) summary');   // 打開「AI 建議紀錄」
 await page.fill('#w3-ait', '1. 低角度拍椅腳 2. 手提起椅子的特寫');
 await page.click('#sv');
 ok((await page.textContent('#msg')).includes('AI 建議紀錄'), 'W3 貼了 AI 建議就要寫採用／修改了什麼');

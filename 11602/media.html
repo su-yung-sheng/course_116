@@ -34,6 +34,13 @@
   .tl>div{padding:.45rem .4rem;font-size:.75rem;font-weight:800;text-align:center;border-right:2px solid #fff;min-width:0}
   .tl>div:last-child{border-right:0}
   .tl .n{display:block;font-size:.7rem;font-weight:700;opacity:.85}
+  .spark{border:2px dashed #fbbf24;background:#fffbeb;border-radius:.8rem;padding:.6rem .8rem}
+  .spark summary{cursor:pointer}
+  .sp-row .input{margin:0;max-width:11rem}
+  .tpl{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center;margin:.25rem 0 .5rem}
+  .tpl .chip,.sp-c{cursor:pointer;font:inherit;font-size:.78rem}
+  .tpl .chip:hover,.sp-c:hover{border-color:var(--unit);background:var(--unit-soft)}
+  .shotrow.tplrow{background:#fef9c3;border-color:#fbbf24}
   .verbar{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;padding:.5rem .7rem;border:2px dashed var(--unit-line);border-radius:.8rem;background:var(--unit-soft)}
   .verbar .btn.on{background:var(--unit);border-color:var(--unit);color:#fff}
   .s0{background:#fee2e2}.s1{background:#ffedd5}.s2{background:#dbeafe}.s3{background:#ede9fe}.s4{background:#dcfce7}
@@ -314,6 +321,39 @@
     }).join('') + '<span class="tiny soft">' + (ver() === 15 ? '15 秒：三句話照寫、5～7 個鏡頭，拍完剪完比較快；完成後可以再挑戰 30 秒。' : '30 秒：8～12 個鏡頭，特色可以拍得更完整。時間不夠可以先做 15 秒版。') + '</span></div>';
   }
 
+  /* ── 🆘 沒想法也能開始：網站自己的鷹架（不經過 AI）──
+     W1 引導問題＋反差句型 → 特色候選；W2 句型填空（自動帶入主角、特色）；W3 鏡頭食譜（依特色類型產生草稿，每一鏡都要改成自己的）。 */
+  var SPARK = [
+    { q: '① 它平常在哪裡？', ph: '例：教室、書包裡、玄關' },
+    { q: '② 誰會用？什麼時候用？', ph: '例：下雨天上學的我' },
+    { q: '③ 用它的時候，手會做什麼動作？', ph: '例：一按就打開', cand: 1 },
+    { q: '④ 摸起來、看起來怎麼樣？', ph: '例：傘面滑滑的、有小碎花', cand: 1 },
+    { q: '⑤ 它可以變形、收起來或疊起來嗎？', ph: '例：收起來只剩手掌長', cand: 1 },
+    { q: '⑥ 和同類的東西比，它哪裡不一樣？', ph: '例：比一般的傘輕很多', cand: 1 }
+  ];
+  var TPL = {   // {obj} 主角、{core} 核心特色、{usual} 大家通常覺得它；＿＿ 要自己填
+    open: ['你以為它只是一個{obj}？', '每天都看到的{obj}，你真的認識它嗎？', '{usual}？那是你還沒看過這一面。'],
+    feat: ['一＿＿，就＿＿。', '原來{obj}也可以＿＿。', '{core}，就是它的秘密。'],
+    end: ['{obj}，不只是{obj}。', '＿＿，從{obj}開始。', '平凡的{obj}，不平凡。']
+  };
+  function tplFill(t, w1) { return t.replace(/\{obj\}/g, w1.obj || '它').replace(/\{core\}/g, coreFeat(w1) || '＿＿').replace(/\{usual\}/g, w1.usual || '很普通'); }
+  var FT = ['動作型', '材質型', '變化型', '外觀型', '情境型'];
+  function guessType(f) {
+    f = f || '';
+    if (/收|疊|摺|折|變|伸縮|展開|拆|組/.test(f)) return 2;
+    if (/提|按|轉|推|拉|倒|拿|揮|扣|單手|一按|甩|撐/.test(f)) return 0;
+    if (/軟|硬|滑|紋|材質|摸|透明|亮|粗|細|觸感|輕|重/.test(f)) return 1;
+    if (/色|圖案|款式|花|造型|樣式|可愛|印/.test(f)) return 3;
+    return 4;
+  }
+  var RECIPE = [   // 每一型三個拍法：[拍什麼, 角度]；{f} 帶入特色
+    [['手做出「{f}」那一下的特寫', '特寫'], ['拉遠一點：人做出「{f}」的整個動作', '中景'], ['同一個動作換低角度再拍一次', '低角度']],
+    [['手指慢慢滑過表面，拍出「{f}」', '特寫'], ['光從側面照，讓「{f}」看得更清楚', '特寫'], ['一邊摸一邊把鏡頭拉遠', '中景']],
+    [['變化前的樣子，準備「{f}」', '中景'], ['「{f}」的過程，用低角度拍', '低角度'], ['變化後的樣子，和變化前放在一起比', '中景']],
+    [['把不同顏色或款式排成一排，拍出「{f}」', '俯拍'], ['一個一個換，快速切換「{f}」', '特寫'], ['拿起最喜歡的那一個', '中景']],
+    [['在真的會用到它的地方，拍出「{f}」', '遠景'], ['跟著人帶它走，呈現「{f}」', '跟拍'], ['用的人開心的樣子（拍手和動作就好）', '中景']]
+  ];
+
   /* ── 步驟 1 決定主題：拍主角照片，和 AI 討論特色 ── */
   var FEEL = ['驚喜', '溫暖', '好笑', '帥氣', '安心', '療癒', '懷念'];
   function thumb(file, cb) {           // 照片縮成 360px 的小圖（只存在自己的瀏覽器／學習紀錄）
@@ -331,8 +371,15 @@
     r.readAsDataURL(file);
   }
   function topicStep(body) {
-    var ex = extra('W1'), f = ex.feats || ['', '', ''], photo = ex.photo || '';
+    var ex = extra('W1'), f = ex.feats || ['', '', ''], photo = ex.photo || '', sp = ex.spark || [], ct = ex.contrast || ['', ''];
     body.innerHTML = '<details class="mb1"><summary class="small bold">💡 想不到要拍什麼？先請 AI 給點子</summary>' + promptBox('w1-idea', '先自己想 1 個，再把這段話給 AI：') + '</details>' +
+      '<details class="spark mb1" id="w1-spark"' + (ex.obj && (ex.feats || []).every(Boolean) ? '' : ' open') + '><summary class="small bold">🆘 完全沒想法？從手上的物品開始想（不用 AI 也可以）</summary>' +
+      '<p class="tiny soft mt1">把物品拿在手上，一題一題回答。③～⑥ 的答案會變成「特色候選」，點一下就放進下面的特色。</p><div class="grid g2 mt1">' +
+      SPARK.map(function (q, i) { return '<label class="field">' + q.q + '<input class="input" id="sp-' + i + '" maxlength="20" value="' + esc(sp[i] || '') + '" placeholder="' + esc(q.ph) + '"></label>'; }).join('') + '</div>' +
+      '<div class="mt1" id="sp-cands"></div>' +
+      '<p class="small bold mt2">🔄 反差句型：大家以為它＿＿，其實它＿＿</p><div class="row sp-row"><span class="small">大家以為它</span><input class="input" id="sp-a" maxlength="12" value="' + esc(ct[0]) + '" placeholder="很普通、很無聊">' +
+      '<span class="small">，其實它</span><input class="input" id="sp-b" maxlength="20" value="' + esc(ct[1]) + '" placeholder="單手就能撐開"><button type="button" class="btn sm" id="sp-use">⬇ 放進下面</button></div>' +
+      '<p class="tiny soft mt1">反差就是廣告的核心：觀眾以為它很普通，你讓他發現「其實它…」。還是想不到？到「📺 看示範」看別人怎麼把一張凳子拍得很特別。</p></details>' +
       '<div class="grid g2 mt2"><div>' +
       '<label class="field">🎯 主角是（一項物品）<input class="input" id="w1-obj" maxlength="10" value="' + esc(ex.obj || '') + '" placeholder="例：塑膠椅、水壺、雨傘、書包"></label>' +
       '<p class="tiny soft mt1">好主角：容易取得、可以從不同角度拍（上面、側面、特寫、有人在用）。</p>' +
@@ -366,10 +413,26 @@
       var fl = this.files && this.files[0]; if (!fl) return;
       thumb(fl, function (u) { photo = u; document.getElementById('w1-prev').innerHTML = '<img src="' + u + '" alt="主角照片" style="max-width:100%;max-height:220px;border-radius:.8rem">'; });
     };
-    upd(); wireCopy(body);
+    function firstEmptyFeat(t) {
+      for (var i = 0; i < 3; i++) { var e = document.getElementById('w1-f' + i); if (!e.value.trim()) { e.value = t; upd(); e.focus(); return true; } }
+      return false;
+    }
+    function cands() {
+      var list = SPARK.map(function (q, i) { return q.cand ? val('sp-' + i) : ''; }).concat([val('sp-b')]).filter(function (x) { return len(x) >= 2; });
+      document.getElementById('sp-cands').innerHTML = list.length ? '<span class="tiny bold">✨ 特色候選（點一下放進特色）：</span>' + list.map(function (c) { return '<button type="button" class="chip sp-c">' + esc(c) + '</button>'; }).join(' ') : '';
+      body.querySelectorAll('.sp-c').forEach(function (b) { b.onclick = function () { if (!firstEmptyFeat(b.textContent)) UI.toast('三個特色都填了；想換就先清掉一格'); }; });
+    }
+    body.querySelectorAll('#w1-spark input').forEach(function (e) { e.addEventListener('input', cands); });
+    document.getElementById('sp-use').onclick = function () {
+      if (val('sp-a')) { document.getElementById('w1-usual').value = val('sp-a'); }
+      if (val('sp-b')) firstEmptyFeat(val('sp-b'));
+      upd();
+    };
+    cands(); upd(); wireCopy(body);
     document.getElementById('w1-sv').onclick = function () {
       var v = { obj: val('w1-obj'), photo: photo, ai: val('w1-ai'), feats: [val('w1-f0'), val('w1-f1'), val('w1-f2')], core: core(),
-        usual: val('w1-usual'), who: val('w1-who'), feel: val('w1-feel'), ver: ver() }, miss = [];
+        usual: val('w1-usual'), who: val('w1-who'), feel: val('w1-feel'), ver: ver(),
+        spark: SPARK.map(function (_, i) { return val('sp-' + i); }), contrast: [val('sp-a'), val('sp-b')] }, miss = [];
       if (!v.obj) miss.push('主角');
       if (v.feats.some(function (x) { return len(x) < 2; })) miss.push('3 個特色');
       if (v.core < 0) miss.push('圈出核心特色');
@@ -397,12 +460,14 @@
       '<div class="note small mt1">🤖 還沒闖 <a href="#" id="w2-ai">AI 前導關</a>？先看看 AI 會在哪裡出錯。AI 給的是<b>草稿</b>，最後由你決定。</div>' +
       '<p class="bold mt3">① 先自己想，再請 AI 發想</p>' +
       '<label class="field mt1">🧠 問 AI 之前，我自己先想的一句<input class="input" id="w2-mine" maxlength="24" value="' + esc(ex.mine || '') + '" placeholder="例：椅子也想去旅行"></label>' +
+      '<div class="tpl mt1"><span class="tiny bold">🆘 沒想法？挑一個句型，把＿＿改成你的字：</span>' + TPL.open.concat(TPL.feat.slice(0, 2)).map(function (t) { return '<button type="button" class="chip tpl-b" data-to="w2-mine">' + esc(tplFill(t, w1)) + '</button>'; }).join('') + '</div>' +
       '<div class="grid g2 mt1"><label class="field">語氣' + sel('w2-tone', TONE, ex.tone || '溫暖') + '</label>' +
       '<label class="field">用了哪個 AI 工具？（沒用就寫「沒有用 AI」）<input class="input" id="w2-tool" maxlength="20" value="' + esc(ex.tool || AIT.name) + '" placeholder="例：' + esc(AIT.name) + '"></label></div>' +
       promptBox('w2-pa', '提示詞 A：發想') +
       '<label class="field mt2">AI 給的選項（貼上來，選填）<textarea class="input" id="w2-cands" rows="4">' + esc(ex.cands || '') + '</textarea></label>' +
       '<p class="bold mt3">② 選出三句，寫在下面（可以改、可以混搭）</p><div class="stack mt1">' + LINES.map(function (l) {
-        return '<label class="field">' + l.name + '（' + V().at[l.k] + '）<span class="cnt" id="w2-c-' + l.k + '"></span><input class="input" id="w2-' + l.k + '" maxlength="24" value="' + esc(L[l.k] || '') + '" placeholder="' + esc(l.ph) + '"></label>';
+        return '<label class="field">' + l.name + '（' + V().at[l.k] + '）<span class="cnt" id="w2-c-' + l.k + '"></span><input class="input" id="w2-' + l.k + '" maxlength="24" value="' + esc(L[l.k] || '') + '" placeholder="' + esc(l.ph) + '"></label>' +
+          '<div class="tpl"><span class="tiny soft">句型：</span>' + TPL[l.k].map(function (t) { return '<button type="button" class="chip tpl-b" data-to="w2-' + l.k + '">' + esc(tplFill(t, w1)) + '</button>'; }).join('') + '</div>';
       }).join('') + '</div><div id="w2-hype" class="mt1"></div>' +
       promptBox('w2-pb', '提示詞 B：請 AI 幫你檢查（選好三句後再用）') +
       '<p class="bold mt3">③ 自己做最後決定</p>' +
@@ -427,11 +492,18 @@
       document.getElementById('w2-hype').innerHTML = hy.length ? '<div class="note warn small">' + esc(hy.join('、')) + ' 聽起來有點誇大，畫面真的拍得出來嗎？可以換個說法。</div>' : '';
     }
     body.querySelectorAll('input,select,textarea').forEach(function (e) { e.addEventListener('input', upd); e.addEventListener('change', upd); });
+    body.querySelectorAll('.tpl-b').forEach(function (b) {
+      b.onclick = function () {
+        var e = document.getElementById(b.dataset.to); e.value = b.textContent; upd(); e.focus();
+        var k = e.value.indexOf('＿＿'); if (k >= 0) e.setSelectionRange(k, k + 2);   // 直接選到要自己填的地方
+      };
+    });
     upd(); wireCopy(body);
     document.getElementById('w2-ai').onclick = function (e) { e.preventDefault(); clearHash(); tab('ai'); };
     document.getElementById('w2-sv').onclick = function () {
       var v = { mine: val('w2-mine'), tone: val('w2-tone'), tool: val('w2-tool'), cands: val('w2-cands'), lines: lines(), edit: val('w2-edit'), mode: val('w2-mode') }, miss = [];
       if (len(v.mine) < 2) miss.push('自己先想的一句');
+      if (/＿/.test(v.mine) || LINES.some(function (l) { return /＿/.test(v.lines[l.k]); })) miss.push('把句型裡的＿＿換成你自己的字');
       if (!v.tool) miss.push('用了哪個 AI 工具');
       LINES.forEach(function (l) { var n = len(v.lines[l.k]); if (!n || n > l.max) miss.push(l.name + '（1～' + l.max + ' 字）'); });
       if (len(v.edit) < 4) miss.push('我改了什麼');
@@ -451,14 +523,27 @@
       return { seg: g, what: '', angle: V().angles[i], sec: 3, feat: fe[g] ? 0 : 3 };
     });
   }
+  /* 🍳 鏡頭食譜：依版本和特色類型排一份草稿（tpl 記下原文，沒改過的不算完成） */
+  function recipeShots(w1, ftypes) {
+    var core = w1.core >= 0 ? w1.core : 0, oth = [0, 1, 2].filter(function (k) { return k !== core; }), obj = w1.obj || '主角';
+    function fName(k) { return (w1.feats || [])[k] || '特色 ' + (k + 1); }
+    function R(k, j) { var r = RECIPE[ftypes[k] != null ? ftypes[k] : guessType(fName(k))][j]; return [r[0].replace(/\{f\}/g, fName(k)), r[1]]; }
+    function S(seg, wa, sec, feat) { return { seg: seg, what: wa[0], tpl: wa[0], angle: wa[1], sec: sec, feat: feat }; }
+    var open = [obj + '最特別的一個細節，鏡頭慢慢拉近', '特寫'], end = [obj + '全景＋收尾標語（標語停 2 秒以上）', '遠景'];
+    if (ver() === 15) return [S(0, open, 3, 3), S(1, R(core, 0), 3, core), S(1, R(core, 1), 3, core), S(1, R(oth[0], 0), 2, oth[0]), S(2, end, 3, 3)];
+    return [S(0, open, 3, 3), S(1, R(oth[0], 0), 3, oth[0]), S(1, [obj + '的整體外形，從側面慢慢繞一圈', '中景'], 2, 3),
+      S(2, R(core, 0), 3, core), S(2, R(core, 1), 4, core), S(2, R(core, 2), 3, core),
+      S(3, R(oth[1], 0), 3, oth[1]), S(3, [RECIPE[4][0][0].replace('{f}', '平常用它的樣子'), '遠景'], 4, 3), S(4, end, 4, 3)];
+  }
   function sumSec(sh) { return sh.reduce(function (a, x) { return a + (+x.sec || 0); }, 0); }
   function shotStep(body, s) {
     var VV = V(), SEGS = VV.segs, CHK = s.checks.map(vtext);
+    var ftypes = (extra('W3').ftypes || []).slice();
     var sh = shots(), w1 = extra('W1'), w2l = extra('W2').lines || {}, ex = extra('W3'), st = ex.checks || [], listOk = !!ex.listOk;
     var feats = (w1.feats || ['特色 1', '特色 2', '特色 3']).map(function (x, i) { return (i === w1.core ? '⭐ ' : '') + (x || '特色 ' + (i + 1)); }).concat(['氣氛／情境']);
     function finish() {
       var ok = listOk && allChecked(CHK, st);
-      save('W3', Object.assign({ shots: sh, listOk: listOk, checks: st }, document.getElementById('w3-ait') ? aiVals('w3') : { aiText: ex.aiText, aiUse: ex.aiUse }), ok);
+      save('W3', Object.assign({ shots: sh, listOk: listOk, checks: st, ftypes: ftypes }, document.getElementById('w3-ait') ? aiVals('w3') : { aiText: ex.aiText, aiUse: ex.aiUse }), ok);
       return ok;
     }
     function draw() {
@@ -471,8 +556,15 @@
         }).join('') + '</div>' +
         '<div class="scroll-x mt1"><table class="t small"><tr><th>時段</th><th>拍攝內容</th><th>這時候出現的句子</th></tr>' + SEGS.map(function (g, i) {
           return '<tr><td class="s' + g.c + '">' + esc(g.t) + '</td><td>' + esc(g.what) + '</td><td>' + (g.line ? '「' + esc(w2l[g.line] || '＿＿') + '」' : '<span class="soft">（畫面說話）</span>') + '</td></tr>'; }).join('') + '</table></div>' +
+        '<details class="spark mt2 no-print" id="w3-rc"' + (sh.some(function (x) { return len(x.what) >= 2; }) ? '' : ' open') + '><summary class="small bold">🆘 不知道怎麼拍？用「鏡頭食譜」排一份草稿</summary>' +
+        '<p class="tiny soft mt1">先確認每個特色是哪一種（網站先幫你猜了），食譜會依類型給拍法。產生之後，<b>每一個鏡頭都要改成你真的要拍的畫面</b>（在哪裡拍、拍誰的手、怎麼動）。</p>' +
+        '<div class="stack mt1">' + [0, 1, 2].map(function (k) {
+          var ft = ftypes[k] != null ? ftypes[k] : guessType((w1.feats || [])[k]);
+          return '<label class="row small" style="flex-wrap:nowrap"><b style="min-width:9rem">' + esc(feats[k]) + '</b><select class="input" data-ft="' + k + '" style="max-width:9rem;margin:0">' +
+            FT.map(function (t, j) { return '<option value="' + j + '"' + (ft === j ? ' selected' : '') + '>' + t + '</option>'; }).join('') + '</select></label>';
+        }).join('') + '</div><div class="row mt1"><button type="button" class="btn" id="w3-recipe">🍳 產生鏡頭草稿</button><span class="tiny soft">動作型：拍手的動作；材質型：拍表面；變化型：拍前後對比；外觀型：拍顏色款式；情境型：拍用它的地方</span></div></details>' +
         '<div class="stack mt2">' + sh.map(function (x, i) {
-          return '<div class="shotrow"><div class="no">#' + (i + 1) + '</div>' +
+          return '<div class="shotrow' + (x.tpl && x.what === x.tpl ? ' tplrow' : '') + '"><div class="no">#' + (i + 1) + '</div>' +
             '<label class="tiny bold">時段<select class="input" data-k="seg" data-i="' + i + '">' + SEGS.map(function (g, k) { return '<option value="' + k + '"' + (+x.seg === k ? ' selected' : '') + '>' + g.t + '</option>'; }).join('') + '</select></label>' +
             '<label class="tiny bold what">拍什麼<input class="input" data-k="what" data-i="' + i + '" value="' + esc(x.what) + '" placeholder="例：手指滑過椅面的紋路"></label>' +
             '<label class="tiny bold">拍出哪個特色<select class="input" data-k="feat" data-i="' + i + '">' + feats.map(function (f, k) { return '<option value="' + k + '"' + (+x.feat === k ? ' selected' : '') + '>' + esc(f) + '</option>'; }).join('') + '</select></label>' +
@@ -491,6 +583,13 @@
         if (k !== 'what') el.onchange = function () { el.oninput(); draw(); };   // 換選項才重畫（打字時不重畫，游標才不會跳掉）
       });
       body.querySelectorAll('[data-del]').forEach(function (b) { b.onclick = function () { sh.splice(+b.dataset.del, 1); STORE.draft('media-shots', JSON.stringify(sh)); draw(); }; });
+      body.querySelectorAll('[data-ft]').forEach(function (e) { e.onchange = function () { ftypes[+e.dataset.ft] = +e.value; }; });
+      document.getElementById('w3-recipe').onclick = function () {
+        if (sh.some(function (x) { return len(x.what) >= 2 && x.what !== x.tpl; }) && !confirm('會用草稿蓋掉目前寫好的鏡頭，確定嗎？')) return;
+        [0, 1, 2].forEach(function (k) { if (ftypes[k] == null) ftypes[k] = +body.querySelector('[data-ft="' + k + '"]').value; });
+        sh = recipeShots(w1, ftypes); STORE.draft('media-shots', JSON.stringify(sh)); draw();
+        document.getElementById('msg').innerHTML = '<div class="note warn small">🍳 草稿排好了（黃色的是食譜原文）。一格一格改成你真的要拍的畫面，再按「儲存鏡頭清單」。</div>';
+      };
       var add = document.getElementById('add'); if (add) add.onclick = function () { sh.push({ seg: SEGS.map(function (g) { return g.line; }).indexOf('feat'), what: '', angle: '中景', sec: 3, feat: 3 }); STORE.draft('media-shots', JSON.stringify(sh)); draw(); };
       document.getElementById('pr').onclick = function () { window.print(); };
       document.getElementById('w3-p').textContent = '我要用手機拍 ' + VV.short + '廣告。主角：' + (w1.obj || '＿＿') + '；核心特色：' + (coreFeat(w1) || '＿＿') + '；其他特色：' +
@@ -509,6 +608,8 @@
         if (filled.length < VV.shots[0] || sh.length > VV.shots[1]) miss.push(VV.shots.join('～') + ' 個寫好內容的鏡頭（目前 ' + filled.length + ' 個）');
         SEGS.forEach(function (g, k) { if (!filled.some(function (x) { return +x.seg === k; })) miss.push(g.t + ' 至少一個鏡頭'); });
         if (filled.filter(function (x) { return +x.feat === w1.core; }).length < 2) miss.push('核心特色至少拍 2 個鏡頭');
+        var raw = filled.filter(function (x) { return x.tpl && x.what === x.tpl; }).length;
+        if (raw) miss.push('還有 ' + raw + ' 個鏡頭是食譜原文（黃色），改成你真的要拍的畫面');
         if (VV.allFeats) [0, 1, 2].forEach(function (k) { if (!filled.some(function (x) { return +x.feat === k; })) miss.push('「' + ((w1.feats || [])[k] || '特色 ' + (k + 1)) + '」至少一個鏡頭'); });
         else if (!filled.some(function (x) { return +x.feat !== w1.core && +x.feat < 3; })) miss.push('另外兩個特色，至少拍到其中一個');
         if (!sh.some(function (x) { return x.angle === '遠景'; })) miss.push('一個遠景');
