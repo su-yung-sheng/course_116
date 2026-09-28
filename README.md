@@ -49,7 +49,7 @@
 - 電腦教室有還原卡 → 關機進度就清掉（學生可先按「下載我的進度」帶走）
 - 沒有教師端、沒有學期鎖
 
-正式上課前要把 `shared/store.js` 換成 course_115 的 Google 登入＋Firestore 版本 —— **API 不變，各頁面不用改**。步驟見 `docs/02_系統架構.md`。
+正式上課前要把 `shared/store.js` 換成 Google 登入＋Firestore 版本（**新的 Firebase 專案**，寫法參考 course_115）—— **API 不變，各頁面不用改**。步驟見 `docs/02_系統架構.md`。
 
 ## 🛠️ 改內容看這裡
 
