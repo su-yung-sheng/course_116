@@ -14,7 +14,7 @@
   function modStars(m) { return m.parts ? m.parts.reduce(function (a, p) { return a + STORE.partStars(p); }, 0) : STORE.moduleStars(m.id); }
   function modDone(m) { return m.parts ? m.parts.reduce(function (a, p) { return a + STORE.partDone(p); }, 0) : STORE.moduleDone(m.id); }
 
-  // 平均完成度：每個計星單元各自算完成 %，再平均（每個單元份量一樣；5016B 不計星，不算進來）
+  // 平均完成度：每個計星單元各自算完成 %，再平均（每個單元份量一樣；maxStars 是 0 的不算。5016B 從 2026-09-28 起計星，也算進來）
   function pctOf(m) { return m.maxStars ? Math.min(1, modStars(m) / m.maxStars) : 0; }
   function avgPct(mods) {
     var S = mods.filter(function (m) { return m.maxStars && !m.soon; });
@@ -89,7 +89,7 @@
     { id: 'hard', ic: '🏆', t: '挑戰王', need: '10 關拿到 3⭐', ok: function (R) { return R.filter(function (x) { return x.r.stars >= 3; }).length >= 10; } },
     { id: 'week', ic: '📅', t: '準時完成', need: '把本週任務全部完成', ok: function () { var w = weekInfo(); return !!(w && !w.before && !w.after && !w.todo.length); } },
     { id: 'unit', ic: '🏅', t: '單元制霸', need: '任一單元拿滿星星', ok: function () { return C.MODULES.some(function (m) { return m.maxStars && modStars(m) >= m.maxStars; }); } },
-    { id: 'maker', ic: '🛠️', t: '動手做', need: '完成一個不計星的實作步驟（工作站、5016B）', ok: function (R) { return R.some(function (x) { return x.r.done; }); } },
+    { id: 'maker', ic: '🛠️', t: '動手做', need: '完成一個實作步驟（廣告工作站、5016B 專題）', ok: function (R) { return R.some(function (x) { return x.r.done; }); } },
     { id: 'all', ic: '🎓', t: '全部制霸', need: '所有計星單元都拿滿', ok: function () { var S = C.MODULES.filter(function (m) { return m.maxStars; }); return S.length && S.every(function (m) { return modStars(m) >= m.maxStars; }); } }
   ];
   function badges() {

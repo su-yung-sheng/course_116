@@ -76,6 +76,24 @@ const pg = gas.call('pyg', { run: py.run, outs: py.tests.map(() => ({ events: [[
 ok(pg.stars === 0 && !pg.rc, '🐍 輸出亂打 → 0 星、沒有收據');
 ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送測資結果 → 拒絕');
 
+/* 8b. 5016B：星星看「預測錯幾次」，由伺服器算 */
+{
+  const LA = priv('11601/lab.js').LAB_ANSWERS, S1 = LA.S1, c1 = (a, d) => gas.call(a, { t: '11601', ...d });
+  const k = c1('lks', { sid: 'S1', who: { cls: '901', seat: '01', name: '測' } });
+  ok(k.run && k.n === S1.length, '🔬 5016B 開局：一節一局', k.n + ' 題');
+  ok(c1('lkf', { run: k.run }).err === 'incomplete', '🔬 還沒全部說對就結算 → 拒絕');
+  const wrongV = String((S1[0].answer + 1) % 3);
+  let r = c1('lk', { run: k.run, i: 0, v: wrongV }); ok(r.ok === false && r.wrong === 1 && !('why' in r), '🔬 預測錯 → 記一次、不給解說');
+  S1.forEach((q, i) => c1('lk', { run: k.run, i, v: String(q.answer) }));
+  const f = c1('lkf', { run: k.run }); ok(f.stars === 2 && f.rc, '🔬 錯 1 次 → 2⭐＋收據');
+  ok(c1('lkf', { run: k.run }).err === 'done' && c1('lk', { run: k.run, i: 0, v: '0' }).err === 'done', '🔬 結算過的局不能再用');
+  const k2 = c1('lks', { sid: 'S1' }); S1.forEach((q, i) => c1('lk', { run: k2.run, i, v: String(q.answer) }));
+  ok(c1('lkf', { run: k2.run }).stars === 3, '🔬 一次都沒錯 → 3⭐');
+  ok(c1('lkp', { sid: 'S5', v: { 'p-name': 'x', 'p-s1': '短' } }).ok === false, '🏆 S5 成果卡沒填完整 → 不給星');
+  ok(c1('lkp', { sid: 'S5', v: { 'p-name': '守護燈', 'p-in': '超音波', 'p-num': '50', 'p-s1': '上課有人靠近門口', 'p-s2': '偵測到就亮黃燈提醒', 'p-s3': '把次數上傳雲端' } }).stars === 3, '🏆 S5 成果卡填完整 → 3⭐');
+  ok(c1('lkp', { sid: 'S1', v: {} }).err === 'bad-item' && c1('lks', { sid: 'S5' }).err === 'bad-item', '🔬 有檢核的節不能走專題的路、專題節沒有檢核局');
+}
+
 /* 9. 📋 一鍵貼上版（全部檔案合成一個）也要能跑，而且和分開的檔案一樣 */
 {
   const one = createGas(fileURLToPath(new URL('../private/伺服器一鍵貼上/一鍵貼上_course116.gs', import.meta.url))), h = JSON.parse(one.ctx.doGet().getContent());

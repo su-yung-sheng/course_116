@@ -93,7 +93,7 @@ node tools/dev-server.mjs        # → http://localhost:8116/
 | `40`～`44_labs_*.js` | 33 個實驗站：`make(hard) → { pub, sec }`、`check(sec, 學生的操作) → 結果` |
 | `50_python.js` | `py`（拿測資）／`pyg`（送輸出評分） |
 | `51_sheet.js` | `sh`／`shc`（清理）／`shf`（公式） |
-| `52_misc.js` | `lk`（5016B）、`dq`（單元一）、`hint`（漸進提示） |
+| `52_misc.js` | 5016B 計星（`lks` 開局、`lk` 預測、`lkf` 結算、`lkp` 專題成果卡）、`dq`（單元一）、`hint`（漸進提示） |
 | `60_gen_net.js`、`61_gen_cipher.js` | 🎲 出題器（只在伺服器執行） |
 
 網頁端的對應：`shared/api.js`（連線）、`shared/cardgame.js`（遊戲引擎）、`shared/*-labs.js`（實驗站畫面）、`shared/pyrunner.js`、`shared/sheet.js`、`shared/labkit.js`、`11601/digital/progress-hook.js`。
