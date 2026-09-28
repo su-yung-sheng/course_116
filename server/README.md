@@ -1,10 +1,11 @@
 # 🔐 驗證伺服器（Google Apps Script）部署說明
 
 答案、判斷對錯、扣 ❤️、出題、發星星，全部在這個伺服器上。網站（GitHub Pages）只有題目。
-這個資料夾是**伺服器程式**（公開，沒有答案）；真正要貼到 Apps Script 的是建置後的 **`private/server/`**（多了答案檔，不能公開）。
+這個資料夾是**伺服器程式**（公開，沒有答案）；真正要貼到 Apps Script 的是建置後的 **`private/伺服器一鍵貼上/`**（全部合成一個檔、含答案，不能公開）。
 
 ```
 node tools/build.mjs
+  → private/伺服器一鍵貼上/一鍵複製.html、一鍵貼上_course116.gs   📋 全部合成一個檔（建議用這個）
   → private/server/
        00_env.js … 61_gen_cipher.js   伺服器程式（和這個資料夾一樣）
        70_sheet_engine.js             試算表引擎（shared/sheet.js 的複本）
@@ -12,47 +13,46 @@ node tools/build.mjs
        appsscript.json                專案設定（時區、網頁應用程式權限）
 ```
 
-## 一、第一次部署（約 15 分鐘）
+## 一、第一次部署（約 10 分鐘）
 
 > 建議用**個人 Google 帳號**：很多學校的 Workspace 不允許「所有人（不必登入）」存取網頁應用程式。
 
 1. 在 repo 根目錄執行 `node tools/build.mjs`。
 2. 打開 <https://script.google.com> → **新專案**，專案名稱改成「course_116 驗證伺服器」。
-3. 左邊 ⚙️「專案設定」→ 勾「在編輯器中顯示『appsscript.json』資訊清單檔案」。
-4. 回到 `<>` 編輯器，把 `private/server/` 的檔案一個一個貼進去：
-   - 按「檔案 ＋ → 指令碼」，名稱照檔名打（不用打 `.js`），例如 `00_env`、`10_util`…`90_answers`。
-   - **照檔名的數字順序建立**（00 → 10 → 20 → … → 90）。Apps Script 依編輯器裡的順序載入檔案，順序錯了會少功能。
-   - `appsscript.json` 整個換成 `private/server/appsscript.json` 的內容。
-   - 預設的 `程式碼.gs` 刪掉。
-5. 右上角 **部署 → 新增部署作業**：
+3. 📋 **一鍵貼上**：用瀏覽器打開 `private/伺服器一鍵貼上/一鍵複製.html` → 按「📋 複製全部」
+   → 回到 Apps Script 的 `程式碼.gs`，**Ctrl＋A 全選、Ctrl＋V 貼上**（整個取代）→ 💾 儲存。
+   （全部 17 個伺服器檔案已經依序合成一個，只要這一個檔。也可以用記事本打開同資料夾的 `一鍵貼上_course116.gs` 全選複製。）
+4. 右上角 **部署 → 新增部署作業**：
    - 類型：⚙️ → **網頁應用程式**
    - 執行身分：**我**
    - 誰可以存取：**所有人**
    - 按「部署」→ 第一次會要求授權（「這個應用程式未經 Google 驗證」→ 進階 → 前往…）→ 允許。
-6. 複製「網頁應用程式網址」（`https://script.google.com/macros/s/…/exec`）。
-7. 用瀏覽器打開這個網址，應該看到：
+5. 複製「網頁應用程式網址」（`https://script.google.com/macros/s/…/exec`）。
+6. 用瀏覽器打開這個網址，應該看到：
    ```json
    {"ok":true,"service":"course_116 驗證伺服器","labs":33,"gens":31,"missing":[],"terms":["11601","11602"],…}
    ```
-   `ok` 是 `false` 或 `missing` 不是空的 → 有檔案漏貼或順序錯了。
-8. 把網址填進 **`11601/config.js` 和 `11602/config.js`** 的 `VERIFY_URL`（兩個填一樣的），提交、推送網站。
-9. 打開網站玩一關：答錯會扣 ❤️、過關會拿到星星，就成功了。
+7. 把網址填進 **`11601/config.js` 和 `11602/config.js`** 的 `VERIFY_URL`（兩個填一樣的），提交、推送網站。
+8. 打開網站玩一關：答錯會扣 ❤️、過關會拿到星星，就成功了。
 
-### 用 clasp 上傳（會用指令列的話比較快）
+<details><summary>另一種做法：分開的檔案（private/server/，給會用 clasp 的人）</summary>
+
+`private/server/` 是同一份內容拆成 17 個檔（加 `appsscript.json`）。手動貼的話要**照檔名數字順序建立**（Apps Script 依編輯器裡的順序載入）；用 clasp：
 
 ```bash
 npm install -g @google/clasp
-clasp login                                   # 用要部署的 Google 帳號登入
-# 第一次：在 script.google.com 建好專案後，⚙️ 專案設定 → 複製「指令碼 ID」存成 private/script-id.txt
+clasp login
+# 第一次：⚙️ 專案設定 → 複製「指令碼 ID」存成 private/script-id.txt
 node tools/build.mjs                          # 會多產生 private/server/.clasp.json（照檔名順序上傳）
 cd private/server && clasp push -f
 ```
-上傳後一樣要在網頁上「部署」（第 5 步）。
+⚠️ 兩種做法不要混用：專案裡同時有一鍵版和分開的檔案，程式會重複定義。
+</details>
 
 ## 二、改題目之後
 
 1. 改 `private/` → `node tools/build.mjs` → `cd tests && npm test`。
-2. 更新 Apps Script：通常只有 **`90_answers.js`** 會變（改了伺服器程式才要貼其他檔）。整個內容換掉、存檔。
+2. 📋 打開 `private/伺服器一鍵貼上/一鍵複製.html` → 複製全部 → 到 Apps Script 的 `程式碼.gs` 全選、貼上、儲存。
 3. **部署 → 管理部署作業 → ✏️ 編輯 → 版本：新版本 → 部署**。網址不會變。
 4. 用瀏覽器打開網址，看 `built`（建置時間，UTC）是不是剛剛那次。
 5. 推送網站。

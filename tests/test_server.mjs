@@ -1,6 +1,6 @@
 // 🔐 驗證伺服器（server/，用 tools/gas-mock.mjs 模擬 Apps Script）：不經過網頁，直接用「作弊的方式」打伺服器
 //    確認：跳過題目拿不到星、❤️ 扣完就結束、題目資料裡沒有答案、收據簽章對得上、亂送資料不會當掉
-import crypto from 'crypto';
+import crypto from 'crypto'; import { fileURLToPath } from 'url';
 import { createGas } from '../tools/gas-mock.mjs';
 import fs from 'fs'; import vm from 'vm';
 const priv = rel => { const c = { window: {} }; c.window.window = c.window; vm.createContext(c); vm.runInContext(fs.readFileSync(new URL('../private/' + rel, import.meta.url), 'utf8'), c); return c.window; };   // 不用瀏覽器：不經過 harness
@@ -75,6 +75,15 @@ ok(py.run && py.tests.length > 0 && py.tests.every(t => !('checks' in t)), '🐍
 const pg = gas.call('pyg', { run: py.run, outs: py.tests.map(() => ({ events: [['out', '亂打']] })), feats: {} });
 ok(pg.stars === 0 && !pg.rc, '🐍 輸出亂打 → 0 星、沒有收據');
 ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送測資結果 → 拒絕');
+
+/* 9. 📋 一鍵貼上版（全部檔案合成一個）也要能跑，而且和分開的檔案一樣 */
+{
+  const one = createGas(fileURLToPath(new URL('../private/伺服器一鍵貼上/一鍵貼上_course116.gs', import.meta.url))), h = JSON.parse(one.ctx.doGet().getContent());
+  ok(h.ok && h.labs === Object.keys(gas.ctx.SV.labs).length && h.gens === Object.keys(gas.ctx.CARDGAME.gens).length, '📋 一鍵貼上版：健康檢查通過', h.labs + ' 個實驗站、' + h.gens + ' 個出題器');
+  const s1 = one.call('start', { t: '11602', lv: lv.id, st: 0 });
+  rounds.forEach((rd, ri) => { for (let i = 0; i < s1.sizes[ri]; i++) one.call('ans', { t: '11602', run: s1.run, r: ri, i, v: rd.items[i].a }); });
+  ok(one.call('fin', { t: '11602', run: s1.run }).stars === 1, '📋 一鍵貼上版：可以過關拿星');
+}
 
 console.log(bad ? '✘ ' + bad + ' 項沒過' : '✔ 伺服器驗證全部通過');
 process.exit(bad ? 1 : 0);

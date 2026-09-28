@@ -165,6 +165,31 @@ for (const f of fs.readdirSync(P('server')).filter(f => /^\d\d_.*\.js$/.test(f))
 fs.writeFileSync(path.join(OUT, '70_sheet_engine.js'), '/* 試算表引擎（和網頁用的 shared/sheet.js 同一份）：伺服器重算學生的公式 */\n' + fs.readFileSync(P('shared/sheet.js'), 'utf8'));
 fs.writeFileSync(path.join(OUT, '90_answers.js'), '/* ⚠️ 自動產生（node tools/build.mjs），全部答案都在這裡 —— 只能放在 Apps Script，絕對不能公開 */\nvar SV_ANS = ' + JSON.stringify(ANS) + ';\n');
 if (fs.existsSync(P('server', 'appsscript.json'))) fs.copyFileSync(P('server', 'appsscript.json'), path.join(OUT, 'appsscript.json'));
+/* 📋 一鍵貼上：全部檔案依序合成一個檔（Apps Script 只要建一個檔、整個貼上）
+   放在 private/伺服器一鍵貼上/（和 private/server/ 分開：用 clasp 上傳 server/ 時才不會重複）
+   ・一鍵複製.html            用瀏覽器打開 → 按「📋 複製全部」
+   ・一鍵貼上_course116.gs    用記事本打開 → 全選 → 複製 */
+const ONE = P('private', '伺服器一鍵貼上');
+fs.rmSync(ONE, { recursive: true, force: true }); fs.mkdirSync(ONE, { recursive: true });
+const parts = fs.readdirSync(OUT).filter(f => f.endsWith('.js')).sort();
+const one = '/* ⚠️ course_116 驗證伺服器（一鍵貼上版，node tools/build.mjs 產生，' + ANS.built + ' UTC）\n' +
+  '   含全部答案：只能貼在 Google Apps Script，絕對不能公開。更新時整個取代。 */\n' +
+  parts.map(f => '\n/* ════════ ' + f + ' ════════ */\n' + fs.readFileSync(path.join(OUT, f), 'utf8').replace(/\s*$/, '') + '\n;').join('\n') + '\n';
+fs.writeFileSync(path.join(ONE, '一鍵貼上_course116.gs'), one);
+const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+fs.writeFileSync(path.join(ONE, '一鍵複製.html'), '<!doctype html><meta charset="utf-8"><title>course_116 驗證伺服器：一鍵複製</title>' +
+  '<style>body{font-family:"Microsoft JhengHei",sans-serif;max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.7}button{font:inherit;font-size:1.3rem;padding:.6rem 1.4rem;border-radius:.6rem;border:0;background:#047857;color:#fff;cursor:pointer}' +
+  'textarea{width:100%;height:10rem;font:12px monospace}.ok{color:#047857;font-weight:900}ol li{margin:.3rem 0}</style>' +
+  '<h1>🔐 course_116 驗證伺服器</h1><p>建置時間：' + ANS.built + ' UTC　·　' + parts.length + ' 個檔案合成一個　·　' + Math.round(one.length / 1024) + ' KB</p>' +
+  '<p><button id="b">📋 複製全部</button> <span id="m"></span></p>' +
+  '<ol><li>打開 Apps Script 專案的 <b>程式碼.gs</b>（只要這一個檔）</li><li>在編輯區按 <b>Ctrl＋A</b> 全選，再按 <b>Ctrl＋V</b> 貼上（整個取代）</li><li>按 💾 儲存</li>' +
+  '<li>第一次：部署 → 新增部署作業 → 網頁應用程式（執行身分：我；存取：所有人）<br>之後更新：部署 → 管理部署作業 → ✏️ → 版本：新版本 → 部署</li></ol>' +
+  '<p>⚠️ 這一頁含全部答案，只放在老師電腦（private/ 資料夾），不要傳給學生、不要上傳 GitHub。</p>' +
+  '<textarea id="t" readonly>' + esc(one) + '</textarea>' +
+  '<script>document.getElementById("b").onclick=function(){var t=document.getElementById("t"),m=document.getElementById("m");' +
+  'function ok(){m.innerHTML="<span class=ok>✅ 已複製，到 Apps Script 貼上吧</span>";}' +
+  'if(navigator.clipboard){navigator.clipboard.writeText(t.value).then(ok,function(){t.select();document.execCommand("copy");ok();});}else{t.select();document.execCommand("copy");ok();}};</script>');
+
 /* 用 clasp 上傳（選用）：private/script-id.txt 放 Apps Script 專案的「指令碼 ID」，就產生 .clasp.json（照檔名順序上傳） */
 const SID = P('private', 'script-id.txt');
 if (fs.existsSync(SID)) {
@@ -172,3 +197,4 @@ if (fs.existsSync(SID)) {
   fs.writeFileSync(path.join(OUT, '.clasp.json'), JSON.stringify({ scriptId: fs.readFileSync(SID, 'utf8').trim(), rootDir: '.', filePushOrder: order }, null, 2) + '\n');
 }
 console.log('✔ private/server/：' + fs.readdirSync(OUT).length + ' 個檔案（' + stat.levels + ' 關、' + stat.rounds + ' 回合）');
+console.log('📋 一鍵貼上：private/伺服器一鍵貼上/一鍵複製.html（用瀏覽器打開，按「複製全部」）');

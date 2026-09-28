@@ -18,7 +18,8 @@ import { fileURLToPath } from 'url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 export function createGas(dir = path.join(ROOT, 'private', 'server')) {
-  if (!fs.existsSync(path.join(dir, '90_answers.js'))) throw new Error('找不到 ' + dir + '/90_answers.js —— 先執行 node tools/build.mjs');
+  const single = /\.(gs|js)$/.test(dir);   // 也可以直接給「一鍵貼上」的單一檔案（驗證合併版能跑）
+  if (!single && !fs.existsSync(path.join(dir, '90_answers.js'))) throw new Error('找不到 ' + dir + '/90_answers.js —— 先執行 node tools/build.mjs');
   const cache = new Map(), props = new Map();
   const ctx = {
     console,
@@ -38,7 +39,8 @@ export function createGas(dir = path.join(ROOT, 'private', 'server')) {
     SpreadsheetApp: { openById: () => { throw new Error('SpreadsheetApp 沒有模擬'); } }
   };
   vm.createContext(ctx);
-  for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.js')).sort()) vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), ctx, { filename: f });
+  if (single) vm.runInContext(fs.readFileSync(dir, 'utf8'), ctx, { filename: path.basename(dir) });
+  else for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.js')).sort()) vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), ctx, { filename: f });
   return {
     ctx,
     post: body => ctx.doPost({ postData: { contents: String(body || '') } }).getContent(),
