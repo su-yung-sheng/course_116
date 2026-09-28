@@ -8,8 +8,8 @@
 window.CONFIG = {
   TERM: '11602',
   //   🔐 驗證伺服器（Google Apps Script 網頁應用程式的網址，…/exec）：答案、判斷、星星都在那裡（見 server/README.md）
-  //   留空：在自己電腦用 node tools/dev-server.mjs 預覽時會自動用本機模擬伺服器；放上網站後留空＝練習模式（不判斷、不記星）
-  VERIFY_URL: '',
+  //   在自己電腦（localhost）預覽時一律用本機模擬伺服器（網址加 ?gas=live 才連這個）；留空＝練習模式（不判斷、不記星）
+  VERIFY_URL: 'https://script.google.com/macros/s/AKfycbx4uYlffS8uiRtjUoNQihvUc__v5-oYPpgNRdhFGUd5dnYrqd4m3bAuVXzhSS9vmOha8A/exec',
   SCHOOL: '前峰國中 九年級',
   //   第 1 週的星期一（⚠️ 依 116 學年度行事曆確認後再改）
   TERM_START: '2028-02-14',

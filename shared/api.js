@@ -3,15 +3,16 @@
    ---------------------------------------------------------------------
    答案只在伺服器：前端送出學生的操作，伺服器判斷對錯、扣 ❤️、發星星。
    · 網址：config.js 的 VERIFY_URL（部署 Apps Script 網頁應用程式後拿到的 …/exec）
-           在自己電腦用 tools/dev-server.mjs 開的話，自動用本機的模擬伺服器 /__gas
+           在自己電腦（localhost）開的話，一律用本機的模擬伺服器 /__gas（網址加 ?gas=live 才連真的）
    · 連不上伺服器 → 練習模式：可以看題目、動手做，但不判斷、不記星（API.online 為 false）
    · 用 text/plain 送 JSON：瀏覽器不會先送 OPTIONS 預檢，Apps Script 才收得到
    ===================================================================== */
 (function () {
   var C = window.CONFIG || {}, state = null, waiters = [];
-  function url() {
-    if (C.VERIFY_URL) return C.VERIFY_URL;
-    return /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) ? '/__gas' : '';
+  function url() {   // 自己電腦預覽（localhost）一律用本機模擬伺服器；網址加 ?gas=live 才連真的伺服器
+    var local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    if (local && !/[?&]gas=live\b/.test(location.search)) return '/__gas';
+    return C.VERIFY_URL || '';
   }
   function post(body, ms) {
     var u = url(); if (!u) return Promise.reject({ err: 'offline' });
@@ -21,11 +22,25 @@
       .catch(function (e) { throw e && e.err ? e : { err: 'offline' }; })
       .then(function (o) { if (timer) clearTimeout(timer); if (o && o.err) throw o; return o; }, function (e) { if (timer) clearTimeout(timer); throw e; });
   }
+  /* ⏳ 等伺服器的時候（Apps Script 每次約 1～2 秒）：畫面下方顯示「伺服器判斷中…」，免得學生以為當掉一直按 */
+  var pending = 0;
+  function wait(d) {
+    pending = Math.max(0, pending + d);
+    if (!document.getElementById('api-wait-css')) {
+      var st = document.createElement('style'); st.id = 'api-wait-css';
+      st.textContent = 'html.api-wait,html.api-wait *{cursor:progress}html.api-wait body::after{content:"⏳ 伺服器判斷中…";position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);' +
+        'background:#0f172a;color:#fff;padding:.45rem 1rem;border-radius:999px;font-weight:800;font-size:.95rem;z-index:9999;pointer-events:none;opacity:0;animation:apiw .2s .35s forwards}' +
+        '@keyframes apiw{to{opacity:.92}}@media (prefers-reduced-motion:reduce){html.api-wait body::after{animation:none;opacity:.92}}';
+      (document.head || document.documentElement).appendChild(st);
+    }
+    document.documentElement.classList.toggle('api-wait', pending > 0);
+  }
   /* 呼叫一個動作：成功 → 伺服器回的物件；失敗 → reject({ err: 代碼 })
      伺服器忙（很多人同時送出）自動等一下再送，最多 3 次 */
   function call(a, data, tries) {
     var body = { a: a, t: C.TERM }; for (var k in data || {}) body[k] = data[k];
-    return post(body).catch(function (e) {
+    wait(1);
+    return post(body).then(function (o) { wait(-1); return o; }, function (e) { wait(-1); throw e; }).catch(function (e) {
       if (e.err === 'busy' && (tries || 0) < 3) return new Promise(function (ok) { setTimeout(ok, 400 + Math.random() * 600); }).then(function () { return call(a, data, (tries || 0) + 1); });
       if (e.err === 'offline') setState(false);
       throw e;
