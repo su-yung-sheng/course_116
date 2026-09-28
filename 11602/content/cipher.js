@@ -1,5 +1,5 @@
 /* ⚠️ 自動產生，請勿手改。來源：private/11602/content/cipher.js（私有，不進 git）；產生方式：node tools/build.mjs
-   答案、解說、預期輸出都已封存（見 shared/seal.js）。 */
+   公開版只有題目：答案、解說、提示、預期輸出都在驗證伺服器（server/，見 server/README.md）。 */
 window.CIPHER_LEVELS = [
  {
   "id": "K1",
@@ -16,7 +16,8 @@ window.CIPHER_LEVELS = [
       "gen": "letterNum",
       "n": 4,
       "prompt": "看表找編號",
-      "tool": "abc"
+      "tool": "abc",
+      "src": "11602/K1/0/0"
      }
     ]
    },
@@ -29,7 +30,8 @@ window.CIPHER_LEVELS = [
       "n": 2,
       "prompt": "整個單字換成編號",
       "tool": "abc",
-      "hard": true
+      "hard": true,
+      "src": "11602/K1/1/0"
      }
     ]
    },
@@ -40,14 +42,16 @@ window.CIPHER_LEVELS = [
       "type": "gen",
       "gen": "letterNum",
       "n": 3,
-      "prompt": "不看表，挑戰記憶"
+      "prompt": "不看表，挑戰記憶",
+      "src": "11602/K1/2/0"
      },
      {
       "type": "gen",
       "gen": "letterNum",
       "n": 2,
       "prompt": "整個單字（不看表）",
-      "hard": true
+      "hard": true,
+      "src": "11602/K1/2/1"
      }
     ]
    }
@@ -68,7 +72,8 @@ window.CIPHER_LEVELS = [
       "gen": "wrap",
       "n": 4,
       "prompt": "算出新的編號",
-      "tool": "abc"
+      "tool": "abc",
+      "src": "11602/K2/0/0"
      }
     ]
    },
@@ -81,7 +86,8 @@ window.CIPHER_LEVELS = [
       "n": 2,
       "prompt": "字母繞圈圈",
       "tool": "abc",
-      "hard": true
+      "hard": true,
+      "src": "11602/K2/1/0"
      }
     ]
    },
@@ -93,7 +99,8 @@ window.CIPHER_LEVELS = [
       "gen": "wrap",
       "n": 4,
       "prompt": "繞圈挑戰（不看表）",
-      "hard": true
+      "hard": true,
+      "src": "11602/K2/2/0"
      }
     ]
    }
@@ -115,7 +122,8 @@ window.CIPHER_LEVELS = [
       "n": 2,
       "max": 4,
       "prompt": "用轉盤加密",
-      "tool": "caesar"
+      "tool": "caesar",
+      "src": "11602/K3/0/0"
      }
     ]
    },
@@ -128,7 +136,8 @@ window.CIPHER_LEVELS = [
       "n": 3,
       "min": 4,
       "prompt": "用編號算出密文",
-      "tool": "abc"
+      "tool": "abc",
+      "src": "11602/K3/1/0"
      }
     ]
    },
@@ -142,7 +151,8 @@ window.CIPHER_LEVELS = [
       "min": 4,
       "prompt": "大金鑰加密",
       "tool": "abc",
-      "hard": true
+      "hard": true,
+      "src": "11602/K3/2/0"
      }
     ]
    }
@@ -163,7 +173,8 @@ window.CIPHER_LEVELS = [
       "gen": "caesarDec",
       "n": 2,
       "prompt": "知道金鑰，把密文解開",
-      "tool": "caesar"
+      "tool": "caesar",
+      "src": "11602/K4/0/0"
      }
     ]
    },
@@ -175,7 +186,8 @@ window.CIPHER_LEVELS = [
       "gen": "bruteForce",
       "n": 2,
       "prompt": "不知道金鑰，暴力破解",
-      "tool": "caesar"
+      "tool": "caesar",
+      "src": "11602/K4/1/0"
      }
     ]
    },
@@ -188,14 +200,16 @@ window.CIPHER_LEVELS = [
       "n": 1,
       "prompt": "攔截兩個單字",
       "tool": "caesar",
-      "hard": true
+      "hard": true,
+      "src": "11602/K4/2/0"
      },
      {
       "type": "gen",
       "gen": "caesarDec",
       "n": 1,
       "prompt": "用編號表解密",
-      "tool": "abc"
+      "tool": "abc",
+      "src": "11602/K4/2/1"
      }
     ]
    }
@@ -217,7 +231,8 @@ window.CIPHER_LEVELS = [
       "n": 2,
       "keys": 2,
       "prompt": "兩把金鑰加密",
-      "tool": "vigenere"
+      "tool": "vigenere",
+      "src": "11602/K5/0/0"
      }
     ]
    },
@@ -230,7 +245,8 @@ window.CIPHER_LEVELS = [
       "n": 2,
       "keys": 3,
       "prompt": "三把金鑰加密",
-      "tool": "vigenere"
+      "tool": "vigenere",
+      "src": "11602/K5/1/0"
      }
     ]
    },
@@ -242,7 +258,8 @@ window.CIPHER_LEVELS = [
       "gen": "vigDec",
       "n": 2,
       "prompt": "維吉尼亞解密",
-      "tool": "vigenere"
+      "tool": "vigenere",
+      "src": "11602/K5/2/0"
      }
     ]
    }
@@ -261,7 +278,8 @@ window.CIPHER_LEVELS = [
      {
       "type": "gen",
       "gen": "tally",
-      "prompt": "統計全班作答"
+      "prompt": "統計全班作答",
+      "src": "11602/K6/0/0"
      }
     ]
    },
@@ -271,7 +289,8 @@ window.CIPHER_LEVELS = [
      {
       "type": "gen",
       "gen": "tally",
-      "prompt": "換一題再統計"
+      "prompt": "換一題再統計",
+      "src": "11602/K6/1/0"
      }
     ]
    },
@@ -282,7 +301,8 @@ window.CIPHER_LEVELS = [
       "type": "gen",
       "gen": "tally",
       "prompt": "大班級統計",
-      "hard": true
+      "hard": true,
+      "src": "11602/K6/2/0"
      }
     ]
    }

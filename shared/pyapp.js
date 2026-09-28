@@ -80,7 +80,7 @@ window.PYAPP = { mount: function (opts) {
       '<details class="mt2"><summary class="bold small" style="cursor:pointer">🐱 和 Scratch 積木對照</summary>' +
       '<div class="scroll-x mt1"><table class="t map-t"><tr><th>Scratch 積木</th><th>Python</th></tr>' +
       lv.scratch.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table></div></details>' +
-      '<div class="row mt2"><button class="btn sm" id="btn-hint">💡 提示（0 / ' + (lv.hx ? lv.hn : lv.hints.length) + '）</button>' +
+      '<div class="row mt2"><button class="btn sm" id="btn-hint">💡 提示（0 / ' + lv.hn + '）</button>' +
       (opts.ref ? '<a class="btn sm" id="btn-ref" data-refp="' + lv.id + '" href="' + opts.ref + '#' + lv.id + '" target="_blank" rel="noopener">📚 這關用到的語法</a>' : '') + '</div><div id="hints" class="stack mt1"></div>' +
       '</article>' +
 
@@ -108,15 +108,19 @@ window.PYAPP = { mount: function (opts) {
     document.getElementById('btn-reset').onclick = function () {
       if (confirm('要把程式換回範本嗎？（目前寫的會不見）')) { ta.value = lv.starter; onEdit(); }
     };
-    var shown = 0, nHint = lv.hx ? lv.hn : lv.hints.length;
-    document.getElementById('btn-hint').onclick = function () {
-      if (shown >= nHint) return;
-      var H = lv.hx ? SEAL.reveal('hint/' + lv.id, lv.hx) : lv.hints;   // 提示是混淆過的，按了才解開
-      var d = document.createElement('div'); d.className = 'hint small pop';
-      d.innerHTML = '<b>提示 ' + (shown + 1) + '：</b>' + esc(H[shown]);
-      document.getElementById('hints').appendChild(d);
-      shown++; this.textContent = '💡 提示（' + shown + ' / ' + nHint + '）';
-      if (shown >= nHint) this.disabled = true;
+    var shown = 0, nHint = lv.hn || 0, hb = document.getElementById('btn-hint'), asking = false;
+    if (!nHint) hb.disabled = true;
+    hb.onclick = function () {   // 提示在伺服器：按一次拿一則（最後幾則常常很接近答案，所以不放在網頁裡）
+      if (shown >= nHint || asking) return;
+      asking = true;
+      API.call('hint', { kind: 'py', lv: lv.id, i: shown }).then(function (r) {
+        asking = false;
+        var d = document.createElement('div'); d.className = 'hint small pop';
+        d.innerHTML = '<b>提示 ' + (shown + 1) + '：</b>' + esc(r.hint);
+        document.getElementById('hints').appendChild(d);
+        shown++; hb.textContent = '💡 提示（' + shown + ' / ' + nHint + '）';
+        if (shown >= nHint) hb.disabled = true;
+      }, function (e) { asking = false; UI.toast(API.msg(e)); });
     };
     PYRUN.ready().then(function () { setBusy(false); }, function () {});
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -277,10 +281,10 @@ window.PYAPP = { mount: function (opts) {
     var res = document.getElementById('result');
     res.classList.remove('hidden');
     res.innerHTML = '<p class="bold">⏳ 評分中…（' + lv.tests.length + ' 組測資）</p>';
-    PYRUN.grade(lv, code).then(function (g) {
+    PYRUN.grade(lv, code, { mod: MOD }).then(function (g) {
       setBusy(false);
       var before = stars(lv.id);
-      var saved = STORE.saveLevel(MOD, lv.id, { stars: g.stars, score: g.score, code: code });
+      var saved = g.offline ? { improved: false } : STORE.saveLevel(MOD, lv.id, { stars: g.stars, score: g.score, code: code, rc: g.rc, ts: g.ts });
       renderList();
       var lb = document.getElementById('lv-best'); if (lb) lb.innerHTML = UI.stars(stars(lv.id));
       var idx = L.indexOf(lv);
@@ -292,18 +296,18 @@ window.PYAPP = { mount: function (opts) {
         var tt = t.test, why = '';
         if (!t.pass) {
           if (t.error) why = PYRUN.explain(t.error, code).title;
-          else if (tt.hidden) why = (tt.xw ? SEAL.reveal(tt.s + '/why', tt.xw) : tt.why) || '再想想特殊情況';
-          else why = (t.fails[0] && t.fails[0].msg) || '輸出和預期不一樣';
+          else why = t.msg || (tt.hidden ? '再想想特殊情況' : '輸出和預期不一樣');
         }
-        var inp = tt.hidden ? '🔒 隱藏' : (tt.inputs.length ? tt.inputs.map(esc).join('、') : '（沒有輸入）');
+        var inp = tt.hidden ? '🔒 隱藏' : ((tt.inputs || []).length ? tt.inputs.map(esc).join('、') : '（沒有輸入）');
         var out = tt.hidden || !t.run.events ? '' : '<details class="tiny"><summary>看你的輸出</summary><div class="sample mt1">' + esc(PYRUN.transcript(t.run.events)) + '</div></details>';
         return '<tr><td>' + (i + 1) + '. ' + esc(tt.name) + '</td><td>' + inp + '</td><td>' +
-          (t.pass ? '<span class="ok-c">✔ 通過</span>' : '<span class="bad-c">✘</span> <span class="small">' + esc(why) + '</span>') + out + '</td></tr>';
+          (t.pass == null ? '<span class="soft">📴 沒有判斷</span>' : t.pass ? '<span class="ok-c">✔ 通過</span>' : '<span class="bad-c">✘</span> <span class="small">' + esc(why) + '</span>') + out + '</td></tr>';
       }).join('');
       var reqs = g.reqs.map(function (r) {
         return '<li>' + (r.ok ? '<span class="ok-c">✔</span> ' : '<span class="bad-c">✘</span> ') + esc(r.req.msg) + '</li>';
       }).join('');
-      var msg = g.stars === 3 ? '🎉 完美！程式正確、結構也漂亮。' :
+      var msg = g.offline ? '📴 練習模式：連不上驗證伺服器，只跑了公開的範例測資給你看輸出，沒有判斷、不記星。連上網路再送出一次。' :
+                g.stars === 3 ? '🎉 完美！程式正確、結構也漂亮。' :
                 g.stars === 2 ? '👍 測資全部通過！再符合下面的結構要求就能拿到 3 星。' :
                 g.stars === 1 ? '💪 快成功了！看看哪幾組沒過。' : '🧐 還沒有任何一組通過，先按「試跑」找出問題。';
       res.innerHTML =
@@ -322,7 +326,7 @@ window.PYAPP = { mount: function (opts) {
           : { id: 'btn-next', locked: true, lbl: '🔒 下一關', title: '這一關拿到 2⭐ 才開放', go: function () { UI.toast('這一關拿到 2 顆星，下一關才會開放'); } });
       res.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (saved.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(g.stars));
-    });
+    }, function (e) { setBusy(false); res.innerHTML = '<div class="note bad">⚠️ ' + esc(API.msg(e)) + '</div>'; });
   }
 
   /* ── 進場 ─────────────────────────────────────── */

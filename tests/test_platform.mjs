@@ -1,5 +1,5 @@
 // 單元三「系統平臺大冒險」：⭐ 三星三階（基礎題庫 → 🧪 實驗站 → 🧪 實驗站挑戰版）
-import { launch, login, BASE, SHOTS, priv, passCool } from './harness.mjs';
+import { launch, login, BASE, SHOTS, priv, passCool, lastLab, gas } from './harness.mjs';
 import { solvePfLab } from './pf_solver.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 const { browser, context } = await launch({ viewport: { width: 1280, height: 900 } });
@@ -87,11 +87,11 @@ ok(await page.evaluate(() => STORE.moduleStars('platform')) === 24, '八關全�
 
 /* ── 🧪 實驗站：錯誤操作會被擋下（扣心但保留畫面），截圖 ── */
 const open = async (id, s, q = 1) => { await page.goto(`${BASE}/11601/platform.html?t=${id}${s}${q}#${id}`); await page.click(`.stage[data-s="${s}"]`); await page.waitForSelector('#lab > div'); await page.waitForTimeout(1600); };
-const fbHas = async t => (await page.textContent('#fb')).includes(t);
+const fbHas = async t => { await page.waitForSelector('#fb .note', { timeout: 8000 }).catch(() => {}); return (await page.textContent('#fb')).includes(t); };   // 伺服器判斷：等回覆
 const heartsLeft = () => page.$$eval('.hud .heart.full, .hud .h-on', e => e.length).catch(() => -1);
 
 await open('G2', 1);
-{ const steps = (await page.$eval('#lab', e => e.dataset.steps)).split(',');
+{ const steps = lastLab().sec.steps;   // 步驟順序只有伺服器知道
   await page.click('.fu-u[data-u="alu"]');   // 第一步就去計算 → 不對
   ok(await fbHas('輸入'), '🏭 五大單元：資料還沒輸入就計算 → 擋下', steps.length);
   await passCool(page); await page.screenshot({ path: SHOTS + 'pf-lab-five.png' });
@@ -139,9 +139,9 @@ await open('G7', 1);
   await page.screenshot({ path: SHOTS + 'pf-lab-cloud.png' }); }
 
 await open('G8', 2);
-{ const sp = JSON.parse(await page.$eval('#lab', e => e.dataset.spec));
+{ const S = lastLab().sec, d = gas.ctx.SV._pf.DEVS[S.di], sp = { s: d.s, op: d.op, v: S.v, a: d.a, mode: S.mode };   // 規格只有伺服器知道
   await page.selectOption('#em-s', sp.s); await page.selectOption('#em-o', sp.op); await page.fill('#em-n', String(sp.v)); await page.selectOption('#em-a', sp.a);
-  await page.click('#em-run');
+  await page.click('#em-run'); await page.waitForSelector('.em-t');
   const res = await page.$$eval('.em-t', e => e.length);
   ok(res >= 7 && (sp.mode === 'inv' ? await page.$('#nx') : await fbHas('測試沒過')), '🔌 挑戰：' + sp.mode + ' 條件照抄數字 →', sp.mode === 'inv' ? '（反過來說照抄剛好對）' : '邊界測試抓出來');
   await page.screenshot({ path: SHOTS + 'pf-lab-emb.png' }); }

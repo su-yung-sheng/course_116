@@ -1,12 +1,13 @@
 /* =====================================================================
    🏁 課堂挑戰模式（老師投影、小組搶答）
    ---------------------------------------------------------------------
-   題目來自 🎲 出題器（CARDGAME.gens）：每題當場隨機產生、照規則檢查，原始碼裡沒有答案清單。
+   題目來自驗證伺服器的 🎲 出題器（server/60_gen_net.js、61_gen_cipher.js）：每題當場隨機產生、由伺服器判斷，
+   網頁只拿到題目，投影畫面按 F12 也看不到答案。（課堂挑戰不扣心、不記星；要連網路）
    流程：設定組數、題目範圍 → 投影題目、倒數計時 → 哪一組舉手，老師點那一組、輸入（或點選）他們的答案 →
         答對 +10（剩一半以上時間再 +5 搶快）；答錯這一組這題不能再答，換別組 → 下一題 → 最後排名。
    分數存在這台電腦的瀏覽器（重新整理不會不見），按「結束」才清除。
    用法：CHALLENGE.mount('#app', { topics: [{ id, name, icon, gens: [{ gen, rd }] }] })
-   需要：ui.js、cardgame.js（答題工具）、出題器（net-gen.js／cipher-gen.js…）
+   需要：ui.js、api.js、cardgame.js（答題工具）
    ===================================================================== */
 (function () {
   var esc = UI.esc, KEY = 'c116-challenge-' + ((window.CONFIG && CONFIG.TERM) || '');
@@ -17,7 +18,17 @@
   var COLORS = ['#1d4ed8', '#b91c1c', '#047857', '#7e22ce', '#b45309', '#0f766e', '#be123c', '#4338ca'];
 
   function mount(sel, opts) {
-    var app = document.querySelector(sel), T = opts.topics, st = null, cur = null, timer = null;
+    var app = document.querySelector(sel), T = opts.topics, st = null, cur = null, timer = null, run = null;
+    /* 伺服器上的「課堂挑戰局」：不扣心、不記星，只負責出題和判斷 */
+    function ensureRun() {
+      if (run) return Promise.resolve(run);
+      return API.call('start', { free: true, mod: 'challenge' }).then(function (r) { run = r.run; return run; });
+    }
+    function offline(e) {
+      clearInterval(timer);
+      app.innerHTML = '<section class="card"><div class="note bad">⚠️ ' + esc(API.msg(e)) + '</div><p class="small soft mt1">課堂挑戰的題目由驗證伺服器出題、判斷，要連上網路才能玩。</p><div class="row mt2"><button type="button" class="btn" id="ch-back">← 回到設定</button></div></section>';
+      app.querySelector('#ch-back').onclick = setup;
+    }
 
     /* ── 設定 ── */
     function setup() {
@@ -47,24 +58,28 @@
       };
     }
 
-    /* ── 出一題 ── */
-    function make() {
-      for (var guard = 0; guard < 30; guard++) {
-        var t = T[st.topics[Math.floor(Math.random() * st.topics.length)]], g = t.gens[Math.floor(Math.random() * t.gens.length)];
-        var fn = CARDGAME.gens[g.gen]; if (!fn) continue;
-        var rd = Object.assign({ n: 1 }, g.rd || {}); if (st.hard && g.hardOk !== false) rd.hard = true;
-        var items = fn(rd).filter(function (it) { return !it.kind || it.kind === 'input' || it.kind === 'choice'; });
-        if (items.length) return { it: items[Math.floor(Math.random() * items.length)], topic: t, tool: rd.tool || g.tool };
-      }
-      return null;
+    /* ── 出一題（請伺服器出；只要能投影作答的題型：打字、選擇） ── */
+    function make(guard) {
+      guard = guard || 0;
+      var t = T[st.topics[Math.floor(Math.random() * st.topics.length)]], g = t.gens[Math.floor(Math.random() * t.gens.length)];
+      var rd = g.rd || {}, hard = st.hard && g.hardOk !== false;
+      return ensureRun().then(function () {
+        return API.call('gen', { run: run, gen: g.gen, hard: hard, tool: rd.tool || g.tool || null, one: true, kinds: ['input', 'choice'] });
+      }).then(function (r) { return { it: r.qs[0], topic: t, tool: rd.tool || g.tool }; }, function (e) {
+        if (e.err === 'run-expired') { run = null; }
+        if ((e.err === 'no-item' || e.err === 'no-gen' || e.err === 'run-expired') && guard < 20) return make(guard + 1);
+        throw e;
+      });
     }
     function next(first) {
       clearInterval(timer);
       if (!first) { st.q++; save(st); }
       if (st.q >= st.total) return end();
-      cur = make(); if (!cur) { app.innerHTML = '<p class="note bad">出題器沒有載入</p>'; return; }
-      cur.locked = {}; cur.left = st.sec; cur.done = false; cur.pick = null;
-      draw(); tick();
+      app.innerHTML = board() + '<section class="card ch-q mt2 center"><p class="soft bold">🎲 出題中…</p></section>';
+      make().then(function (c) {
+        cur = c; cur.locked = {}; cur.left = st.sec; cur.done = false; cur.pick = null;
+        draw(); tick();
+      }, offline);
     }
     function tick() {
       clearInterval(timer);
@@ -93,7 +108,7 @@
       var tool = it.tool || cur.tool; if (tool && CARDGAME.tools[tool]) CARDGAME.tools[tool](app.querySelector('#tool'), it);
       app.querySelectorAll('.ch-team').forEach(function (b) { b.onclick = function () { choose(+b.dataset.i); }; });
       app.querySelector('#ch-pause').onclick = function () { cur.pause = !cur.pause; this.textContent = cur.pause ? '▶ 繼續' : '⏸ 暫停'; };
-      app.querySelector('#ch-hint').onclick = function () { var h = typeof it.hint === 'function' ? it.hint('') : it.hint; app.querySelector('#fb').innerHTML = '<div class="note small">💡 ' + esc(h || '這題沒有提示') + '</div>'; };
+      app.querySelector('#ch-hint').onclick = function () { var h = it.hint; app.querySelector('#fb').innerHTML = '<div class="note small">💡 ' + esc(h || '這題沒有提示') + '</div>'; };
       app.querySelector('#ch-skip').onclick = function () { next(); };
       app.querySelector('#ch-end').onclick = function () { if (confirm('結束這一場，看排名？')) end(); };
       if (cur.pick != null) answerBox();
@@ -106,24 +121,25 @@
       answerBox();
     }
     function answerBox() {
-      var it = cur.it, kind = it.kind || 'input', i = cur.pick, box = app.querySelector('#ch-ans'), val = null, fv = null;
+      var it = cur.it, kind = it.kind || 'input', i = cur.pick, box = app.querySelector('#ch-ans'), val = null, sending = false;
       box.innerHTML = '<div class="ch-answer" style="--c:' + COLORS[i] + '"><b>' + esc(st.teams[i].name) + ' 的答案：</b>' +
-        (kind === 'choice' ? '<div class="buckets mt1">' + it.options.map(function (o) { return '<button type="button" class="pick bucket ch-o" data-v="' + esc(o.id) + '">' + (o.icon ? '<span class="ic">' + o.icon + '</span>' : '') + '<span>' + esc(o.label) + '</span></button>'; }).join('') + '</div>' +
-          (it.follow ? '<p class="small bold mt1">' + esc(it.follow.q) + '</p><div class="buckets mt1">' + it.follow.options.map(function (o) { return '<button type="button" class="pick bucket ch-f" data-v="' + esc(o.id) + '">' + esc(o.label) + '</button>'; }).join('') + '</div>' : '')
+        (kind === 'choice' ? '<div class="buckets mt1">' + it.options.map(function (o) { return '<button type="button" class="pick bucket ch-o" data-v="' + esc(o.id) + '">' + (o.icon ? '<span class="ic">' + o.icon + '</span>' : '') + '<span>' + esc(o.label) + '</span></button>'; }).join('') + '</div>'
           : '<input class="input mt1" id="ch-in" autocomplete="off" placeholder="' + esc(it.ph || '輸入答案') + '" aria-label="答案">') +
         '<div class="row mt1"><button type="button" class="btn go" id="ch-judge">⚖️ 判定</button></div></div>';
       box.querySelectorAll('.ch-o').forEach(function (b) { b.onclick = function () { val = b.dataset.v; box.querySelectorAll('.ch-o').forEach(function (x) { x.classList.toggle('on', x === b); }); }; });
-      box.querySelectorAll('.ch-f').forEach(function (b) { b.onclick = function () { fv = b.dataset.v; box.querySelectorAll('.ch-f').forEach(function (x) { x.classList.toggle('on', x === b); }); }; });
       var inp = box.querySelector('#ch-in'); if (inp) { inp.focus(); inp.onkeydown = function (e) { if (e.key === 'Enter') judge(); }; }
       box.querySelector('#ch-judge').onclick = judge;
       function judge() {
         var v = kind === 'choice' ? val : norm(inp.value);
-        if (v == null || v === '' || (it.follow && kind === 'choice' && fv == null)) return UI.toast('先輸入（或選好）答案');
-        var ok = !!it.check(v) && (!it.follow || kind !== 'choice' || !!it.follow.check(fv)), fb = app.querySelector('#fb');
+        if (v == null || v === '') return UI.toast('先輸入（或選好）答案');
+        if (sending) return; sending = true;
+        API.call('gq', { run: run, q: it.q, v: v }).then(function (r) { sending = false; show(!!r.ok, r.why); }, function (e) { sending = false; if (e.err === 'too-many') return show(false); offline(e); });
+      }
+      function show(ok, why) {
+        var fb = app.querySelector('#fb');
         if (ok) {
           var bonus = cur.left >= st.sec / 2 ? 5 : 0;
           st.teams[i].score += 10 + bonus; cur.done = true; save(st);
-          var why = typeof it.why === 'function' ? it.why(v) : it.why;
           app.querySelector('.ch-board').outerHTML = board();
           box.innerHTML = '';
           fb.innerHTML = '<div class="note ok pop ch-big">🎉 ' + esc(st.teams[i].name) + ' 答對！＋10' + (bonus ? '（搶快 ＋5）' : '') + '<br><span class="small">' + esc(why || '') + '</span></div><div class="row mt2"><button type="button" class="btn primary" id="ch-next">' + (st.q + 1 < st.total ? '下一題 →' : '看排名 🏆') + '</button></div>';

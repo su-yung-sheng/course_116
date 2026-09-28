@@ -38,7 +38,8 @@
 | 系統架構、進度 API、接回 Firebase 的步驟 | [docs/02_系統架構.md](docs/02_系統架構.md) |
 | Python 評分規格（測資寫法、錯誤翻譯機） | [docs/03_Python評分規格.md](docs/03_Python評分規格.md) |
 | 設計系統（配色規則、共用元件、頁面骨架） | [docs/04_設計系統.md](docs/04_設計系統.md) |
-| 安全性（答案封存、限制、防使用者腳本／F12 的三層對策） | [docs/05_安全性.md](docs/05_安全性.md) |
+| 安全性（答案只在驗證伺服器、練習模式、防使用者腳本／F12 的三層對策） | [docs/05_安全性.md](docs/05_安全性.md) |
+| 🔐 驗證伺服器部署（Google Apps Script） | [server/README.md](server/README.md) |
 | 108 課綱對照（每一關的學習內容、學習表現代碼） | [docs/06_課綱對照.md](docs/06_課綱對照.md) |
 
 ## ⚠️ 目前是「可運作骨架」（本機版）
@@ -52,7 +53,7 @@
 
 ## 🛠️ 改內容看這裡
 
-> 🔒 **有答案的內容一律改 `private/`，改完執行 `node tools/build.mjs`**，它會產生封存版的 `content/*.js` 等公開檔案。
+> 🔒 **有答案的內容一律改 `private/`，改完執行 `node tools/build.mjs`**，它會產生只有題目的 `content/*.js`，和要貼到 Google Apps Script 的 `private/server/`（**兩邊都要更新**，步驟見 `server/README.md`）。
 > 公開檔案裡的 `content/*.js` 是自動產生的，**不要直接改**（下次建置會被蓋掉）。`private/` 不會進 Git，**請自己備份**。詳見 `docs/05_安全性.md`。
 
 | 要改什麼 | 改哪支 |
@@ -60,7 +61,9 @@
 | 單元名稱、星數、稱號（門檻是「平均完成度」%：各單元完成 % 的平均）、Pyodide 位置、備課全開 | `{學期}/config.js` |
 | 📅 本週任務的週次表、📚 課綱對照 | `{學期}/config.js` 的 `WEEKS`、`CURRICULUM`（改完課綱跑 `node tools/k12-doc.mjs`） |
 | Python 關卡、測資、提示、Scratch 對照（上學期） | `private/11601/content/python.js` → 建置 |
-| 密碼特務的關卡與概念小卡 | `private/11602/content/cipher.js` → 建置；出題規則在 `shared/cipher-gen.js` |
+| 密碼特務的關卡與概念小卡 | `private/11602/content/cipher.js` → 建置；出題規則在 `server/61_gen_cipher.js`（網路世界：`server/60_gen_net.js`） |
+| 🧪 實驗站的情境與判斷 | `server/40`～`44_labs_*.js`（畫面在 `shared/*-labs.js`） |
+| 🔐 驗證伺服器網址 | `{學期}/config.js` 的 `VERIFY_URL`（兩學期填一樣） |
 | 互動遊戲的題目與說明 | `private/11601/content/platform.js`、`private/11602/content/{media,network,data}.js` → 建置 |
 | 試算表關卡的資料與公式 | `private/11602/content/sheet.js` → 建置 |
 | 專題工作站的步驟與檢核項目 | `private/11602/content/media.js` 的 `MEDIA_STEPS` → 建置 |
@@ -72,13 +75,13 @@
 建置（需要 Node.js 18 以上）：
 
 ```
-node tools/build.mjs          ← 在 repo 根目錄；讀 private/，寫出封存後的公開檔案
+node tools/build.mjs          ← 在 repo 根目錄；讀 private/，寫出公開的題目檔＋private/server/（伺服器整包）
 ```
 
 ## 🔍 本機預覽與測試
 
 ```
-python -m http.server 8116        ← 在 repo 根目錄，開 http://localhost:8116/
+node tools/dev-server.mjs         ← 在 repo 根目錄，開 http://localhost:8116/（含本機模擬的驗證伺服器）
 ```
 
 不要直接雙擊 HTML：`file://` 下 Web Worker 會被擋，Python 引擎起不來。
@@ -90,14 +93,15 @@ cd tests
 npm install
 npx playwright install chromium
 npm test          ← 完整（約 20 分鐘）
-npm run quick     ← 快速：洩漏掃描、亂猜模擬、導覽、錯誤頁、實驗站、課堂挑戰、無障礙（約 4 分鐘）
+npm run quick     ← 快速：洩漏掃描、伺服器驗證、亂猜模擬、導覽、錯誤頁、實驗站、課堂挑戰、無障礙（約 4 分鐘）
 ```
 
-`npm test` 第一步是 `leak_scan.mjs`：把 `private/` 裡的正解、解說、提示、標準公式逐段拿去比對公開檔案，發現明碼就失敗 —— **推送前跑一次**。
+`npm test` 第一步是 `leak_scan.mjs`：把 `private/` 裡的正解、解說、提示、標準公式逐段拿去比對公開檔案（網站＋`server/` 程式），並檢查公開題目檔沒有答案欄位，發現就失敗 —— **推送前跑一次**。
+接著 `test_server.mjs` 直接用作弊的方式打伺服器（沒答完就結算、❤️ 用完繼續、亂送資料、收據簽章）。測試用 `tools/gas-mock.mjs` 在測試程式裡模擬伺服器，實驗站的解題器可以偷看伺服器的情境（學生的網頁看不到）。
 
 涵蓋：上學期 10 關 Python 參考解答都拿 3⭐、11 種「不該滿分」的寫法被擋下、12 種錯誤翻譯、無窮迴圈會被砍掉且引擎自動恢復；
 所有三星三階關卡（系統平臺、網路世界、資料偵探、概念闖關、AI 素養、密碼特務）由解題機器人一階一階打到 3⭐，每一階亂猜過關機率 < 1%（`guess_sim.mjs`，48 關）；23 個 🧪 實驗站做錯會被擋下並說明；密碼特務 6 關由解題機器人照畫面題目作答全部通關、驗證每次題目不同、愛心歸零；試算表公式計算與 5 關評分（含寫死數字被擋、資料清理）；
-30 秒廣告工作站五個步驟（含看示範、AI 前導關）；兩學期 5016B 十節的預測檢核與成果卡；單元一進度掛鉤；12 個頁面和所有實驗站在手機寬度沒有橫向捲動；課堂挑戰（搶答、鎖題、重新整理續玩、排名）、會考前總複習、本週任務、徽章、單元學習卡、進度下載提醒；axe-core 掃 40 個畫面 0 個無障礙問題。
+30 秒廣告工作站五個步驟（含看示範、AI 前導關）；兩學期 5016B 十節的預測檢核與成果卡；單元一進度掛鉤；12 個頁面和所有實驗站在手機寬度沒有橫向捲動；課堂挑戰（搶答、鎖題、重新整理續玩、排名）、會考前總複習、本週任務、徽章、單元學習卡、進度下載提醒；axe-core 掃 40 個畫面 0 個無障礙問題；連不上伺服器時的練習模式（`test_offline.mjs`）。
 
 ## 📄 授權
 

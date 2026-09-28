@@ -11,9 +11,8 @@
 <script src="config.js"></script>
 <script src="../shared/store.js"></script>
 <script src="../shared/ui.js"></script>
+<script src="../shared/api.js"></script>
 <script src="../shared/cardgame.js"></script>
-<script src="../shared/net-gen.js"></script>
-<script src="../shared/cipher-gen.js"></script>
 <script src="../shared/challenge.js"></script>
 </head>
 <body>
@@ -22,7 +21,7 @@
   <div id="app"></div>
 </main>
 <script>
-/* 🏁 課堂挑戰模式：題目範圍＝哪些 🎲 出題器（shared/net-gen.js、shared/cipher-gen.js）
+/* 🏁 課堂挑戰模式：題目範圍＝哪些 🎲 出題器（在驗證伺服器：伺服器端的 60_gen_net、61_gen_cipher）
    只用「打字」和「選擇」題型（排順序、下拉選單的題目不適合搶答）。 */
 UI.topbar('#topbar', { title: '🏁 課堂挑戰', kicker: '老師投影 · 小組搶答 · 🎲 題目每次隨機' });
 CHALLENGE.mount('#app', { topics: [

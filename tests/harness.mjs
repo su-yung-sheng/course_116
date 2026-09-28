@@ -1,8 +1,9 @@
-// 測試共用：啟動瀏覽器，把 CDN 導到本機檔案（不用連網也能測）
+// 測試共用：啟動瀏覽器，把 CDN 導到本機檔案（不用連網也能測）；驗證伺服器用 tools/gas-mock.mjs 在這個行程裡模擬
 // 用法：cd tests && npm install && npx playwright install chromium
-//       另開一個視窗在 repo 根目錄：python -m http.server 8116
+//       先在 repo 根目錄 node tools/build.mjs（產生 private/server/），再另開一個視窗：node tools/dev-server.mjs
 //       node test_python.mjs （其他 test_*.mjs 同）
 import { chromium } from 'playwright';
+import { createGas } from '../tools/gas-mock.mjs';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,9 +14,20 @@ export const SHOTS = process.env.SHOTS || new URL('./shots/', import.meta.url).p
 
 const types = { '.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.json': 'application/json', '.zip': 'application/zip' };
 
+/* 模擬的驗證伺服器：網頁送到 /__gas 的請求都由這裡回答；測試可以用 gas.run(id)、lastLab() 偷看伺服器狀態（解題器用） */
+export const gas = createGas();
+export function lastRun() { return gas.runs().sort((a, b) => a.t0 - b.t0).pop() || null; }
+export function lastLab() { const r = lastRun(); if (!r || !r.labs) return null; const ks = Object.keys(r.labs); return ks.length ? r.labs[ks[ks.length - 1]] : null; }
+export const stats = { calls: 0 };
+
 export async function launch(opts = {}) {
   const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
   const context = await browser.newContext({ viewport: opts.viewport || { width: 1280, height: 900 }, deviceScaleFactor: 1 });
+  await context.route('**/__gas', route => {   // opts.offline：模擬連不上伺服器（練習模式）
+    if (opts.offline) return route.abort('internetdisconnected');
+    stats.calls++;
+    route.fulfill({ status: 200, body: gas.post(route.request().postData() || ''), headers: { 'content-type': 'application/json' } });
+  });
   await context.route('https://cdn.jsdelivr.net/pyodide/**', route => {
     const f = PYO + route.request().url().split('/full/')[1].split('?')[0];
     if (!fs.existsSync(f)) return route.fulfill({ status: 404, body: 'nf' });

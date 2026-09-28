@@ -1,4 +1,4 @@
-/* 116 課程系統：快速檢核的對錯與提示已移除（封存在各頁按鈕的 data-k，來源在 private/11601/digital/review.json） */
+/* 116 課程系統：快速檢核的對錯與提示已移除（在驗證伺服器，來源在 private/11601/digital/review.json） */
 window.CourseData = {
   navigation: [
     { href: 'index.html', label: '課程地圖' },

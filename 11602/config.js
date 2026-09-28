@@ -7,12 +7,15 @@
    ===================================================================== */
 window.CONFIG = {
   TERM: '11602',
+  //   🔐 驗證伺服器（Google Apps Script 網頁應用程式的網址，…/exec）：答案、判斷、星星都在那裡（見 server/README.md）
+  //   留空：在自己電腦用 node tools/dev-server.mjs 預覽時會自動用本機模擬伺服器；放上網站後留空＝練習模式（不判斷、不記星）
+  VERIFY_URL: '',
   SCHOOL: '前峰國中 九年級',
   //   第 1 週的星期一（⚠️ 依 116 學年度行事曆確認後再改）
   TERM_START: '2028-02-14',
   HUB_PAGE: 'hub.html',
-  CHALLENGE_PAGE: 'challenge.html',
-  REVIEW_PAGE: 'review.html',         // 🎓 會考前總複習（上下學期混合抽題）：闖關地圖最下面有連結   // 🏁 課堂挑戰（小組搶答，老師投影）：闖關地圖最下面有連結
+  CHALLENGE_PAGE: 'challenge.html',   // 🏁 課堂挑戰（小組搶答，老師投影）：闖關地圖最下面有連結
+  REVIEW_PAGE: 'review.html',         // 🎓 會考前總複習（上下學期混合抽題）：闖關地圖最下面有連結
 
   /* 📚 108 課綱對照（代碼條文在 shared/k12.js）：關卡 id → 學習內容、學習表現代碼
      概念小卡上會顯示；docs/06_課綱對照.md 是整理好的總表。 */

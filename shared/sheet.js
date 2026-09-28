@@ -17,8 +17,8 @@
      targets  [{ cell:'C9', ref:'=SUM(C2:C8)', must:['SUM'], tol, alt:[另一個可接受的值] , tip }]
               ref 用同一張表算出標準答案；學生的公式必須用到 must 的函式、而且要參照儲存格（不能直接打答案）
      clean    （選用）先清理再計算：{ issues:{ 列號: 'dup'|'miss'|'noise'|'unit' }, fixed: 清理後的 data, note }
-   ⚠️ 上面是 private/ 裡的寫法；公開的 content 由 tools/build.mjs 封存：
-      targets 的 ref／alt／tol 換成 ok（可接受數值的雜湊），clean 換成 rows（每列雜湊）＋ e（清理後資料，全部判對才打得開）
+   ⚠️ 上面是 private/ 裡的寫法；公開的 content（tools/build.mjs 產生）只剩題目：targets 只有 cell／label／must，clean 只有 prompt。
+      標準答案、清理後的資料、提示都在驗證伺服器（server/51_sheet.js 用同一份試算表引擎重算學生的公式）。
    計星：3 顆 ❤️，每按一次「檢查」有錯就扣一顆；全部正確時剩幾顆 ❤️ 就拿幾顆 ⭐。
    ===================================================================== */
 (function () {
@@ -224,14 +224,10 @@
     if (!/[A-Z]+\d+/.test(F.slice(1))) return no({ code: 'number' });
     var miss = (t.must || []).filter(function (fn) { return F.indexOf(fn + '(') < 0; });
     if (miss.length) return no({ code: 'must', fn: miss[0] });
-    var okv;
-    if (t.ok) {   // 封存版：標準答案只剩「可接受數值（小數第 2 位）」的雜湊
-      okv = typeof v === 'number' && t.ok.indexOf(SEAL.h(t.s, SEAL.num2(v))) >= 0;
-    } else {      // 明碼版（只在 private/ 與建置工具裡出現）
-      var want = evaluate(t.ref, grid), tol = t.tol == null ? 0.01 : t.tol;
-      okv = [want].concat(t.alt || []).some(function (w) { return typeof w === 'number' ? Math.abs(num(v) - w) <= tol : String(v) === String(w); });
-    }
-    if (!okv) { var r = no({ code: 'value', v: fmt(v) }), lt = t.tx ? SEAL.reveal(t.s, t.tx) : t.tip; if (lt) r.x.tip = '💬 ' + lt + '。' + r.x.tip; return r; }
+    // 明碼版（只在 private/、測試、伺服器裡用；網頁的評分在伺服器 server/51_sheet.js）
+    var want = evaluate(t.ref, grid), tol = t.tol == null ? 0.01 : t.tol;
+    var okv = [want].concat(t.alt || []).some(function (w) { return typeof w === 'number' ? Math.abs(num(v) - w) <= tol : String(v) === String(w); });
+    if (!okv) { var r = no({ code: 'value', v: fmt(v) }); if (t.tip) r.x.tip = '💬 ' + t.tip + '。' + r.x.tip; return r; }
     return { ok: true, v: v };
   }
 
@@ -268,13 +264,17 @@
       app.querySelectorAll('.lvcard').forEach(function (b) { b.onclick = function () { start(+b.dataset.i); }; });
     }
 
+    /* 🔐 評分在驗證伺服器（server/51_sheet.js）：標準答案、清理後的資料、提示、延伸說明都只在伺服器
+       連不上伺服器 → 練習模式：可以寫公式、看算出來的值，但不判斷、不記星 */
     function start(i) {
       var lv = L[i];
       try { history.replaceState(null, '', '#' + lv.id); } catch (e) {}
       if (REF) REFPANEL.follow(lv.id);
-      S = { i: i, lv: lv, hearts: HEARTS, stage: lv.clean ? 'clean' : 'calc', sel: null, marks: {} };
+      var me = S = { i: i, lv: lv, hearts: HEARTS, stage: lv.clean ? 'clean' : 'calc', sel: null, marks: {}, hints: [] };
       S.grid = lv.clean ? makeGrid(lv.data, {}) : makeGrid(lv.data, lv.labels);
       draw();
+      S.ready = API.call('sh', { lv: lv.id, mod: MOD, who: STORE.me() }).then(function (r) { if (S !== me) return; S.run = r.run; S.hearts = r.hearts; },
+        function (e) { if (S !== me) return; S.offline = true; draw(); if (e.err !== 'offline') document.getElementById('fb').innerHTML = '<div class="note bad">⚠️ ' + esc(API.msg(e)) + '</div>'; });
     }
 
     function draw() {
@@ -299,7 +299,8 @@
       app.innerHTML = '<section class="card">' +
         '<div class="hud"><button class="btn sm" id="quit">✕ 離開</button><b>' + lv.icon + ' ' + esc(lv.title) + '</b>' +
         '<span class="chip">' + (S.stage === 'clean' ? '步驟 1：清理資料' : (lv.clean ? '步驟 2：計算' : '寫公式')) + '</span>' +
-        '<span style="margin-left:auto"></span>' + UI.hearts(S.hearts, HEARTS) + '</div>' +
+        (S.offline ? '<span class="chip">📴 練習模式 · 不判斷、不記星</span>' : '') +
+        '<span style="margin-left:auto"></span>' + (S.offline ? '' : UI.hearts(S.hearts, HEARTS)) + '</div>' +
         '<p class="mt2">' + lv.story + '</p>' +
         (S.stage === 'clean' ? '<div class="note warn mt1 small">' + lv.clean.prompt + '</div>' :
           '<ol class="small mt1" style="padding-left:1.3rem">' + lv.targets.map(function (t) { return '<li><b class="mono">' + t.cell + '</b>：' + esc(t.label) + '</li>'; }).join('') + '</ol>') +
@@ -309,7 +310,7 @@
           '<p id="fwarn" class="tiny bold mt1" style="color:var(--warn);min-height:1.1em"></p><div id="fxplain"></div>' : '') +
         '<div class="scroll-x mt1"><table class="sheet">' + head + rows + '</table></div>' +
         '<div class="row mt2"><button class="btn go" id="check">✅ 檢查</button>' +
-        (lv.hx || lv.hints ? '<button class="btn sm" id="hint">💡 提示</button>' : '') +
+        (lv.hn ? '<button class="btn sm" id="hint">💡 提示</button>' : '') +
         (REF ? '<a class="btn sm" id="btn-ref" data-refp="' + lv.id + '" href="' + REF + '#' + lv.id + '" target="_blank" rel="noopener">📚 這關用到的函式</a>' : '') + '</div>' +
         '<div class="fb mt2" id="fb" aria-live="polite"></div></section>';
       document.getElementById('quit').onclick = function () { if (confirm('離開這一關？這次的進度不會保留。')) menu(); };
@@ -335,61 +336,84 @@
         }
       }
       var hb = document.getElementById('hint');
-      if (hb) hb.onclick = function () { S.hint = Math.min((S.hint || 0) + 1, lv.hx ? lv.hn : lv.hints.length); showHints(); };
+      if (hb) hb.onclick = function () {   // 提示在伺服器：按一次多拿一則
+        var me = S, k = S.hints.length; if (k >= lv.hn || S.asking) return;
+        S.asking = true;
+        API.call('hint', { kind: 'sheet', lv: lv.id, i: k }).then(function (r) { me.asking = false; me.hints[k] = r.hint; if (S === me) showHints(); }, function (e) { me.asking = false; UI.toast(API.msg(e)); });
+      };
       showHints();
       document.getElementById('check').onclick = check;
     }
 
     function showHints() {
-      if (!S.hint) return;
+      if (!S.hints.length) return;
       var fb = document.getElementById('fb');
-      fb.innerHTML = (S.lv.hx ? SEAL.reveal('hint/' + S.lv.id, S.lv.hx) : S.lv.hints).slice(0, S.hint).map(function (h, i) { return '<div class="hint small mt1">💡 提示 ' + (i + 1) + '：' + esc(h) + '</div>'; }).join('') + (S.msg || '');
+      fb.innerHTML = S.hints.map(function (h, i) { return '<div class="hint small mt1">💡 提示 ' + (i + 1) + '：' + esc(h) + '</div>'; }).join('') + (S.msg || '');
     }
 
     function check() {
-      var lv = S.lv, fb = document.getElementById('fb');
+      var lv = S.lv, fb = document.getElementById('fb'), me = S;
+      if (S.busy) return;
+      var fx = document.getElementById('fx'); if (fx && S.sel) S.grid.set(S.sel, fx.value.trim());
+      if (S.offline) return offlineCheck(fb);
+      if (!S.run) return S.ready.then(function () { if (S === me && !me.offline) check(); });   // 還在跟伺服器開局：開好就接著檢查
+      function fail(e) { me.busy = false; if (e.err === 'dead') return over(); fb.innerHTML = '<div class="note bad">⚠️ ' + esc(API.msg(e)) + '</div>'; }
+      S.busy = true;
       if (S.stage === 'clean') {
-        var wrong = 0, marks = [];
-        for (var r = 2; r <= lv.data.length; r++) {
-          var m = S.marks[r] || 'ok'; marks.push(m);
-          if (SEAL.h(lv.clean.s, r + ':' + m) !== lv.clean.rows[r]) wrong++;
-        }
-        if (wrong) return miss('<div class="note bad pop">❌ 還有 <b>' + wrong + '</b> 列判斷得不對。一列一列看：有沒有一模一樣的？有沒有空白？數字合不合理？單位一樣嗎？</div>');
-        // 全部判對，才打得開「清理後的資料」
-        SEAL.open(lv.clean.e, lv.clean.s, marks.join(',')).then(function (res) {
-          if (!res) return;
+        var marks = {};
+        for (var r = 2; r <= lv.data.length; r++) marks[r] = S.marks[r] || 'ok';
+        API.call('shc', { run: S.run, marks: marks }).then(function (res) {
+          me.busy = false; if (S !== me) return;
+          if (!res.ok) return miss('<div class="note bad pop">❌ 還有 <b>' + res.wrong + '</b> 列判斷得不對。一列一列看：有沒有一模一樣的？有沒有空白？數字合不合理？單位一樣嗎？</div>', res);
+          // 全部判對，伺服器才給「清理後的資料」
           S.fixed = res.fixed; S.stage = 'calc'; S.grid = makeGrid(res.fixed, lv.labels); S.sel = null; S.msg = '';
           draw();
           document.getElementById('fb').innerHTML = '<div class="note ok pop"><b>✅ 清理完成！</b> ' + res.note + '</div>';
-        });
+        }, fail);
         return;
       }
-      var res = lv.targets.map(function (t) { return { t: t, r: gradeTarget(t, S.grid) }; });
-      var bad = res.filter(function (x) { return !x.r.ok; });
-      if (bad.length) {
-        return miss('<div class="note bad pop"><b>❌ 還有 ' + bad.length + ' 格不對</b><ul style="margin:.3rem 0 0;padding-left:1.2rem">' +
-          bad.map(function (x) { return '<li class="mt1"><b class="mono">' + x.t.cell + '</b>：' + xHTML(x.r.x) + '</li>'; }).join('') + '</ul></div>');
-      }
-      finish();
+      var cells = {}; lv.targets.forEach(function (t) { cells[t.cell] = S.grid.get(t.cell) || ''; });
+      API.call('shf', { run: S.run, cells: cells }).then(function (out) {
+        me.busy = false; if (S !== me) return;
+        var bad = lv.targets.filter(function (t) { return !(out.res[t.cell] || {}).ok; }).map(function (t) {
+          var g = out.res[t.cell] || {}, x = explain(String(cells[t.cell] || ''), g.e || { code: 'value' });
+          if (g.tip) x.tip = '💬 ' + g.tip + '。' + x.tip;
+          return { t: t, x: x };
+        });
+        if (bad.length) {
+          return miss('<div class="note bad pop"><b>❌ 還有 ' + bad.length + ' 格不對</b><ul style="margin:.3rem 0 0;padding-left:1.2rem">' +
+            bad.map(function (b) { return '<li class="mt1"><b class="mono">' + b.t.cell + '</b>：' + xHTML(b.x) + '</li>'; }).join('') + '</ul></div>', out);
+        }
+        finish(out);
+      }, fail);
+    }
+    /* 練習模式：只看公式算不算得出來（不知道標準答案，所以不判斷對錯） */
+    function offlineCheck(fb) {
+      if (S.stage === 'clean') { fb.innerHTML = '<div class="note warn">📴 練習模式：清理資料的步驟要連上驗證伺服器才能判斷（清理後的資料也在伺服器）。</div>'; return; }
+      fb.innerHTML = '<div class="note pop">📴 練習模式（不判斷對錯）：<ul style="margin:.3rem 0 0;padding-left:1.2rem">' + S.lv.targets.map(function (t) {
+        var f = String(S.grid.get(t.cell) || ''), v = '（空白）';
+        if (f) { try { v = fmt(evaluate(f, S.grid)); } catch (e) { v = explain(f, e).title; } }
+        return '<li><b class="mono">' + t.cell + '</b>　<code>' + esc(f) + '</code> → ' + esc(v) + '</li>';
+      }).join('') + '</ul></div>';
     }
 
-    function miss(html) {
-      S.hearts--;
+    function miss(html, res) {
+      S.hearts = res.hearts;
       S.msg = html;
-      if (S.hearts <= 0) return over();
+      if (res.dead) return over();
       draw();
       document.getElementById('fb').innerHTML = html;
       showHints();
     }
 
-    function finish() {
-      var lv = S.lv, i = S.i, stars = S.hearts;
+    function finish(out) {
+      var lv = S.lv, i = S.i, stars = out.stars;
       var formulas = {}; lv.targets.forEach(function (t) { formulas[t.cell] = S.grid.get(t.cell); });
-      var r = STORE.saveLevel(MOD, lv.id, { stars: stars, score: Math.round(stars / 3 * 100), extra: { formulas: formulas } });
+      var r = STORE.saveLevel(MOD, lv.id, { stars: stars, rc: out.rc, ts: out.ts, score: Math.round(stars / 3 * 100), extra: { formulas: formulas } });
       app.innerHTML = '<section class="card pop center"><div class="tape"></div><p class="kicker">過關！</p>' +
         '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2><div class="end-star mt1">' + UI.stars(stars) + '</div>' +
         '<div class="note small mt2" style="text-align:left;display:inline-block">' + lv.targets.map(function (t) { return '<div><b class="mono">' + t.cell + '</b>　<code>' + esc(formulas[t.cell]) + '</code></div>'; }).join('') + '</div>' +
-        (lv.after ? '<p class="small mt2">' + lv.after + '</p>' : '') +
+        (out.after ? '<p class="small mt2">' + out.after + '</p>' : '') +
         (r.improved ? '<p class="note ok small mt2" style="display:inline-block">⭐ 新紀錄已儲存！</p>' : '<p class="small soft mt1">最佳紀錄：' + UI.stars(best(lv.id)) + '</p>') +
         '<div class="row mt3" style="justify-content:center"><button class="btn" id="again">🔁 再做一次</button></div><nav id="end-pager"></nav></section>';
       document.getElementById('again').onclick = function () { start(i); };

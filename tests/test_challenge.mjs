@@ -22,10 +22,10 @@ await page.screenshot({ path: SHOTS + 'challenge-q.png', fullPage: true });
 
 // 第 1 題：第 2 組答錯（鎖住）→ 第 1 組答對（＋10、搶快＋5）
 await page.keyboard.press('2'); await page.waitForSelector('#ch-in');
-await page.fill('#ch-in', 'ZZZZ'); await page.click('#ch-judge');
+await page.fill('#ch-in', 'ZZZZ'); await page.click('#ch-judge'); await page.waitForSelector('#fb .note');   // 伺服器判斷：等回覆
 ok((await page.textContent('#fb')).includes('答錯') && await page.$eval('.ch-team[data-i="1"]', b => b.disabled), '答錯：這一組這題鎖住，換別組');
 await page.click('.ch-team[data-i="0"]'); const a = await cipherAnswer(page, S);
-await page.fill('#ch-in', a); await page.click('#ch-judge');
+await page.fill('#ch-in', a); await page.click('#ch-judge'); await page.waitForSelector('#fb .note.ok');
 ok((await page.textContent('#fb')).includes('答對') && (await page.textContent('.ch-team[data-i="0"] .ch-score')).startsWith('15'), '答對：＋10，搶快再＋5', a);
 await page.screenshot({ path: SHOTS + 'challenge-ok.png', fullPage: true });
 await page.click('#ch-next');

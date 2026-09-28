@@ -1,13 +1,12 @@
 /* =====================================================================
-   🎲 密碼特務・隨機出題器（CARDGAME.gens）與答題工具
+   🎲 密碼特務・隨機出題器（CARDGAME.gens）── 伺服器端
    ---------------------------------------------------------------------
    關卡裡寫 { type: 'gen', gen: '出題器名稱', n: 題數, prompt, tool }，
    每次「開始挑戰」都重新出題 → 每位學生、每一次的題目都不一樣，背答案沒有用。
 
-   為什麼 F12 看不到答案？
-     · 題目是當場隨機產生的，原始碼裡沒有「題目＋答案」的清單
+   ⭐ 只在驗證伺服器（Google Apps Script）上執行：出題、檢查都在伺服器，網頁拿到的只有題目（見 server/30_cards.js 的 SV_PUB）。
+     · 題目是當場隨機產生的（有種子，驗證時重新產生同一題），原始碼裡沒有「題目＋答案」的清單
      · 檢查答案時，是把學生的答案「照規則算回去」，看看是不是和題目對得上
-       （例如解密題：把學生打的明文再加密一次，和畫面上的密文比對）
    出題器回傳：[{ t, sub, icon, ph, hint, check(答案)→true/false, why(答案)→答對後的解說, tool, … }]
    ===================================================================== */
 (function () {
@@ -19,10 +18,8 @@
     'RIVER HOUSE GREEN QUEEN TEACH LEARN PAPER PENCIL WINDOW GARDEN ORANGE BANANA MONKEY RABBIT DRAGON SUMMER WINTER').split(' ');
   var DICT = {}; WORDS.forEach(function (w) { DICT[w] = 1; });
 
-  /* 亂數：優先用瀏覽器的密碼學亂數 */
-  function rnd(n) {
-    try { var a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; } catch (e) { return Math.floor(Math.random() * n); }
-  }
+  /* 亂數：伺服器出題時用 CARDGAME.rand（有種子、可以重現：驗證答案時重新產生同一題） */
+  function rnd(n) { return Math.floor((CARDGAME.rand || Math.random)() * n); }
   function pick(arr) { return arr[rnd(arr.length)]; }
   function picks(arr, n) { var a = arr.slice(), out = []; while (out.length < n && a.length) out.push(a.splice(rnd(a.length), 1)[0]); return out; }
   function between(lo, hi) { return lo + rnd(hi - lo + 1); }
@@ -200,27 +197,4 @@
   CARDGAME.gens = Object.assign(CARDGAME.gens || {}, G);
   CARDGAME.cipher = { shift: shift, vig: vig, WORDS: WORDS };      // 給測試與其他頁面用
 
-  /* ── 答題工具 ── */
-  CARDGAME.tools = CARDGAME.tools || {};
-  /* 字母編號表 */
-  CARDGAME.tools.abc = function (el) {
-    el.innerHTML = '<div class="card soft-bg" style="padding:.8rem"><b class="small">🔤 字母編號表</b><div class="scroll-x mt1"><table class="t mono" style="min-width:40rem"><tr>' +
-      A.split('').map(function (c) { return '<td style="text-align:center;padding:.25rem">' + c + '</td>'; }).join('') + '</tr><tr>' +
-      A.split('').map(function (c, i) { return '<td style="text-align:center;padding:.25rem;color:var(--unit);font-weight:900">' + i + '</td>'; }).join('') + '</tr></table></div></div>';
-  };
-  /* 計數表：點一下作答格子做記號，自動算有幾格被點 */
-  CARDGAME.tools.tally = function (el, it) {
-    var d = it.data, on = {};
-    function draw() {
-      var n = Object.keys(on).length;
-      el.innerHTML = '<div class="card soft-bg" style="padding:.8rem"><div class="row between"><b class="small">📋 全班作答（點一下做記號）</b><span class="chip">已點 ' + n + ' 格</span></div>' +
-        '<div class="row mt1" style="gap:.35rem">' + d.ans.map(function (a, i) {
-          return '<button type="button" class="pick mono" data-i="' + i + '" style="min-width:3.2rem;padding:.35rem;text-align:center' + (on[i] ? ';border-color:var(--ok);background:var(--ok-bg)' : '') + '">' +
-            '<div class="tiny soft">' + (i + 1) + ' 號</div><div class="black">' + a + (on[i] ? ' ✔' : '') + '</div></button>';
-        }).join('') + '</div><div class="row mt1"><button type="button" class="btn sm" id="tally-clear">清除記號</button></div></div>';
-      el.querySelectorAll('[data-i]').forEach(function (b) { b.onclick = function () { var i = +b.dataset.i; if (on[i]) delete on[i]; else on[i] = 1; draw(); }; });
-      el.querySelector('#tally-clear').onclick = function () { on = {}; draw(); };
-    }
-    draw();
-  };
 })();

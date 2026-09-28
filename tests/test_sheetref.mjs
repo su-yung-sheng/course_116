@@ -1,5 +1,5 @@
 // 📊 試算表函式小抄（11602/sheetref.html）＋試算表關卡頁的 📚 浮動視窗、錯誤說明、提示不給答案
-import { launch, login, BASE, SHOTS } from './harness.mjs';
+import { launch, login, BASE, SHOTS, gas } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 const { browser, context } = await launch();
 const page = await context.newPage();
@@ -52,14 +52,14 @@ await page.click('#check'); await page.waitForSelector('#fb .note.bad');
 const fbt = await page.textContent('#fb');
 ok(fbt.includes('雙引號') && fbt.includes('標題') && await page.$$eval('#fb .sx-ex', x => x.length) >= 1, '檢查：每一格的錯誤都有說明＋❌／✅（範圍包含標題列也會指出來）');
 await page.screenshot({ path: SHOTS + 'sheet-explain.png', fullPage: true });
-await page.click('#hint'); await page.click('#hint'); await page.click('#hint');
+for (let k = 1; k <= 3; k++) { await page.click('#hint'); await page.waitForFunction(n => document.querySelectorAll('#fb .hint').length >= n, k); }   // 提示在伺服器：按一次拿一則
 const hints = await page.$$eval('#fb .hint', h => h.map(x => x.textContent));
 ok(hints.length === 3 && hints.every(h => !/=\s*[A-Z]+\(/.test(h)), '提示：三段都不直接給公式', hints.length);
 await page.click('#refp-x'); await page.click('#quit'); await page.click('.lvcard[data-i="4"]'); await page.click('#btn-ref'); await page.waitForTimeout(600);
 ok(await fr.locator('#countif-cell').count() === 1 && await fr.locator('#countif-cmp').count() === 0, '第 5 關按 📚 → 小抄換成第 5 關用到的');
 
 /* 所有關卡的提示都不給完整公式 */
-const allHints = await page.evaluate(() => SHEET_LEVELS.map(l => l.hx ? SEAL.reveal('hint/' + l.id, l.hx) : l.hints).flat());
+const allHints = Object.values(gas.ctx.SV_ANS.sheet['11602']).map(l => l.hints).flat();   // 提示只在伺服器
 ok(allHints.length >= 15 && allHints.every(h => !/=\s*[A-Z]+\(/.test(h)), '五關提示都不含完整公式', allHints.length);
 
 /* 手機 */

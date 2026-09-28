@@ -1,5 +1,5 @@
 // 🧪 資料偵探 D1～D3、多媒體 M1～M4、AI 前導關 A1～A6 的實驗站：做錯會被擋下並說明原因，做對才過；手機版不破版
-import { launch, login, BASE, SHOTS, passCool } from './harness.mjs';
+import { launch, login, BASE, SHOTS, passCool, lastLab, gas } from './harness.mjs';
 import { solveLab2 } from './labs2_solver.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 const { browser, context } = await launch({ viewport: { width: 1280, height: 900 } });
@@ -17,7 +17,7 @@ const open = async (id, s, q = 0) => {   // 直接打開某一關的第 s 階（
   await page.goto(`${BASE}/11602/${pg}.html?p=${id}${s}${q}#${id}`);
   await page.click(`.stage[data-s="${s}"]`); await page.waitForSelector('#lab > div'); await page.waitForTimeout(1600);
 };
-const fb = async t => (await page.textContent('#fb')).includes(t);
+const fb = async t => { await page.waitForSelector('#fb .note:not(.warn)', { timeout: 8000 }).catch(() => {}); return (await page.textContent('#fb')).includes(t); };   // 伺服器判斷：等回覆
 const ds = () => page.$eval('#lab', e => ({ ...e.dataset }));
 const done = async (id, s) => { await solveLab2(page); await page.waitForSelector('#nx', { timeout: 6000 }).then(() => ok(true, id, ['', '操作', '挑戰'][s], '照規則做對 → 通過')).catch(async () => ok(false, id, s, await page.textContent('#fb'))); };
 
@@ -44,22 +44,22 @@ await open('D3', 2); await page.screenshot({ path: SHOTS + 'lab2-D3.png', fullPa
 /* M1～M4 */
 await open('M1', 2); await page.screenshot({ path: SHOTS + 'lab2-M1.png', fullPage: true }); await done('M1', 2);
 await open('M2', 1);
-{ const n = +(await ds()).n; for (let f = n - 1; f >= 0; f--) await page.click(`.fb-f[data-f="${f}"]`);
+{ const S = lastLab().sec, ks = S.order.map((_, k) => k).sort((a, b) => S.order[b] - S.order[a]); for (const k of ks) await page.click(`.fb-f[data-k="${k}"]`);   // 倒過來排（畫面上的順序是打亂的，真正順序只有伺服器知道）
   await page.fill('#fb-fps', '12'); await page.click('#fb-ok'); ok(await fb('順序不對'), '🎞️ M2：畫面倒過來排 → 球會跳來跳去'); await passCool(page);
   await page.screenshot({ path: SHOTS + 'lab2-M2.png', fullPage: true }); await done('M2', 1); }
 await open('M3', 1);
-{ const clips = JSON.parse((await ds()).clips);
+{ const clips = lastLab().sec.clips;   // 哪一段是畫面、聲音只有伺服器知道
   for (const c of clips) { await page.click(`.tl-clip[data-c="${c.id}"]`); await page.click(`.tl-lab[data-t="${c.kind === 'audio' ? 'A1' : c.kind === 'base' ? 'V2' : 'V1'}"]`); }
   await page.click('#tl-ok'); ok(await fb('蓋住'), '🎚️ M3：全景影片放上層 → 會把其他畫面蓋住'); await passCool(page);
   await page.screenshot({ path: SHOTS + 'lab2-M3.png', fullPage: true }); await done('M3', 1); }
 await open('M4', 2);
-{ const s = JSON.parse((await ds()).s); for (const id of s.mats) await page.click(`.lc-a[data-m="${id}"][data-a="credit"]`);
+{ const s = JSON.parse((await ds()).s); for (const m of s.mats) await page.click(`.lc-a[data-m="${m.id}"][data-a="credit"]`);
   await page.click('#lc-ok'); ok(await fb('判斷得不對'), '📜 M4：全部選「標示作者就能用」→ 擋下（商業＋改作）'); await passCool(page); await done('M4', 2); }
 
 /* A1～A6 */
 await open('A1', 1);
 { const n = +(await ds()).n; for (let i = 0; i < n; i++) { await page.click(`.bb-tab[data-i="${i}"]`); await page.click('.bb-k[data-k="learn"]'); }
-  await page.click('#bb-ok'); ok((await page.textContent('#fb')).includes('還沒做完實驗'), '🤖 A1：沒做實驗就判斷 → 要先教再測');
+  await page.click('#bb-ok'); await page.waitForSelector('#fb .note'); ok((await page.textContent('#fb')).includes('還沒做完實驗'), '🤖 A1：沒做實驗就判斷 → 要先教再測');
   await page.screenshot({ path: SHOTS + 'lab2-A1.png', fullPage: true }); await done('A1', 1); }
 await open('A2', 2);
 { const pool = JSON.parse((await ds()).pool), noBig = pool.map((p, i) => [p, i]).filter(([p]) => !(p.a === 'cat' && p.size >= 8));
@@ -78,7 +78,7 @@ await open('A5', 2);
 { await solveLab2(page).catch(() => {}); }   // 先照規則做一遍（會通過）；再開一題測「照抄 AI 原句」
 await open('A5', 2, 1);
 { const s = JSON.parse((await ds()).s);
-  const r = await page.evaluate(s => { const P = CARDGAME.labs._pl; return { who: P.WHO.indexOf(s.who), tone: P.TONE.indexOf(s.tone), k: s.drafts.map(x => P.judgeDraft(x, s.feat, s.lim)) }; }, s);
+  const r = { who: s.WHO.indexOf(s.who), tone: s.TONE.indexOf(s.tone), k: s.drafts.map(x => gas.ctx.SV._ai.judgeDraft(x, s.feat, s.lim)) };
   for (const [k, v] of [['who', r.who], ['feat', s.fopts.indexOf(s.feat)], ['tone', r.tone], ['lim', 0]]) await page.click(`.pl-s[data-s="${k}"][data-k="${v}"]`);
   for (const [i, v] of r.k.entries()) await page.click(`.pl-k[data-i="${i}"][data-k="${v}"]`);
   await page.fill('#pl-mine', s.drafts[r.k.indexOf('ok')]); await page.click('#pl-ok');

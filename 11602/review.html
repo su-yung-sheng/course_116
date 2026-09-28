@@ -10,10 +10,8 @@
 <script src="../shared/k12.js"></script>
 <script src="../shared/store.js"></script>
 <script src="../shared/ui.js"></script>
-<script src="../shared/seal.js"></script>
+<script src="../shared/api.js"></script>
 <script src="../shared/cardgame.js"></script>
-<script src="../shared/net-gen.js"></script>
-<script src="../shared/cipher-gen.js"></script>
 <script src="../shared/net-labs.js"></script>
 <script src="../shared/pf-labs.js"></script>
 <script src="../shared/media-labs.js"></script>
@@ -35,7 +33,7 @@
 </main>
 <script>
 /* 🎓 會考前總複習：把九年級上下學期的關卡「混在一起」重新抽題（每次打開都重新抽）
-   ⭐ 基礎＝各關題庫隨機抽（封存版，答案一樣看不到）→ ⭐⭐ 操作＝🎲 出題器混合 → ⭐⭐⭐ 挑戰＝🧪 實驗站混合（較難版）
+   ⭐ 基礎＝各關題庫隨機抽（答案在驗證伺服器，網頁看不到）→ ⭐⭐ 操作＝🎲 出題器混合 → ⭐⭐⭐ 挑戰＝🧪 實驗站混合（較難版）
    紀錄存在 review 模組，不算進闖關地圖的單元進度。 */
 UI.topbar('#topbar', { title: '🎓 會考前總複習', kicker: '九年級上下學期混合 · 每次打開重新抽題' });
 (function () {
@@ -61,7 +59,7 @@ UI.topbar('#topbar', { title: '🎓 會考前總複習', kicker: '九年級上�
   // 第 1 關沒有出題器：操作階改用實驗站（一般版）
   window.REVIEW_LEVELS = R.map(function (r) {
     var b = base(r.lv);
-    return { id: r.id, icon: r.icon, title: r.title, book: r.book,
+    return { id: r.id, icon: r.icon, title: r.title, book: r.book, custom: true,   // custom：伺服器照這裡抽到的回合（src／出題器／實驗站）開局，每一項都會檢查是真的
       learn: '<b>總複習怎麼玩</b><ul><li>⭐ 基礎：從各關題庫抽 ' + Math.min(4, b.length) + ' 組分類題（每組 3 張）</li><li>⭐⭐ 操作：' + (r.gens.length ? '🎲 出題器混合，每題數字都不一樣' : '🧪 實驗站（一般版）') + '</li><li>⭐⭐⭐ 挑戰：🧪 實驗站較難版</li></ul>每次打開都重新抽題；卡住就回到原本的單元看「概念小卡」。',
       stages: [
         { goal: '各關題庫混合抽題', rounds: sample(b, 4, 3) },

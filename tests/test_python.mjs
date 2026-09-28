@@ -23,8 +23,8 @@ async function gradeCode(id, code) {
     const lv = PY_LEVELS.find(l => l.id === id);
     const g = await PYRUN.grade(lv, code);
     return { stars: g.stars, passed: g.passed, total: g.total,
-      fails: g.tests.filter(t => !t.pass).map(t => t.test.name + ':' + (t.error ? t.error.type : (t.fails[0] && (t.fails[0].msg || JSON.stringify(t.fails[0]))))),
-      reqs: g.reqs.filter(r => !r.ok).map(r => r.req.need) };
+      fails: g.tests.filter(t => !t.pass).map(t => t.test.name + ':' + (t.error ? t.error.type : t.msg)),   // 評分在伺服器：只回「過了沒、原因」
+      reqs: g.reqs.filter(r => !r.ok).map(r => r.req.msg) };
   }, [id, code]);
 }
 let bad = 0;

@@ -2,7 +2,7 @@
    🎬 多媒體專題頁（11602/media.html）：課程小卡、概念闖關、看示範、AI 前導關、30 秒廣告工作站 W1～W5
    ---------------------------------------------------------------------
    原本整段寫在 media.html 裡（約 700 行），拆出來方便維護；頁面只留版面和載入順序。
-   需要（依序載入）：config.js、store.js、ui.js、seal.js、cardgame.js、labkit.js、media-labs.js、ai-labs.js、content/media.js
+   需要（依序載入）：config.js、store.js、ui.js、api.js、cardgame.js、labkit.js、media-labs.js、ai-labs.js、content/media.js
    內容（關卡、示範、工作站步驟）都在 content/media.js；AI 工具在 config.js 的 AI_TOOL。
    ===================================================================== */
 (function () {

@@ -3,39 +3,57 @@
    ---------------------------------------------------------------------
    CARDGAME.mount({ app: '#app', levels: [...], mod: 'platform', blurb: '…' })
 
-   四種回合（內容寫在各學期的 content/*.js）
+   🔐 答案只在驗證伺服器（Google Apps Script，見 server/ 與 shared/api.js）：
+      網頁只有題目；學生每按一次，就把「選了什麼」送上去，伺服器判斷對錯、扣 ❤️、最後發星星（附簽章收據）。
+      所以 F12、改程式、Tampermonkey 腳本都拿不到答案，也沒辦法自己加星。
+      連不上伺服器 → 練習模式：可以看題目、作答，但不判斷、不記星（🎲 出題器和 🧪 實驗站要連線）。
+
+   回合種類（內容寫在 private/{學期}/content/*.js，tools/build.mjs 產生不含答案的公開版）
      sort   一張一張出卡，選它屬於哪一類（buckets）
      order  依規則排出順序（點選的先後）
-     build  每個欄位挑一個零件，組出符合需求的東西（rules 檢查）
-     type   自己打出答案（answers 任一個都算對；比對前全形轉半形、去空白、不分大小寫）
-            可以帶 tool：'caesar'（凱薩轉盤）、'vigenere'（維吉尼亞密碼表）、'binary'（位元權值表）
-     gen    🎲 隨機出題：每次開始都由 CARDGAME.gens[rd.gen](rd) 產生新題目（shared/cipher-gen.js），
-            每位學生、每一次挑戰的題目都不一樣，背答案沒有用；題目自己帶 check(答案)，不存正解
+     build  每個欄位挑一個零件，組出符合需求的東西
+     type   自己打出答案（比對前全形轉半形、去空白、不分大小寫）；可以帶 tool（caesar／vigenere／binary／abc／tally）
+     gen    🎲 伺服器隨機出題（每位學生、每一次都不一樣）；題型 it.kind：input／choice／order／slots／bits
+     lab    🧪 視覺化實驗站（CARDGAME.labs[名稱](el, api)）：伺服器產生情境、判斷結果
    opts.sequential：上一關 ≥ 2⭐ 才開下一關（HUB.openAll() 備課模式可暫時全開）
+   關卡有 custom:true（例如總複習）→ 用回合上的 src／gen／lab 組一局（伺服器會檢查每一項都是真的）
 
    兩種計星方式：
      · 一般關卡（lv.rounds）：3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐
      · ⭐ 三星三階（lv.stages：[基礎, 操作, 挑戰]）：每一階各有 3 顆 ❤️，過了第幾階就拿幾顆 ⭐
-         ⭐ 基礎：觀念（題庫隨機抽）　⭐⭐ 操作：動手做（🎲 參數隨機）　⭐⭐⭐ 挑戰：🎲 更難的隨機題
-       上一階過了才開下一階；❤️ 用完只要重來那一階。星星代表「做到多難」，不是「錯幾次」。
-   防亂猜與強化（全部關卡）：
-     · 🧊 冷靜一下：連續答錯 2 次，或答錯時作答不到 1.5 秒 → 暫停 5 秒看概念重點；離開畫面（切分頁、切視窗）秒數重算
-     · 💡 分層提示：同一題錯第 1 次給方向（it.hint），第 2 次給步驟（it.hint2）；📖 小卡隨時可以叫出來
-     · 🩹 修復站：❤️ 用完先針對卡住的那一回合練 2 題（不扣心、先給提示、答完看解說），才能重新挑戰
-     · 三星三階的關卡：選項 ≤ 3 個的題目答錯就「換一題」（不能翻牌猜）；it.follow 追問「為什麼」
-   gen 回合的題目可以是好幾種「動手」題型（it.kind）：
-     input（預設，打答案）、choice（按選項）、order（依序點）、slots（每一格選一個）、bits（點位元湊出數字）
-   ⚠️ 內容檔是 tools/build.mjs 從 private/ 產生的「封存版」：答案與解說都要用學生的答案試開（shared/seal.js）。
+   防亂猜與強化：
+     · 🧊 冷靜一下：連續答錯 2 次，或答錯時作答不到 1.5 秒 → 暫停 5 秒看概念重點；離開畫面秒數重算
+     · 💡 分層提示：同一題錯第 1 次給方向，第 2 次給步驟（都由伺服器給）；📖 小卡隨時可以叫出來
+     · 🩹 修復站：❤️ 用完先針對卡住的那一回合練習（不扣心、先給提示），才能重新挑戰
+     · 三星三階：選項 ≤ 3 個的題目答錯就「換一題」（不能翻牌猜）；追問「為什麼」
    ===================================================================== */
-window.CARDGAME = { mount: function (opts) {
+window.CARDGAME = window.CARDGAME || {};
+CARDGAME.mount = function (opts) {
   var L = opts.levels, esc = UI.esc, MOD = opts.mod, HEARTS = 3;
   var app = typeof opts.app === 'string' ? document.querySelector(opts.app) : opts.app;
   var G = null;   // 遊戲狀態
 
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function range(n) { var o = []; for (var i = 0; i < n; i++) o.push(i); return o; }
   function best(id) { var r = STORE.level(MOD, id); return r ? (r.stars || 0) : 0; }
   function open(i) { return !opts.sequential || i === 0 || best(L[i - 1].id) >= 2 || !!(window.HUB && HUB.openAll && HUB.openAll()); }
   function norm(s) { return String(s).replace(/[！-～]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/\s+/g, '').toUpperCase(); }
+
+  /* ── 呼叫伺服器（同一時間只送一個；失敗時顯示原因） ── */
+  var busy = false;
+  function lock(b) { busy = b; app.classList.toggle('busy', b); }
+  function call(a, data) {
+    lock(true);
+    var body = { run: G && G.run }; for (var k in data || {}) body[k] = data[k];
+    return API.call(a, body).then(function (res) { lock(false); return res; }, function (e) { lock(false); throw e; });
+  }
+  function trouble(e, fb) {   // 伺服器回錯誤：❤️ 用完 → 結束；局過期 → 回小卡；其他 → 顯示原因
+    fb = fb || document.getElementById('fb');
+    if (e && e.err === 'dead') return outOfHearts(fb, 'button.pick, #tf button, #lab button');
+    var again = e && (e.err === 'run-expired' || e.err === 'done');
+    if (fb) fb.innerHTML = '<div class="note bad pop">⚠️ ' + esc(API.msg(e)) + '</div>' + (again ? '<div class="row mt2"><button class="btn primary" id="rs">重新開始這一關</button></div>' : '');
+    if (again) { var g = G; document.getElementById('rs').onclick = function () { start(g.i, g.st); }; }
+  }
 
   /* ── 關卡選單 ─────────────────────────────── */
   function menu() {
@@ -47,6 +65,7 @@ window.CARDGAME = { mount: function (opts) {
       '<p class="kicker">' + L.length + ' 個互動體驗關卡 · ' + (opts.sequential ? '依序開放（上一關 2⭐ 開下一關）' : '自由挑戰順序') + '</p><h2 class="black" style="font-size:1.35rem">' + esc(opts.headline || '先讀「概念小卡」，再用遊戲證明你懂了') + '</h2>' +
       '<p class="small soft mt1">' + (L.some(function (lv) { return lv.stages; }) ? '每關三階：📘 基礎 ⭐ → 🛠️ 操作 ⭐⭐ → 🏆 挑戰 ⭐⭐⭐。過了第幾階就拿幾顆星；🎲 題目每次都不一樣。' : '每關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。可以一直重玩刷新紀錄。') + '</p></div>' +
       '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star-ink)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
+      '<div id="net-state"></div>' +
       '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
         if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true"><div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">上一關拿到 2 顆星就會開放</p></button>';
@@ -56,6 +75,13 @@ window.CARDGAME = { mount: function (opts) {
           '<p class="tiny soft bold mt1">' + esc(lv.book) + '</p></button>';
       }).join('') + '</section>';
     app.querySelectorAll('.lvcard:not(.locked)').forEach(function (b) { b.onclick = function () { learn(+b.dataset.i); }; });
+    netState();
+  }
+  function netState() {   // 連不上伺服器時，在選單上方說明「練習模式」
+    API.ready().then(function (on) {
+      var box = document.getElementById('net-state'); if (!box) return;
+      box.innerHTML = on ? '' : '<div class="note warn mt2 small">📴 <b>練習模式</b>：連不上驗證伺服器（可能沒網路）。可以看題目、練習作答，但<b>不判斷對錯、不記星</b>；🎲 出題器和 🧪 實驗站要連線才能玩。</div>';
+    });
   }
 
   /* ── 概念小卡 ─────────────────────────────── */
@@ -100,21 +126,39 @@ window.CARDGAME = { mount: function (opts) {
   }
 
   /* ── 遊戲流程 ─────────────────────────────── */
-  function start(i, s) {
-    var lv = L[i], st = lv.stages ? (s || 0) : null;
-    G = { i: i, lv: lv, st: st, rounds: lv.stages ? lv.stages[st].rounds : lv.rounds, r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0 };
-    count(); round();
+  /* focus：修復站要練的回合（第幾回合）；沒有就是正式挑戰 */
+  function start(i, s, focus) {
+    var lv = L[i], st = lv.stages ? (s || 0) : null, all = lv.stages ? lv.stages[st].rounds : lv.rounds, practice = focus != null;
+    G = { i: i, lv: lv, st: st, rounds: practice ? [all[focus]] : all, r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0, practice: practice };
+    var g = G;
+    app.innerHTML = '<section class="card center"><p class="soft bold">⏳ 準備題目中…</p></section>';
+    API.ready().then(function (on) {
+      if (G !== g) return;
+      if (!on) { g.offline = true; g.sizes = g.rounds.map(offlineSize); count(); return round(); }
+      var req = { mod: MOD, lv: lv.id, st: st, who: STORE.me(), practice: practice };
+      if (lv.custom) req.comp = g.rounds.map(function (rd) {
+        return rd.src ? { src: rd.src, pick: practice ? 2 : rd.pick } : rd.type === 'gen' ? { gen: rd.gen, hard: !!rd.hard, tool: rd.tool || null } : { lab: rd.lab, hard: !!rd.hard };
+      });
+      else if (practice) req.focus = focus;
+      call('start', req).then(function (res) {
+        if (G !== g) return;
+        g.run = res.run; g.hearts = res.hearts; g.sizes = res.sizes; count(); round();
+      }, function (e) {
+        if (G !== g) return;
+        if (e.err === 'offline') { g.offline = true; g.sizes = g.rounds.map(offlineSize); count(); return round(); }
+        app.innerHTML = '<section class="card"><div id="fb"></div><div class="row mt2"><button class="btn" id="back">← 回到概念小卡</button></div></section>';
+        trouble(e); document.getElementById('back').onclick = function () { learn(i); };
+      });
+    });
+  }
+  function offlineSize(rd) {
+    if (rd.type === 'sort') return Math.min(rd.pick || rd.items.length, rd.items.length);
+    if (rd.type === 'order' || rd.type === 'type') return rd.items.length;
+    if (rd.type === 'build') return rd.customers.length;
+    return rd.n || 1;
   }
   /* 題號是「整個關卡（這一階）」連續算的：第 1～10 題，不會每一回合又從 1 開始 */
-  function sizeOf(rd) {
-    if (rd.type === 'sort') return rd.pick || rd.items.length;
-    if (rd.type === 'type') return rd.items.length;
-    if (rd.type === 'build') return rd.customers.length;
-    if (rd.type === 'gen') { if (rd.n) return rd.n; var g = CARDGAME.gens && CARDGAME.gens[rd.gen]; return g ? g(rd).length : 1; }
-    if (rd.type === 'lab') return rd.n || 1;
-    return 1;
-  }
-  function count() { G.base = 0; G.qk = 0; G.qtotal = G.rounds.reduce(function (a, rd) { return a + sizeOf(rd); }, 0); }
+  function count() { G.base = 0; G.qk = 0; G.qtotal = G.sizes.reduce(function (a, n) { return a + n; }, 0); }
   function cnt(k) { G.qk = k; return '（第 ' + (G.base + k + 1) + ' / ' + G.qtotal + ' 題）'; }
 
   function hud() {
@@ -122,10 +166,11 @@ window.CARDGAME = { mount: function (opts) {
     G.qt = Date.now();   // 這一題開始的時間（答太快的判斷用）
     return '<div class="hud"><button class="btn sm" id="quit">✕ 離開</button>' +
       '<b>' + lv.icon + ' ' + esc(lv.title) + '</b>' +
+      (G.offline ? '<span class="chip">📴 練習模式 · 不判斷、不記星</span>' : '') +
       (G.practice ? '<span class="chip repair-chip">🩹 修復站 · 不扣心</span>' : (G.st != null ? '<span class="chip stage-chip">' + '⭐'.repeat(G.st + 1) + ' ' + STAGE[G.st].n + '</span>' : '') +
       '<span class="chip qprog" title="這一關的進度"><span class="qbar"><i style="width:' + Math.round((G.base + (G.qk || 0)) / Math.max(1, G.qtotal) * 100) + '%"></i></span>' + (G.base + (G.qk || 0)) + ' / ' + G.qtotal + ' 題</span>') +
       '<button class="btn sm" id="peek" type="button">📖 小卡</button>' +
-      '<span style="margin-left:auto" class="combo">' + (G.combo >= 2 ? '🔥 連對 ' + G.combo : '') + '</span>' + (G.practice ? '' : UI.hearts(G.hearts, HEARTS)) + '</div>';
+      '<span style="margin-left:auto" class="combo">' + (G.combo >= 2 ? '🔥 連對 ' + G.combo : '') + '</span>' + (G.practice || G.offline ? '' : UI.hearts(G.hearts, HEARTS)) + '</div>';
   }
   function bindQuit() {
     var q = document.getElementById('quit'); if (q) q.onclick = function () { if (confirm('離開這一關？這次的進度不會保留。')) menu(); };
@@ -183,85 +228,101 @@ window.CARDGAME = { mount: function (opts) {
     else if (rd.type === 'gen') playGen(rd);
     else if (rd.type === 'lab') playLab(rd);
   }
-
-  /* lab：🧪 視覺化實驗站（CARDGAME.labs[名稱](el, api)）── 學生在畫面上動手做，按「確認／測試」時由實驗站判斷。
-     api.submit(對不對, 說明, 提示, 步驟提示)：對 → 顯示說明與「下一題」；錯 → 扣心、給提示，同一個情境繼續修改。
-     api.hard（挑戰版）、api.practice（修復站：先給提示）。情境每次隨機產生。 */
-  function playLab(rd) {
-    var make = CARDGAME.labs && CARDGAME.labs[rd.lab], n = rd.n || 1, k = 0;
-    if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到實驗站：' + esc(rd.lab) + '</p></section>'; return; }
-    function one() {
-      var tries = 0, done = false;
-      G.qk = k;
-      app.innerHTML = '<section class="card">' + hud() +
-        '<p class="small soft bold mt2">🧪 ' + esc(rd.prompt) + cnt(k) + '</p>' +
-        '<div id="lab" class="lab mt1"></div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
-      bindQuit();
-      var el = document.getElementById('lab'), fb = document.getElementById('fb');
-      make(el, { hard: !!rd.hard, practice: !!G.practice,
-        submit: function (ok, why, hint, hint2) {
-          if (done) return false;
-          var alive = hit(ok); refreshHud();
-          if (ok) {
-            done = true; el.classList.add('lab-done');
-            fb.innerHTML = '<div class="note ok pop"><b>✅ 成功！</b> ' + esc(why || '') + '</div>' +
-              '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < n ? '下一題 →' : '完成這回合 →') + '</button></div>';
-            var nx = document.getElementById('nx'); nx.focus();
-            nx.onclick = function () { k++; if (k < n) one(); else nextRound(); };
-            return true;
-          }
-          if (!alive) { done = true; el.classList.add('lab-done'); outOfHearts(fb, '#lab button'); return false; }
-          tries++;
-          var h = tries >= 2 && hint2 ? hint2 : hint;
-          fb.innerHTML = '<div class="note bad pop">❌ ' + esc(why || '還不對') + (h ? '<br>' + (tries >= 2 && hint2 ? '🔍 ' : '💡 ') + esc(h) : '') +
-            (tries >= 2 ? '<br><span class="tiny">還是卡住？按上面的「📖 小卡」回去看重點。</span>' : '') + '</div>';
-          return true;
-        },
-        say: function (html) { fb.innerHTML = html; }
-      });
-    }
-    one();
+  /* 練習模式（離線）：出題器、實驗站要伺服器才能玩 */
+  function needNet(rd) {
+    app.innerHTML = '<section class="card">' + hud() + '<p class="small soft bold mt2">' + (rd.type === 'gen' ? '🎲 ' : '🧪 ') + esc(rd.prompt || '') + '</p>' +
+      '<div class="note warn mt2">📴 這一回合是' + (rd.type === 'gen' ? '「🎲 隨機出題」' : '「🧪 實驗站」') + '，題目由伺服器產生，要連上網路才能玩。</div>' +
+      '<div class="row mt2"><button class="btn primary" id="nx">跳過這回合 →</button></div></section>';
+    bindQuit(); document.getElementById('nx').onclick = nextRound; document.getElementById('nx').focus();
+  }
+  /* 練習模式（離線）：作答後不判斷，直接下一題 */
+  function offlineNote(fb, last, next) {
+    fb.innerHTML = '<div class="note pop">📴 已作答（練習模式不判斷對錯）。連上網路再挑戰，才會判斷、記星。</div><div class="row mt2"><button class="btn primary" id="nx">' + (last ? '完成這回合 →' : '下一題 →') + '</button></div>';
+    var nx = document.getElementById('nx'); nx.focus(); nx.onclick = next;
   }
 
-  function hit(ok) {
-    var fast = Date.now() - (G.qt || 0) < 1500;
+  /* 伺服器回來的結果：更新 ❤️、連對、冷靜一下；回傳 false 表示 ❤️ 用完了 */
+  function hit(res) {
+    var ok = !!res.ok, fast = Date.now() - (G.qt || 0) < 1500;
+    if (res.hearts != null) G.hearts = res.hearts;
     if (G.practice) return true;   // 修復站不扣心
     G.total++;
     if (ok) { G.right++; G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo); G.streak = 0; }
     else {
-      G.combo = 0; G.hearts--; G.streak = (G.streak || 0) + 1;
-      if (G.hearts > 0 && (G.streak >= 2 || fast)) { var why = G.streak >= 2 ? 'streak' : 'fast', g0 = G; setTimeout(function () { if (G && G === g0) cooldown(why); }, 60); }
+      G.combo = 0; G.streak = (G.streak || 0) + 1;
+      if (!res.dead && (G.streak >= 2 || fast)) { var why = G.streak >= 2 ? 'streak' : 'fast', g0 = G; setTimeout(function () { if (G && G === g0) cooldown(why); }, 60); }
     }
-    return G.hearts > 0;
+    return !res.dead;
   }
   var swapStage = function () { return G.st != null && !G.practice; };   // 三星三階才「答錯換一題」
+  function hintHTML(res) { return res.hint ? '<br>' + (res.deep ? '🔍 ' : '💡 ') + esc(res.hint) : ''; }
+
+  /* lab：🧪 視覺化實驗站 ── 伺服器產生情境（api.pub），學生動手做，api.send(操作) 送上去判斷。
+     api.send 回傳 Promise(伺服器的結果)：{ ok, partial, why, hint, act, warn, out, data, reset… } */
+  function playLab(rd) {
+    if (G.offline) return needNet(rd);
+    var make = CARDGAME.labs && CARDGAME.labs[rd.lab], n = G.sizes[G.r], k = 0;
+    if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到實驗站：' + esc(rd.lab) + '</p></section>'; return; }
+    function one() {
+      var done = false, tries = 0;
+      G.qk = k;
+      app.innerHTML = '<section class="card">' + hud() +
+        '<p class="small soft bold mt2">🧪 ' + esc(rd.prompt) + cnt(k) + '</p>' +
+        '<div id="lab" class="lab mt1"><p class="soft small">⏳ 準備實驗站…</p></div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
+      bindQuit();
+      var el = document.getElementById('lab'), fb = document.getElementById('fb');
+      call('lab', { r: G.r }).then(function (res) {
+        el.innerHTML = '';
+        make(el, { hard: !!rd.hard, practice: !!G.practice, pub: res.pub,
+          say: function (html) { fb.innerHTML = html; },
+          send: function (v) {
+            if (done || busy) return Promise.resolve(null);
+            return call('lq', { l: res.l, v: v }).then(function (r) {
+              if (r.act) { if (r.warn) fb.innerHTML = '<div class="note warn small">' + esc(r.warn) + '</div>'; return r; }
+              if (r.ok && r.partial) { if (r.say) fb.innerHTML = '<div class="note ok small">' + esc(r.say) + '</div>'; else fb.innerHTML = ''; return r; }
+              var alive = hit(r); refreshHud();
+              if (r.ok) {
+                done = true; el.classList.add('lab-done');
+                fb.innerHTML = '<div class="note ok pop"><b>✅ 成功！</b> ' + esc(r.why || '') + '</div>' +
+                  '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < n ? '下一題 →' : '完成這回合 →') + '</button></div>';
+                var nx = document.getElementById('nx'); nx.focus();
+                nx.onclick = function () { k++; if (k < n) one(); else nextRound(); };
+                return r;
+              }
+              if (!alive) { done = true; el.classList.add('lab-done'); outOfHearts(fb, '#lab button'); return r; }
+              tries++;
+              fb.innerHTML = '<div class="note bad pop">❌ ' + esc(r.why || '還不對') + hintHTML(r) +
+                (tries >= 2 ? '<br><span class="tiny">還是卡住？按上面的「📖 小卡」回去看重點。</span>' : '') + '</div>';
+              return r;
+            }, function (e) { trouble(e, fb); return null; });
+          }
+        });
+      }, function (e) { trouble(e, fb); });
+    }
+    one();
+  }
 
   function nextRound() {
-    G.base += sizeOf(G.rounds[G.r]); G.qk = 0;
+    G.base += G.sizes[G.r]; G.qk = 0;
     G.r++;
     if (G.r >= G.rounds.length) finish();
     else { var nx = G.rounds[G.r]; UI.toast('✅ 這一組完成！接下來換一種題目：' + (nx.prompt || nx.title || ''), 2600); round(); }
   }
 
-  /* ⚠️ 下面四種回合用的都是「封存版」內容（tools/build.mjs 產生）：
-       正確答案只能用學生的選擇去「試開」（SEAL.open），打得開才算對、才看得到解說。
-       所以答錯時不會顯示正確答案 —— 扣一顆 ❤️、讓學生再想一次。 */
-  var busy = false;
-  function lock(b) { busy = b; app.classList.toggle('busy', b); }
   function outOfHearts(fb, disableSel) {
-    G.deadRd = G.rounds[G.r];   // 修復站要練的就是這一回合
+    G.deadR = G.r;   // 修復站要練的就是這一回合
     app.querySelectorAll(disableSel).forEach(function (x) { x.disabled = true; });
     fb.innerHTML = '<div class="note bad pop"><b>💔 愛心用完了</b> 回去看看概念小卡，再挑戰一次。</div><div class="row mt2"><button class="btn primary" id="nx">看結果</button></div>';
     document.getElementById('nx').onclick = gameOver;
   }
-  function refreshHud() { document.querySelector('.hud').outerHTML = hud(); bindQuit(); }
+  function refreshHud() { var h = document.querySelector('.hud'); if (h) { h.outerHTML = hud(); bindQuit(); } }
 
-  /* sort：一張一張出卡 */
+  /* sort：一張一張出卡（送出的是「第幾張卡」和「選的類別」，伺服器對答案） */
   function playSort(rd) {
-    var all = rd.ordered ? rd.items.slice() : shuffle(rd.items), items = rd.pick ? all.slice(0, rd.pick) : all.slice(), used = items.slice();
+    var all = rd.ordered ? range(rd.items.length) : shuffle(range(rd.items.length)), need = G.sizes[G.r], items = all.slice(0, need), used = items.slice();
     var k = 0;
     function card() {
-      var it = items[k];
+      var idx = items[k], it = rd.items[idx];
       G.qk = k;
       app.innerHTML = '<section class="card">' + hud() +
         '<p class="small soft bold mt2">' + esc(rd.prompt) + cnt(k) + '</p>' +
@@ -271,21 +332,21 @@ window.CARDGAME = { mount: function (opts) {
           return '<button class="pick bucket" data-b="' + b.id + '"><span class="ic">' + b.icon + '</span><span>' + esc(b.label) + '</span></button>';
         }).join('') + '</div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
       bindQuit();
+      function nextCard() { k++; if (k < items.length) card(); else nextRound(); }
       app.querySelectorAll('.bucket').forEach(function (btn) {
         btn.onclick = function () {
           if (busy || btn.disabled) return;
-          lock(true);
-          SEAL.open(it.e, it.s, btn.dataset.b).then(function (r) {
-            lock(false);
-            var ok = !!r, alive = hit(ok), fb = document.getElementById('fb');
-            refreshHud();
-            if (ok) {
+          var fb = document.getElementById('fb');
+          if (G.offline) { app.querySelectorAll('.bucket').forEach(function (x) { x.disabled = true; }); btn.classList.add('on'); return offlineNote(fb, k + 1 >= items.length, nextCard); }
+          call('ans', { r: G.r, i: idx, v: btn.dataset.b }).then(function (r) {
+            var alive = hit(r);
+            refreshHud(); fb = document.getElementById('fb');
+            if (r.ok) {
               app.querySelectorAll('.bucket').forEach(function (x) { x.disabled = true; });
               btn.classList.add('right');
-              fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(r.why) + '</div>' +
+              fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(r.why || '') + '</div>' +
                 '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < items.length ? '下一張 →' : '完成這回合 →') + '</button></div>';
-              var nx = document.getElementById('nx'); nx.focus();
-              nx.onclick = function () { k++; if (k < items.length) card(); else nextRound(); };
+              var nx = document.getElementById('nx'); nx.focus(); nx.onclick = nextCard;
             } else {
               btn.classList.add('wrong'); btn.disabled = true;
               if (!alive) return outOfHearts(fb, '.bucket');
@@ -302,14 +363,14 @@ window.CARDGAME = { mount: function (opts) {
               }
               fb.innerHTML = '<div class="note bad pop">❌ 不是「' + esc(lab.label) + '」—— 再想想，換一個答案。</div>';
             }
-          });
+          }, function (e) { trouble(e, fb); });
         };
       });
     }
     card();
   }
 
-  /* order：依序點選 */
+  /* order：依序點選（送出「第幾個位置」和「點的是哪一個」） */
   function playOrder(rd) {
     var shown = shuffle(rd.items), got = 0, n = rd.items.length;
     G.qk = 0;
@@ -319,17 +380,17 @@ window.CARDGAME = { mount: function (opts) {
         return '<button class="pick order-btn" data-t="' + esc(x.t) + '"><div style="font-size:2rem">' + x.icon + '</div><div>' + esc(x.t) + '</div></button>';
       }).join('') + '</div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
     bindQuit();
+    function mark(btn) { btn.classList.add('right'); btn.insertAdjacentHTML('afterbegin', '<span class="n">' + (got + 1) + '</span>'); got++; }
     app.querySelectorAll('.order-btn').forEach(function (btn) {
       btn.onclick = function () {
         if (busy || btn.classList.contains('right')) return;
-        lock(true);
-        SEAL.open(rd.seq[got], rd.s + '#' + got, btn.dataset.t).then(function (r) {
-          lock(false);
-          var ok = !!r, alive = hit(ok), fb = document.getElementById('fb');
-          refreshHud();
-          if (ok) {
-            btn.classList.add('right'); btn.insertAdjacentHTML('afterbegin', '<span class="n">' + (got + 1) + '</span>');
-            got++;
+        var fb = document.getElementById('fb');
+        if (G.offline) { mark(btn); if (got === n) offlineNote(fb, true, nextRound); return; }
+        call('ans', { r: G.r, i: got, v: btn.dataset.t }).then(function (r) {
+          var alive = hit(r);
+          refreshHud(); fb = document.getElementById('fb');
+          if (r.ok) {
+            mark(btn);
             if (got === n) {
               fb.innerHTML = '<div class="note ok pop"><b>✅ 順序正確！</b> ' + esc(r.why || '') + '</div><div class="row mt2"><button class="btn primary" id="nx">下一回合 →</button></div>';
               document.getElementById('nx').onclick = nextRound; document.getElementById('nx').focus();
@@ -340,12 +401,12 @@ window.CARDGAME = { mount: function (opts) {
             if (!alive) return outOfHearts(fb, '.order-btn');
             fb.innerHTML = '<div class="note bad pop">❌ 第 ' + (got + 1) + ' 個不是「' + esc(btn.dataset.t) + '」，再想想概念小卡裡的比喻。</div>';
           }
-        });
+        }, function (e) { trouble(e, fb); });
       };
     });
   }
 
-  /* build：挑零件組出符合需求的東西（每一種組合的結果都封存，鑰匙就是那個組合） */
+  /* build：挑零件組出符合需求的東西（客人的規則在伺服器，送出的是選了哪些零件） */
   function playBuild(rd) {
     var c = 0;
     function customer() {
@@ -377,46 +438,37 @@ window.CARDGAME = { mount: function (opts) {
           drawTotal();
         };
       });
+      function nextCu() { c++; if (c < rd.customers.length) customer(); else nextRound(); }
       document.getElementById('submit').onclick = function () {
         var fb = document.getElementById('fb');
         if (busy) return;
         var missing = rd.slots.filter(function (s) { return !chosen[s.id]; });
         if (missing.length) { fb.innerHTML = '<div class="note warn">還沒選：' + missing.map(function (s) { return esc(s.label); }).join('、') + '</div>'; return; }
         var key = rd.slots.map(function (s) { return chosen[s.id].id; }).join('|');
-        lock(true);
-        SEAL.open(cu.outcomes[SEAL.h(cu.s, key)], cu.s, key).then(function (r) {
-          lock(false);
-          r = r || { ok: false, msgs: ['這個組合不符合客人的需求。'] };
-          var alive = hit(r.ok);
-          refreshHud();
+        if (G.offline) { app.querySelectorAll('.opt,#submit').forEach(function (x) { x.disabled = true; }); return offlineNote(fb, c + 1 >= rd.customers.length, nextCu); }
+        call('ans', { r: G.r, i: c, v: key }).then(function (r) {
+          var alive = hit(r);
+          refreshHud(); fb = document.getElementById('fb');
           if (r.ok) {
             app.querySelectorAll('.opt,#submit').forEach(function (x) { x.disabled = true; });
-            fb.innerHTML = '<div class="note ok pop"><b>✅ 客人很滿意！</b> ' + esc(r.good) + '</div><div class="row mt2"><button class="btn primary" id="nx">' + (c + 1 < rd.customers.length ? '下一位客人 →' : '完成這回合 →') + '</button></div>';
-            var nx = document.getElementById('nx'); nx.focus();
-            nx.onclick = function () { c++; if (c < rd.customers.length) customer(); else nextRound(); };
+            fb.innerHTML = '<div class="note ok pop"><b>✅ 客人很滿意！</b> ' + esc(r.good || '') + '</div><div class="row mt2"><button class="btn primary" id="nx">' + (c + 1 < rd.customers.length ? '下一位客人 →' : '完成這回合 →') + '</button></div>';
+            var nx = document.getElementById('nx'); nx.focus(); nx.onclick = nextCu;
           } else {
             if (!alive) return outOfHearts(fb, '.opt,#submit');
-            fb.innerHTML = '<div class="note bad pop"><b>❌ 退貨！</b><ul style="margin:.3rem 0 0;padding-left:1.2rem">' + r.msgs.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ul></div>' +
+            fb.innerHTML = '<div class="note bad pop"><b>❌ 退貨！</b><ul style="margin:.3rem 0 0;padding-left:1.2rem">' + (r.msgs || ['這個組合不符合客人的需求。']).map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ul></div>' +
               '<p class="small soft mt1">改一改零件，再交件一次。</p>';
           }
-        });
+        }, function (e) { trouble(e, fb); });
       };
     }
     customer();
   }
 
-  /* type：自己打答案（可附工具）；每一種可接受的寫法各封存一份 */
+  /* type：自己打答案（可附工具） */
   function playType(rd) {
-    var qs = rd.shuffle ? shuffle(rd.items) : rd.items.slice(), k = 0;
-    function tryOpen(it, v) {
-      var i = 0;
-      return (function next() {
-        if (i >= it.e.length) return Promise.resolve(null);
-        return SEAL.open(it.e[i++], it.s, v).then(function (r) { return r || next(); });
-      })();
-    }
+    var qs = rd.shuffle ? shuffle(range(rd.items.length)) : range(rd.items.length), k = 0;
     function q() {
-      var it = qs[k];
+      var idx = qs[k], it = rd.items[idx];
       G.qk = k;
       app.innerHTML = '<section class="card">' + hud() +
         '<p class="small soft bold mt2">' + esc(rd.prompt) + cnt(k) + '</p>' +
@@ -428,39 +480,37 @@ window.CARDGAME = { mount: function (opts) {
       bindQuit();
       if (rd.tool && CARDGAME.tools[rd.tool]) CARDGAME.tools[rd.tool](document.getElementById('tool'), it);
       var inp = document.getElementById('ans'); inp.focus();
+      function nextQ() { k++; if (k < qs.length) q(); else nextRound(); }
       document.getElementById('tf').onsubmit = function (e) {
         e.preventDefault();
-        var v = norm(inp.value); if (!v || busy) return;
-        lock(true);
-        tryOpen(it, v).then(function (r) {
-          lock(false);
-          var ok = !!r, alive = hit(ok), fb = document.getElementById('fb');
-          refreshHud();
-          if (ok) {
+        var v = norm(inp.value), fb = document.getElementById('fb'); if (!v || busy) return;
+        if (G.offline) { inp.disabled = true; document.querySelector('#tf button').disabled = true; return offlineNote(fb, k + 1 >= qs.length, nextQ); }
+        call('ans', { r: G.r, i: idx, v: v }).then(function (r) {
+          var alive = hit(r);
+          refreshHud(); fb = document.getElementById('fb');
+          if (r.ok) {
             inp.disabled = true; document.querySelector('#tf button').disabled = true;
             fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(r.why || '') + '</div>' +
               '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < qs.length ? '下一題 →' : '完成這回合 →') + '</button></div>';
-            var nx = document.getElementById('nx'); nx.focus();
-            nx.onclick = function () { k++; if (k < qs.length) q(); else nextRound(); };
+            var nx = document.getElementById('nx'); nx.focus(); nx.onclick = nextQ;
           } else if (!alive) {
             inp.disabled = true; outOfHearts(fb, '#tf button');
           } else {
             inp.select();
             fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (it.hint ? ' 💡 ' + esc(it.hint) : '') + '</div>';
           }
-        });
+        }, function (e) { trouble(e, fb); });
       };
     }
     q();
   }
 
-  /* gen：🎲 隨機出題。題目在「開始這一回合」時才產生，答錯扣心、不公布答案；答對才顯示解說 */
+  /* gen：🎲 伺服器隨機出題。網頁只拿到題目（沒有 check／答案）；答錯扣心、伺服器給分層提示；答對才看到解說 */
   function playGen(rd) {
-    var make = CARDGAME.gens && CARDGAME.gens[rd.gen];
-    if (!make) { app.innerHTML = '<section class="card"><p class="note bad">找不到出題器：' + esc(rd.gen) + '</p></section>'; return; }
-    var qs = make(rd), k = 0;
-    function fresh() { var pool = make(rd); return pool[Math.floor(Math.random() * pool.length)]; }
-    function hintOf(it, v, tries) { var h = tries >= 2 && it.hint2 ? it.hint2 : it.hint; return typeof h === 'function' ? h(v) : h; }
+    if (G.offline) return needNet(rd);
+    var qs = null, k = 0, n = G.sizes[G.r];
+    app.innerHTML = '<section class="card">' + hud() + '<p class="soft bold mt2">🎲 出題中…</p><div class="fb" id="fb"></div></section>';
+    call('gen', { r: G.r }).then(function (res) { qs = res.qs; n = qs.length; q(); }, function (e) { trouble(e); });
     function q() {
       var it = qs[k], tool = it.tool || rd.tool, kind = it.kind || 'input', val = null, tries = 0;
       G.qk = k;
@@ -468,7 +518,7 @@ window.CARDGAME = { mount: function (opts) {
         '<p class="small soft bold mt2">🎲 ' + esc(it.prompt || rd.prompt) + cnt(k) + '</p>' +
         '<div class="qcard mt1 pop"><div class="big">' + (it.icon || '✏️') + '</div><div class="txt' + (it.mono === false ? '' : ' mono') + '">' + esc(it.t) + '</div>' +
         (it.sub ? '<div class="small soft bold mt1">' + esc(it.sub) + '</div>' : '') + (it.html ? '<div class="mt1">' + it.html + '</div>' : '') + '</div>' +
-        (G.practice && it.hint ? '<div class="note small mt2">💡 提示：' + esc(hintOf(it, '', 1)) + '</div>' : '') +
+        (it.hint ? '<div class="note small mt2">💡 提示：' + esc(it.hint) + '</div>' : '') +   // 修復站：伺服器一開始就給提示
         (tool ? '<div class="mt2" id="tool"></div>' : '') + body(it, kind) +
         '<div class="fb mt2" id="fb" aria-live="polite"></div></section>';
       bindQuit();
@@ -477,51 +527,59 @@ window.CARDGAME = { mount: function (opts) {
       wire(it, kind, function (v) { val = v; });
       form.onsubmit = function (e) {
         e.preventDefault();
+        if (busy) return;
         var v = kind === 'input' ? norm(document.getElementById('ans').value) : val;
         if (v == null || v === '' || (kind === 'order' && v.length < (it.need || it.items.length)) || (kind === 'slots' && v.indexOf(null) >= 0)) {
           return UI.toast(kind === 'order' ? '先把每一個都依序點完' : kind === 'slots' ? '每一格都要選' : '先作答再按確定');
         }
-        var ok = !!it.check(v), alive = hit(ok), fb = document.getElementById('fb');
-        refreshHud();
-        if (ok && it.follow && !G.practice) return follow(it, form, fb);
-        if (ok) return good(it, v, form, fb);
-        if (!alive) return outOfHearts(fb, '#tf button, #tf input, #tf select');
-        tries++;
-        if (kind === 'choice' && swapStage()) return swap(fb, '❌ 不對。選擇題答錯就換一題新的 —— 用猜的過不了關。');
-        var h = hintOf(it, v, tries);
-        fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (h ? ' ' + (tries >= 2 && it.hint2 ? '🔍 ' : '💡 ') + esc(h) : '') +
-          (tries >= 2 ? '<br><span class="tiny">還是卡住？按上面的「📖 小卡」回去看重點。</span>' : '') + '</div>';
-        if (kind === 'input') document.getElementById('ans').select();
-        if (kind === 'order') { var rs = document.getElementById('reset'); if (rs) rs.click(); }
+        var fb = document.getElementById('fb');
+        call('gq', { q: it.q, v: v }).then(function (r) {
+          if (r.ok && r.follow) { G.qt = Date.now(); return follow(it, r.follow, form, fb); }   // 答對了還要追問理由（先不算分）
+          var alive = hit(r);
+          refreshHud(); fb = document.getElementById('fb');
+          if (r.ok) return good(r, form, fb);
+          if (!alive) return outOfHearts(fb, '#tf button, #tf input, #tf select');
+          tries++;
+          if (kind === 'choice' && swapStage()) return swap(fb, '❌ 不對。選擇題答錯就換一題新的 —— 用猜的過不了關。');
+          fb.innerHTML = '<div class="note bad pop">❌ 不對喔，再試一次。' + (r.hint ? ' ' + (r.deep ? '🔍 ' : '💡 ') + esc(r.hint) : '') +
+            (tries >= 2 ? '<br><span class="tiny">還是卡住？按上面的「📖 小卡」回去看重點。</span>' : '') + '</div>';
+          if (kind === 'input') document.getElementById('ans').select();
+          if (kind === 'order') { var rs = document.getElementById('reset'); if (rs) rs.click(); }
+        }, function (e) { trouble(e, fb); });
       };
     }
-    function good(it, v, form, fb) {
+    function good(r, form, fb) {
       form.querySelectorAll('input,button,select').forEach(function (x) { x.disabled = true; });
-      fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(typeof it.why === 'function' ? it.why(v) : (it.why || '')) + '</div>' +
-        '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < qs.length ? '下一題 →' : '完成這回合 →') + '</button></div>';
+      fb.innerHTML = '<div class="note ok pop"><b>✅ 答對了！</b> ' + esc(r.why || '') + '</div>' +
+        '<div class="row mt2"><button class="btn primary" id="nx">' + (k + 1 < n ? '下一題 →' : '完成這回合 →') + '</button></div>';
       var nx = document.getElementById('nx'); nx.focus();
-      nx.onclick = function () { k++; if (k < qs.length) q(); else nextRound(); };
+      nx.onclick = function () { k++; if (k < n) q(); else nextRound(); };
     }
     function swap(fb, msg) {
       app.querySelectorAll('#tf button, #tf input, #tf select, .gfol').forEach(function (x) { x.disabled = true; });
       fb.innerHTML = '<div class="note bad pop">' + esc(msg) + '</div><div class="row mt2"><button class="btn" id="swap">換一題 →</button></div>';
-      document.getElementById('swap').onclick = function () { qs[k] = fresh(); q(); };
+      document.getElementById('swap').onclick = function () {
+        var qc = app.querySelector('.qcard'); if (qc) qc.remove();   // 舊題目先拿掉，等伺服器出新題
+        this.disabled = true;
+        call('gen', { r: G.r, one: true }).then(function (res) { qs[k] = res.qs[0]; q(); }, function (e) { trouble(e, fb); });
+      };
     }
     /* 追問「為什麼」：選對了還要說得出理由，才算真的懂 */
-    function follow(it, form, fb) {
-      var f = it.follow;
+    function follow(it, f, form, fb) {
       form.querySelectorAll('input,button,select').forEach(function (x) { x.disabled = true; });
       fb.innerHTML = '<div class="note ok pop"><b>✅ 對了！</b> 再追問一題：<b>' + esc(f.q) + '</b></div><div class="buckets mt1">' +
         f.options.map(function (o) { return '<button type="button" class="pick bucket gfol" data-v="' + esc(o.id) + '">' + esc(o.label) + '</button>'; }).join('') + '</div><div id="fb2" class="mt1"></div>';
-      G.qt = Date.now();
       app.querySelectorAll('.gfol').forEach(function (b) {
         b.onclick = function () {
-          var ok2 = !!f.check(b.dataset.v), alive = hit(ok2), fb2 = document.getElementById('fb2');
-          refreshHud();
-          if (ok2) { b.classList.add('right'); app.querySelectorAll('.gfol').forEach(function (x) { x.disabled = true; }); fb2.innerHTML = ''; return good(it, b.dataset.v, form, fb2); }
-          b.classList.add('wrong');
-          if (!alive) return outOfHearts(fb2, '.gfol');
-          swap(fb2, '❌ 答案對，但理由不對 —— 可能是猜的。換一題新的。');
+          if (busy) return;
+          call('gq', { q: it.q, f: b.dataset.v }).then(function (r) {
+            var alive = hit(r), fb2 = document.getElementById('fb2');
+            refreshHud();
+            if (r.ok) { b.classList.add('right'); app.querySelectorAll('.gfol').forEach(function (x) { x.disabled = true; }); fb2.innerHTML = ''; return good(r, form, fb2); }
+            b.classList.add('wrong');
+            if (!alive) return outOfHearts(fb2, '.gfol');
+            swap(fb2, '❌ 答案對，但理由不對 —— 可能是猜的。換一題新的。');
+          }, function (e) { trouble(e, document.getElementById('fb2')); });
         };
       });
     }
@@ -546,12 +604,12 @@ window.CARDGAME = { mount: function (opts) {
       if (kind === 'choice') app.querySelectorAll('.gopt').forEach(function (b) {
         b.onclick = function () { app.querySelectorAll('.gopt').forEach(function (x) { x.classList.toggle('on', x === b); }); set(b.dataset.v); };
       });
-      if (kind === 'order') {
+      if (kind === 'order') {   // 送出的是「畫面上第幾個」的順序，伺服器自己對照
         var seq = [];
         function show() {
           document.getElementById('seq').innerHTML = seq.length ? seq.map(function (i, n) { return '<span class="chip">' + (n + 1) + '. ' + esc(it.items[i].t) + '</span>'; }).join(' → ') : '<span class="tiny soft">還沒點</span>';
           app.querySelectorAll('.gitem').forEach(function (b) { var n = seq.indexOf(+b.dataset.i); b.classList.toggle('on', n >= 0); b.disabled = n >= 0; });
-          set(seq.map(function (i) { return it.items[i].id != null ? it.items[i].id : it.items[i].t; }));
+          set(seq.slice());
         }
         app.querySelectorAll('.gitem').forEach(function (b) { b.onclick = function () { seq.push(+b.dataset.i); show(); }; });
         document.getElementById('reset').onclick = function () { seq = []; show(); };
@@ -575,15 +633,31 @@ window.CARDGAME = { mount: function (opts) {
         drawBits();
       }
     }
-    q();
   }
 
-  /* ── 結束 ─────────────────────────────────── */
+  /* ── 結束：請伺服器結算（每一回合都做完才給星，附簽章收據） ── */
   function finish() {
-    if (G.practice) return repairDone();
-    if (G.st != null) return finishStage();
-    var stars = G.hearts, lv = G.lv, i = G.i;
-    var r = STORE.saveLevel(MOD, lv.id, { stars: stars, score: Math.round(G.right / Math.max(1, G.total) * 100), extra: { maxCombo: G.maxCombo } });
+    if (G.offline) return offlineDone();
+    var g = G;
+    app.innerHTML = '<section class="card center"><p class="soft bold">⏳ 結算中…</p><div id="fb"></div></section>';
+    call('fin', {}).then(function (res) {
+      if (G !== g) return;
+      if (g.practice) return repairDone();
+      if (g.st != null) return finishStage(res);
+      finishLevel(res);
+    }, function (e) { trouble(e); });
+  }
+  function offlineDone() {
+    var i = G.i, s = G.st;
+    app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">📴</p><h2 class="black">練習完成</h2>' +
+      '<p class="soft mt1">練習模式不判斷對錯、不記星。連上網路後再挑戰一次，就會判斷、記星。</p>' +
+      '<div class="row mt3" style="justify-content:center"><button class="btn go" id="again">🔁 再挑戰一次</button><button class="btn" id="back">← 關卡選單</button></div></section>';
+    document.getElementById('again').onclick = function () { API.retry(); start(i, s); };
+    document.getElementById('back').onclick = menu;
+  }
+  function finishLevel(res) {
+    var stars = res.stars, lv = G.lv, i = G.i;
+    var r = STORE.saveLevel(MOD, lv.id, { stars: stars, rc: res.rc, ts: res.ts, score: Math.round(G.right / Math.max(1, G.total) * 100), extra: { maxCombo: G.maxCombo } });
     app.innerHTML = '<section class="card pop center"><div class="tape"></div><p class="kicker">過關！</p>' +
       '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
       '<div class="end-star mt1">' + UI.stars(stars) + '</div>' +
@@ -592,18 +666,20 @@ window.CARDGAME = { mount: function (opts) {
       '<div class="row mt3" style="justify-content:center"><button class="btn" id="again">🔁 再玩一次</button></div>' +
       '<nav id="end-pager"></nav></section>';
     document.getElementById('again').onclick = function () { start(i); };
-    // 結尾：← 關卡選單／下一關 →（和全站的「上一課／下一課」同一組樣式）
+    endPager(i);
+    if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
+  }
+  function endPager(i) {   // 結尾：← 關卡選單／下一關 →（和全站的「上一課／下一課」同一組樣式）
     var N = L[i + 1];
     UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
       !N ? null : open(i + 1) ? { id: 'next', lbl: '下一關 →', title: N.icon + ' ' + N.title, go: function () { learn(i + 1); } }
         : { id: 'next', locked: true, lbl: '🔒 下一關', title: '這一關拿到 2⭐ 才開放', go: function () { UI.toast('這一關拿到 2 顆星，下一關才會開放'); } });
-    if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
   }
 
   /* 三星三階：過了這一階 → 星數＝第幾階 */
-  function finishStage() {
-    var lv = G.lv, i = G.i, s = G.st, stars = s + 1, more = s + 1 < lv.stages.length;
-    var r = STORE.saveLevel(MOD, lv.id, { stars: stars, score: Math.round(G.right / Math.max(1, G.total) * 100) });
+  function finishStage(res) {
+    var lv = G.lv, i = G.i, s = G.st, stars = res.stars, more = s + 1 < lv.stages.length;
+    var r = STORE.saveLevel(MOD, lv.id, { stars: stars, rc: res.rc, ts: res.ts, score: Math.round(G.right / Math.max(1, G.total) * 100) });
     app.innerHTML = '<section class="card pop center"><div class="tape"></div><p class="kicker">第 ' + (s + 1) + ' 階 · ' + STAGE[s].n + ' 通過！</p>' +
       '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
       '<div class="end-star mt1">' + UI.stars(stars) + '</div>' +
@@ -614,16 +690,13 @@ window.CARDGAME = { mount: function (opts) {
       '<nav id="end-pager"></nav></section>';
     document.getElementById('again').onclick = function () { start(i, s); };
     var up = document.getElementById('up'); if (up) { up.onclick = function () { start(i, s + 1); }; up.focus(); }
-    var N = L[i + 1];
-    UI.pager('#end-pager', { id: 'menu', lbl: '← 回到', title: '關卡選單', go: menu },
-      !N ? null : open(i + 1) ? { id: 'next', lbl: '下一關 →', title: N.icon + ' ' + N.title, go: function () { learn(i + 1); } }
-        : { id: 'next', locked: true, lbl: '🔒 下一關', title: '這一關拿到 2⭐ 才開放', go: function () { UI.toast('這一關拿到 2 顆星，下一關才會開放'); } });
+    endPager(i);
     if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
   }
 
-  /* 🩹 修復站：❤️ 用完後，針對卡住的那一回合先練 2 題（不扣心、先給提示），才能重新挑戰 */
+  /* 🩹 修復站：❤️ 用完後，針對卡住的那一回合先練習（不扣心、先給提示），才能重新挑戰 */
   function gameOver() {
-    var i = G.i, s = G.st, rd = G.deadRd || G.rounds[G.r];
+    var i = G.i, s = G.st, focus = G.deadR != null ? G.deadR : G.r, rd = G.rounds[focus];
     var canDrill = rd && (rd.type === 'gen' || rd.type === 'sort' || rd.type === 'lab');
     app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">' + (s != null ? '第 ' + (s + 1) + ' 階的' : '') + '愛心用完了</h2>' +
       '<p class="soft mt1">先到 <b>🩹 修復站</b> 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
@@ -631,12 +704,7 @@ window.CARDGAME = { mount: function (opts) {
       (canDrill ? (rd.type === 'lab' ? '在實驗站再做 1 次：不扣心、先給提示。' : '練 2 題：不扣心、題目上方先給提示，答完看解說。') : '先把概念小卡讀一遍（看著畫面 10 秒）。') + '</div>' +
       '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="repair-go">🩹 進入修復站</button></div></section>';
     var go = document.getElementById('repair-go'); go.focus();
-    go.onclick = function () {
-      if (!canDrill) return readCard();
-      var prd = Object.assign({}, rd, rd.type === 'gen' ? { n: 2 } : rd.type === 'lab' ? { n: 1 } : { pick: 2 });
-      G = { i: i, lv: G.lv, st: s, rounds: [prd], r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0, practice: true };
-      count(); round();
-    };
+    go.onclick = function () { if (!canDrill) return readCard(); start(i, s, focus); };
   }
   function readCard() {
     var lv = G.lv;
@@ -672,10 +740,10 @@ window.CARDGAME = { mount: function (opts) {
     if (i >= 0 && open(i)) learn(i); else menu();
   });
   return { menu: menu, learn: learn };
-} };
+};
 
 /* ── 答題工具 ─────────────────────────────── */
-CARDGAME.tools = {
+CARDGAME.tools = {   // 答題工具：畫在題目下面，幫學生算（不含答案）
   /* 凱薩轉盤：外圈明文、內圈密文，可以自己轉 */
   caesar: function (el, it) {
     var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', shift = it.toolShift != null ? it.toolShift : 0;
@@ -709,3 +777,27 @@ CARDGAME.tools = {
     draw();
   }
 };
+(function () {
+  var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  /* 字母編號表 */
+  CARDGAME.tools.abc = function (el) {
+    el.innerHTML = '<div class="card soft-bg" style="padding:.8rem"><b class="small">🔤 字母編號表</b><div class="scroll-x mt1"><table class="t mono" style="min-width:40rem"><tr>' +
+      A.split('').map(function (c) { return '<td style="text-align:center;padding:.25rem">' + c + '</td>'; }).join('') + '</tr><tr>' +
+      A.split('').map(function (c, i) { return '<td style="text-align:center;padding:.25rem;color:var(--unit);font-weight:900">' + i + '</td>'; }).join('') + '</tr></table></div></div>';
+  };
+  /* 計數表：點一下作答格子做記號，自動算有幾格被點 */
+  CARDGAME.tools.tally = function (el, it) {
+    var d = it.data, on = {};
+    function draw() {
+      var n = Object.keys(on).length;
+      el.innerHTML = '<div class="card soft-bg" style="padding:.8rem"><div class="row between"><b class="small">📋 全班作答（點一下做記號）</b><span class="chip">已點 ' + n + ' 格</span></div>' +
+        '<div class="row mt1" style="gap:.35rem">' + d.ans.map(function (a, i) {
+          return '<button type="button" class="pick mono" data-i="' + i + '" style="min-width:3.2rem;padding:.35rem;text-align:center' + (on[i] ? ';border-color:var(--ok);background:var(--ok-bg)' : '') + '">' +
+            '<div class="tiny soft">' + (i + 1) + ' 號</div><div class="black">' + a + (on[i] ? ' ✔' : '') + '</div></button>';
+        }).join('') + '</div><div class="row mt1"><button type="button" class="btn sm" id="tally-clear">清除記號</button></div></div>';
+      el.querySelectorAll('[data-i]').forEach(function (b) { b.onclick = function () { var i = +b.dataset.i; if (on[i]) delete on[i]; else on[i] = 1; draw(); }; });
+      el.querySelector('#tally-clear').onclick = function () { on = {}; draw(); };
+    }
+    draw();
+  };
+})();

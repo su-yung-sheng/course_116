@@ -17,6 +17,7 @@ function shortest(g) {
 
 /** 回傳 { kind, answer }：input → 字串；choice → 選項 id；order → 依序要點的按鈕文字片段；slots → 每格的值；bits → 位元字串 */
 export async function solve(page) {
+  await page.waitForSelector('.qcard .txt', { timeout: 8000 });
   const t = (await page.textContent('.qcard .txt')).trim();
   const sub = (await page.$eval('.qcard', e => (e.querySelector('.small') || {}).textContent || '')).trim();
   const has = async sel => !!(await page.$(sel));
@@ -97,6 +98,7 @@ export async function answer(page, sol, wrong) {
 
 /** 🧪 實驗站：照畫面上的狀態做出正確結果（封包重組、Wi-Fi 基地臺位置、拉線） */
 export async function solveLab(page) {
+  await page.waitForSelector('#lab[data-lab]', { timeout: 10000 });   // 實驗站的情境由伺服器產生：等畫面畫好
   const lab = await page.$eval('#lab', e => e.dataset.lab);
   if (lab === 'packetSim') {
     await page.click('#pk-send');
@@ -159,7 +161,10 @@ export async function solveLab(page) {
     await page.click(`.dn-row:has(td:text-is("${dom}"))`); await page.waitForSelector('.dn-s');
     await page.click(`.dn-s[data-ip="${ip}"]`);
   } else if (lab === 'mailTrip') {
-    for (const [st, p] of [['mA', 'SMTP'], ['mB', 'SMTP'], ['pcB', 'POP3']]) { await page.click(`.mt-s[data-s="${st}"]`); await page.click(`.mt-p[data-p="${p}"]`); await page.click('#mt-go'); }
+    for (const [k, [st, p]] of [['mA', 'SMTP'], ['mB', 'SMTP'], ['pcB', 'POP3']].entries()) {
+      await page.click(`.mt-s[data-s="${st}"]`); await page.click(`.mt-p[data-p="${p}"]`); await page.click('#mt-go');
+      await page.waitForFunction(n => document.querySelectorAll('.mt-st.done').length >= n, k + 1);   // 等伺服器回覆、畫面換到下一站
+    }
   } else if (lab === 'spy') {
     await page.click('.sp-m[data-m="https"]'); await page.click('#sp-go');
   } else if (lab === 'dlSim') {

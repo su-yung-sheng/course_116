@@ -9,10 +9,9 @@
 <script src="config.js"></script>
 <script src="../shared/store.js"></script>
 <script src="../shared/ui.js"></script>
-<script src="../shared/seal.js"></script>
+<script src="../shared/api.js"></script>
 <link rel="stylesheet" href="../shared/labkit.css">
 <script src="../shared/labkit.js"></script>
-<script src="content/lab.js"></script>
 </head>
 <body>
 <main class="wrap">
@@ -40,7 +39,7 @@
        link                   ← 和課本哪一章接起來
        sim(el, api)           ← 模擬器；api.set(條件) 讓檢核「動手驗證」
        blocks python          ← 積木 ↔ Python 對照
-       checks                 ← 先預測再驗證：{ q, options, setup }（正解與解說在 private/，建置後封存在 content/lab.js）
+       checks                 ← 先預測再驗證：{ q, options, setup }（正解與解說在 private/，只放在驗證伺服器）
      ================================================================ */
   var SECTIONS = [
     {

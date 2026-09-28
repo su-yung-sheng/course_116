@@ -6,7 +6,7 @@ import { solve as netSolve0, answer as netAnswer, solveLab as netLab } from './n
 import { cipherAnswer, solveLab2, LABS2 } from './labs2_solver.mjs';
 // 🎲 密碼出題器（D4 用到）先試；不是密碼題才交給網路解題器
 const netSolve = async page => { const a = await cipherAnswer(page); return a != null ? { kind: 'input', answer: a } : netSolve0(page); };
-const solveLab = async page => LABS2.includes(await page.$eval('#lab', e => e.dataset.lab)) ? solveLab2(page) : netLab(page);
+const solveLab = async page => LABS2.includes(await page.waitForSelector('#lab[data-lab]').then(() => page.$eval('#lab', e => e.dataset.lab))) ? solveLab2(page) : netLab(page);
 
 const { browser, context } = await launch();
 const page = await context.newPage();
@@ -148,7 +148,7 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
 
 /* ── 🧪 其他實驗站：做錯會說明錯在哪裡 ── */
 {
-  const open = async (id, s, q) => { await page.goto(`${BASE}/11602/network.html?w=${q}#${id}`); await page.click(`.stage[data-s="${s}"]`); await page.waitForSelector('#lab'); await page.waitForTimeout(1600); };
+  const open = async (id, s, q) => { await page.goto(`${BASE}/11602/network.html?w=${q}#${id}`); await page.click(`.stage[data-s="${s}"]`); await page.waitForSelector('#lab[data-lab]'); await page.waitForTimeout(1600); };
   const fbHas = async (t, msg) => { await page.waitForSelector('#fb .note'); ok((await page.textContent('#fb')).includes(t), msg); await passCool(page); };
   await open('N2', 1, 1);   // 長距離用雙絞線
   const spots = JSON.parse(await page.$eval('#lab', e => e.dataset.spots));
@@ -167,7 +167,7 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
   const dom = await page.$eval('#lab', e => e.dataset.dom);
   await page.locator('.dn-row').filter({ hasNotText: dom }).first().click(); await fbHas('不一樣', '🌐 DNS：點到很像的網址會被擋');
   // 偷看者：http 會被看到密碼
-  await page.goto(`${BASE}/11602/network.html?w=6#N7`); await page.click('.stage[data-s="1"]'); await page.waitForSelector('#lab');
+  await page.goto(`${BASE}/11602/network.html?w=6#N7`); await page.click('.stage[data-s="1"]'); await page.waitForSelector('#lab[data-lab]');
   await solveLab(page); await page.waitForSelector('#nx'); await page.click('#nx'); await page.waitForSelector('.sp-m');
   await page.waitForTimeout(1600); await page.click('.sp-m[data-m="http"]'); await page.click('#sp-go');
   ok((await page.textContent('#sp-see')).includes('password='), '🕵️ 偷看者：http 送出看得到密碼'); await passCool(page);
@@ -176,7 +176,7 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
   // 手機寬度：每個實驗站都沒有橫向捲動
   const m = await context.newPage(); await m.setViewportSize({ width: 375, height: 800 });
   for (const [id, s] of [['N1', 1], ['N2', 1], ['N3', 1], ['N4', 1], ['N5', 2], ['N6', 1], ['N7', 1], ['N8', 1], ['N9', 1], ['N10', 1], ['N10', 2]]) {
-    await m.goto(`${BASE}/11602/network.html?mm=${id}${s}#${id}`); await m.click(`.stage[data-s="${s}"]`); await m.waitForSelector('#lab'); await m.waitForTimeout(300);
+    await m.goto(`${BASE}/11602/network.html?mm=${id}${s}#${id}`); await m.click(`.stage[data-s="${s}"]`); await m.waitForSelector('#lab[data-lab]'); await m.waitForTimeout(300);
     const w = await m.evaluate(() => document.documentElement.scrollWidth); ok(w <= 375, '📱 手機 ' + id + ' 實驗站沒有橫向捲動', w);
   }
   await m.close();
@@ -260,7 +260,7 @@ for (let i = 0; i < SL.length; i++) {
   await page.click(`.lvcard[data-i="${i}"]`);
   if (lv.clean) {
     if (i === 3) {   // 先故意全部判「沒問題」扣一顆心
-      await page.click('#check');
+      await page.click('#check'); await page.waitForSelector('#fb .note');
       ok((await page.textContent('#fb')).includes('判斷得不對'), 'T4 清理檢查會擋');
     }
     for (const [r, v] of Object.entries(lv.clean.issues)) await page.selectOption(`select.issue[data-r="${r}"]`, v);
@@ -270,7 +270,7 @@ for (let i = 0; i < SL.length; i++) {
   }
   if (i === 1) {   // 寫死數字要被擋
     await fill(lv.targets[0].cell, '=5');
-    await page.click('#check');
+    await page.click('#check'); await page.waitForSelector('#fb .note');
     ok((await page.textContent('#fb')).includes('不要直接打答案'), 'T2 寫死數字被擋');
   }
   for (const t of lv.targets) await fill(t.cell, t.ref);
@@ -308,7 +308,7 @@ for (let i = 0; i < CL.length; i++) {
     for (let guard = 0; guard < 40 && !(await page.$('.end-star')); guard++) {
       await page.waitForSelector('#ans:not([disabled])');
       if (!wrongDone) {          // K3 先故意答錯一次：扣心、不公布答案
-        await page.fill('#ans', 'ZZZZZZ'); await page.press('#ans', 'Enter');
+        await page.fill('#ans', 'ZZZZZZ'); await page.press('#ans', 'Enter'); await page.waitForSelector('#fb .note');
         const fb = await page.textContent('#fb'); ok(fb.includes('不對') && !/→/.test(fb), '密碼特務答錯：扣心、不給答案'); wrongDone = true; await passCool(page);
       }
       const a = await cipherAnswer(page);

@@ -86,7 +86,8 @@
       next.tries = (old.tries || 0) + 1;
       next.lastAt = Date.now();
       var improved = false;
-      if ((rec.stars || 0) > (old.stars || 0)) { next.stars = rec.stars; next.at = Date.now(); improved = true; }
+      if ((rec.stars || 0) > (old.stars || 0)) { next.stars = rec.stars; next.at = Date.now(); improved = true; if (rec.rc) { next.rc = rec.rc; next.ts = rec.ts; } }   // rc：伺服器簽發的收據（老師可以驗證這顆星是真的）
+      else if (rec.rc && (rec.stars || 0) === (old.stars || 0) && !old.rc) { next.rc = rec.rc; next.ts = rec.ts; }
       if (rec.score != null && (old.score == null || rec.score > old.score)) next.score = rec.score;
       if (rec.done && !old.done) { next.done = true; next.at = next.at || Date.now(); improved = true; }
       if (rec.extra) next.extra = Object.assign({}, old.extra || {}, rec.extra);

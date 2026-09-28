@@ -7,7 +7,7 @@
      apps objectives materials           ← 生活應用、學習目標、材料
      sim(el, api) → { set(setup) }       ← 模擬器；set 讓檢核「動手驗證」時把情境設好，回傳看到的結果
      blocks [[class, 文字]] python        ← 積木 ↔ Python 對照（python 為 null 表示在模擬器裡即時顯示）
-     checks [{ q, options, setup }]      ← 正確選項與解說在 private/{學期}/lab.js，建置後封存在 content/lab.js（LAB_KEYS）
+     checks [{ q, options, setup }]      ← 正確選項與解說在 private/{學期}/lab.js，只放在驗證伺服器（API.call('lk')）
    檢核一律「先預測 → 再驗證 → 說對了才算」；全部答對才記完成。
    api.done(rec) 由模擬器自己呼叫（例如專題成果卡產生後）。
    ===================================================================== */
@@ -85,16 +85,18 @@ window.LABKIT = {
             document.getElementById('sim').scrollIntoView({ behavior: 'smooth', block: 'center' });
             runBtn.disabled = true;
             d.querySelectorAll('.pick').forEach(function (x) { x.disabled = true; });
-            // 正確選項與解說封存在 content/lab.js：用學生的預測去試開，打得開才算說對
-            var key = ((window.LAB_KEYS || {})[s.id] || [])[qi] || {};
-            SEAL.open(key.e, key.s, String(pick)).then(function (r) {
-              var ok = !!r, mine = d.querySelector('.pick[data-k="' + pick + '"]');
+            // 正確選項與解說在驗證伺服器：把學生的預測送上去對
+            API.call('lk', { sid: s.id, i: qi, v: String(pick) }).then(function (r) {
+              var ok = !!r.ok, mine = d.querySelector('.pick[data-k="' + pick + '"]');
               if (mine) mine.classList.add(ok ? 'right' : 'wrong');
               d.querySelector('[data-fb]').innerHTML = '<div class="note ' + (ok ? 'ok' : 'bad') + ' pop small"><b>🔬 ' + esc(seen) + '</b><br>' +
                 (ok ? '✅ 你的預測正確！ ' + esc(r.why) : '❌ 和你的預測不一樣。看看模擬器的結果，想一想為什麼，再預測一次。') + '</div>' +
                 (ok ? '' : '<button class="btn sm mt1" data-again>重新預測</button>');
               if (ok) { passed[qi] = true; if (Object.keys(passed).length === s.checks.length && !isDone(s.id)) api.done(); }
               else d.querySelector('[data-again]').onclick = render;
+            }, function (e) {   // 連不上伺服器：模擬器照跑，只是沒辦法判斷預測
+              d.querySelector('[data-fb]').innerHTML = '<div class="note warn pop small"><b>🔬 ' + esc(seen) + '</b><br>📴 ' + esc(API.msg(e)) + '</div><button class="btn sm mt1" data-again>重新預測</button>';
+              d.querySelector('[data-again]').onclick = render;
             });
           };
         }

@@ -9,7 +9,7 @@
    ⚠️ 實驗任務只挑「算得出來」的操作（二進位、摩斯、RGB 解碼、動手調參數），
       不挑選擇題 —— 選擇題的答案寫在原本的頁面程式裡，F12 看得到，不拿來計星。
    ⚠️ 快速檢核的對錯原本寫在按鈕的 onclick 裡（F12 一看就知道），
-      現在改成封存：按鈕只剩 answerReview(題號, this) 和 data-k，由這支負責試開。
+      現在按鈕只剩 answerReview(題號, this)：由這支把「按了哪一顆」送到驗證伺服器判斷（API.call('dq')）。
    ===================================================================== */
 (function () {
   /* 116：頁首、課程小卡、登入框都用全站樣式（theme.css + ui.js + unit.js），和其他單元長得一樣。 */
@@ -23,16 +23,15 @@
   if (unit) hookReview();
   var names = { '1': '1-1 二進位原理', '2': '1-2 文字數位化', '3': '1-3 音訊數位化', '4': '1-4 影像數位化' };
 
-  /* 快速檢核：對錯與提示都封存在按鈕的 data-k（tools/build.mjs 產生，來源 private/11601/digital/review.json）
-     鑰匙＝按鈕上的字：按哪一顆就用哪一顆去試開，打開的內容告訴你對不對、錯的話提示是什麼。 */
+  /* 快速檢核：對錯與提示都在驗證伺服器（來源 private/11601/digital/review.json）
+     送出「第幾題、按鈕上的字」，伺服器回答對不對、錯的話提示是什麼。 */
   function hookReview() {
     var wrong = 0, saved = false, right = {};
     window.answerReview = function (q, btn) {
       if (!btn || btn.dataset.busy) return;
       btn.dataset.busy = '1';
-      SEAL.open(btn.getAttribute('data-k'), 'digital/' + unit + '/' + q, btn.textContent.replace(/\s+/g, '')).then(function (r) {
+      API.call('dq', { u: unit, q: q, v: btn.textContent.replace(/\s+/g, '') }).then(function (r) {
         delete btn.dataset.busy;
-        if (!r) return;
         var fb = document.getElementById('review-feedback'), sc = document.getElementById('review-score');
         if (r.ok) {
           right[q] = true;
@@ -54,6 +53,9 @@
             UI.toast('🏅 ' + names[unit] + '：這次 ' + '★'.repeat(stars) + (res.improved ? '（新紀錄！）' : '（最佳 ' + '★'.repeat(best) + '）'), 3500);
           }
         }
+      }, function (e) {
+        delete btn.dataset.busy;
+        var fb = document.getElementById('review-feedback'); if (fb) fb.innerText = '📴 ' + API.msg(e);
       });
     };
   }

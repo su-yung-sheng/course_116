@@ -1,5 +1,5 @@
 /* =====================================================================
-   🎲 網路世界・隨機出題器（CARDGAME.gens）── 三星三階的「操作」「挑戰」用
+   🎲 網路世界・隨機出題器（CARDGAME.gens）── 伺服器端（三星三階的「操作」「挑戰」用）
    ---------------------------------------------------------------------
    和密碼特務同一套做法：題目當場隨機產生，原始碼裡沒有「題目＋答案」的清單；
    檢查時照規則把答案算出來比對。每位學生、每一次挑戰的題目都不一樣。
@@ -7,7 +7,7 @@
    ※ 學生打的答案先經過引擎的 norm()：全形轉半形、去空白、轉大寫
    ===================================================================== */
 (function () {
-  function rnd(n) { try { var a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; } catch (e) { return Math.floor(Math.random() * n); } }
+  function rnd(n) { return Math.floor((CARDGAME.rand || Math.random)() * n); }   // 伺服器出題：有種子的亂數（驗證時重新產生同一題）
   function pick(a) { return a[rnd(a.length)]; }
   function picks(a, n) { a = a.slice(); var o = []; while (o.length < n && a.length) o.push(a.splice(rnd(a.length), 1)[0]); return o; }
   function between(lo, hi) { return lo + rnd(hi - lo + 1); }

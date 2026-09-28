@@ -1,12 +1,19 @@
+import { lastLab, gas } from './harness.mjs';
 // 🧪 資料偵探／多媒體／AI 前導關的實驗站解題器＋🎲 密碼出題器解題器
-// 只看畫面上的題目、el.dataset 裡的情境描述，照課本規則算出正確操作（和學生一樣），不讀答案資料。
+// 🎲 出題器：只看畫面上的題目，照課本規則算答案（和學生一樣）。
+// 🧪 實驗站：情境藏在伺服器，解題器直接看模擬伺服器裡的 sec（lastLab()）── 學生的網頁拿不到這些。
 
 /** 🎲 密碼特務的出題器：看題目算答案；不是密碼題就回傳 null */
 export async function cipherAnswer(page, S = { txt: '.qcard .txt', sub: '.qcard .small', ans: '#ans' }) {
-  return page.evaluate(S => {
-    if (!window.CARDGAME || !CARDGAME.cipher || !document.querySelector(S.txt) || !document.querySelector(S.ans)) return null;
-    const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', C = CARDGAME.cipher;
-    const t = document.querySelector(S.txt).textContent.trim(), sub = (document.querySelector(S.sub) || {}).textContent || '';
+  await page.waitForSelector(S.txt, { timeout: 8000 }).catch(() => {});   // 題目由伺服器出：等它出現
+  const P = await page.evaluate(S => {   // 從畫面讀題目（和學生看到的一樣）；算答案用伺服器那份密碼規則（shift／vig／單字庫）
+    if (!document.querySelector(S.txt) || !document.querySelector(S.ans)) return null;
+    return { t: document.querySelector(S.txt).textContent.trim(), sub: (document.querySelector(S.sub) || {}).textContent || '',
+      cells: [...document.querySelectorAll('#tool [data-i] .black')].map(e => e.textContent.replace('✔', '').trim()) };
+  }, S);
+  if (!P) return null;
+  {
+    const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', C = gas.ctx.CARDGAME.cipher, t = P.t, sub = P.sub;
     let m;
     if (/把整個單字換成編號/.test(sub)) return t.split('').map(c => A.indexOf(c)).join(',');
     if (/這串編號是哪一個英文單字/.test(sub)) return t.split(' ').map(x => A[+x]).join('');
@@ -22,17 +29,16 @@ export async function cipherAnswer(page, S = { txt: '.qcard .txt', sub: '.qcard 
     if (/加密法 1/.test(sub)) return C.vig(t, t.split('').map((_, i) => i + 1), 1);
     if ((m = sub.match(/維吉尼亞解密，金鑰依序 ([\d、]+)/))) return C.vig(t, m[1].split('、').map(Number), -1);
     if ((m = sub.match(/金鑰依序 ([\d、]+)/))) return C.vig(t, m[1].split('、').map(Number), 1);
-    const cells = [...document.querySelectorAll('#tool [data-i] .black')];
     const km = sub.match(/正解是 ([A-D])/);
-    if (!cells.length || !km) return null;
-    const ans = cells.map(e => e.textContent.replace('✔', '').trim()), key = km[1];
+    if (!P.cells.length || !km) return null;
+    const ans = P.cells, key = km[1];
     if (/答對的有幾人/.test(t)) return String(ans.filter(x => x === key).length);
     if (/答錯的有幾人/.test(t)) return String(ans.filter(x => x !== key).length);
     if (/錯誤選項.*最多人選/.test(t)) { const c = {}; ans.filter(x => x !== key).forEach(x => c[x] = (c[x] || 0) + 1); return Object.keys(c).sort((a, b) => c[b] - c[a])[0]; }
     if ((m = t.match(/選 ([A-D]) 的有幾人/))) return String(ans.filter(x => x === m[1]).length);
     if (/答對率/.test(t)) return String(Math.round(ans.filter(x => x === key).length / ans.length * 100));
     return null;
-  }, S);
+  }
 }
 
 export const LABS2 = ['resFrame', 'flipbook', 'timeline', 'licenseCheck', 'dataToInfo', 'cleanLab', 'rleLab', 'blackBox', 'trainer', 'robotAlgo', 'nextWord', 'promptLab', 'fakeSpot'];
@@ -41,43 +47,34 @@ const change = (page, sel, v) => page.$eval(sel, (e, v) => { e.value = v; e.disp
 
 /** 🧪 把目前畫面上的實驗站做對（最後按確認） */
 export async function solveLab2(page) {
+  await page.waitForSelector('#lab[data-lab]', { timeout: 10000 });   // 實驗站的情境由伺服器產生：等畫面畫好
   const d = await ds(page), lab = d.lab || (await page.$eval('#lab > div', e => e.className));
-  if (d.q && (await page.$('.rf2'))) {   // 📺 resFrame
-    const q = JSON.parse(d.q), RES = await page.evaluate(() => CARDGAME.labs._m.RES);
-    const res = name => RES.find(r => r.n === name);
-    for (const [i, x] of q.entries()) {
-      if (x.k === 'wh') { const r = res(x.t.match(/「(.+?)」/)[1]); await page.fill(`.rf-n[data-i="${i}"][data-p="w"]`, String(r.w)); await page.fill(`.rf-n[data-i="${i}"][data-p="h"]`, String(r.h)); }
-      else if (x.k === 'hi') { const vs = await page.$$eval(`.rf-o[data-i="${i}"]`, bs => bs.map(b => +b.dataset.v)); await page.click(`.rf-o[data-i="${i}"][data-v="${Math.max(...vs)}"]`); }
-      else {
-        let v;
-        if (x.k === 'fr') { const a = x.t.match(/(\d+) 分 (\d+) 秒.*?(\d+)fps/), b = x.t.match(/(\d+) 秒.*?每秒 (\d+) 格/); v = a ? (+a[1] * 60 + +a[2]) * +a[3] : +b[1] * +b[2]; }
-        if (x.k === 'x') { const [a, b] = [...x.t.matchAll(/「(.+?)」/g)].map(m => res(m[1])); v = a.w * a.h / (b.w * b.h); }
-        if (x.k === 'il') v = +x.t.match(/(\d+)i/)[1] / 2;
-        await page.fill(`.rf-n[data-i="${i}"][data-p="v"]`, String(v));
-      }
+  const S = lastLab().sec, SV = gas.ctx.SV;   // 伺服器留著的情境（解題器可以偷看；學生的網頁拿不到）
+  if (d.lab === 'resFrame') {   // 📺
+    for (const [i, x] of S.q.entries()) {
+      if (x.k === 'wh') { await page.fill(`.rf-n[data-i="${i}"][data-p="w"]`, String(x.w)); await page.fill(`.rf-n[data-i="${i}"][data-p="h"]`, String(x.h)); }
+      else if (x.k === 'hi') await page.click(`.rf-o[data-i="${i}"][data-v="${x.v}"]`);
+      else await page.fill(`.rf-n[data-i="${i}"][data-p="v"]`, String(x.v));
     }
     return page.click('#rf-ok');
   }
-  if (await page.$('.fbk')) {   // 🎞️ flipbook
-    const N = +d.n, T = +d.t;
-    for (let f = 0; f < N; f++) await page.click(`.fb-f[data-f="${f}"]`);
-    await page.fill('#fb-fps', String(N / T));
-    if (d.x) { const x = JSON.parse(d.x); await page.fill('#fb-tot', String((x.m * 60 + x.s) * x.f)); }
+  if (d.lab === 'flipbook') {   // 🎞️ 畫面上的第 k 張 → 真正的第 order[k] 格
+    const ks = S.order.map((_, k) => k).sort((a, b) => S.order[a] - S.order[b]);
+    for (const k of ks) await page.click(`.fb-f[data-k="${k}"]`);
+    await page.fill('#fb-fps', String(S.N / S.T));
+    if (S.extra) await page.fill('#fb-tot', String((S.extra.m * 60 + S.extra.s) * S.extra.f));
     return page.click('#fb-ok');
   }
-  if (d.clips) {   // 🎚️ timeline
-    const clips = JSON.parse(d.clips), hard = clips.some(c => c.at != null);
-    for (const c of clips) {
+  if (d.lab === 'timeline') {   // 🎚️
+    for (const c of S.clips) {
       const tr = c.kind === 'base' ? 'V1' : c.kind === 'over' ? 'V2' : c.id === 'voice' ? 'A2' : 'A1';
       await page.click(`.tl-clip[data-c="${c.id}"]`); await page.click(`.tl-lab[data-t="${tr}"]`);
     }
-    if (hard) for (const c of clips) await change(page, `.tl-st[data-c="${c.id}"]`, String(c.at));
+    if (S.hard) for (const c of S.clips) await change(page, `.tl-st[data-c="${c.id}"]`, String(S.want[c.id]));
     return page.click('#tl-ok');
   }
-  if (await page.$('.lc')) {   // 📜 licenseCheck
-    const s = JSON.parse(d.s);
-    const v = await page.evaluate(s => { const M = CARDGAME.labs._m; return s.mats.map(id => M.verdict(M.MATS.find(m => m.id === id), s.commercial, s.edit)); }, s);
-    for (const [i, id] of s.mats.entries()) await page.click(`.lc-a[data-m="${id}"][data-a="${v[i]}"]`);
+  if (d.lab === 'licenseCheck') {   // 📜
+    for (const m of S.mats) await page.click(`.lc-a[data-m="${m.id}"][data-a="${SV._media.verdict(m, S.commercial, S.edit)}"]`);
     return page.click('#lc-ok');
   }
   if (await page.$('.di')) {   // 🔎 dataToInfo
@@ -94,8 +91,7 @@ export async function solveLab2(page) {
     return page.click('#di-ok');
   }
   if (await page.$('.cl-k')) {   // 🧹 cleanLab 基本
-    const rows = JSON.parse(d.rows), k = await page.evaluate(rows => rows.map(r => CARDGAME.labs._d.judge(r)), rows);
-    for (const [i, v] of k.entries()) await page.click(`.cl-k[data-i="${i}"][data-k="${v}"]`);
+    for (const [i, r] of S.rows.entries()) await page.click(`.cl-k[data-i="${i}"][data-k="${SV._data.judge(r)}"]`);
     return page.click('#cl-ok');
   }
   if (await page.$('.cl-a')) {   // 🧹 cleanLab 挑戰
@@ -124,39 +120,34 @@ export async function solveLab2(page) {
     }
     return page.click('#rl-ok');
   }
-  if (d.lab === 'blackBox') {   // 🤖 做實驗：每個水果測兩次 → 全部教一遍 → 再測一遍
-    const n = +d.n, fruits = d.fruits.split(','), hard = !!(await page.$('.bb-k[data-k="rand"]'));
-    const lastOut = async () => (await page.$$eval('.bb-log li', ls => ls.map(l => l.textContent))).pop().match(/「(.+?)」/)[1];
-    for (let i = 0; i < n; i++) {
+  if (d.lab === 'blackBox') {   // 🤖 每一台：每個水果教一遍 → 再測一次（有證據）→ 照伺服器的答案分類
+    const logN = () => page.$$eval('.bb-log li:not(.soft)', ls => ls.length);
+    for (let i = 0; i < S.ms.length; i++) {
       await page.click(`.bb-tab[data-i="${i}"]`);
-      let changed = false;
-      for (let k = 0; k < fruits.length; k++) {
-        await page.click(`.bb-f[data-k="${k}"]`); const outs = [];
-        for (let r = 0; r < 3; r++) { await page.click('#bb-test'); outs.push(await lastOut()); }
-        if (new Set(outs).size > 1) changed = true;
+      for (let k = 0; k < S.fruits.length; k++) {
+        const n0 = await logN(); await page.click(`.bb-f[data-k="${k}"]`); await page.click('#bb-teach');
+        await page.waitForFunction(n => document.querySelectorAll('.bb-log li:not(.soft)').length > n, n0);
       }
-      for (let k = 0; k < fruits.length; k++) { await page.click(`.bb-f[data-k="${k}"]`); await page.click('#bb-teach'); }
-      let right = 0;
-      for (let k = 0; k < fruits.length; k++) { await page.click(`.bb-f[data-k="${k}"]`); await page.click('#bb-test'); if (await lastOut() === fruits[k]) right++; }
-      const type = changed && hard ? 'rand' : right === fruits.length ? 'learn' : 'rule';
-      await page.click(`.bb-k[data-k="${type}"]`);
+      const n1 = await logN(); await page.click('.bb-f[data-k="0"]'); await page.click('#bb-test');
+      await page.waitForFunction(n => document.querySelectorAll('.bb-log li:not(.soft)').length > n, n1);
+      await page.click(`.bb-k[data-k="${S.ms[i].type}"]`);
     }
     return page.click('#bb-ok');
   }
-  if (d.lab === 'trainer') {   // 🐱🐶 暴力找一組 ≤ max 張、讓測試全對的資料集（測試的真實答案：耳朵 ≥ 5 是貓）
-    const pool = JSON.parse(d.pool), tests = JSON.parse(d.tests), max = +d.max;
-    const nn = (set, p) => { let b = null, bd = 1e9; for (const q of set) { const dd = (q.ear - p.ear) ** 2 + (q.size - p.size) ** 2; if (dd < bd) { bd = dd; b = q; } } return b && b.a; };
+  if (d.lab === 'trainer') {   // 🐱🐶 暴力找一組 ≤ max 張、讓測試全對的資料集（真正的答案用伺服器的 truth）
+    const pool = JSON.parse(d.pool), tests = S.tests || JSON.parse(d.tests), max = +d.max, A = SV._ai;
     let best = null;
     for (let m = 1; m < (1 << pool.length) && !best; m++) {
       const idx = pool.map((_, i) => i).filter(i => m & (1 << i)); if (idx.length > max) continue;
-      if (tests.every(p => nn(idx.map(i => pool[i]), p) === (p.ear >= 5 ? 'cat' : 'dog'))) best = idx;
+      const set = idx.map(i => (S.pool || pool)[i]);
+      if (tests.every(p => A.nn(set, p) === A.truth(p))) best = idx;
     }
     for (const i of best) await page.click(`.tr-p[data-k="${i}"]`);
     await page.click('#tr-run');
     return page.click('#tr-ok');
   }
   if (d.lab === 'robotAlgo') {   // 🤖 最少積木的路線（Dijkstra），挑戰版用「重複執行」
-    const { G, s, goal, limit } = JSON.parse(d.map), H = G.length, W = G[0].length, DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+    const { G, s, limit } = JSON.parse(d.map), gy = G.findIndex(r => r.includes('goal')), goal = { x: G[gy].indexOf('goal'), y: gy }, H = G.length, W = G[0].length, DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
     const key = (x, y, dd) => x + ',' + y + ',' + dd, best = { [key(s.x, s.y, s.d)]: 0 }, prev = {};
     const q = [[s.x, s.y, s.d, 0]]; let end = null;
     while (q.length) {
@@ -187,7 +178,7 @@ export async function solveLab2(page) {
   }
   if (d.lab === 'promptLab') {   // 🔍 四要素＋一句一句檢查
     const s = JSON.parse(d.s);
-    const r = await page.evaluate(s => { const P = CARDGAME.labs._pl; return { who: P.WHO.indexOf(s.who), tone: P.TONE.indexOf(s.tone), k: s.drafts.map(x => P.judgeDraft(x, s.feat, s.lim)) }; }, s);
+    const r = { who: S.WHO.indexOf(S.who), tone: S.TONE.indexOf(S.tone), k: S.drafts.map(x => SV._ai.judgeDraft(x, S.feat, S.lim)) };
     for (const [k, v] of [['who', r.who], ['feat', s.fopts.indexOf(s.feat)], ['tone', r.tone], ['lim', 0]]) await page.click(`.pl-s[data-s="${k}"][data-k="${v}"]`);
     for (const [i, v] of r.k.entries()) await page.click(`.pl-k[data-i="${i}"][data-k="${v}"]`);
     if (await page.$('#pl-mine')) await page.fill('#pl-mine', s.feat + '真方便');

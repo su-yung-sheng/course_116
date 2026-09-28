@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /* =====================================================================
-   建置：把 private/ 裡的明碼答案封存成公開網站用的 content 檔
+   建置：把 private/ 的明碼內容拆成兩份
    ---------------------------------------------------------------------
    用法（在 repo 根目錄）：  node tools/build.mjs
-   ★ 改題目、改答案、改測資 → 改 private/ 裡的檔案 → 跑這支 → 提交產生出來的檔案
+   ★ 改題目、改答案、改測資 → 改 private/ 裡的檔案 → 跑這支 → 提交公開檔 → 更新 Apps Script（見 server/README.md）
    ★ private/ 不進 git（.gitignore），只在老師的電腦上 —— 請另外備份
-   ★ 公開 repo 裡的 content/*.js、content/lab.js、digital/*.html 的 data-k 都是這支產生的，不要手改
 
    產出
-     {學期}/content/*.js      遊戲、Python、試算表（答案封存）
-     {學期}/content/lab.js    5016B 預測檢核的封存鑰匙
-     11601/digital/1～4.html  快速檢核按鈕的 data-k
+     ① 公開網站用（進 git）：{學期}/content/*.js ── 只有題目，沒有答案、解說、提示、預期輸出、隱藏測資
+     ② 驗證伺服器用（不進 git）：private/server/ ── 整包貼到 Google Apps Script
+          server/*.js（伺服器程式，公開）＋ 70_sheet_engine.js（試算表引擎）＋ 90_answers.js（SV_ANS：全部答案）
+     ③ 11601/digital/1～4.html：拿掉快速檢核按鈕上的舊封存資料（改問伺服器）
    ===================================================================== */
 import fs from 'fs';
 import path from 'path';
@@ -20,16 +20,9 @@ import { fileURLToPath } from 'url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const P = (...a) => path.join(ROOT, ...a);
-const SEAL = (await import(P('shared/seal.js'))).default || globalThis.SEAL;
-
-/* ── 私有鹽（第一次建置時產生；遺失的話重新建置即可，只是封存結果全部換新） ── */
-const pepperFile = P('private/pepper.txt');
 if (!fs.existsSync(P('private'))) { console.error('找不到 private/ —— 這台電腦沒有明碼答案來源，無法建置。'); process.exit(1); }
-if (!fs.existsSync(pepperFile)) fs.writeFileSync(pepperFile, crypto.randomBytes(24).toString('hex') + '\n');
-const PEPPER = fs.readFileSync(pepperFile, 'utf8').trim();
-const salt = (...parts) => SEAL.sha(PEPPER + '|' + parts.join('|')).slice(0, 16);
 
-/* ── 在沙箱裡載入 private 的內容檔與需要的共用引擎 ── */
+/* ── 在沙箱裡載入 private 的內容檔 ── */
 function load(files) {
   const ctx = { window: {}, console };
   ctx.window.window = ctx.window;
@@ -37,152 +30,93 @@ function load(files) {
   for (const f of files) vm.runInContext(fs.readFileSync(f, 'utf8'), ctx, { filename: f });
   return ctx.window;
 }
-const ENGINE = load([P('shared/pyrunner.js'), P('shared/sheet.js')]);
-const PYRUN = ENGINE.PYRUN, SHEET = ENGINE.SHEET;
-const normPy = s => PYRUN._norm(s), halfPy = s => PYRUN._half(s);
-const normType = s => String(s).replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/\s+/g, '').toUpperCase();
-
-let count = { blobs: 0, hashes: 0 };
-const seal = async (s, key, obj) => { count.blobs++; return SEAL.seal(s, key, obj, PEPPER); };
-const H = (s, v) => { count.hashes++; return SEAL.h(s, v); };
-function within(s, wants, tol) {          // 誤差範圍內所有「小數第 2 位」的值 → 雜湊
-  const out = new Set();
-  for (const w of wants) {
-    const lo = Math.ceil((w - tol) * 100 - 1e-6), hi = Math.floor((w + tol) * 100 + 1e-6);
-    for (let k = lo; k <= hi; k++) out.add(H(s, SEAL.num2(k / 100)));
-  }
-  return [...out];
-}
-// 漸進提示（最後一則常常就是答案）：不是加密，只是不讓 F12 一眼看到；按「提示」才解開
-const hideHints = (id, hints) => (hints && hints.length ? { hx: SEAL.obscure('hint/' + id, hints), hn: hints.length } : {});
-function seededShuffle(arr, seed) {
-  const a = arr.slice(); let x = parseInt(SEAL.sha(seed).slice(0, 8), 16);
+const SHEET = load([P('shared/sheet.js')]).SHEET;
+const clone = o => JSON.parse(JSON.stringify(o));
+const pickKeys = (o, keys) => Object.fromEntries(keys.filter(k => o[k] !== undefined).map(k => [k, o[k]]));
+function seededShuffle(arr, seed) {        // 依序點的題目：公開版打亂順序（固定亂法，不要剛好是正解順序）
+  const a = arr.slice(); let x = parseInt(crypto.createHash('sha256').update(seed).digest('hex').slice(0, 8), 16);
   for (let i = a.length - 1; i > 0; i--) { x = (x * 1103515245 + 12345) >>> 0; const j = x % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
-  if (a.every((v, i) => v === arr[i]) && a.length > 1) a.push(a.shift());   // 不要剛好是正解順序
+  if (a.every((v, i) => v === arr[i]) && a.length > 1) a.push(a.shift());
   return a;
 }
 
-/* ── Python ───────────────────────────────────── */
-async function sealPython(levels) {
-  return levels.map(({ hints, ...lv }) => ({
-    ...lv, ...hideHints(lv.id, hints),
-    tests: lv.tests.map((t, ti) => {
-      const s = salt('py', lv.id, ti);
-      const checks = t.checks.map(c => {
-        const o = t.hidden ? {} : (c.msg ? { msg: c.msg } : {});
-        if (c.line != null) return { ...o, t: 'line', h: H(s, normPy(c.line)) };
-        if (c.has != null) return { ...o, t: 'has', h: H(s, normPy(c.has)), n: normPy(c.has).length };
-        if (c.not != null) return { ...o, t: 'not', h: H(s, normPy(c.not)), n: normPy(c.not).length };
-        if (c.word != null) return { ...o, t: 'word', h: H(s, halfPy(c.word)), n: halfPy(c.word).length };
-        if (c.order) return { ...o, t: 'order', seq: c.order.map(x => ({ h: H(s, normPy(x)), n: normPy(x).length })) };
-        if (c.count != null) return { ...o, t: 'count', h: H(s, normPy(c.count)), n: normPy(c.count).length, min: c.min, max: c.max, eq: c.eq };
-        if (c.num != null) return { ...o, t: 'num', hs: within(s, [c.num], c.tol == null ? 0.01 : c.tol) };
-        if (c.nums) return { ...o, t: 'nums', h: H(s, c.nums.map(Number).join(',')), k: c.nums.length, tail: !!c.tail };
-        throw new Error(lv.id + ' 不認得的檢查：' + JSON.stringify(c));
+const ANS = { built: new Date().toISOString().slice(0, 16).replace('T', ' '), cards: {}, py: {}, sheet: {}, labkit: {}, digital: {} };
+let stat = { levels: 0, rounds: 0 };
+
+/* ── 互動遊戲（sort／order／build／type／gen／lab） ── */
+function pubRounds(term, lvId, st, list) {
+  return list.map((rd, ri) => {
+    stat.rounds++;
+    const src = term + '/' + lvId + '/' + (st == null ? '-' : st) + '/' + ri;
+    if (rd.type === 'sort') {
+      rd.items.forEach(it => { if (!rd.buckets.some(b => b.id === it.a)) throw new Error(lvId + ' 答案不在選項裡：' + it.t); });
+      return { type: 'sort', src, prompt: rd.prompt, pick: rd.pick, ordered: rd.ordered, buckets: rd.buckets, items: rd.items.map(it => pickKeys(it, ['t', 'icon', 'scene'])) };
+    }
+    if (rd.type === 'order') return { type: 'order', src, prompt: rd.prompt, hint: rd.hint, items: seededShuffle(rd.items, src).map(x => pickKeys(x, ['t', 'icon'])) };
+    if (rd.type === 'build') {
+      const combos = rd.slots.reduce((acc, sl) => acc.flatMap(c => sl.options.map(o => [...c, [sl.id, o]])), [[]]);
+      rd.customers.forEach(cu => {   // 每位客人至少要有一種組合能過關
+        const okOne = combos.some(combo => {
+          const chosen = Object.fromEntries(combo), props = { price: rd.base ? rd.base.price : 0 };
+          for (const [, o] of combo) { if (o.price) props.price += o.price; for (const k in o) if (!['id', 'label', 'price'].includes(k)) props[k] = o[k]; }
+          return !cu.rules.some(r => r.sum ? props[r.sum] > r.max : r.pick ? chosen[r.pick].id !== r.is : ((r.min != null && !(props[r.prop] >= r.min)) || (r.eq != null && props[r.prop] !== r.eq)));
+        });
+        if (!okOne) throw new Error(lvId + ' 客人「' + cu.who + '」沒有任何組合能過關');
       });
-      const base = { name: t.name, s, checks };
-      if (t.hidden) return { ...base, hidden: true, xw: t.why ? SEAL.obscure(s + '/why', t.why) : undefined, xin: SEAL.obscure(s, t.inputs || []) };
-      return { ...base, inputs: t.inputs || [] };
-    })
-  }));
+      return { type: 'build', src, title: rd.title, base: rd.base,
+        slots: rd.slots.map(sl => ({ id: sl.id, label: sl.label, options: sl.options.map(o => pickKeys(o, ['id', 'label', 'price'])) })),
+        customers: rd.customers.map(cu => ({ who: cu.who, need: cu.need })) };
+    }
+    if (rd.type === 'type') return { type: 'type', src, prompt: rd.prompt, tool: rd.tool, shuffle: rd.shuffle, items: rd.items.map(it => pickKeys(it, ['t', 'sub', 'icon', 'ph', 'hint', 'toolShift'])) };
+    if (rd.type === 'lab' || rd.type === 'gen') return { ...clone(rd), src };   // 情境、題目都由伺服器產生（參數原樣帶過去）
+    throw new Error('不認得的回合：' + rd.type);
+  });
 }
-
-/* ── 互動遊戲（sort／order／build／type） ─────── */
-async function sealCards(levels) {
-  const out = [];
-  for (const lv of levels) {
+function cards(term, levels) {
+  const T = ANS.cards[term] = ANS.cards[term] || {};
+  return levels.map(lv => {
+    if (T[lv.id]) throw new Error(term + ' 關卡編號重複：' + lv.id);
+    T[lv.id] = clone(lv); stat.levels++;
     const base = { id: lv.id, icon: lv.icon, title: lv.title, book: lv.book, learn: lv.learn };
-    if (lv.stages) {   // ⭐ 三星三階：每一階各自封存（salt 帶上階段編號）
-      const stages = [];
-      for (let si = 0; si < lv.stages.length; si++) {
-        const st = lv.stages[si];
-        stages.push({ goal: st.goal, rounds: await sealRounds({ id: lv.id + '#' + si }, st.rounds) });
-      }
-      out.push({ ...base, stages });
-    } else out.push({ ...base, rounds: await sealRounds(lv, lv.rounds) });
-  }
-  return out;
-}
-async function sealRounds(lv, list) {
-    const rounds = [];
-    for (let ri = 0; ri < list.length; ri++) {
-      const rd = list[ri], s0 = salt('card', lv.id, ri);
-      if (rd.type === 'sort') {
-        const items = [];
-        for (let i = 0; i < rd.items.length; i++) {
-          const it = rd.items[i], s = salt('card', lv.id, ri, i);
-          if (!rd.buckets.some(b => b.id === it.a)) throw new Error(lv.id + ' 答案不在選項裡：' + it.t);
-          items.push({ t: it.t, icon: it.icon, scene: it.scene, s, e: await seal(s, it.a, { why: it.why }) });
-        }
-        rounds.push({ type: 'sort', prompt: rd.prompt, pick: rd.pick, ordered: rd.ordered, buckets: rd.buckets, items });
-      } else if (rd.type === 'order') {
-        const seq = [];
-        for (let i = 0; i < rd.items.length; i++) seq.push(await seal(s0 + '#' + i, rd.items[i].t, i === rd.items.length - 1 ? { why: rd.why } : {}));
-        rounds.push({ type: 'order', prompt: rd.prompt, hint: rd.hint, s: s0, items: seededShuffle(rd.items, s0).map(x => ({ t: x.t, icon: x.icon })), seq });
-      } else if (rd.type === 'build') {
-        const combos = rd.slots.reduce((acc, sl) => acc.flatMap(c => sl.options.map(o => [...c, [sl.id, o]])), [[]]);
-        const customers = [];
-        for (let ci = 0; ci < rd.customers.length; ci++) {
-          const cu = rd.customers[ci], s = salt('card', lv.id, ri, 'c', ci), outcomes = {};
-          let valid = 0;
-          for (const combo of combos) {
-            const chosen = Object.fromEntries(combo), props = { price: rd.base ? rd.base.price : 0 };
-            for (const [, o] of combo) { if (o.price) props.price += o.price; for (const k in o) if (!['id', 'label', 'price'].includes(k)) props[k] = o[k]; }
-            const fails = cu.rules.filter(r => r.sum ? props[r.sum] > r.max : r.pick ? chosen[r.pick].id !== r.is
-              : ((r.min != null && !(props[r.prop] >= r.min)) || (r.eq != null && props[r.prop] !== r.eq)));
-            const key = combo.map(([, o]) => o.id).join('|');
-            if (!fails.length) valid++;
-            outcomes[H(s, key)] = await seal(s, key, fails.length ? { ok: false, msgs: fails.map(f => f.msg) } : { ok: true, good: cu.good });
-          }
-          if (!valid) throw new Error(lv.id + ' 客人「' + cu.who + '」沒有任何組合能過關');
-          customers.push({ who: cu.who, need: cu.need, s, outcomes });
-        }
-        rounds.push({ type: 'build', title: rd.title, base: rd.base,
-          slots: rd.slots.map(sl => ({ id: sl.id, label: sl.label, options: sl.options.map(o => ({ id: o.id, label: o.label, price: o.price })) })), customers });
-      } else if (rd.type === 'type') {
-        const items = [];
-        for (let i = 0; i < rd.items.length; i++) {
-          const it = rd.items[i], s = salt('card', lv.id, ri, i), keys = [...new Set(it.a.map(normType))], e = [];
-          for (const k of keys) e.push(await seal(s, k, { why: it.why, ans: it.a[0] }));
-          items.push({ t: it.t, sub: it.sub, icon: it.icon, ph: it.ph, hint: it.hint, toolShift: it.toolShift, s, e });
-        }
-        rounds.push({ type: 'type', prompt: rd.prompt, tool: rd.tool, shuffle: rd.shuffle, items });
-      } else if (rd.type === 'lab') {
-        rounds.push({ ...rd });   // 🧪 實驗站：情境隨機產生、由實驗站自己判斷，不用封存
-      } else if (rd.type === 'gen') {
-        rounds.push({ ...rd });   // 隨機出題：沒有固定答案，不用封存（出題器參數原樣帶過去）
-      } else throw new Error('不認得的回合：' + rd.type);
-    }
-    return rounds;
+    if (lv.stages) return { ...base, stages: lv.stages.map((st, si) => ({ goal: st.goal, rounds: pubRounds(term, lv.id, si, st.rounds) })) };
+    return { ...base, rounds: pubRounds(term, lv.id, null, lv.rounds) };
+  });
 }
 
-/* ── 試算表 ───────────────────────────────────── */
-async function sealSheet(levels) {
-  const out = [];
-  for (const lv of levels) {
+/* ── Python：公開版只有題目、範例、要求、公開測資的輸入（離線練習用）；預期輸出、隱藏測資、提示都在伺服器 ── */
+function python(term, levels) {
+  const T = ANS.py[term] = ANS.py[term] || {};
+  return levels.map(lv => {
+    T[lv.id] = clone(lv);
+    const { hints, tests, ...pub } = lv;
+    return { ...clone(pub), hn: (hints || []).length, tests: tests.map(t => (t.hidden ? { name: t.name, hidden: true } : { name: t.name, inputs: t.inputs || [] })) };
+  });
+}
+
+/* ── 試算表：標準答案先算好（伺服器比對用），公開版只有題目與資料 ── */
+function sheet(term, levels) {
+  const T = ANS.sheet[term] = ANS.sheet[term] || {};
+  return levels.map(lv => {
     const grid = SHEET.makeGrid(lv.clean ? lv.clean.fixed : lv.data, lv.labels);
-    lv.targets.forEach(t => grid.set(t.cell, t.ref));   // 先把標準公式填進去：後面的格子可能引用前面的答案（例如 B13 用到 B11）
-    const targets = lv.targets.map((t, i) => {
-      const s = salt('sheet', lv.id, i), want = SHEET.evaluate(t.ref, grid);
+    lv.targets.forEach(t => grid.set(t.cell, t.ref));   // 後面的格子可能引用前面的答案（例如 B13 用到 B11）
+    const targets = lv.targets.map(t => {
+      const want = SHEET.evaluate(t.ref, grid);
       if (typeof want !== 'number') throw new Error(lv.id + ' ' + t.cell + ' 標準答案不是數字');
-      return { cell: t.cell, label: t.label, must: t.must, tx: t.tip ? SEAL.obscure(s, t.tip) : undefined, s, ok: within(s, [want].concat(t.alt || []), t.tol == null ? 0.01 : t.tol) };
+      return { ...clone(t), want };
     });
-    const o = { id: lv.id, icon: lv.icon, title: lv.title, book: lv.book, story: lv.story, data: lv.data, labels: lv.labels, targets, after: lv.after, ...hideHints(lv.id, lv.hints) };
-    if (lv.clean) {
-      const s = salt('sheet', lv.id, 'clean'), rows = {}, marks = [];
-      for (let r = 2; r <= lv.data.length; r++) { const is = lv.clean.issues[r] || 'ok'; rows[r] = H(s, r + ':' + is); marks.push(is); }
-      o.clean = { prompt: lv.clean.prompt, s, rows, e: await seal(s, marks.join(','), { fixed: lv.clean.fixed, note: lv.clean.note }) };
-    }
-    out.push(o);
-  }
-  return out;
+    T[lv.id] = { ...clone(lv), targets };
+    const o = { id: lv.id, icon: lv.icon, title: lv.title, book: lv.book, story: lv.story, data: lv.data, labels: lv.labels,
+      targets: lv.targets.map(t => pickKeys(t, ['cell', 'label', 'must'])), hn: (lv.hints || []).length };
+    if (lv.clean) o.clean = { prompt: lv.clean.prompt };
+    return o;
+  });
 }
 
-/* ── 寫檔 ─────────────────────────────────────── */
+/* ── 寫檔 ── */
 function writeJS(file, globals, src) {
   const body = Object.entries(globals).map(([k, v]) => 'window.' + k + ' = ' + JSON.stringify(v, null, 1) + ';').join('\n\n');
   fs.writeFileSync(file, '/* ⚠️ 自動產生，請勿手改。來源：' + src + '（私有，不進 git）；產生方式：node tools/build.mjs\n' +
-    '   答案、解說、預期輸出都已封存（見 shared/seal.js）。 */\n' + body + '\n');
+    '   公開版只有題目：答案、解說、提示、預期輸出都在驗證伺服器（server/，見 server/README.md）。 */\n' + body + '\n');
 }
 
 for (const term of ['11601', '11602']) {
@@ -191,43 +125,50 @@ for (const term of ['11601', '11602']) {
     const W = load([path.join(dir, f)]), outG = {};
     for (const [k, v] of Object.entries(W)) {
       if (k === 'window') continue;
-      if (k === 'PY_LEVELS') outG[k] = await sealPython(v);
-      else if (k === 'SHEET_LEVELS') outG[k] = await sealSheet(v);
-      else if (/_LEVELS$/.test(k)) outG[k] = await sealCards(v);
+      if (k === 'PY_LEVELS') outG[k] = python(term, v);
+      else if (k === 'SHEET_LEVELS') outG[k] = sheet(term, v);
+      else if (/_LEVELS$/.test(k)) outG[k] = cards(term, v);
       else outG[k] = v;                     // 沒有答案的資料（例如 MEDIA_STEPS）原樣輸出
     }
     writeJS(P(term, 'content', f), outG, 'private/' + term + '/content/' + f);
     console.log('✔', term + '/content/' + f, Object.keys(outG).join(', '));
   }
-  /* 5016B */
+  /* 5016B 預測檢核：答案只在伺服器；舊的公開封存檔刪掉 */
   const labSrc = P('private', term, 'lab.js');
-  if (fs.existsSync(labSrc)) {
-    const A = load([labSrc]).LAB_ANSWERS, keys = {};
-    for (const [sid, list] of Object.entries(A)) {
-      keys[sid] = [];
-      for (let i = 0; i < list.length; i++) { const s = salt('lab', term, sid, i); keys[sid].push({ s, e: await seal(s, String(list[i].answer), { why: list[i].why }) }); }
-    }
-    writeJS(P(term, 'content', 'lab.js'), { LAB_KEYS: keys }, 'private/' + term + '/lab.js');
-    console.log('✔', term + '/content/lab.js');
-  }
+  if (fs.existsSync(labSrc)) ANS.labkit[term] = clone(load([labSrc]).LAB_ANSWERS);
+  if (fs.existsSync(P(term, 'content', 'lab.js'))) { fs.unlinkSync(P(term, 'content', 'lab.js')); console.log('🗑', term + '/content/lab.js（改問伺服器）'); }
 }
 
-/* 單元一：快速檢核按鈕 */
+/* 單元一：快速檢核按鈕 ── 答案在伺服器；HTML 上不留任何答案資料 */
 const REV = P('private', '11601', 'digital', 'review.json');
 if (fs.existsSync(REV)) {
   const R = JSON.parse(fs.readFileSync(REV, 'utf8'));
+  ANS.digital = R;
   for (const [u, list] of Object.entries(R)) {
     const file = P('11601', 'digital', u + '.html');
     let html = fs.readFileSync(file, 'utf8'), i = 0;
-    const blobs = [];
-    for (const b of list) blobs.push(await seal('digital/' + u + '/' + b.q, b.label.replace(/\s+/g, ''), b.ok ? { ok: true } : { ok: false, hint: b.hint }));
-    html = html.replace(/onclick="answerReview\((\d+), this\)" data-k="[^"]*"/g, (m, q) => {
-      const b = list[i]; if (!b || String(b.q) !== q) throw new Error('單元一 ' + u + '.html 按鈕順序和 review.json 對不上');
-      return 'onclick="answerReview(' + q + ', this)" data-k="' + blobs[i++] + '"';
+    html = html.replace(/onclick="answerReview\((\d+), this\)"(?: data-k="[^"]*")?/g, (m, q) => {
+      const b = list[i++]; if (!b || String(b.q) !== q) throw new Error('單元一 ' + u + '.html 按鈕順序和 review.json 對不上');
+      return 'onclick="answerReview(' + q + ', this)"';
     });
     if (i !== list.length) throw new Error('單元一 ' + u + '.html 按鈕數量和 review.json 對不上');
     fs.writeFileSync(file, html);
   }
   console.log('✔ 11601/digital/1～4.html 快速檢核');
 }
-console.log('完成：封存 ' + count.blobs + ' 份、雜湊 ' + count.hashes + ' 筆。');
+
+/* ── 驗證伺服器整包：private/server/（貼到 Google Apps Script，或用 clasp push） ── */
+const OUT = P('private', 'server');
+fs.rmSync(OUT, { recursive: true, force: true });
+fs.mkdirSync(OUT, { recursive: true });
+for (const f of fs.readdirSync(P('server')).filter(f => /^\d\d_.*\.js$/.test(f)).sort()) fs.copyFileSync(P('server', f), path.join(OUT, f));
+fs.writeFileSync(path.join(OUT, '70_sheet_engine.js'), '/* 試算表引擎（和網頁用的 shared/sheet.js 同一份）：伺服器重算學生的公式 */\n' + fs.readFileSync(P('shared/sheet.js'), 'utf8'));
+fs.writeFileSync(path.join(OUT, '90_answers.js'), '/* ⚠️ 自動產生（node tools/build.mjs），全部答案都在這裡 —— 只能放在 Apps Script，絕對不能公開 */\nvar SV_ANS = ' + JSON.stringify(ANS) + ';\n');
+if (fs.existsSync(P('server', 'appsscript.json'))) fs.copyFileSync(P('server', 'appsscript.json'), path.join(OUT, 'appsscript.json'));
+/* 用 clasp 上傳（選用）：private/script-id.txt 放 Apps Script 專案的「指令碼 ID」，就產生 .clasp.json（照檔名順序上傳） */
+const SID = P('private', 'script-id.txt');
+if (fs.existsSync(SID)) {
+  const order = fs.readdirSync(OUT).filter(f => f.endsWith('.js')).sort();
+  fs.writeFileSync(path.join(OUT, '.clasp.json'), JSON.stringify({ scriptId: fs.readFileSync(SID, 'utf8').trim(), rootDir: '.', filePushOrder: order }, null, 2) + '\n');
+}
+console.log('✔ private/server/：' + fs.readdirSync(OUT).length + ' 個檔案（' + stat.levels + ' 關、' + stat.rounds + ' 回合）');

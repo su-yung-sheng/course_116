@@ -3,14 +3,12 @@
    ---------------------------------------------------------------------
    PYRUN.init(url)                   載入 Pyodide（第一次約 5～15 秒，之後有快取）
    PYRUN.run(code, inputs, opts)     執行一次 → { events, error, need, used, features }
-   PYRUN.grade(level, code)          用關卡的測資評分 → { stars, score, tests:[…], reqs:[…] }
+   PYRUN.grade(level, code, ctx)     評分 → { stars, score, tests:[…], reqs:[…], rc } （伺服器判斷，見下面）
    PYRUN.explain(error, code)        把 Python 錯誤翻成國中生看得懂的中文
    PYRUN.transcript(events)          把 events 組成畫面上的文字
 
-   ★ 評分只在瀏覽器裡跑，不需要後端、不花額度、秒回。
-   ⚠️ 測資寫在 content/python.js，repo 公開 → 學生 F12 看得到隱藏測資。
-      這是刻意的取捨：Python 星星是「學習回饋」，不是「成績的唯一證據」。
-      要當成績證據，老師另看 STORE 裡留下的最後一次程式碼（record.code）。
+   ★ 程式在學生的瀏覽器裡跑（Pyodide），不花伺服器額度。
+   🔐 預期輸出、隱藏測資、提示都只在驗證伺服器（server/50_python.js）：網頁只送「程式跑出來的輸出」上去比對。
    ===================================================================== */
 (function () {
   var TIMEOUT_MS = 3000;
@@ -74,11 +72,6 @@
       .replace(/　/g, ' ');
   }
   function norm(s) { return half(s).replace(/\s+/g, '').toLowerCase(); }
-  function numbersIn(s) {
-    var m = half(s).match(/-?\d+(?:\.\d+)?/g);
-    return m ? m.map(Number) : [];
-  }
-
   /** 畫面用：組出主控台文字（含使用者輸入） */
   PYRUN.transcript = function (events, withInputs) {
     return (events || []).map(function (ev) {
@@ -87,161 +80,49 @@
       return ev[1];
     }).join('');
   };
-  function outText(events, kinds) {
-    return (events || []).filter(function (ev) { return kinds.indexOf(ev[0]) >= 0; }).map(function (ev) { return ev[1]; }).join('\n');
-  }
 
-  /* ── 單一檢查 ─────────────────────────────────────────────
-     { line:'Hello, World!' }            有一行（去頭尾空白、全半形不拘）完全相同
-     { has:'免購票' }                     輸出（含 input 提示字）裡找得到
-     { not:'不及格' }                     找不到
-     { order:['太大','太小','答對'] }      依序出現
-     { count:'錯誤', min:2, max:3 }        出現次數
-     { num:18.95, tol:0.05 }              輸出裡有一個數字在誤差內（只看 print，不看提示字）
-     { nums:[5,4,3,2,1], tail:true }      print 出來的數字依序出現（tail：必須是最後這幾個）
-     每一條可以帶 msg：沒過時給學生的提示                                   */
-  function check(c, events) {
-    var all = outText(events, ['out', 'prompt']);
-    var outs = outText(events, ['out']);
-    var A = norm(all);
-    if (c.line != null) {
-      var want = norm(c.line);
-      return half(all).split('\n').some(function (l) { return norm(l) === want; });
-    }
-    if (c.has != null) return A.indexOf(norm(c.has)) >= 0;
-    if (c.not != null) return A.indexOf(norm(c.not)) < 0;
-    if (c.word != null) {
-      // 只看 print、分大小寫、前後不能緊貼英文字母（「D」不會被「DOG」或提示字裡的 A～Z 命中）
-      var esc = c.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return new RegExp('(^|[^A-Za-z])' + esc + '([^A-Za-z]|$)').test(half(outs));
-    }
-    if (c.order) {
-      var pos = 0;
-      for (var i = 0; i < c.order.length; i++) {
-        var at = A.indexOf(norm(c.order[i]), pos);
-        if (at < 0) return false;
-        pos = at + norm(c.order[i]).length;
-      }
-      return true;
-    }
-    if (c.count != null) {
-      var k = norm(c.count), n = 0, p = A.indexOf(k);
-      while (p >= 0) { n++; p = A.indexOf(k, p + k.length); }
-      return (c.min == null || n >= c.min) && (c.max == null || n <= c.max) && (c.eq == null || n === c.eq);
-    }
-    if (c.num != null) {
-      var tol = c.tol == null ? 0.01 : c.tol;
-      return numbersIn(outs).some(function (x) { return Math.abs(x - c.num) <= tol + 1e-9; });
-    }
-    if (c.nums) {
-      var got = numbersIn(outs);
-      if (c.tail) {
-        var t = got.slice(-c.nums.length);
-        return t.length === c.nums.length && t.every(function (x, j) { return x === c.nums[j]; });
-      }
-      var j = 0;
-      for (var q = 0; q < got.length && j < c.nums.length; q++) if (got[q] === c.nums[j]) j++;
-      return j === c.nums.length;
-    }
-    return false;
-  }
-
-  /* ── 封存版的檢查：預期值只存雜湊（tools/build.mjs 產生），這裡把學生的輸出切片算雜湊來比 ──
-     { t:'line', h }　{ t:'has'|'not', h, n }　{ t:'word', h, n }　{ t:'order', seq:[{h,n}] }
-     { t:'count', h, n, min, max, eq }　{ t:'num', hs:[…] }　{ t:'nums', h, k, tail }       */
-  function checkSealed(c, events, s) {
-    var all = outText(events, ['out', 'prompt']), outs = outText(events, ['out']);
-    var A = norm(all);
-    function H(v) { return SEAL.h(s, v); }
-    function find(tok, from) {
-      for (var i = from || 0; i + tok.n <= A.length; i++) if (H(A.substr(i, tok.n)) === tok.h) return i;
-      return -1;
-    }
-    switch (c.t) {
-      case 'line': return half(all).split('\n').some(function (l) { return H(norm(l)) === c.h; });
-      case 'has': return find(c, 0) >= 0;
-      case 'not': return find(c, 0) < 0;
-      case 'word':
-        var O = half(outs);
-        for (var i = 0; i + c.n <= O.length; i++) {
-          if ((i > 0 && /[A-Za-z]/.test(O[i - 1])) || (i + c.n < O.length && /[A-Za-z]/.test(O[i + c.n]))) continue;
-          if (H(O.substr(i, c.n)) === c.h) return true;
-        }
-        return false;
-      case 'order':
-        var pos = 0;
-        for (var k = 0; k < c.seq.length; k++) { var at = find(c.seq[k], pos); if (at < 0) return false; pos = at + c.seq[k].n; }
-        return true;
-      case 'count':
-        var cnt = 0, j = 0;
-        while (j + c.n <= A.length) { if (H(A.substr(j, c.n)) === c.h) { cnt++; j += c.n; } else j++; }
-        return (c.min == null || cnt >= c.min) && (c.max == null || cnt <= c.max) && (c.eq == null || cnt === c.eq);
-      case 'num':
-        return numbersIn(outs).some(function (x) { return c.hs.indexOf(H(SEAL.num2(x))) >= 0; });
-      case 'nums':
-        var got = numbersIn(outs);
-        if (c.tail) return got.length >= c.k && H(got.slice(-c.k).join(',')) === c.h;
-        if (got.length > 16) got = got.slice(-16);
-        var hit = false;
-        (function pick(start, acc) {           // 依順序挑 k 個（子序列）
-          if (hit) return;
-          if (acc.length === c.k) { if (H(acc.join(',')) === c.h) hit = true; return; }
-          for (var q = start; q <= got.length - (c.k - acc.length); q++) pick(q + 1, acc.concat(got[q]));
-        })(0, []);
-        return hit;
-    }
-    return false;
-  }
-
-  /* ── 結構要求：'for>=1'、'calls.input>=2'、'binops.FloorDiv>=1'、'calls.print<=3'、'branches>=4' ── */
-  function req(expr, f) {
-    var m = /^([\w.]+)\s*(>=|<=|==|>|<)\s*(\d+)$/.exec(expr);
-    if (!m || !f) return false;
-    var v = m[1].split('.').reduce(function (o, k) { return o == null ? undefined : o[k]; }, f) || 0;
-    var n = +m[3];
-    return { '>=': v >= n, '<=': v <= n, '==': v === n, '>': v > n, '<': v < n }[m[2]];
-  }
-
-  /**
-   * 評分
-   *   1★ 程式跑得動，而且至少過 1 組測資
-   *   2★ 全部測資（含隱藏測資）通過 → 開下一關
-   *   3★ 2★ ＋ 符合這一關的程式結構要求（例如「要用 for 迴圈」）
-   */
-  PYRUN.grade = function (level, code) {
-    var tests = level.tests || [];
-    var results = [];
-    var chain = Promise.resolve();
-    var timedOut = false;
+  /* ── 評分（伺服器判斷）─────────────────────────────────────
+     1. 問驗證伺服器這一關要跑哪些測資（隱藏測資的輸入也是這時才拿到）
+     2. 在學生的瀏覽器裡跑每一組（Pyodide），把輸出（events）送回伺服器
+     3. 伺服器比對預期輸出、看程式結構，決定星星（附簽章收據）
+        1★ 程式跑得動，而且至少過 1 組測資；2★ 全部測資（含隱藏測資）通過；3★ 2★ ＋ 符合程式結構要求
+     連不上伺服器 → 練習模式：只跑公開的範例測資給學生看輸出，不判斷、不記星（offline: true）
+     回傳 { stars, score, tests:[{ test:{name,hidden,inputs}, run, error, pass, msg }], reqs:[{ req:{msg}, ok }], passed, total, features, rc, ts, offline } */
+  function runAll(code, tests) {
+    var results = [], chain = Promise.resolve(), timedOut = false;
     tests.forEach(function (t, i) {
       chain = chain.then(function () {
-        if (timedOut) {   // 一組停不下來，後面幾組也一定停不下來 —— 不必每組再等 3 秒
-          results.push({ test: t, run: { events: [] }, error: { type: 'Timeout', msg: '', line: null }, pass: false, fails: [] });
-          return;
-        }
-        // 隱藏測資的輸入是混淆過的（見 shared/seal.js），執行前才還原
-        var inputs = t.xin ? SEAL.reveal(t.s, t.xin) : (t.inputs || []);
-        return PYRUN.run(code, inputs, { seed: 116 + i }).then(function (r) {
+        if (timedOut) { results.push({ test: t, run: { events: [] }, error: { type: 'Timeout', msg: '', line: null } }); return; }   // 一組停不下來，後面幾組也一定停不下來
+        return PYRUN.run(code, t.inputs || [], { seed: 116 + i }).then(function (r) {
           var err = r.error;
           if (r.timeout) timedOut = true;
           if (r.need) err = { type: 'NeedMoreInput', msg: '', line: null };
-          var fails = err ? [] : (t.checks || []).filter(function (c) { return !(c.t ? checkSealed(c, r.events, t.s) : check(c, r.events)); });
-          results.push({ test: t, run: r, error: err, pass: !err && fails.length === 0, fails: fails });
+          results.push({ test: t, run: r, error: err });
         });
       });
     });
-    return chain.then(function () {
-      var feats = results.length ? results[0].run.features : null;
-      var reqs = (level.req || []).map(function (q) { return { req: q, ok: !!req(q.need, feats) }; });
-      var passed = results.filter(function (r) { return r.pass; }).length;
-      var allPass = results.length > 0 && passed === results.length;
-      var reqOk = reqs.every(function (r) { return r.ok; });
-      var stars = allPass ? (reqOk ? 3 : 2) : (passed > 0 ? 1 : 0);
-      var score = Math.round((results.length ? passed / results.length : 0) * 80 +
-                             (reqs.length ? reqs.filter(function (r) { return r.ok; }).length / reqs.length : 1) * 20);
-      if (!allPass) score = Math.min(score, 74);
-      return { stars: stars, score: score, tests: results, reqs: reqs, passed: passed, total: results.length, features: feats };
-    });
+    return chain.then(function () { return results; });
+  }
+  PYRUN.grade = function (level, code, ctx) {
+    ctx = ctx || {};
+    function offline() {
+      var pub = (level.tests || []).filter(function (t) { return !t.hidden; });
+      return runAll(code, pub).then(function (rs) {
+        rs.forEach(function (x) { x.pass = null; });
+        return { offline: true, stars: 0, score: 0, tests: rs, reqs: [], passed: 0, total: rs.length, features: rs.length ? rs[0].run.features : null };
+      });
+    }
+    return API.call('py', { lv: level.id, mod: ctx.mod, who: window.STORE && STORE.me() }).then(function (P) {
+      return runAll(code, P.tests).then(function (rs) {
+        var feats = rs.length && rs[0].run ? rs[0].run.features : null;
+        var outs = rs.map(function (x) { return { events: (x.run && x.run.events || []).slice(0, 5000), err: !!x.error }; });
+        return API.call('pyg', { run: P.run, outs: outs, feats: feats }).then(function (G) {
+          rs.forEach(function (x, i) { var g = G.results[i] || {}; x.pass = !!g.pass; x.msg = g.msg; });
+          return { stars: G.stars, score: G.score, tests: rs, reqs: G.reqs.map(function (q) { return { req: { msg: q.msg }, ok: q.ok }; }),
+            passed: G.passed, total: G.total, features: feats, rc: G.rc, ts: G.ts };
+        });
+      });
+    }, function (e) { if (e && e.err === 'offline') return offline(); throw e; });
   };
 
   /* ── 錯誤翻譯機 ─────────────────────────────────────────
@@ -489,6 +370,6 @@
     return hits;
   };
 
-  PYRUN._check = check; PYRUN._req = req; PYRUN._norm = norm; PYRUN._half = half;   // 給測試與建置工具用
+  PYRUN._norm = norm; PYRUN._half = half;   // 給測試用
   window.PYRUN = PYRUN;
 })();

@@ -1,5 +1,5 @@
 /* ⚠️ 自動產生，請勿手改。來源：private/11602/content/network.js（私有，不進 git）；產生方式：node tools/build.mjs
-   答案、解說、預期輸出都已封存（見 shared/seal.js）。 */
+   公開版只有題目：答案、解說、提示、預期輸出都在驗證伺服器（server/，見 server/README.md）。 */
 window.NET_LEVELS = [
  {
   "id": "N1",
@@ -13,6 +13,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N1/0/0",
       "prompt": "這是區域網路還是廣域網路？",
       "pick": 5,
       "buckets": [
@@ -30,62 +31,45 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "電腦教室裡 35 台電腦連在一起",
-        "icon": "🖥️",
-        "s": "3cbb0018fb1e014e",
-        "e": "iYktuAtcHJscDeeUt97pOkYLe7Ii9ZwdhLD9jPALoy9IqJSAPo/Q6PhD7qgb41XhuOt1BsOMv31WDZIks5TEz1XK+spppQWs56z27w1JXcsKrWM="
+        "icon": "🖥️"
        },
        {
         "t": "家裡的手機、筆電都連同一台 Wi-Fi 分享器",
-        "icon": "🏠",
-        "s": "9955e204fb58118d",
-        "e": "PSoEcMxUBcsboyQyIlPJCnJplhBv/w6O9GCo6YQ3jNp4a9h6ADYEFARVtneYT+akpHZs4bqGPKemVQz6MwYqarbrLSThIgIEDc5EM7c="
+        "icon": "🏠"
        },
        {
         "t": "銀行全國各地分行的電腦互相連線",
-        "icon": "🏦",
-        "s": "0266a57465f601e2",
-        "e": "BTdVKh37DiNSGRnV24VIKB9B9QcFnp2aQ1RsqxOMNrJdwN08fCn/GVA1qnk9SVWp6hq1wvh0aYoeX/ylOdy8EYDL6ONPDAIKAGSIYd3kKnepuIZpOEfeK7RnJyKkYhwJ8EmZlyoy96EHTZ9nSf398fQ="
+        "icon": "🏦"
        },
        {
         "t": "連接全國各級學校的臺灣學術網路",
-        "icon": "🏫",
-        "s": "f439b9b5c716293d",
-        "e": "BivtYtZk4sxzWcXon0G+/otfAW9VZF42ZCTjst2l7k12MAadk9C+2dGm/yKCNh5tb/fZ0K4ENoaoayj91FNZbHL14Zi0ry+oVUE9CGyu6srk0yFG5zPt64ojBo5eUa/Fh+c="
+        "icon": "🏫"
        },
        {
         "t": "網際網路（Internet）",
-        "icon": "🌐",
-        "s": "bb1f61edafec5ca5",
-        "e": "wd4A4Gh9Y8tE3vAHkqsA8Ipo2FpEvj41pUob53YDzUcZD9dfIE33jyvoAwC9hgi5+IwbFsZy3SvyaC983rsGc8Lf7P/9pdsaU/ZQ5F3uKAWpXnCkEZs="
+        "icon": "🌐"
        },
        {
         "t": "學校三棟大樓的電腦連成一個網路",
-        "icon": "🏫",
-        "s": "9322b8d6ac11cc7d",
-        "e": "4rN0lCPrlEZ9xOPcWxz5eGWoIo3j+/j6ZKcpfCeaH5SABbugz3RYb6MY9cBnpGnknR0wZ1OWFZQGyIYh/4ZKs3u9g7Gsd66qJZD0eoznKK2TLQrFlAkTsW4="
+        "icon": "🏫"
        },
        {
         "t": "臺北總公司和高雄分公司的電腦互相連線",
-        "icon": "🏢",
-        "s": "636ad00f8edd4b48",
-        "e": "r9gpuh7tjb2uJ7Me5euYk4h/JwHN1gY1W/jx/5XuTXF1rAAgPsMALtfaIn1Mqp+TSws1L7iMEzZME5Fb98nSrfFC+KLFGBY="
+        "icon": "🏢"
        },
        {
         "t": "網咖裡 20 台電腦連在一起打電動",
-        "icon": "🎮",
-        "s": "794edf1f2fe5f0d4",
-        "e": "7HSyOhjjEdLU+z9/Gz6GLmqeqJ7bFHF6heAvOR38d/14+n0hcvWz27uUCzIW0w5DrBwfa/y/ch1/LH3bXCk10SmDEodsWpu4e/YIc7M="
+        "icon": "🎮"
        },
        {
         "t": "全臺便利商店的收銀機連回總部",
-        "icon": "🏪",
-        "s": "ecb35223004470df",
-        "e": "kry6gWXIvitIfzoLUBdrvi4Voe8TNR8XM8oD5dfbS55X9HFTry4EhOCf0z04eYQYXAsZHg3LGAbS3dhLYU4sYMgY3vi9PGOz4v65fRHStZOsXp4lH1ISXpc="
+        "icon": "🏪"
        }
       ]
      },
      {
       "type": "sort",
+      "src": "11602/N1/0/1",
       "prompt": "這是哪一個設備（或服務）的工作？",
       "pick": 5,
       "buckets": [
@@ -113,45 +97,31 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "把線路上的類比訊號轉成電腦看得懂的數位訊號",
-        "icon": "〰️",
-        "s": "265deb0aeb8b96a8",
-        "e": "R3WeaeRoGD1zn5crjsTWg52hHjcXeXw99Fxn/pH2TD7UomETLdXrFbzU9Y2r6nuRDZMSRy3wOWKaePEGGsoXG2ZaPkMzKIMsKX6iqRF1CD7b0QgyXjCW1Q=="
+        "icon": "〰️"
        },
        {
         "t": "決定封包要往哪條路走，有 WAN 和 LAN 兩種接孔",
-        "icon": "🗺️",
-        "s": "8b5e71501a4a79e2",
-        "e": "0rbsXz2M4DTUQZYeSc4mTX7L52h2aX+FoMXOwPIbVSWO+kZO6XrJYKP1+MqeosqQM3dE+C2oP3qmYhXcg25T0jyJ1GxgkT8bKai1YIst0vA="
+        "icon": "🗺️"
        },
        {
         "t": "教室的網路插孔不夠了，用它多接幾台電腦",
-        "icon": "🔌",
-        "s": "e966e9c41d41e238",
-        "e": "ikPzShYsC0MXSjq2BDsa4WL96DqocM9pYOaMTObgkwuURgbVM/4xbrF0lnv/i3KVQDNWGFgrZl3wtHKfn2F8t5kwg0oRWy8KsPk="
+        "icon": "🔌"
        },
        {
         "t": "電信公司提供你家連上網際網路的服務",
-        "icon": "📡",
-        "s": "46dba07a8f04edf7",
-        "e": "yB8yqBUifwvtDz+3uB+sDmUPaAoyL3TnoFByJ/RlNzdoAeU1NSFEwFsEtve4J9q1231MmlrQDVXinnRTfjVMHayPu9195iKInq5E"
+        "icon": "📡"
        },
        {
         "t": "讓家裡好幾台裝置共用一個對外連線，並分配內部位址",
-        "icon": "🏠",
-        "s": "8ea65894f69bb543",
-        "e": "k4KN4fs1FstDxkSLIP4CDOces2dPWnTZlqjrEs/urqLp1ul0YAi1WvLVnYr3DQp4Atv4hj3//Tk8KRA/D8gHATnG7fNkmLWKL2Ojn8XItUb8bYD3uJof"
+        "icon": "🏠"
        },
        {
         "t": "光纖傳進來的訊號，要先經過它才能給電腦用",
-        "icon": "💡",
-        "s": "6416c92a9f273e59",
-        "e": "nTQk3gfVVeytlvVtFqnB5QMaMBBJB/2jc+QkVhAPBrNtZvjZt+TdgmA3bCRZGzw1YP838t4fHwUWgxhT50nNL455w46WT06t2LoBuqUiys3Mddv7iwLAT4u6qftlVXV6jrSHKcuXZ2h756DGrabjMRO8/+I="
+        "icon": "💡"
        },
        {
         "t": "中華電信、台灣大哥大提供的「上網服務」",
-        "icon": "📶",
-        "s": "c7faed069c066161",
-        "e": "a6a8jifxAtdVbGOVZHwMH7UTFEUrGpyq4qWVtBvYnzT6nvfkCcCoLPms27pW+wVEAuLKGNAmY42Il+DjeBjtsZpGZPka5OV9pZe6dKV41m+tHP4X"
+        "icon": "📶"
        }
       ]
      }
@@ -164,7 +134,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "wireRoom",
       "n": 2,
-      "prompt": "教室拉線"
+      "prompt": "教室拉線",
+      "src": "11602/N1/1/0"
      }
     ]
    },
@@ -176,13 +147,15 @@ window.NET_LEVELS = [
       "lab": "wireRoom",
       "n": 1,
       "prompt": "教室拉線：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N1/2/0"
      },
      {
       "type": "gen",
       "gen": "portsCalc",
       "n": 2,
-      "prompt": "網路孔夠不夠？"
+      "prompt": "網路孔夠不夠？",
+      "src": "11602/N1/2/1"
      }
     ]
    }
@@ -200,6 +173,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N2/0/0",
       "prompt": "這是哪一種線材？",
       "pick": 5,
       "buckets": [
@@ -222,44 +196,33 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "用玻璃或塑膠纖維，靠「光」傳資料",
-        "icon": "✨",
-        "s": "d07f5a91aba9ecc0",
-        "e": "ImeGo3YsMPsjl6RrPRhOrRKIhf6nNOJ+gIJT/SN/ncUqJN8ry07FAcyaiFaRKgAKOwJ7s8AH8tZAwBx/YTC5LMh0CqCCHZUU/WK1jiUl4TR4t34LOClgqVbbQzHOT0Zlm3U="
+        "icon": "✨"
        },
        {
         "t": "兩條兩條的電線互相纏繞，減少電磁波干擾",
-        "icon": "🧶",
-        "s": "c14caaa1c9dec921",
-        "e": "03Vk00XkHlh2ugXgD8ukgdCiyBYhAMtxGvUAwIQy879czB8FDL27+6c8tLmHT+5cdE+RVboFrrq2gJJl9Aubt3HRceGT7vX49kYBCCDCWet9oXaScxky5DLqb1Xkgs/SRYY="
+        "icon": "🧶"
        },
        {
         "t": "中間一根銅芯，外面包絕緣體和一層銅網",
-        "icon": "🥢",
-        "s": "6a7d6e7c2a06e24f",
-        "e": "Tl/AsZNGJR8Raybb9A69VT0oi3HMI6tS4M7g5GBo55HoeKfl02Q4VsXlkmsBeFEpTci/vG9qoF6ZEHH9Gg+yP7iBqygrW/j+H+alHWGW49w5JeA+Magy2pjweV0k7BqPkRx6rwgLunygfA=="
+        "icon": "🥢"
        },
        {
         "t": "電腦教室裡，每台電腦接到交換器的那條線",
-        "icon": "🖥️",
-        "s": "924c4d8f2d975e91",
-        "e": "YgXJPVaqZPI43+r4gn/9ALujHV1y7w36DfpdDlQXgU23EFFTs/8zkmIhptFUtUT/wSrLGu2MISzNlRgBWFpx+YTBhZn0hzgXsvUNd6DXiSkUvQ8/t2Z9MkVr3Zo="
+        "icon": "🖥️"
        },
        {
         "t": "把有線電視訊號接到電視盒",
-        "icon": "📺",
-        "s": "a52b1681f0b266aa",
-        "e": "Sd32GokruVPPBci3ZYFUNo4l/tDBg6rehl77+pJ2Pmtl7jmL4qMegE6Qhios7J5Rh2JWTx6owk6vm4y2IKrTxjsCSrOqpS97Dphch0td+wONuUN2hXEBogI="
+        "icon": "📺"
        },
        {
         "t": "連接城市之間、甚至跨海的網路主幹道",
-        "icon": "🌊",
-        "s": "dc4f4f29558695f9",
-        "e": "jndIvjd/5EdFHTlS9rhio7q3oQhuVBhsOAoE44YWRUm7FaP5GNbXX96D0Y+IDU4YJbxLWP83MTYpbj/h8PpHZK5pVGyFu9UQaKM8/SpuFvpOxqrfbsIZ3So="
+        "icon": "🌊"
        }
       ]
      },
      {
       "type": "sort",
+      "src": "11602/N2/0/1",
       "prompt": "光纖和雙絞線比一比：這句話說的是哪一種？",
       "buckets": [
        {
@@ -276,38 +239,38 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "傳輸速度快、傳得遠",
-        "icon": "🚀",
-        "s": "ef6505475dfcff63",
-        "e": "p++ESFBaT1I4rf4UKWjXyDg+W+OlFfAg4R7Ezme06MdaTRu2J8/19dcPfORcbcSLzWOyUlS5sY9BJWNF5S6bA0keZu4U25U="
+        "icon": "🚀"
        },
        {
         "t": "成本低，適合一間教室這種小範圍",
-        "icon": "💰",
-        "s": "f8976420acdabf2a",
-        "e": "SOuGg23loRhiTGl8yn0LF4Qmxbm+k1QXrNID0ENfNTmaMec42PNA0hjnpid0li0qY7PAVV1D2/fqa41/cHC68m61Xsj40QymWuqHcU0d8rDylGBTQprmlew="
+        "icon": "💰"
        },
        {
         "t": "成本高，所以多用在主要幹道",
-        "icon": "💸",
-        "s": "ffa57311d789fc2d",
-        "e": "pDiVhTGcoizliGkAH19ddntGQKe3+L9UHOOG9XgP4MYQotBaXnKZn0ZUNVzvwahYHoTHEI0G+JJPjbHd6ZXSq3/6RDtF4MhZ7l9Sqmrjtl+A1H4ssE7Km5458js="
+        "icon": "💸"
        },
        {
         "t": "傳輸距離比較短",
-        "icon": "📏",
-        "s": "0c5ffa0c2ecc6300",
-        "e": "NagsiZ0MOnQyUeLckivbw3sRLXh+ca+jRks5cN5GjiWKUIPSjnD40cdTA2TCaj5j8RSyNxt7NShtM4U2F5x3zeV1RPA5nrIN3bJkuX29vNmA2dmDrpFrmGM="
+        "icon": "📏"
        }
       ]
      },
      {
       "type": "order",
+      "src": "11602/N2/0/2",
       "prompt": "把網路從 ISP 送到你家電腦的路線排好",
-      "s": "450015bd264ff6c1",
       "items": [
        {
         "t": "光纖接到用戶端",
         "icon": "💡"
+       },
+       {
+        "t": "雙絞線送到電腦",
+        "icon": "🔀"
+       },
+       {
+        "t": "數據機轉換訊號",
+        "icon": "📞"
        },
        {
         "t": "你的電腦",
@@ -320,23 +283,7 @@ window.NET_LEVELS = [
        {
         "t": "ISP（電信公司）",
         "icon": "🏢"
-       },
-       {
-        "t": "雙絞線送到電腦",
-        "icon": "🔀"
-       },
-       {
-        "t": "數據機轉換訊號",
-        "icon": "📞"
        }
-      ],
-      "seq": [
-       "1tEYnXdQ+aYPToy2NSLJi8Nix6n517k9JkS9JPk4",
-       "RdVobss3DVVswFavqjzQdW+ygta3VIH47BRDK7UW",
-       "NxpbDXhXr+h9oLmwK25oaysUqbQy673pN/Jyfmqo",
-       "2dOxURJD9V+q4zkL1kzs+HxveKWFOQ+7V3ADqUCi",
-       "H0DhieVbDZvdZYsY3Q27ZrxaIc4hSxBzS4+KqbAk",
-       "Fta3vE3/1OW2soOkXlitYRD//6ctRKQS4rZlI1EXPQXF6M3PN/j4JF4+05BnPc7GAxdU3U9ds8ZrZ8gxDvIaSsd3hzXF1CYmWji3VmJ9V5F93buuhmWzhp47pFkCnM/8ECL5P2uRNHbBp9eQucWC5G0i0GRCWLgNnqb1tMqM7DTTOcWjUDj1BDqLFzXsT4OeDYCLELaW2InkCrONJXvN0VWJPNgqXXgZgsAv"
       ]
      }
     ]
@@ -348,7 +295,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "cablePlan",
       "n": 1,
-      "prompt": "佈線工程師"
+      "prompt": "佈線工程師",
+      "src": "11602/N2/1/0"
      }
     ]
    },
@@ -360,14 +308,16 @@ window.NET_LEVELS = [
       "lab": "cablePlan",
       "n": 1,
       "prompt": "佈線工程師：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N2/2/0"
      },
      {
       "type": "gen",
       "gen": "cableAssign",
       "n": 1,
       "prompt": "選線材：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N2/2/1"
      }
     ]
    }
@@ -385,6 +335,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N3/0/0",
       "prompt": "這是 TCP 還是 IP 負責的？",
       "pick": 5,
       "buckets": [
@@ -402,91 +353,67 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "幫每個封包編上號碼",
-        "icon": "#️⃣",
-        "s": "2f5109db7341a8b4",
-        "e": "PGCMcuH8CZaUGuQSEMYTDbuh0gSLW9MfCRnjrVmdnA91FeDR2IWfnfxoqSaotmYGV350L53q3Wb9nXR+cZPZAw=="
+        "icon": "#️⃣"
        },
        {
         "t": "檢查封包有沒有送到，沒到就重送",
-        "icon": "🔁",
-        "s": "0c3c82482e7eb6dc",
-        "e": "wo7eYof6XRKEoMYZDzLljqzx1tcov9kn3DSFXs3Y9lNeFwyATiFGrRSQUmMQo9DJU1nuJKrObylHsIqkSRONREcypYd8Y/5j3ayFtLJxz1UBAfYz"
+        "icon": "🔁"
        },
        {
         "t": "在封包上寫上來源和目的地的網路位址",
-        "icon": "🏷️",
-        "s": "7a1f195522ab9c60",
-        "e": "BM1NjdaVE2IQI/Clbuwf7uujGT2LOSFaG70s4U0NViSLXq3tB8yH2bZpLJeJZWehy2Nap7po+nMu0aBdgVoS15+oRFzA"
+        "icon": "🏷️"
        },
        {
         "t": "像信封上的收件人地址",
-        "icon": "✉️",
-        "s": "2b33ab8925d76ee9",
-        "e": "0eB1weLK77U0+kKXHm2WofgoXSIg/QuL535efosVe+L9gg33IwMOhE5/RQPUdR7ln9RXdwvYzbXYcnaYOYc8ucRMdswUtBEPL18="
+        "icon": "✉️"
        },
        {
         "t": "收到後依號碼把封包重新組回原本的資料",
-        "icon": "🧩",
-        "s": "77c239dc46f44ca6",
-        "e": "iJHm7ZAz3cmTZWv/3v4c93J0iDk9hmFK7dnU6LL1oOHTD/Y9kL0af1N6BWyUGRjhydZMGm86S4kvewQ+Yl6pxAvhkgIJgVfpSjw7CJEawA=="
+        "icon": "🧩"
        },
        {
         "t": "沒收到對方的確認，就把封包再送一次",
-        "icon": "📤",
-        "s": "3632872866ea3c80",
-        "e": "h/No50r5mSxfjc2FNkCPYZJfan5DqJRm3UqNptBAkIOd0BRJ0ZA1hh08OSba38cKJ4Q9+MU+wlgjTfF0i4Ti+kSthjIbKwBiyQ=="
+        "icon": "📤"
        },
        {
         "t": "讓路由器知道封包要往哪裡送",
-        "icon": "🧭",
-        "s": "d14870f45e8cfb78",
-        "e": "/UoA0Duzq++eRv/JrZRMZp7QzPs7w6XuwUwnzYbSlqzPhLjDMgem1aKzsfStCpU9OjR/jyMA89K1IhbkoGkzaJK6LMb8"
+        "icon": "🧭"
        },
        {
         "t": "每台上網的裝置都要有一個",
-        "icon": "🖥️",
-        "s": "0e43bfe3d651cc39",
-        "e": "QhfmwvalajAoRKcnlzfZMUgNzTe2cCWVawEb1kSRqms/uV1+o8TISd1QC4ID1CS9j5W/P7C61f+691UW3KWzb/R/H94XUmj2"
+        "icon": "🖥️"
        }
       ]
      },
      {
       "type": "order",
+      "src": "11602/N3/0/1",
       "prompt": "把「傳一張照片給朋友」的過程排好順序",
-      "s": "905cdbde210210cd",
       "items": [
        {
-        "t": "IP 加上來源與目的地位址",
-        "icon": "🏷️"
+        "t": "TCP 幫封包編號",
+        "icon": "🔢"
        },
        {
         "t": "路由器一站一站轉送",
         "icon": "🧭"
        },
        {
-        "t": "TCP 幫封包編號",
-        "icon": "🔢"
-       },
-       {
-        "t": "回傳「收到了」的確認",
-        "icon": "✅"
+        "t": "接收端依編號重組",
+        "icon": "🧩"
        },
        {
         "t": "照片被切成許多小封包",
         "icon": "✂️"
        },
        {
-        "t": "接收端依編號重組",
-        "icon": "🧩"
+        "t": "回傳「收到了」的確認",
+        "icon": "✅"
+       },
+       {
+        "t": "IP 加上來源與目的地位址",
+        "icon": "🏷️"
        }
-      ],
-      "seq": [
-       "mlQEHJqxjWWgG1mwfKGTPweyrm7FWpZkKzkccSgK",
-       "5ZRHdR/0no96zGrkdIm28NuFDXtaCsOqr/tiCnhd",
-       "2DpyNPy0I7XBT8DFFRz47LUNxXdIGIWatqKv+J+Q",
-       "slylwpVisUxShKc+Xy6T9vaPloNyX+fOiOg30tjK",
-       "JDideYDeUw+AEe+xZDE6WifgjbP8jh08q2piipqq",
-       "1UhbeKe1R/z2YoOABx9lILWLJhysanNfb0gSKs0UFbiqSYMuYN5RH85MRMSi6Q9yjUVTw+zWhy7GpxlFNL8ukrTzsqvSGTIvIIm0uCY9IEqO5QAssJ2oa/QiUz5f70zfX+7amacTGiQFa2663VILQloLhViY/iy8iWykdWjfXETj25nZ8XRLOPv2I3c="
       ]
      }
     ]
@@ -498,7 +425,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "packetSim",
       "n": 2,
-      "prompt": "封包快遞模擬器"
+      "prompt": "封包快遞模擬器",
+      "src": "11602/N3/1/0"
      }
     ]
    },
@@ -510,14 +438,16 @@ window.NET_LEVELS = [
       "lab": "packetSim",
       "n": 1,
       "prompt": "封包快遞模擬器：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N3/2/0"
      },
      {
       "type": "gen",
       "gen": "packetLost",
       "n": 2,
       "prompt": "要重送哪幾號？",
-      "hard": true
+      "hard": true,
+      "src": "11602/N3/2/1"
      }
     ]
    }
@@ -537,27 +467,21 @@ window.NET_LEVELS = [
       "type": "gen",
       "gen": "ipValid",
       "n": 5,
-      "prompt": "合法的 IPv4 嗎？"
+      "prompt": "合法的 IPv4 嗎？",
+      "src": "11602/N4/0/0"
      },
      {
       "type": "type",
+      "src": "11602/N4/0/1",
       "prompt": "觀念確認（自己打答案）",
       "items": [
        {
         "t": "IPv4 位址由幾組數字組成？",
-        "icon": "🔢",
-        "s": "3d1ad26309973f70",
-        "e": [
-         "u3FaTpBBpYqiYpcdSPeNhsbLRS8Y2yJ3jjoNh5jKLNhECqd8F+5Dcy86GyEOcCBEP7YkyskUMkGmxBYaR45hGBFSQqNr9XIFDfLz"
-        ]
+        "icon": "🔢"
        },
        {
         "t": "IPv4 每一組最大是多少？",
-        "icon": "🔝",
-        "s": "a704688f5ff7c754",
-        "e": [
-         "ZSThTDC9+LtW8gZbRUqc/P0cHxnY8O3sODQn/dBaqn7yVdwli1qG64kUPEoum0yCVB6gkr5b+dUJr2WhIpHbPr4P0FSQ180NpdwND8p3RWlHlv6YtFVNE6ZbL4Nw"
-        ]
+        "icon": "🔝"
        }
       ]
      }
@@ -570,7 +494,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "ipPanel",
       "n": 2,
-      "prompt": "IP 設定面板"
+      "prompt": "IP 設定面板",
+      "src": "11602/N4/1/0"
      }
     ]
    },
@@ -582,13 +507,15 @@ window.NET_LEVELS = [
       "lab": "ipPanel",
       "n": 1,
       "prompt": "IP 設定面板：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N4/2/0"
      },
      {
       "type": "gen",
       "gen": "ipPrivate",
       "n": 4,
-      "prompt": "公有還是私有？"
+      "prompt": "公有還是私有？",
+      "src": "11602/N4/2/1"
      }
     ]
    }
@@ -606,6 +533,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N5/0/0",
       "prompt": "這是 IPv4 還是 IPv6？",
       "pick": 5,
       "buckets": [
@@ -623,50 +551,37 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "由 32 個位元組成",
-        "icon": "🔢",
-        "s": "2bf862c0ec3133d0",
-        "e": "GJuXkSAOfvnJKIs9YUdCtkHRls0ns96txyBaS8cAc50hZeuDJhkXfBtyeR0DOgfVNQOsGudz4ocOspYjl+iCIj+y+JYw4OR/5Ga6FENOJg=="
+        "icon": "🔢"
        },
        {
         "t": "由 128 個位元組成",
-        "icon": "🔢",
-        "s": "b180721ad8cc7dba",
-        "e": "8P3pkJn69MyKx5wAajTkonrrCNmVvl9q3z/ZDWDR/bLG9u9TFQ1GExLXsRrRJNAF0J3YXlejPAw9hj9S2fWZf2cmxbANOFk32qbzMz5nOTMY"
+        "icon": "🔢"
        },
        {
         "t": "用「.」分成 4 組十進位數字",
-        "icon": "⚫",
-        "s": "28a6d4778ec04e77",
-        "e": "oXHpuItFrf2Km1QmS04AY+R0dWyj9Nba3SZsz0wnvtF6xkq152D0OsTrwRfc06lJ2TcykQ6FNaosIno="
+        "icon": "⚫"
        },
        {
         "t": "用「:」分成 8 組十六進位數字",
-        "icon": "➗",
-        "s": "0423fbd79bb9afc1",
-        "e": "t13BvjR+4rz4Mxq1BsjQtW31Z6/GbpmSq21oh08sp0Ae2tEI8LGlyzVOFTwOXYeCImFZ8O8bGvXB+gP28Sfk6PXFVL3kkZHI"
+        "icon": "➗"
        },
        {
         "t": "2001:db8::1",
-        "icon": "🏷️",
-        "s": "141235cbde1ade1d",
-        "e": "iQ387az6JW/cZBR0KKCBu9vCa+bodW+bZ2bdxACOtXWTsmOvIOiqKgPxeVyQpwsTss7u5wmdwdniGGovWfbh40DEzZiVBoRMdcS6DGecIJBdkYOL9jvPIwgpPnxuhUI5VsdDh7O3eowhWH4Z"
+        "icon": "🏷️"
        },
        {
         "t": "140.112.53.15",
-        "icon": "🏷️",
-        "s": "21b9880d0e2f5077",
-        "e": "WxPW7AF/CtEXlPxknJ8pR527CI5z4tvBQvgludMJzg+LBWy9IpEr3pSUeKYZnoVk1QEHOfwYGY+f9D26DSVMJDfIeU5g5pZrA3W5fEMypvajLX4GBw=="
+        "icon": "🏷️"
        },
        {
         "t": "位址數量不夠用，才需要換新版",
-        "icon": "😰",
-        "s": "6b6edd4733e53d5b",
-        "e": "+yGhYoRKK0oHUNVtrCiKcBS1LWmT1BrCDnHy1aRbde8ZCVJCUjKrMEKnB54o5SWjZ0w8iORwZm1nSjWEECkAra51vseghJpmkj7RYdw5a9vDTpZ0vWT8mNIlig=="
+        "icon": "😰"
        }
       ]
      },
      {
       "type": "sort",
+      "src": "11602/N5/0/1",
       "prompt": "這樣省略，對不對？（原本的位址寫在題目裡）",
       "pick": 4,
       "buckets": [
@@ -684,55 +599,38 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "2531:0cb7:03a6:0000:0000:0000:0000:0f12 → 2531:cb7:3a6:0:0:0:0:f12",
-        "icon": "✂️",
-        "s": "68a2e55a7b23bbf8",
-        "e": "QA0B9EAOquuhj1YTqqjIyjxEYF/b158E8jvk3+uKysD1juN/rtmNd75JMzuguQu480pI5xDKiX3gJ4zf7N8Kwi6JE+ejpDh1IKdK98a0Pdjot8Hfy1PRmOlj0Qs9LZygdVlUqI+66dAibM5tzw=="
+        "icon": "✂️"
        },
        {
         "t": "2531:0cb7:03a6:0000:0000:0000:0000:0f12 → 2531:cb7:3a6::f12",
-        "icon": "✂️",
-        "s": "140bea8d25b7b5a1",
-        "e": "XyKcQWhlHnLVF/xxnkzKnM25AitNfaHk7FE+z5gL19Wqmn2c0D19dSmAVg4gPzj1GpFnAcoQjONwbtTHrZKitOc9LQRb+ndQIo8H4UCsSr5pRTFUl7A5feQIvG4aJcdJwjs+fOQ="
+        "icon": "✂️"
        },
        {
         "t": "2531:0cb7:03a6:0000:0000:0000:0000:0f12 → 2531:cb7:3a6::f1",
-        "icon": "✂️",
-        "s": "79fe3d3c2931e3b6",
-        "e": "bYMxDclCtLtqerNEPkXDr4M6ZZSV8UloroiphesuHeR8vg7zSzNBiUKoY2MpBcrzwJ67Mr3KU4kOiVD9bDN+nB1aEF0vkG15SrLxz5owX5totVqgM+DTj5WqpIEbdsQhtDbkW5/V4yxUpevg2FshNg=="
+        "icon": "✂️"
        },
        {
         "t": "2001:0db8:0000:0000:0001:0000:0000:0001 → 2001:db8::1::1",
-        "icon": "✂️",
-        "s": "5b2f3b7ab814d5e9",
-        "e": "kIFJK1rkQQi0JKwBOqxWBp8hrWBDvroC0WNEK8YlUVuFfuCZJ0fqyL4MEXkFAefp0VUjoNiYlS9QcAsPpjJ2jUi9Ou422FqLZ9EMS+UsS0Kgv8ZtvHFjZxz3FOF17ZsVdBhzawdt1EnQm6TJgffa6OWQI3oUlhLZzXz8BstakNM="
+        "icon": "✂️"
        },
        {
         "t": "2001:0db8:0000:0000:0001:0000:0000:0001 → 2001:db8::1:0:0:1",
-        "icon": "✂️",
-        "s": "a7c3af03cd772338",
-        "e": "cVWEe+vam2yZkZFkRMteJOWZFCJmgObm7pBX3tBkVEWSkBySVG2gFnltYHW3C9Hrioov8VSk60WkwqGDEa3r2Z174ZtrTnW9LiEZdKObsrC93sL3ouMvwo4zNoaKAaEZY+OaGIJq7HnLOg=="
+        "icon": "✂️"
        }
       ]
      },
      {
       "type": "type",
+      "src": "11602/N5/0/2",
       "prompt": "觀念確認（自己打答案）",
       "items": [
        {
         "t": "IPv6 位址由幾個位元組成？",
-        "icon": "6️⃣",
-        "s": "4e50e07acecfc41f",
-        "e": [
-         "WH0SesKt1UXoCVPTTM1D08RqMIQbl9xev8/PS+kYB1dW2SiFN///14VgxHxDjPtX4Ud/YEF2628vTlkidhHgEZaNfdIvhiANlrGYCMie4xnUKVF2u7ADkiqrLE85y75NhU4H"
-        ]
+        "icon": "6️⃣"
        },
        {
         "t": "IPv6 寫成幾組十六進位數字？",
-        "icon": "➗",
-        "s": "263090d2d351e2b4",
-        "e": [
-         "xlXBT+vbG2D7gHQY/dtBvS31WDvODUh+wmo6FXUorsrAebUMotzI3zdWzEOEtSpaV8t9NT5z1vIkWIxH3d0CVOmggKkJT7tVddASZrn7MwRoSTM2/AkUMFk="
-        ]
+        "icon": "➗"
        }
       ]
      }
@@ -745,13 +643,15 @@ window.NET_LEVELS = [
       "type": "gen",
       "gen": "hexBits",
       "n": 2,
-      "prompt": "4 個位元 → 1 個十六進位數字"
+      "prompt": "4 個位元 → 1 個十六進位數字",
+      "src": "11602/N5/1/0"
      },
      {
       "type": "lab",
       "lab": "v6Press",
       "n": 1,
-      "prompt": "IPv6 壓縮機"
+      "prompt": "IPv6 壓縮機",
+      "src": "11602/N5/1/1"
      }
     ]
    },
@@ -763,13 +663,15 @@ window.NET_LEVELS = [
       "lab": "v6Press",
       "n": 2,
       "prompt": "IPv6 壓縮機：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N5/2/0"
      },
      {
       "type": "gen",
       "gen": "v6expand",
       "n": 1,
-      "prompt": "IPv6 還原"
+      "prompt": "IPv6 還原",
+      "src": "11602/N5/2/1"
      }
     ]
    }
@@ -787,6 +689,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N6/0/0",
       "prompt": "標出來的這一段是網址的哪一部分？",
       "pick": 4,
       "buckets": [
@@ -814,44 +717,33 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "www.ntu.edu.tw 的「ntu」",
-        "icon": "🌐",
-        "s": "f8b2e1e46140adc8",
-        "e": "mULVX8C86xN8iDjNvvAaWH6APxPEhJMv+c6spgajdbcSRHYv2K4Dgcws+l1IbQ75UuWo/ZIXTGw9Zkt7nevSoMpLSz3PrwDsYnkW"
+        "icon": "🌐"
        },
        {
         "t": "www.ntu.edu.tw 的「tw」",
-        "icon": "🌐",
-        "s": "b1390b4c72047581",
-        "e": "5+fEKUBeQ5a8wm5Om1ICMB9dlOptLPx1HaDlTOA4mMXnIlCK+EfkyniceKHGs1YPfDFcP1caEfc="
+        "icon": "🌐"
        },
        {
         "t": "www.taichung.gov.tw 的「gov」",
-        "icon": "🌐",
-        "s": "5a9129979315531d",
-        "e": "pzL2YiwDl3iVMOymvjGNxsW3fd4BeUVCYD+Y0X8yEkHRPx6o208DaU2Fij0JJCOspzkBK49JH6rKR0Y2FZwa"
+        "icon": "🌐"
        },
        {
         "t": "mail.google.com 的「mail」",
-        "icon": "🌐",
-        "s": "357fa82d91deef06",
-        "e": "bpaEX7Xr1eOMTIa3wZQpEn2zDNEX9v92GLM8ZzOyEZUyjdiTQoNEioqRJ0PRb8oPw/Wa2i5aHrlNpdPC0tekr0VFs+cl3dEWK8WE6YZQ9OA0nfB7/uF2yHebXQ=="
+        "icon": "🌐"
        },
        {
         "t": "www.taichung.gov.tw 的「taichung」",
-        "icon": "🌐",
-        "s": "bb40441ba1f579fc",
-        "e": "/7r6IvfbXmHfNRU+z2QKh/DYeVg8+8dqCZ5R7+D8XMGlWn3WD+nH/QYcCuQytAaxUbRg2GgA+WMetkg+fcmwGDddCy0ISYpPSWAwEZM="
+        "icon": "🌐"
        },
        {
         "t": "www.yahoo.co.jp 的「jp」",
-        "icon": "🌐",
-        "s": "0b9dc4520994c1cb",
-        "e": "E/+0CNYZluMLRH+IzY24X00EVQS6X2QULxih2Cn+jpo1O/qUvhem/qapx8mSq/JeIthvDo/pgTk="
+        "icon": "🌐"
        }
       ]
      },
      {
       "type": "sort",
+      "src": "11602/N6/0/1",
       "prompt": "這個網址最可能屬於哪一類機構？",
       "pick": 4,
       "buckets": [
@@ -879,80 +771,59 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "www.qfm.kh.edu.tw",
-        "icon": "🌐",
-        "s": "879923232b85ad70",
-        "e": "Pge/hgMqpsNgsKTERWSeexPSF6hfdNJEKjJNPKjpYV+qXaZQbN0G4eko8uYLPmEcUyH72BFoT92firfmuawQl2tsFB6q1R1GQw=="
+        "icon": "🌐"
        },
        {
         "t": "www.taichung.gov.tw",
-        "icon": "🌐",
-        "s": "aa9900ae82dfdd18",
-        "e": "ea/XEoKZnoIrzk6v7PiMCH20REXYOuGv3QVjUsXt3szqE9FlKfdhsjzGzZnbSJTb68UJtNB48YSe6qoOYg=="
+        "icon": "🌐"
        },
        {
         "t": "www.pchome.com.tw",
-        "icon": "🌐",
-        "s": "539336901c1b2647",
-        "e": "w8t1n+kVsS3O21Qb5uxBlKV3k8r62vB+w7C07jc2RAlvmBx4x/zVv2dynBj/kQPVQTpnNzU8PA=="
+        "icon": "🌐"
        },
        {
         "t": "www.wikipedia.org",
-        "icon": "🌐",
-        "s": "0defce9f642d99bf",
-        "e": "QeHHbJ/Whqnqol8uwrrP7Oy/4qak8Np2haSoOFWzL7OlU6ot1+/MGYQL3GvtVRRcg8gx/ZVu1r8UE7kUObtp8EE+/lXs3pM2jpaMdH4FNuT4Rg=="
+        "icon": "🌐"
        },
        {
         "t": "www.president.gov.tw",
-        "icon": "🏛️",
-        "s": "cf86b8655dbb06b0",
-        "e": "N3OZS6CnCHFelifiUz4VUyTap6JpXFA3a09dzSQ/Awfp+YYFUw8ltJIKanJZQz9qtNae0Y5h/YsGJ7Bb"
+        "icon": "🏛️"
        },
        {
         "t": "shopping.yahoo.com.tw",
-        "icon": "🛍️",
-        "s": "77794179f343e85a",
-        "e": "tWEMozG6EUgCoYy2kxuPow9uMTe9b4nzyIy8MAxs+c6zMOLjrxDNHCHjmHhYGgszvTyAljfE4eVhtxoF3WM9UopvxTDsnwfD"
+        "icon": "🛍️"
        },
        {
         "t": "www.ncku.edu.tw",
-        "icon": "🎓",
-        "s": "147aae273a80d189",
-        "e": "gVJjILzbdmHCTygj0XdSsJ76YN7sGJCGW/8DNkOCho79muORNMzg8hKpxaArws6cXdsl5OfCx3B7O6xM"
+        "icon": "🎓"
        }
       ]
      },
      {
       "type": "order",
+      "src": "11602/N6/0/2",
       "prompt": "在瀏覽器打入網址按 Enter 之後，依序發生什麼事？",
-      "s": "4000f2ed1e606d23",
       "items": [
        {
-        "t": "DNS 把網域名稱查成 IP 位址",
-        "icon": "📒"
-       },
-       {
-        "t": "瀏覽器把網頁顯示出來",
-        "icon": "🪟"
+        "t": "依 IP 位址連到網站伺服器",
+        "icon": "🖥️"
        },
        {
         "t": "伺服器把網頁資料傳回來",
         "icon": "📦"
        },
        {
+        "t": "DNS 把網域名稱查成 IP 位址",
+        "icon": "📒"
+       },
+       {
         "t": "瀏覽器拿到網域名稱",
         "icon": "⌨️"
        },
        {
-        "t": "依 IP 位址連到網站伺服器",
-        "icon": "🖥️"
+        "t": "瀏覽器把網頁顯示出來",
+        "icon": "🪟"
        }
-      ],
-      "seq": [
-       "q886kdyLcip18UtszZBJLUk2JLEYXnECWoyya1+u",
-       "4Nlu15rPGUWN0BVoN5Tx4GFykZmO9Z2yMXD5mb7A",
-       "imN0+opy5geEcAtd8KrZh75tEd0gA2G+yti7RP78",
-       "efllZPHsI2+2h2//rZ8UZAowbIMmwzY1wGjwhxL6",
-       "yroG2SQlC5CIrHV16vW6lhaANqkMsv4JQ6QPohqjJexlw0IH2DQagcc9nhIzkuxlK5ippTrqa+gxgTtxPkE5UkzVI7Sc6KPb2inuBGmALM2ReSAsg0w69gZpgqm/cPhor5Ogaw=="
       ]
      }
     ]
@@ -964,7 +835,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "dnsBook",
       "n": 2,
-      "prompt": "DNS 電話簿"
+      "prompt": "DNS 電話簿",
+      "src": "11602/N6/1/0"
      }
     ]
    },
@@ -976,13 +848,15 @@ window.NET_LEVELS = [
       "lab": "dnsBook",
       "n": 1,
       "prompt": "DNS 電話簿：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N6/2/0"
      },
      {
       "type": "gen",
       "gen": "urlRead",
       "n": 3,
-      "prompt": "這是誰的網站？"
+      "prompt": "這是誰的網站？",
+      "src": "11602/N6/2/1"
      }
     ]
    }
@@ -1000,6 +874,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N7/0/0",
       "prompt": "這是哪一種網路服務？",
       "pick": 5,
       "buckets": [
@@ -1037,57 +912,39 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "用瀏覽器查學校網站的行事曆",
-        "icon": "🗓️",
-        "s": "7f80f6d9d1ce9348",
-        "e": "q74XclPTJFMcyV846gNnAjZFsMfdBcsLe1YqWPYeejCUnrRosqD1x/8KOOE9B+7b3+8SBYUY6M9FfMsxpYAehu6VAytVWJL7fi8="
+        "icon": "🗓️"
        },
        {
         "t": "把專題報告當附件寄給老師",
-        "icon": "📎",
-        "s": "555e6b95cfc518c3",
-        "e": "XscDyCYWBE4J6ChqdjHzR+U1Vif6JIsNbX9kreT33b7MVZc6BO6T41opGqUs/sOBvIuZouBALTzhg9JwmbVKZP8bodO4jGpotPikPgrWoWRZw3sRnunFEIfg39HDBSm4MoDiGtrZp43eUw=="
+        "icon": "📎"
        },
        {
         "t": "畢旅群組大家即時討論要帶什麼",
-        "icon": "🗨️",
-        "s": "d0ae0add7351c9fe",
-        "e": "Ta69p6LAm0ARxSmuA0TYuYqmoHwB6nDtuOzSL2h1LzRe8ph/BI/SsCe/nEcxJjDiPs9sw+2NWPPsGn9nZv0ViHbgcfjwTGtHtodu9S6iEEeT4Q=="
+        "icon": "🗨️"
        },
        {
         "t": "發一則畢業照限時動態",
-        "icon": "🎓",
-        "s": "82d356f8d3689697",
-        "e": "64t6pPVTbKZY2Zk4PsEUq3yIpFlblBYMLVYbn3eo6JcyMoYsSFon3FsBn7HlKwUzHDbxbODmeMLa/XelI2bl7FG6oAuD2ptk3hXpQj0K7j2ypWXaZeA8ECGJ2w=="
+        "icon": "🎓"
        },
        {
         "t": "晚上想看哪一集影集就點哪一集",
-        "icon": "🍿",
-        "s": "03f597335bf07d66",
-        "e": "rjMOSK5e1ds1lzEfEuzCyQwx1vZueve82+2U50R7r+HR0+KVGgRi32HsBcDML6vr/RNTylc9YW70JCBEaU7zJmCxa8cgfg/fnIOLr6/rILXym04vuRSh9Y2MgSmvZw=="
+        "icon": "🍿"
        },
        {
         "t": "空氣盒子自動上傳 PM2.5 數值",
-        "icon": "🌫️",
-        "s": "52f9fc1006922150",
-        "e": "lTHrk2ng9hl4MytYwgPyYZTaG54GgMHrFlKf/p/b5A5W13MoBTNcijQtBMop8HN3RnVXPiZtRrzquzZPtGRtBHqKnVNxfC0fi8fUiEuaKXoIodUuuw=="
+        "icon": "🌫️"
        },
        {
         "t": "上網看老師上傳的教學影片，想看哪段就看哪段",
-        "icon": "▶️",
-        "s": "d5f3b3808290d092",
-        "e": "G3rU0Sy7BzJHQlH5f2CuhXObumjVrYEBMxL23335ZwrgCVKnAe4a7UH4dRkGLX/+vppKMpnoagyLU2QkY6VVZsH2QlfbSPbzdw=="
+        "icon": "▶️"
        },
        {
         "t": "智慧插座讓你在學校就能關掉家裡的電風扇",
-        "icon": "🔌",
-        "s": "c9bda6fc3c3e119c",
-        "e": "a+eTtw6m+ZrXhobg7Im3bEAv0QqNPuDWXB26hO/x4mNvH4RbdVmrZDruU5WPEqNEW168AbH4746Wv9Rk2lMgEqRptg7lBY/Dy1XDmoYIUn8CUhaUMhwZZA=="
+        "icon": "🔌"
        },
        {
         "t": "和同學用通訊軟體視訊討論報告",
-        "icon": "📹",
-        "s": "e995d07f60f63521",
-        "e": "p7p+3UwJ+kVUDLqv1/GnZ8EKXWwRqcTqbEuYfa84DZ8qH8IiG1Tgrgf+bUWuUr5gtriCQIn3hhFjsXbnhGx6fsnq9AkIBZE2Cg=="
+        "icon": "📹"
        }
       ]
      }
@@ -1100,13 +957,15 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "mailTrip",
       "n": 1,
-      "prompt": "郵件旅程"
+      "prompt": "郵件旅程",
+      "src": "11602/N7/1/0"
      },
      {
       "type": "lab",
       "lab": "spy",
       "n": 1,
-      "prompt": "偷看者"
+      "prompt": "偷看者",
+      "src": "11602/N7/1/1"
      }
     ]
    },
@@ -1118,13 +977,15 @@ window.NET_LEVELS = [
       "lab": "mailTrip",
       "n": 1,
       "prompt": "郵件旅程：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N7/2/0"
      },
      {
       "type": "gen",
       "gen": "httpsJudge",
       "n": 3,
-      "prompt": "要不要 https？"
+      "prompt": "要不要 https？",
+      "src": "11602/N7/2/1"
      }
     ]
    }
@@ -1142,6 +1003,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N8/0/0",
       "prompt": "這個情境最適合哪一種無線技術？",
       "pick": 5,
       "buckets": [
@@ -1164,62 +1026,45 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "無線耳機連手機聽音樂",
-        "icon": "🎧",
-        "s": "06b8d71c8c62a290",
-        "e": "2Ipvg9VYkqoX0dICroGMPdiEf9XUgo7Mwe/G8y5G1gU5yIFJxYibfCicXDuHIPCR2GAPKIw1R1pYBduHspGP8FctMO+MWQK6nrgSgZty+pZzqYCLzzY7Ag=="
+        "icon": "🎧"
        },
        {
         "t": "智慧手錶把步數同步到手機",
-        "icon": "⌚",
-        "s": "fffc4d11bf00d329",
-        "e": "kPM572UtlzZuQFxEXXhXYsmJ35Rgt5WngNptQK9G1IAoRNNdRhtT8KJwt6kj4t9fJOhNXAHXIBHdotzhasftE1ChBsflODMFmEleidI="
+        "icon": "⌚"
        },
        {
         "t": "在家用筆電看高畫質影片",
-        "icon": "💻",
-        "s": "ac2fde20b698df94",
-        "e": "/Zdpgl6SM0MyQqOJzGTjPDw0bw/y6ZpMPS5JjfnwgmRWh0ArN3QTKn6dPuueL267D8N2aud/zGGgywEd9GXScBZ67Nkh5TWSYWDsvxBpSLhhOHc="
+        "icon": "💻"
        },
        {
         "t": "電腦教室的平板無線上網",
-        "icon": "🏫",
-        "s": "84413d9dbb1b2914",
-        "e": "NMtZnudBpih218pgtm2DbcpE3xX/xDTr8b7KekpI5atabNZ8pDsZNxhBtuxyr8Uvvm/EwtVfpJxDDz7STqyVHONWZySy6PFylplU"
+        "icon": "🏫"
        },
        {
         "t": "搭公車時用手機查路線",
-        "icon": "🚌",
-        "s": "48c6b24aadc4a258",
-        "e": "n09T0OFSzEu6F3FFjDa9AS1ddvQWU+PKFiZMjTasgbQcz69pPgrJ6SgfOo89WWvOyc2Ijz8rFb6HwwPOfd3Ipqa2TEkEYMYwf6S0urIBkFqRCdKJZHrceG1WMQ=="
+        "icon": "🚌"
        },
        {
         "t": "爬山時打電話報平安",
-        "icon": "⛰️",
-        "s": "4e7a2575d4401009",
-        "e": "Bej2f6/WqMnQeP/cSE+ryP4svs9WPtu1rb+1w2b8697WE4DF8/wMbDHTo/gzkTtortTA2yr6M69+MDchjPTEjQApo1ycHPVbqlaopUuj3Ike2g=="
+        "icon": "⛰️"
        },
        {
         "t": "用手機的熱點讓筆電在高鐵上上網",
-        "icon": "🚄",
-        "s": "8f23278686bdcd16",
-        "e": "5cKnDPyHwyy+yJdfCL2EnXdh2dbUht1cMVTob95uSnThtN/8rlGixvApf0ei3Xs5UMgXO5Qnj/Qg469SjleDU2bpLYBbYJF/kst1Y894XPXbll1IEHc="
+        "icon": "🚄"
        },
        {
         "t": "把手機裡的照片傳到旁邊朋友的手機",
-        "icon": "📲",
-        "s": "334045e0d1924895",
-        "e": "RYdrs0RXuUoteyJeJk3I78cWL8oBXsRsIez9NMXCRYKyzdCLM33u+izM8HjkguzeQTunB4zU8RjQz97cwsmEkzLbgaRFugiViByPWnlSlupjZw=="
+        "icon": "📲"
        },
        {
         "t": "圖書館的公用電腦區無線上網",
-        "icon": "📚",
-        "s": "ce54d77919befacf",
-        "e": "Mjj73lqZ3wgYu1h+hvZbd1Xyc7lWTOSwysQWJHPFxCwpawd8+vet+SLNHRLH0vfPbxttdzq7nDI4r0DlSSEuJEsD+azkEHcC"
+        "icon": "📚"
        }
       ]
      },
      {
       "type": "sort",
+      "src": "11602/N8/0/1",
       "prompt": "這個應用最需要 5G 的哪一個特性？",
       "pick": 4,
       "buckets": [
@@ -1242,33 +1087,23 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "幾秒鐘就下載完一部電影",
-        "icon": "🎬",
-        "s": "61bee6c880f85e5a",
-        "e": "m2PCSOWj80MMts4WATFdZxJ83KDxFyUQDs0Zqaot7MRzmTOW/3SmJWqKR48xZ2h2spJZZy8yWfLan2mrxxpbTRfZ+WPvAVBgxX/vksgLEA=="
+        "icon": "🎬"
        },
        {
         "t": "醫生遠端操作手術機器手臂",
-        "icon": "🩺",
-        "s": "92f6fe8e9b17a93e",
-        "e": "J6FbgJfXYHrc0mOtVqK7auwQt/jplWCgNLUKaJCZwZuUgFaz6OcYjSW2Ef8qtxpciSlbOcOAAUSaAZuJXtlR1mYOT3m8rmOp0dxKyVMrjRdhXeoepBMo9w=="
+        "icon": "🩺"
        },
        {
         "t": "自駕車看到障礙物要立刻煞車",
-        "icon": "🚗",
-        "s": "108d009702a90a4e",
-        "e": "thkDLw6BisblRaE71iX3fGQ6JubzcPc9VnP4cjKCCtR9iRLNCRTxsxknsugNjZ8jphS86j/+Gx1EpN1J+EYMH1SZbOHRDMBkFPIpVpOU8Lu2gQ=="
+        "icon": "🚗"
        },
        {
         "t": "演唱會現場幾萬人同時上網",
-        "icon": "🎤",
-        "s": "bbebd3ff4d5a9e96",
-        "e": "hgWQSmWLCXZ9XjJByfmKLz1vjtfSj2qC6pKUsmL1ZNzCwXi8XL98Ibg/8ekhnlEpc6okFVSqsmFsFqdYgUVdJAoWTSWAwaE93ytfp0oBSWK0s0tp6g=="
+        "icon": "🎤"
        },
        {
         "t": "智慧工廠上千個感測器同時連線",
-        "icon": "🏭",
-        "s": "27488d37c89ebec5",
-        "e": "pv7VnKjAioRoti3c9IzEGIBRc9p5oM6A6f4DMW696e00QC93SmSbsFX1fdTYOy114KYXj0Lscj6/x5huTzS5EOdpLjEMn43iCWT4i0ISV6Iifg=="
+        "icon": "🏭"
        }
       ]
      }
@@ -1281,7 +1116,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "wifiMap",
       "n": 2,
-      "prompt": "Wi-Fi 覆蓋地圖"
+      "prompt": "Wi-Fi 覆蓋地圖",
+      "src": "11602/N8/1/0"
      }
     ]
    },
@@ -1293,14 +1129,16 @@ window.NET_LEVELS = [
       "lab": "wifiMap",
       "n": 1,
       "prompt": "Wi-Fi 覆蓋地圖：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N8/2/0"
      },
      {
       "type": "gen",
       "gen": "wirelessPick",
       "n": 3,
       "prompt": "選哪一種無線技術？",
-      "hard": true
+      "hard": true,
+      "src": "11602/N8/2/1"
      }
     ]
    }
@@ -1318,6 +1156,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N9/0/0",
       "prompt": "這個情況用哪一個頻段比較好？",
       "pick": 4,
       "buckets": [
@@ -1335,44 +1174,33 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "坐在基地臺旁邊看 4K 影片",
-        "icon": "📺",
-        "s": "c1335e3d719b7876",
-        "e": "6o4F4wHJzNPNmM9lQrUgcCYCYKEIIoFaTGB4L/AunzjgLK7cYvy1OfEXInqHPiC+g3+Mw3i/5qT34aK72La0aEpDT4y8w5TEjTg="
+        "icon": "📺"
        },
        {
         "t": "隔了兩道牆的房間，訊號要穩",
-        "icon": "🧱",
-        "s": "f04a64d4da9ef616",
-        "e": "y4s2yzqcg68RhOtqOsj4AoUo8E1fzbDznb+R5DhmETPnvOIRnzvhegV30uSfe2gV5pQz+VT9PZ0bK1n2k5qZaxt/auSt8pcM7wWr0y71"
+        "icon": "🧱"
        },
        {
         "t": "同一個房間裡快速傳大檔案",
-        "icon": "📁",
-        "s": "57ab350d1ec3b842",
-        "e": "xLvFjnQmRNELZvm+fBajM0o02D7+d8+bcNm+jLMDAHMhs73nP+mHbwhDHAxB3bxriGXEEPNKKKLyxsq601mJkVqxWA6FIIs="
+        "icon": "📁"
        },
        {
         "t": "院子另一頭的監視器要連上網",
-        "icon": "📷",
-        "s": "37670e6094b6287a",
-        "e": "mPwc9caMAMwT3zXYGmu3XbaLLG0Y/pd7kn3OkyOxkPmfXOLQK5hi/nvzJ8jowiQO1WLa0sMroJv1NTVy2SceYw=="
+        "icon": "📷"
        },
        {
         "t": "樓上房間要連樓下客廳的基地臺",
-        "icon": "🏠",
-        "s": "ea0790b2b2a624d6",
-        "e": "D//z5kvAkVkeLtkn151S1D/sZlqZEtFbzv1kLkDIp3VqY4OWKD/O4olJzUmRIowIJoyztsrFPDa9XAh1GWh9efX+93uuWhhXnmlHNmfFfShTX/hZ/DhSF/MpGnyLWfA="
+        "icon": "🏠"
        },
        {
         "t": "就在電腦旁邊，要最快的下載速度",
-        "icon": "💨",
-        "s": "6de11567b939fe88",
-        "e": "fTkmtC9S/Oii93QeT75cr3kAmGiP/93tRHwPXfDqScW8BX8qTpdO0CVDdkiIGZDbMp6zVVcj0k+OwlJfQ75OxKX3fgXBlDA="
+        "icon": "💨"
        }
       ]
      },
      {
       "type": "sort",
+      "src": "11602/N9/0/1",
       "prompt": "這句話對不對？",
       "pick": 5,
       "buckets": [
@@ -1390,67 +1218,46 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "基地臺的天線越多，Wi-Fi 一定越快",
-        "icon": "📡",
-        "s": "7509a2e819717b82",
-        "e": "VfL5HJLpEEj1FR/UZywB37taoG/5zORRH9+UeETj7zIlrtdeadN5AmJ8cBMwUrpkwSuDpjBuELjT7ydvXqpfHKkuRj8a3Piqql3FEQ16u8jQdtjKF4P/Dm5g/cX+QwTiAaH62kaXSETbsT8kHDVv95CERyhVzWSLGAU="
+        "icon": "📡"
        },
        {
         "t": "Wi-Fi 5 的筆電可以連 Wi-Fi 6 基地臺，但只有 Wi-Fi 5 的速度",
-        "icon": "💻",
-        "s": "db1fc679d4bafa70",
-        "e": "CRL96vIK7q7/H156PCNSQTeHr4ep0MLLbu380YQnAeeACAZGRQNHJx04Guio5fHQR/Rc7lmqFMD4Mz5htw=="
+        "icon": "💻"
        },
        {
         "t": "同一台基地臺連的人越多，每個人分到的頻寬越少",
-        "icon": "👥",
-        "s": "4d1e956158ad4ada",
-        "e": "/ysfvX7BoTnOnLZtUz0dHnG/MaHd/lDDr/y1urZtbSFBlvKm64KJ/vdsKV9MQFFSx7Neg282/3cKp+V32IBBAz2NyQdO3Fw158j4G5NUpaJBKyJrT6k="
+        "icon": "👥"
        },
        {
         "t": "買了最快的基地臺，上網就一定比 ISP 租的速度快",
-        "icon": "🛒",
-        "s": "a143eba3c63887f4",
-        "e": "oQfWL56tq2dk2+tTT8H8C3HQSiUYFMXj3nrCGJuRiywPdgt4K52t5WmHTbr2MKjd24Jq/+tBmXJRrcGq7pKUcHENdY5CjpYxXBSZZAAUsSv01tRmr+WgsaIGurfzr/9/3SvI67E7BDMlD5QbOJLKcA=="
+        "icon": "🛒"
        },
        {
         "t": "Wi-Fi 6 的標準是 IEEE 802.11ax",
-        "icon": "📄",
-        "s": "e8e2517a3d68010d",
-        "e": "4wmFpS948mo9uZb0TlwnpTkXpENrTA2JG3AIuzrrO6Z/jHlFhGi3DnckbO+UuCVqv9MPZgdDsw/ul1F4dEVn7b+DtvJi1mKU3Gy9rjYacqKdFDak"
+        "icon": "📄"
        },
        {
         "t": "網路速度 100 Mbps，代表每秒最多下載 100 MB",
-        "icon": "❓",
-        "s": "08b6b2d58121a42e",
-        "e": "Q7N6SpdwYwfy5pTviilfuAWy4GQYfzyit7J/MC2j/AiBH4moVeVP1n3ERJD6AB/MdXOuHtVkfO5IOKPYQzE2s2ZIWg+thKd515c/IflwiW1YBddxZGrWpnZycek="
+        "icon": "❓"
        },
        {
         "t": "2.4GHz 和 5GHz 是 Wi-Fi 的兩個頻段",
-        "icon": "📶",
-        "s": "2995332eecc8d50e",
-        "e": "aLmY+6LgW6TMf8Ar3x90wmY/KYiW9rj+7FxVd7iYUBs97MmiduUS5LthZyU6XuvsBSfRalJTfsfop9U2mbSXOa0UbeLnpCvAixvj1AdIS5itHBVt7z8/yyo="
+        "icon": "📶"
        }
       ]
      },
      {
       "type": "type",
+      "src": "11602/N9/0/2",
       "prompt": "觀念確認（自己打答案）",
       "items": [
        {
         "t": "1 Byte（位元組）等於幾 bit（位元）？",
-        "icon": "🔢",
-        "s": "e1887e7f89588be7",
-        "e": [
-         "JTB4WRzNvZVbpFOncFRPnBVrBGEpOBtM9k/mqVztq449V0jmjAw4LVMcxDBBs2qHJ6ZfIFW2+DAOq2GCBEdA1Yp0Y1QAyA/4WByI0XgFXnt6hjtnXS0o0BXM"
-        ]
+        "icon": "🔢"
        },
        {
         "t": "Wi-Fi 6 的標準是 IEEE 802.11 後面加哪兩個字母？",
-        "icon": "📄",
-        "s": "093ddd96d49f6dbc",
-        "e": [
-         "RRQ2Jl3tIhm2ZZNmBWBkVA8Cwp7ANe9lCr70WRyGhK4d+zJQ41EmnjP29SykU0GYubxBevHx613XFP8KfazOp3aT9uVMmC+wGhor1yBd3B9P9t1fHJFvq9xFkXIrLbCYYQuKp+sLSw=="
-        ]
+        "icon": "📄"
        }
       ]
      }
@@ -1463,7 +1270,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "dlSim",
       "n": 1,
-      "prompt": "下載模擬器"
+      "prompt": "下載模擬器",
+      "src": "11602/N9/1/0"
      }
     ]
    },
@@ -1475,13 +1283,15 @@ window.NET_LEVELS = [
       "lab": "dlSim",
       "n": 1,
       "prompt": "下載模擬器：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N9/2/0"
      },
      {
       "type": "gen",
       "gen": "bottleneck",
       "n": 2,
-      "prompt": "網速計算：挑戰"
+      "prompt": "網速計算：挑戰",
+      "src": "11602/N9/2/1"
      }
     ]
    }
@@ -1499,6 +1309,7 @@ window.NET_LEVELS = [
     "rounds": [
      {
       "type": "sort",
+      "src": "11602/N10/0/0",
       "prompt": "這個「嗶」用的是哪一種技術？",
       "pick": 5,
       "buckets": [
@@ -1526,64 +1337,46 @@ window.NET_LEVELS = [
       "items": [
        {
         "t": "超商店員掃描飲料瓶上的黑白線條",
-        "icon": "🥤",
-        "s": "522991b7b2619813",
-        "e": "Ha2xXK5CHNF+Zv5TXOGMC9AwTN2OWldmr7CS6ktc5mHlWsmgAHp/C5jsL69rtSCP+W6Mf5b6TVwylPTazYic1NilkF318QYxe9SThVWSbi8qfKbxoynKgOg="
+        "icon": "🥤"
        },
        {
         "t": "用手機鏡頭掃描餐廳桌上的點餐碼",
-        "icon": "🍜",
-        "s": "d5d813a8d70519b2",
-        "e": "foWkgutW/2hHHUylGeVHa3RrLu2YUpXH56HVaNj05KVHwvSOfGkkA29dcV/UuEFR7DwEdGK1Jo5lyYJ+hPqeRWyK7xbdvtnlDg=="
+        "icon": "🍜"
        },
        {
         "t": "把手機靠近收銀機感應付款",
-        "icon": "📱",
-        "s": "ef9be26fa87b15a2",
-        "e": "FW6UMkmwK/VSGmrfW9bOMdYiYz5fUHADblV/W4H4edIq2E4Qu7RfRnQIjQ0Gh5JfiPQuOOHWG0M/9aUd2i37faKSQ1q3jqzF/XVg"
+        "icon": "📱"
        },
        {
         "t": "開車經過高速公路門架自動扣款",
-        "icon": "🚗",
-        "s": "f6ae5317dfab3a69",
-        "e": "lEEHFxac3RbGAnmLh50RTSVoGhC1cL0HbjUxa3dP4bE+qQU6V5dTZ5oGNEMlr+ag6Kuci3xxlVDSPZQZr4GlpMW7WRSNYnWSUJMVuTkqva4NOLEMj8Tc0wmtBD3eWQ=="
+        "icon": "🚗"
        },
        {
         "t": "拿悠遊卡刷捷運閘門",
-        "icon": "🚇",
-        "s": "e7b5af198ee3f166",
-        "e": "TRhAFF08X9D0AHHbuMzT65uzXpkrsTS953RY5qh3W6sPT94xySbcJ/zkre1E4lY97YcIKwQfV26BfnvmVRrgICBFtFE="
+        "icon": "🚇"
        },
        {
         "t": "圖書館把一疊書放上去就自動借出",
-        "icon": "📚",
-        "s": "ce198cca0ab3b185",
-        "e": "Qrk5G27EjNJSWhWkQb5Nm5UqyLU1szGFxdrehb/ilLEW5DO4qnAXqwSdVtCgLWJlohSj/tcphuf7Xl20YxYDciX+Bs/ZQYfENWFSVJAIiPokjoAdqg5JsEMF5U4Zigg="
+        "icon": "📚"
        },
        {
         "t": "把一整籃商品放上結帳區，螢幕馬上列出全部",
-        "icon": "🧺",
-        "s": "95a7a9cb1233eca9",
-        "e": "cerr0W7Lfm9dfRjcXwjW10jZuKcBo90d6JQ7OPoDLLGxKmnxTOwVGbgVU3/kI3DsGIbHkMLRyEqyZALr3T5O5Y8JhJBUDTgeCa/BmjDi0lKmqwnUDYHpI7h+QRsE0T8="
+        "icon": "🧺"
        },
        {
         "t": "掃描電影票上的方格圖案入場",
-        "icon": "🎟️",
-        "s": "57d91a6e3b274b40",
-        "e": "b+BgLAgSxJPP1eGLtwXzVF4EjkVHnTqCxq8aZHtLkZbWX1vcVssBB92cIGLIVNk09aRJG1VueAojjk/lfk3IL54jFYteZhQdDvfLHz/e5Rg="
+        "icon": "🎟️"
        },
        {
         "t": "書背上印著黑白直線的 ISBN",
-        "icon": "📕",
-        "s": "25f373a1875e2b3f",
-        "e": "gjou4dA+HfzgKz9xhADgxOLhXC6mnG4jmEXnqJRjIGsZaeWq9ZyLRL9wtixJQb4PbihQU4UgiUpR0pLK1EF2IQKNJYBMIREi2A=="
+        "icon": "📕"
        }
       ]
      },
      {
       "type": "order",
+      "src": "11602/N10/0/1",
       "prompt": "條碼是怎麼被「嗶」出來的？依序排好",
-      "s": "d75f74ebf108de69",
       "items": [
        {
         "t": "黑色吸收光線、白色反射光線",
@@ -1601,12 +1394,6 @@ window.NET_LEVELS = [
         "t": "掃描器發出光線照在條碼上",
         "icon": "🔦"
        }
-      ],
-      "seq": [
-       "lY2YX1MYaW5IWnbGogWnTjIEUWjMiVEQEmwnCWRe",
-       "I+asjb/HHbWtteYc9n6nL+X5x0hq+FPPM2VVv9Xq",
-       "L6WQKihYwfJR6EHKjj7YXRXw/q5jiJz6mAAYORfj",
-       "Q19EL/qTEFi7ngrqqyiXMESBoNkkYBPyyYtgwRM8KeT1WKTIb35LhJuyGDcWWa1xP16c4GC/Fg6tH04Rf2dtrjpD+A+HF19DbslfXI6z2bG7DOcFq2OmHCxYnzudkFf4hTzV5TtP6KaaxEkcBVESY4IwMKmrUUvK+ayLR2A="
       ]
      }
     ]
@@ -1618,7 +1405,8 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "barcodeScan",
       "n": 2,
-      "prompt": "條碼掃描器"
+      "prompt": "條碼掃描器",
+      "src": "11602/N10/1/0"
      }
     ]
    },
@@ -1629,20 +1417,23 @@ window.NET_LEVELS = [
       "type": "lab",
       "lab": "barcodePrint",
       "n": 1,
-      "prompt": "印一張條碼"
+      "prompt": "印一張條碼",
+      "src": "11602/N10/2/0"
      },
      {
       "type": "gen",
       "gen": "barcode",
       "n": 1,
       "prompt": "簡化版條碼解碼：挑戰",
-      "hard": true
+      "hard": true,
+      "src": "11602/N10/2/1"
      },
      {
       "type": "gen",
       "gen": "checkout",
       "n": 1,
-      "prompt": "結帳比一比"
+      "prompt": "結帳比一比",
+      "src": "11602/N10/2/2"
      }
     ]
    }
