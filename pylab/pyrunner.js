@@ -118,11 +118,14 @@
       return runAll(code, P.tests).then(function (rs) {
         var feats = rs.length && rs[0].run ? rs[0].run.features : null;
         var outs = rs.map(function (x) { return { events: (x.run && x.run.events || []).slice(0, 5000), err: !!x.error }; });
-        return API.call('pyg', { run: P.run, outs: outs, feats: feats }).then(function (G) {
-          rs.forEach(function (x, i) { var g = G.results[i] || {}; x.pass = !!g.pass; x.msg = g.msg; });
-          return { stars: G.stars, score: G.score, tests: rs, reqs: G.reqs.map(function (q) { return { req: { msg: q.msg }, ok: q.ok }; }),
-            passed: G.passed, total: G.total, features: feats, rc: G.rc, ts: G.ts, pc: G.pc, pstars: G.pstars };
-        });
+        function send() {
+          return API.call('pyg', { run: P.run, outs: outs, feats: feats }).then(function (G) {
+            rs.forEach(function (x, i) { var g = G.results[i] || {}; x.pass = !!g.pass; x.msg = g.msg; });
+            return { stars: G.stars, score: G.score, tests: rs, reqs: G.reqs.map(function (q) { return { req: { msg: q.msg }, ok: q.ok }; }),
+              passed: G.passed, total: G.total, features: feats, rc: G.rc, ts: G.ts, pc: G.pc, pstars: G.pstars };
+          }, function (e) { e = e || {}; e.resend = send; e.step = 'pyg'; throw e; });   // 程式已經跑完、只差送出：e.resend() 直接再送一次，不用重跑
+        }
+        return send();
       });
     }, function (e) { if (e && e.err === 'offline') return offline(); throw e; });
   };

@@ -82,7 +82,7 @@ window.PYLAB = { mount: function (MODE) {
     '<span class="row" style="gap:.5rem">' + (C.REF_URL ? '<a class="btn sm" href="' + C.REF_URL + '" target="_blank" rel="noopener">📚 語法小抄</a>' : '') + '<span id="engine" class="engine">⏳ Python 引擎載入中…</span></span></header>' +
     (TEACHER ? '<div class="note small mt1">👋 謝謝老師幫忙試用！這是九年級「進入 Python 的世界」10 個任務，<b>評分方式和學生版一模一樣</b>（測資在伺服器，看不到）。' +
     '覺得測資太嚴／太鬆、題目看不懂、提示或錯誤說明怪怪的，請按每一關最下面的 <b>📮 回報問題</b>，會自動附上你的程式和評分結果。成績只存在這台電腦，不會影響任何學生。<br>🎒 學生用的版本：<a href="index.html">' + esc(location.href.replace(/teacher\.html.*$/, '')) + '</a>（要填班級座號、2⭐ 才開下一關）</div>' :
-      '<p class="small soft">九年級「進入 Python 的世界」：幫畢旅籌備處寫 10 個小程式。寫完按「✅ 送出評分」，拿到 2⭐ 就開下一關。</p>') +
+      '<p class="small soft">九年級「進入 Python 的世界」：幫畢旅籌備處寫 10 個小程式。寫完按「✅ 送出評分」，拿到 2⭐ 就開下一關。</p>' + helpHTML()) +
     (TEACHER ? '<details class="card mt1 verify" id="verify"><summary class="bold">🔍 驗證學生成績卡（輸入成績卡上的班級、座號、進度碼）</summary>' +
       '<form id="vf" class="mt1" novalidate><div class="grid g3"><label class="small bold">班級<input class="input" id="vf-cls" maxlength="8" inputmode="numeric"></label>' +
       '<label class="small bold">座號<input class="input" id="vf-seat" maxlength="3" inputmode="numeric"></label>' +
@@ -350,7 +350,8 @@ window.PYLAB = { mount: function (MODE) {
     var res = document.getElementById('result'); res.classList.remove('hidden');
     res.innerHTML = '<p class="bold">⏳ 評分中…（' + lv.tests.length + ' 組測資）</p>';
     var before = best(lv.id), idx = L.indexOf(lv);
-    PYRUN.grade(lv, code, { mod: TEACHER ? 'pylab-teacher' : 'pylab', who: ME, pc: TEACHER ? null : get('pc') }).then(function (g) {
+    PYRUN.grade(lv, code, { mod: TEACHER ? 'pylab-teacher' : 'pylab', who: ME, pc: TEACHER ? null : get('pc') }).then(done, fail);
+    function done(g) {
       setBusy(false);
       if (TEACHER && !g.offline && g.stars > best(lv.id)) set('best-' + lv.id, g.stars);
       if (!TEACHER && g.pc) set('pc', g.pc);   // 伺服器簽的新進度碼
@@ -371,7 +372,7 @@ window.PYLAB = { mount: function (MODE) {
       var reqs = g.reqs.map(function (r) { return '<li>' + (r.ok ? '<span class="ok-c">✔</span> ' : '<span class="bad-c">✘</span> ') + esc(r.req.msg) + '</li>'; }).join('');
       var N = L[idx + 1], openedNext = !TEACHER && N && before < 2 && best(lv.id) >= 2;
       res.innerHTML = '<div class="row between"><div><p class="kicker">評分結果' + (TEACHER ? '（和學生看到的一樣）' : '') + '</p><div class="res-star">' + starsHTML(g.stars) + '</div>' +
-        '<p class="bold">' + (g.offline ? '📴 連不上驗證伺服器：只跑了公開的範例測資，沒有判斷。' : g.stars === 3 ? '🎉 滿分。' : g.stars === 2 ? '👍 測資全過，差結構要求。' : g.stars === 1 ? '💪 過了一部分。' : '🧐 還沒有任何一組通過。') + '</p></div>' +
+        '<p class="bold">' + (g.offline ? '📴 連不上驗證伺服器（練習模式）：只跑了公開的範例測資，沒有判斷、這次不記星。網路恢復後再按一次「✅ 送出評分」就會正式評分。' : g.stars === 3 ? '🎉 滿分。' : g.stars === 2 ? '👍 測資全過，差結構要求。' : g.stars === 1 ? '💪 過了一部分。' : '🧐 還沒有任何一組通過。') + '</p></div>' +
         '<div class="center"><div class="black" style="font-size:2rem">' + g.passed + ' / ' + g.total + '</div><div class="tiny soft bold">組測資通過</div></div></div>' +
         (unsaved ? '<div class="note warn mt1">⚠️ 這次的星星沒存到雲端，請先抄下左邊的 🔑 進度碼：' + esc(g.pc) + '</div>' : '') +
         '<div class="scroll-x mt2"><table class="t"><tr><th>測資</th><th>輸入</th><th>結果</th></tr>' + rows + '</table></div>' +
@@ -384,10 +385,26 @@ window.PYLAB = { mount: function (MODE) {
       var nb = document.getElementById('btn-next'); if (nb) nb.onclick = function () { open(idx + 1); };
       if (openedNext) toast('🔓 下一關開放了：' + N.title);
       res.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, function (e) {
-      setBusy(false);
-      res.innerHTML = '<div class="note bad">⚠️ ' + esc(API.msg(e)) + (e && e.err === 'bad-code' ? '<br>重新整理這一頁，會自動換回雲端的進度。' : '') + '</div>';
-    });
+    }
+    /* 評分沒成功：說清楚「發生什麼事、星星有沒有記、現在該怎麼做」，並給重送按鈕 */
+    function fail(e) {
+      setBusy(false); e = e || {};
+      var c = e.err || 'server', net = c === 'timeout' || c === 'offline';
+      var title = c === 'timeout' ? '⏱️ 伺服器太久沒回應' : c === 'offline' ? '📴 送出途中斷線了' : c === 'busy' ? '🚦 伺服器很忙' : c === 'locked' ? '🔒 這一關還沒開放' : c === 'bad-code' ? '🔑 進度碼對不上' : c === 'run-expired' ? '⌛ 放太久了' : '⚠️ 評分沒有完成';
+      var todo = c === 'bad-code' ? '重新整理這一頁，會自動換回雲端的進度，再送出一次。' :
+        c === 'locked' ? '先回上一關拿到 2⭐。' :
+        e.resend ? '你的程式已經跑完了，按「🔁 再送一次」就好（不用重跑）。' : '按「🔁 再送一次」重新評分。';
+      res.innerHTML = '<div class="note bad" id="grade-err"><p class="bold">' + title + '</p><p class="small mt1">' + esc(API.msg(e)) + '</p>' +
+        '<p class="small mt1">⭐ 這次<b>還沒有記星</b>。' + esc(todo) + (net ? '（重送兩次都不行：網路可能有問題，請舉手告訴老師）' : '') + '</p>' +
+        (c === 'locked' || c === 'bad-code' ? '' : '<div class="row mt1" style="gap:.5rem"><button class="btn go sm" id="btn-resend" type="button">🔁 再送一次</button></div>') +
+        '<p class="tiny soft mt1">錯誤代碼：' + esc(c) + (e.step ? '（送出結果時）' : '（拿測資時）') + '</p></div>';
+      var rb = document.getElementById('btn-resend');
+      if (rb) rb.onclick = function () {
+        setBusy(true); res.innerHTML = '<p class="bold">⏳ 重新送出中…</p>';
+        (e.resend ? e.resend() : PYRUN.grade(lv, code, { mod: TEACHER ? 'pylab-teacher' : 'pylab', who: ME, pc: TEACHER ? null : get('pc') })).then(done, fail);
+      };
+      res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   /* ── 📮 回報問題：自動附上關卡、程式碼、最近一次評分結果 → 驗證伺服器 → 老師的 Google 試算表 ── */
@@ -446,6 +463,25 @@ window.PYLAB = { mount: function (MODE) {
     return before;
   }
   }   // build()
+
+  /* ── 🆘 學生版：畫面上的訊息是什麼意思、該怎麼做 ── */
+  function helpHTML() {
+    var R = [
+      ['⏳ 伺服器判斷中…', '正在問伺服器，通常 2～4 秒。', '等一下，不要一直按。'],
+      ['⏳ 伺服器比較慢，已等 N 秒…', '伺服器或網路比較慢，最多等 20 秒。', '<b>不要重新整理</b>，重新整理會中斷。'],
+      ['🔁 連線不穩，自動重送第 2 次…', '第一次沒送到，網頁自己再送一次。', '等它跑完就好。'],
+      ['⏱️ 伺服器太久沒回應／📴 送出途中斷線了', '自動重送也失敗了，<b>這次沒有記星</b>。', '按「🔁 再送一次」；還是不行就舉手告訴老師。'],
+      ['🚦 伺服器很忙', '很多同學同時送出，在排隊。', '等 5 秒再按「🔁 再送一次」。'],
+      ['📴 練習模式', '連不上伺服器：只跑公開的範例測資，不判斷、不記星。', '網路好了再按一次「✅ 送出評分」。'],
+      ['🔒 這一關還沒開放', '上一關還沒拿到 2⭐。', '回上一關完成它。'],
+      ['🔑 進度碼對不上', '這台電腦的進度紀錄被改過或抄錯。', '重新整理，會自動換回雲端的進度。'],
+      ['❌ Python 引擎載入失敗', '第一次要下載約 10 MB，網路不順就會失敗。', '檢查網路後重新整理。'],
+      ['第 N 行：……（紅框）', '這是<b>你的程式</b>有錯，不是網路問題。', '看紅框的說明改程式，或按「💡 提示」。']
+    ];
+    return '<details class="card mt1 help-box" id="help"><summary class="bold">🆘 畫面出現訊息看不懂？（點我看說明）</summary><div class="scroll-x mt1"><table class="t help-t"><tr><th>看到的訊息</th><th>是什麼意思</th><th>怎麼做</th></tr>' +
+      R.map(function (r) { return '<tr><td class="bold">' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join('') +
+      '</table></div><p class="tiny soft mt1">☁️ 進度存在雲端：星星只要有「記星」就不會不見，電腦重開後填一樣的班級座號就接著做。</p></details>';
+  }
 
   /* ── 🧾 學生版成績卡（PNG）：姓名、每一關的星星、日期 → 下載交給老師 ── */
   function scoreCard() {

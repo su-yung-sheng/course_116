@@ -102,6 +102,31 @@ let PC = '';
   await p.click('#btn-grade'); await p.waitForSelector('#result .note.bad', { timeout: 60000 });
   ok((await p.textContent('#result')).includes('進度碼對不上'), '🛡️ 改過的進度碼送出評分 → 伺服器擋下來');
   await p.evaluate(pc => localStorage.setItem('pylab-s801_7-pc', pc), PC); await p.goto(BASE + '/pylab/'); await p.reload(); await p.waitForSelector('.lv');
+  /* 🆘 看得懂的錯誤說明、自動重送、等太久顯示秒數、🔁 再送一次（不用重跑程式） */
+  ok((await p.$$('#help tr')).length >= 9, '🆘 學生版有「畫面出現訊息看不懂？」說明表');
+  let failN = 0, pyN = 0, slow = 0;
+  await p.route('**/__gas', async route => {
+    const a = JSON.parse(route.request().postData() || '{}').a;
+    if (a === 'py') pyN++;
+    if (a === 'pyg' && failN > 0) { failN--; return route.abort('failed'); }
+    if (a === 'pyg' && slow) { slow = 0; await new Promise(r => setTimeout(r, 6500)); }
+    return route.fallback();
+  });
+  await p.click('.lv[data-i="1"]'); await p.fill('#code', SOL.P2); await p.dispatchEvent('#code', 'input');
+  failN = 1; await p.click('#btn-grade');
+  await p.waitForFunction(() => (document.getElementById('api-wait') || {}).textContent?.includes('自動重送'), null, { timeout: 60000 });
+  await p.waitForSelector('#result .res-star', { timeout: 60000 });
+  ok(true, '🔁 送出途中斷線 → 顯示「連線不穩，自動重送第 2 次…」，自動重送成功就照常出成績');
+  failN = 2; pyN = 0; await p.click('#btn-grade'); await p.waitForSelector('#grade-err', { timeout: 60000 });
+  const ge = await p.textContent('#grade-err');
+  ok(ge.includes('送出途中斷線') && ge.includes('還沒有記星') && ge.includes('不用重跑') && ge.includes('錯誤代碼'), '🆘 重送也失敗 → 說清楚：發生什麼事、這次沒記星、該怎麼做、錯誤代碼');
+  await p.click('#btn-resend'); await p.waitForSelector('#result .res-star', { timeout: 60000 });
+  ok(pyN === 1, '🔁 按「再送一次」→ 直接送出剛剛的結果（沒有重拿測資、重跑程式）', 'py 呼叫 ' + pyN + ' 次');
+  slow = 1; await p.click('#btn-grade');
+  await p.waitForFunction(() => /已等 \d+ 秒/.test((document.getElementById('api-wait') || {}).textContent || ''), null, { timeout: 60000 });
+  ok(true, '⏳ 等超過 5 秒 → 「伺服器比較慢，已等 N 秒…請不要重新整理」');
+  await p.waitForSelector('#result .res-star', { timeout: 60000 });
+  await p.unroute('**/__gas');
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-card')]);
   await dl.saveAs(SHOTS + 'pylab-card.png');
   ok(dl.suggestedFilename() === 'Python成績卡-801_7_林小華.png', '🧾 成績卡下載（檔名有班級座號姓名）', dl.suggestedFilename());
@@ -140,7 +165,7 @@ let PC = '';
   await p.waitForFunction(() => document.getElementById('login-err').textContent.includes('對不上'));
   ok(true, '💻 進度碼抄錯 → 提醒「對不上」，不會進去');
   await p.fill('#in-pc', ''); await p.click('#login button.go'); await p.waitForSelector('.lv');
-  ok((await p.$$('.lv.lock')).length === 8 && (await p.textContent('#lv-got')).startsWith('3') && await p.evaluate(() => localStorage.getItem('pylab-s801_7-pc')) === PC, '💻 電腦重開（瀏覽器是空的）→ 不用進度碼，只填班級座號就接續雲端進度（3⭐、第 2 關開放）');
+  ok((await p.$$('.lv.lock')).length === 7 && (await p.textContent('#lv-got')).startsWith('6'), '💻 電腦重開（瀏覽器是空的）→ 不用進度碼，只填班級座號就接續雲端進度（P1、P2 共 6⭐，第 3 關開放）');
   await p.setViewportSize({ width: 390, height: 800 });
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '📱 學生版手機寬度沒有橫向捲動');
   await p.screenshot({ path: SHOTS + 'pylab-student-m.png', fullPage: true });

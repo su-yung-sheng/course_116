@@ -27,26 +27,44 @@
       .catch(function (e) { throw e && e.err ? e : { err: ctl && ctl.signal.aborted ? 'timeout' : 'offline' }; })
       .then(function (o) { if (timer) clearTimeout(timer); if (o && o.err) throw o; return o; }, function (e) { if (timer) clearTimeout(timer); throw e; });
   }
-  /* ⏳ 等伺服器的時候（Apps Script 每次約 1～2 秒）：畫面下方顯示「伺服器判斷中…」，免得學生以為當掉一直按 */
-  var pending = 0;
+  /* ⏳ 等伺服器的時候（Apps Script 每次約 1～3 秒）：畫面下方顯示進度，免得學生以為當掉一直按、或急著重新整理
+     · 0.35 秒後出現「⏳ 伺服器判斷中…」
+     · 超過 5 秒：「⏳ 伺服器比較慢，已等 N 秒…請不要重新整理」（每秒更新）
+     · 自動重送時：「🔁 連線不穩，自動重送第 2 次…」 */
+  var pending = 0, since = 0, note = '', box = null, tick = null, showT = null;
+  function paint() {
+    if (!box) return;
+    var sec = Math.floor((Date.now() - since) / 1000);
+    box.textContent = note ? note : sec >= 5 ? '⏳ 伺服器比較慢，已等 ' + sec + ' 秒…請不要重新整理' : '⏳ 伺服器判斷中…';
+  }
   function wait(d) {
     pending = Math.max(0, pending + d);
-    if (!document.getElementById('api-wait-css')) {
-      var st = document.createElement('style'); st.id = 'api-wait-css';
-      st.textContent = 'html.api-wait,html.api-wait *{cursor:progress}html.api-wait body::after{content:"⏳ 伺服器判斷中…";position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);' +
-        'background:#0f172a;color:#fff;padding:.45rem 1rem;border-radius:999px;font-weight:800;font-size:.95rem;z-index:9999;pointer-events:none;opacity:0;animation:apiw .2s .35s forwards}' +
-        '@keyframes apiw{to{opacity:.92}}@media (prefers-reduced-motion:reduce){html.api-wait body::after{animation:none;opacity:.92}}';
+    if (!box) {
+      var st = document.createElement('style');
+      st.textContent = 'html.api-wait,html.api-wait *{cursor:progress}#api-wait{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);max-width:calc(100% - 2rem);text-align:center;' +
+        'background:#0f172a;color:#fff;padding:.45rem 1rem;border-radius:999px;font-weight:800;font-size:.95rem;z-index:9999;pointer-events:none;opacity:.94}#api-wait[hidden]{display:none}';
       (document.head || document.documentElement).appendChild(st);
+      box = document.createElement('div'); box.id = 'api-wait'; box.setAttribute('role', 'status'); box.hidden = true; document.body.appendChild(box);
     }
     document.documentElement.classList.toggle('api-wait', pending > 0);
+    if (pending > 0 && d > 0 && pending === 1) {
+      since = Date.now(); note = '';
+      clearTimeout(showT); showT = setTimeout(function () { if (pending) { paint(); box.hidden = false; } }, 350);
+      clearInterval(tick); tick = setInterval(paint, 1000);
+    }
+    if (!pending) { clearTimeout(showT); clearInterval(tick); box.hidden = true; note = ''; }
   }
+  function say(t) { note = t; paint(); if (box && pending) box.hidden = false; }
   /* 呼叫一個動作：成功 → 伺服器回的物件；失敗 → reject({ err: 代碼 })
-     伺服器忙（很多人同時送出）自動等一下再送，最多 3 次 */
-  function call(a, data, tries) {
+     · 伺服器忙（很多人同時送出）：自動等一下再送，最多 3 次
+     · 太久沒回應（20 秒）或連線斷掉：自動再送 1 次（📮 回報除外，免得重複） */
+  function call(a, data, tries, again) {
     var body = { a: a, t: C.TERM }; for (var k in data || {}) body[k] = data[k];
     wait(1);
+    if (again) say('🔁 連線不穩，自動重送第 2 次…');
     return post(body, a === 'fb' ? 60000 : 0).then(function (o) { wait(-1); return o; }, function (e) { wait(-1); throw e; }).catch(function (e) {
-      if (e.err === 'busy' && (tries || 0) < 3) return new Promise(function (ok) { setTimeout(ok, 400 + Math.random() * 600); }).then(function () { return call(a, data, (tries || 0) + 1); });
+      if (e.err === 'busy' && (tries || 0) < 3) return new Promise(function (ok) { setTimeout(ok, 400 + Math.random() * 600); }).then(function () { return call(a, data, (tries || 0) + 1, again); });
+      if ((e.err === 'timeout' || e.err === 'offline') && !again && a !== 'fb' && url()) return new Promise(function (ok) { setTimeout(ok, 1000); }).then(function () { return call(a, data, tries, true); });
       if (e.err === 'offline' || e.err === 'timeout') setState(false);
       throw e;
     });
@@ -64,19 +82,19 @@
   }
   /* 錯誤代碼 → 給學生看的話 */
   var MSG = {
-    offline: '連不上驗證伺服器（可能沒網路）。現在是練習模式：可以做，但不判斷對錯、不記星。',
+    offline: '連不上驗證伺服器（可能沒網路，或學校網路擋住了）。現在是練習模式：可以做，但不判斷對錯、不記星。',
     'run-expired': '這一局放太久了（超過 6 小時），重新開始一次吧。',
     dead: '❤️ 用完了，這一局結束，重新挑戰吧！',
-    busy: '伺服器很忙，等幾秒再按一次。',
+    busy: '伺服器很忙（很多同學同時送出），等 5 秒再按一次。',
     incomplete: '還有題目沒完成喔！',
     'too-many': '這題試太多次了，換下一題吧。',
     'no-term': '伺服器還沒有這學期的題庫（請老師更新伺服器）。',
-    timeout: '伺服器太久沒回應，等一下再按一次。',
+    timeout: '伺服器太久沒回應（已經自動重送過 1 次）。等一下再按一次；一直這樣請舉手告訴老師。',
     locked: '上一關還沒有伺服器的 2⭐ 紀錄，先完成上一關。',
     'bad-code': '進度碼對不上（可能抄錯、被改過，或班級座號和當初不一樣）。',
     'bad-who': '班級、座號要填好（座號是數字）。',
     'not-json': '伺服器回傳了錯誤頁（可能需要重新授權：請出題老師在 Apps Script 執行一次「建立回報試算表」）。'
   };
-  function msg(e) { var c = e && e.err || 'server'; return MSG[c] || '伺服器回了一個錯誤（' + c + '），請跟老師說。'; }
+  function msg(e) { var c = e && e.err || 'server'; return MSG[c] || '伺服器出了一點問題（代碼：' + c + '），再按一次試試；還是不行請告訴老師這個代碼。'; }
   window.API = { url: url, call: call, ready: ready, msg: msg, online: null, retry: function () { state = null; } };   // retry：下次 ready() 重新問一次
 })();

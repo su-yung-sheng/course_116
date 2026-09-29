@@ -17,3 +17,5 @@
 .mono{font-family:Consolas,'Courier New',monospace;letter-spacing:.04em}
 .verify summary{cursor:pointer}
 .prog-t td,.prog-t th{padding:.3rem .45rem;white-space:nowrap}.prog-t td.center{color:#b45309;letter-spacing:-.1em}
+.help-box summary{cursor:pointer}.help-t td{font-size:.88rem;vertical-align:top}.help-t td:first-child{white-space:nowrap}
+@media (max-width:640px){.help-t td:first-child{white-space:normal}}
