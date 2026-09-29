@@ -21,7 +21,7 @@ node tools/build.mjs
 2. 打開 <https://script.google.com> → **新專案**，專案名稱改成「course_116 驗證伺服器」。
 3. 📋 **一鍵貼上**：用瀏覽器打開 `private/伺服器一鍵貼上/一鍵複製.html` → 按「📋 複製全部」
    → 回到 Apps Script 的 `程式碼.gs`，**Ctrl＋A 全選、Ctrl＋V 貼上**（整個取代）→ 💾 儲存。
-   （全部 17 個伺服器檔案已經依序合成一個，只要這一個檔。也可以用記事本打開同資料夾的 `一鍵貼上_course116.gs` 全選複製。）
+   （全部伺服器檔案已經依序合成一個，只要這一個檔。也可以用記事本打開同資料夾的 `一鍵貼上_course116.gs` 全選複製。）
 4. 右上角 **部署 → 新增部署作業**：
    - 類型：⚙️ → **網頁應用程式**
    - 執行身分：**我**
@@ -37,7 +37,7 @@ node tools/build.mjs
 
 <details><summary>另一種做法：分開的檔案（private/server/，給會用 clasp 的人）</summary>
 
-`private/server/` 是同一份內容拆成 17 個檔（加 `appsscript.json`）。手動貼的話要**照檔名數字順序建立**（Apps Script 依編輯器裡的順序載入）；用 clasp：
+`private/server/` 是同一份內容拆成一個一個的檔（加 `appsscript.json`）。手動貼的話要**照檔名數字順序建立**（Apps Script 依編輯器裡的順序載入）；用 clasp：
 
 ```bash
 npm install -g @google/clasp
@@ -63,7 +63,7 @@ cd private/server && clasp push -f
 
 | 屬性 | 用途 |
 |---|---|
-| `SECRET` | 收據簽章的金鑰。第一次有人過關時自動產生，**不要改**（改了以前的收據就驗證不過） |
+| `SECRET` | 收據、🔑 pylab 進度碼簽章的金鑰。第一次有人過關時自動產生，**不要改**（改了以前的收據、進度碼就驗證不過） |
 | `FEEDBACK_SHEET_ID` | 📮 Python 教師試用版（`pylab/teacher.html`）的回報試算表。**不用自己填**：第一次有人回報時自動建立「course_116 Python 老師回報」並記在這裡。想先找到它：編輯器選函式 `建立回報試算表` → 執行 → 看執行記錄的網址 |
 | `LOG_SHEET_ID` | 填一份 Google 試算表的 ID（網址 `/d/` 和 `/edit` 中間那段），每次過關就記一列到「紀錄」工作表：時間、班級座號姓名、關卡、星、剩幾顆 ❤️、花幾秒。第一次要重新授權（部署 → 管理部署作業 → 新版本） |
 
@@ -94,6 +94,7 @@ node tools/dev-server.mjs        # → http://localhost:8116/
 | `40`～`44_labs_*.js` | 33 個實驗站：`make(hard) → { pub, sec }`、`check(sec, 學生的操作) → 結果` |
 | `50_python.js` | `py`（拿測資）／`pyg`（送輸出評分） |
 | `51_sheet.js` | `sh`／`shc`（清理）／`shf`（公式） |
+| `53_pylab.js` | 🐍 pylab 學生版的 🔑 進度碼：`py` 開局時檢查上一關 2⭐（伺服器端鎖關）、`pyg` 評完發新的進度碼、`pcv` 驗證進度碼（老師驗成績卡、學生換電腦還原） |
 | `52_misc.js` | 5016B 計星（`lks` 開局、`lk` 預測、`lkf` 結算、`lkp` 專題成果卡）、`dq`（單元一）、`hint`（漸進提示）、`fb`（📮 Python 教師試用版的回報，寫進試算表） |
 | `60_gen_net.js`、`61_gen_cipher.js` | 🎲 出題器（只在伺服器執行） |
 

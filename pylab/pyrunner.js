@@ -114,14 +114,14 @@
         return { offline: true, stars: 0, score: 0, tests: rs, reqs: [], passed: 0, total: rs.length, features: rs.length ? rs[0].run.features : null };
       });
     }
-    return API.call('py', { lv: level.id, mod: ctx.mod, who: ctx.who || (window.STORE && STORE.me()) || null }).then(function (P) {
+    return API.call('py', { lv: level.id, mod: ctx.mod, who: ctx.who || (window.STORE && STORE.me()) || null, pc: ctx.pc || '' }).then(function (P) {
       return runAll(code, P.tests).then(function (rs) {
         var feats = rs.length && rs[0].run ? rs[0].run.features : null;
         var outs = rs.map(function (x) { return { events: (x.run && x.run.events || []).slice(0, 5000), err: !!x.error }; });
         return API.call('pyg', { run: P.run, outs: outs, feats: feats }).then(function (G) {
           rs.forEach(function (x, i) { var g = G.results[i] || {}; x.pass = !!g.pass; x.msg = g.msg; });
           return { stars: G.stars, score: G.score, tests: rs, reqs: G.reqs.map(function (q) { return { req: { msg: q.msg }, ok: q.ok }; }),
-            passed: G.passed, total: G.total, features: feats, rc: G.rc, ts: G.ts };
+            passed: G.passed, total: G.total, features: feats, rc: G.rc, ts: G.ts, pc: G.pc, pstars: G.pstars };
         });
       });
     }, function (e) { if (e && e.err === 'offline') return offline(); throw e; });

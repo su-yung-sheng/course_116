@@ -9,4 +9,4 @@
    ===================================================================== */
 var window = globalThis;                         // 共用的出題器、試算表引擎寫的是 window.xxx
 var CARDGAME = window.CARDGAME = window.CARDGAME || { gens: {}, tools: {} };
-var SV = { labs: {}, VERSION: '2026-09-28' };      // 伺服器端的實驗站、工具
+var SV = { labs: {}, VERSION: '2026-09-29' };      // 伺服器端的實驗站、工具

@@ -4,6 +4,8 @@
    PYLAB.mount('student')  index.html   學生版：填班級座號姓名、上一關 2⭐ 才開下一關、🧾 成績卡下載
    PYLAB.mount('teacher')  teacher.html 教師試用版：不用登入、10 關全開、每一關可以 📮 回報問題
    · 成績與草稿只存在這台電腦的瀏覽器（localStorage，pylab- 開頭；學生版依「班級_座號」分開存）
+   · 學生版的星數＝🔑 進度碼（伺服器簽章，server/53_pylab.js）：評分時附上，伺服器確認上一關 2⭐ 才評分，評完回傳新的進度碼。
+     改瀏覽器紀錄做不出正確的碼；成績卡印進度碼給老師驗證（teacher.html「🔍 驗證成績卡」），換電腦時輸入進度碼還原
    · 評分和闖關網站一樣：程式在瀏覽器跑，輸出送到驗證伺服器比對（測資、提示都在伺服器，看不到）
    需要（依序載入）：config.js、api.js、pyrunner.js、levels.js（PY_LEVELS）
    ===================================================================== */
@@ -22,7 +24,16 @@ window.PYLAB = { mount: function (MODE) {
   function raw(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   function get(k) { return raw(NS + k); }
   function set(k, v) { raw(NS + k, v); }
-  function best(id) { return +(get('best-' + id) || 0); }
+  var B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+  function pcNorm(c) { return String(c || '').toUpperCase().replace(/[\s\-]/g, '').replace(/O/g, '0').replace(/[IL]/g, '1'); }
+  /* 進度碼前 4 碼＝各關星數（公開的壓縮，不是祕密）；後 8 碼是簽章，只有伺服器驗得了 */
+  function pcStars(code) {
+    var c = pcNorm(code), v = 0, z = L.map(function () { return 0; });
+    if (c.length !== 12) return z;
+    for (var i = 0; i < 4; i++) { var d = B32.indexOf(c.charAt(i)); if (d < 0) return z; v = v * 32 + d; }
+    return L.map(function () { var x = v % 4; v = Math.floor(v / 4); return x; });
+  }
+  function best(id) { return TEACHER ? +(get('best-' + id) || 0) : pcStars(get('pc'))[L.map(function (l) { return l.id; }).indexOf(id)] || 0; }
   function unlocked(i) { return TEACHER || i === 0 || best(L[i - 1].id) >= 2; }
 
   var root = document.getElementById('pylab');
@@ -34,17 +45,31 @@ window.PYLAB = { mount: function (MODE) {
     try { ME = JSON.parse(raw('pylab-me') || 'null'); } catch (e) { ME = null; }
     if (ME && ME.cls && ME.seat && ME.name) { NS = 'pylab-s' + ME.cls + '_' + ME.seat + '-'; return build(); }
     root.innerHTML = '<section class="card pop login-card"><div class="tape"></div><p class="kicker">🐍 ' + esc(C.TITLE_STUDENT || C.TITLE) + '</p><h1 class="black" style="font-size:1.4rem">先告訴我你是誰</h1>' +
-      '<p class="small soft mt1">成績只存在這台電腦的瀏覽器。換電腦或清除瀏覽紀錄就會不見，做完記得下載 🧾 成績卡交給老師。</p>' +
+      '<p class="small soft mt1">成績存在這台電腦的瀏覽器。換電腦或清除瀏覽紀錄時，用成績卡上的 🔑 進度碼就能還原；做完記得下載 🧾 成績卡交給老師。</p>' +
       '<form id="login" class="mt2" novalidate><div class="grid g3"><label class="small bold">班級<input class="input" id="in-cls" maxlength="8" inputmode="numeric" placeholder="例：901" required></label>' +
       '<label class="small bold">座號<input class="input" id="in-seat" maxlength="3" inputmode="numeric" placeholder="例：5" required></label>' +
       '<label class="small bold">姓名<input class="input" id="in-name" maxlength="12" placeholder="例：王小明" required></label></div>' +
+      '<details class="mt1" id="pc-in-box"><summary class="small bold">🔑 換電腦了？輸入進度碼還原進度</summary><label class="small bold mt1" style="display:block">進度碼（成績卡上、左下角的 12 碼）' +
+      '<input class="input mono" id="in-pc" maxlength="16" placeholder="例：1A2B-3C4D-5E6F" autocomplete="off" spellcheck="false"></label><p class="tiny soft">要和當初的班級、座號一樣才還原得了。</p></details>' +
       '<p id="login-err" class="small bold mt1" style="color:var(--bad)" aria-live="polite"></p><button class="btn go mt1">開始 ▶</button></form></section>';
     document.getElementById('login').onsubmit = function (e) {
       e.preventDefault();
       var cls = document.getElementById('in-cls').value.trim(), seat = document.getElementById('in-seat').value.trim().replace(/^0+(?=\d)/, ''), name = document.getElementById('in-name').value.trim();
       if (!/^[0-9A-Za-z一-鿿]{1,8}$/.test(cls) || !/^\d{1,3}$/.test(seat) || !name) { document.getElementById('login-err').textContent = '班級、座號（數字）、姓名都要填'; return; }
-      ME = { cls: cls, seat: seat, name: name }; raw('pylab-me', JSON.stringify(ME));
-      loginGate();
+      var pc = pcNorm(document.getElementById('in-pc').value), err = document.getElementById('login-err'), btn = this.querySelector('button');
+      function go() { ME = { cls: cls, seat: seat, name: name }; raw('pylab-me', JSON.stringify(ME)); loginGate(); }
+      if (!pc) return go();
+      if (pc.length !== 12) { err.textContent = '進度碼是 12 碼（英文字母和數字）'; return; }
+      btn.disabled = true; err.textContent = '⏳ 向伺服器確認進度碼…';
+      API.call('pcv', { who: { cls: cls, seat: seat }, pc: pc }).then(function (r) {
+        var key = 'pylab-s' + cls + '_' + seat + '-pc', mine = pcStars(raw(key)).reduce(function (a, b) { return a + b; }, 0);
+        if (r.total >= mine) raw(key, r.pc);   // 這台電腦的進度比較多就不蓋掉
+        go();
+        toast(r.total >= mine ? '🔑 進度還原了：' + r.total + ' ⭐' : '這台電腦的進度比進度碼還多，保留這台的');
+      }, function (e) {
+        btn.disabled = false;
+        err.textContent = e.err === 'bad-code' ? '進度碼和班級、座號對不上：檢查有沒有抄錯，或班級座號是不是和當初一樣' : API.msg(e);
+      });
     };
     document.getElementById('in-cls').focus();
   }
@@ -56,12 +81,30 @@ window.PYLAB = { mount: function (MODE) {
     (TEACHER ? '<div class="note small mt1">👋 謝謝老師幫忙試用！這是九年級「進入 Python 的世界」10 個任務，<b>評分方式和學生版一模一樣</b>（測資在伺服器，看不到）。' +
     '覺得測資太嚴／太鬆、題目看不懂、提示或錯誤說明怪怪的，請按每一關最下面的 <b>📮 回報問題</b>，會自動附上你的程式和評分結果。成績只存在這台電腦，不會影響任何學生。<br>🎒 學生用的版本：<a href="index.html">' + esc(location.href.replace(/teacher\.html.*$/, '')) + '</a>（要填班級座號、2⭐ 才開下一關）</div>' :
       '<p class="small soft">九年級「進入 Python 的世界」：幫畢旅籌備處寫 10 個小程式。寫完按「✅ 送出評分」，拿到 2⭐ 就開下一關。</p>') +
+    (TEACHER ? '<details class="card mt1 verify" id="verify"><summary class="bold">🔍 驗證學生成績卡（輸入成績卡上的班級、座號、進度碼）</summary>' +
+      '<form id="vf" class="mt1" novalidate><div class="grid g3"><label class="small bold">班級<input class="input" id="vf-cls" maxlength="8" inputmode="numeric"></label>' +
+      '<label class="small bold">座號<input class="input" id="vf-seat" maxlength="3" inputmode="numeric"></label>' +
+      '<label class="small bold">進度碼<input class="input mono" id="vf-pc" maxlength="16" autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX"></label></div>' +
+      '<button class="btn go mt1">🔍 驗證</button></form><div id="vf-out" class="mt1" aria-live="polite"></div>' +
+      '<p class="tiny soft mt1">進度碼由驗證伺服器簽章，學生改自己電腦的紀錄做不出對的碼。姓名不在簽章裡（學生可以改打錯的姓名），請以班級座號為準。</p></details>' : '') +
     '<div class="py-grid mt2"><aside class="card" style="padding:.8rem"><p class="kicker" style="margin:.2rem .2rem .6rem">任務清單' + (TEACHER ? '' : ' · 2⭐ 開下一關') + '</p>' +
     '<div class="lv-prog"><span>' + (TEACHER ? '我試過的' : '進度') + '</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>' +
     '<nav id="lv-list" class="lv-list" aria-label="關卡"></nav>' +
     '<p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過' + (TEACHER ? '（學生版要 2⭐ 才開下一關）' : '') + '<br>3⭐ 再加上程式結構要求</p>' +
-    (TEACHER ? '' : '<button class="btn sm mt1" id="btn-card" type="button" style="width:100%">🧾 下載成績卡</button>') + '</aside>' +
+    (TEACHER ? '' : '<div id="pc-box" class="pc-box mt1"></div><button class="btn sm mt1" id="btn-card" type="button" style="width:100%">🧾 下載成績卡</button>') + '</aside>' +
     '<section id="stage" class="stack"></section></div>';
+  if (TEACHER) document.getElementById('vf').onsubmit = function (e) {
+    e.preventDefault();
+    var cls = document.getElementById('vf-cls').value.trim(), seat = document.getElementById('vf-seat').value.trim().replace(/^0+(?=\d)/, ''), pc = pcNorm(document.getElementById('vf-pc').value), out = document.getElementById('vf-out');
+    if (!cls || !/^\d{1,3}$/.test(seat) || pc.length !== 12) { out.innerHTML = '<p class="small bad-c bold">班級、座號、12 碼進度碼都要填</p>'; return; }
+    out.innerHTML = '<p class="small">⏳ 確認中…</p>';
+    API.call('pcv', { who: { cls: cls, seat: seat }, pc: pc }).then(function (r) {
+      out.innerHTML = '<div class="note ok"><b>✅ 進度碼正確</b>：' + esc(cls) + ' 班 ' + esc(seat) + ' 號，合計 <b>' + r.total + ' / ' + r.max + ' ⭐</b></div>' +
+        '<div class="scroll-x mt1"><table class="t"><tr><th>關卡</th><th>星數</th></tr>' + L.map(function (lv, i) { return '<tr><td>' + (i + 1) + '. ' + esc(lv.title) + '</td><td>' + (r.stars[i] ? starsHTML(r.stars[i]) : '<span class="soft">尚未完成</span>') + '</td></tr>'; }).join('') + '</table></div>';
+    }, function (e) {
+      out.innerHTML = '<div class="note bad">' + (e.err === 'bad-code' ? '<b>❌ 對不上</b>：進度碼、班級、座號其中有錯（抄錯或被改過）。' : '⚠️ ' + esc(API.msg(e))) + '</div>';
+    });
+  };
   if (!TEACHER) {
     document.getElementById('who-x').onclick = function () { if (confirm('換成另一位同學？（你的成績還會留在這台電腦）')) { raw('pylab-me', ''); location.reload(); } };
     document.getElementById('btn-card').onclick = scoreCard;
@@ -89,6 +132,11 @@ window.PYLAB = { mount: function (MODE) {
     var got = L.reduce(function (a, lv) { return a + best(lv.id); }, 0), max = L.length * 3;
     document.getElementById('lv-got').textContent = got + ' / ' + max + ' ⭐';
     document.getElementById('lv-bar').style.width = Math.round(got / max * 100) + '%';
+    var pb = document.getElementById('pc-box'), pc = get('pc');
+    if (pb) pb.innerHTML = pc ? '<p class="tiny bold">🔑 我的進度碼<span class="soft">（換電腦時用）</span></p><div class="row" style="gap:.3rem"><code class="pc-code" id="pc-code">' + esc(pc) + '</code>' +
+      '<button class="btn sm" id="pc-copy" type="button" aria-label="複製進度碼">📋</button></div>' : '<p class="tiny soft">🔑 拿到第一顆星後，這裡會出現你的進度碼。</p>';
+    var cp = document.getElementById('pc-copy');
+    if (cp) cp.onclick = function () { (navigator.clipboard ? navigator.clipboard.writeText(pc) : Promise.reject()).then(function () { toast('已複製進度碼'); }, function () { window.prompt('進度碼：', pc); }); };
   }
   document.getElementById('lv-list').addEventListener('click', function (e) {
     var b = e.target.closest('.lv'); if (!b) return;
@@ -243,9 +291,10 @@ window.PYLAB = { mount: function (MODE) {
     var res = document.getElementById('result'); res.classList.remove('hidden');
     res.innerHTML = '<p class="bold">⏳ 評分中…（' + lv.tests.length + ' 組測資）</p>';
     var before = best(lv.id), idx = L.indexOf(lv);
-    PYRUN.grade(lv, code, { mod: TEACHER ? 'pylab-teacher' : 'pylab', who: ME }).then(function (g) {
+    PYRUN.grade(lv, code, { mod: TEACHER ? 'pylab-teacher' : 'pylab', who: ME, pc: TEACHER ? null : get('pc') }).then(function (g) {
       setBusy(false);
-      if (!g.offline && g.stars > best(lv.id)) set('best-' + lv.id, g.stars);
+      if (TEACHER && !g.offline && g.stars > best(lv.id)) set('best-' + lv.id, g.stars);
+      if (!TEACHER && g.pc) set('pc', g.pc);   // 伺服器簽的新進度碼
       if (!TEACHER && !g.offline) set('code-' + lv.id, code.slice(0, 4000));
       renderList(); document.getElementById('lv-best').innerHTML = starsHTML(best(lv.id));
       var firstErr = g.tests.filter(function (t) { return t.error; })[0];
@@ -274,7 +323,10 @@ window.PYLAB = { mount: function (MODE) {
       var nb = document.getElementById('btn-next'); if (nb) nb.onclick = function () { open(idx + 1); };
       if (openedNext) toast('🔓 下一關開放了：' + N.title);
       res.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, function (e) { setBusy(false); res.innerHTML = '<div class="note bad">⚠️ ' + esc(API.msg(e)) + '</div>'; });
+    }, function (e) {
+      setBusy(false);
+      res.innerHTML = '<div class="note bad">⚠️ ' + esc(API.msg(e)) + (e && e.err === 'bad-code' ? '<br>按右上角「換人」重新進來，在「🔑 換電腦了？」輸入成績卡上的進度碼，就能恢復。' : '') + '</div>';
+    });
   }
 
   /* ── 📮 回報問題：自動附上關卡、程式碼、最近一次評分結果 → 驗證伺服器 → 老師的 Google 試算表 ── */
@@ -323,7 +375,7 @@ window.PYLAB = { mount: function (MODE) {
 
   /* ── 🧾 學生版成績卡（PNG）：姓名、每一關的星星、日期 → 下載交給老師 ── */
   function scoreCard() {
-    var W = 900, H = 170 + L.length * 44 + 90, cv = document.createElement('canvas'), x = cv.getContext('2d'), F = '"Noto Sans TC","Microsoft JhengHei",sans-serif';
+    var W = 900, H = 170 + L.length * 44 + 150, cv = document.createElement('canvas'), x = cv.getContext('2d'), F = '"Noto Sans TC","Microsoft JhengHei",sans-serif';
     cv.width = W; cv.height = H;
     x.fillStyle = '#f0fdf4'; x.fillRect(0, 0, W, H);
     x.fillStyle = '#15803d'; x.fillRect(0, 0, W, 96);
@@ -336,8 +388,11 @@ window.PYLAB = { mount: function (MODE) {
       x.fillStyle = '#0f172a'; x.font = '700 21px ' + F; x.fillText((i + 1) + '. ' + lv.title, 40, y);
       x.fillStyle = s ? '#b45309' : '#94a3b8'; x.font = '800 22px ' + F; x.fillText(s ? '★'.repeat(s) + '☆'.repeat(3 - s) : '尚未完成', W - 190, y);
     });
-    x.fillStyle = '#15803d'; x.font = '900 24px ' + F; x.fillText('合計 ' + total + ' / ' + L.length * 3 + ' ⭐', 32, H - 36);
-    x.fillStyle = '#64748b'; x.font = '700 16px ' + F; x.textAlign = 'right'; x.fillText(new Date().toLocaleString('zh-TW'), W - 32, H - 36);
+    x.fillStyle = '#15803d'; x.font = '900 24px ' + F; x.fillText('合計 ' + total + ' / ' + L.length * 3 + ' ⭐', 32, H - 96);
+    x.fillStyle = '#0f172a'; x.fillRect(24, H - 72, W - 48, 52);
+    x.fillStyle = '#fde68a'; x.font = '800 24px Consolas,"Courier New",monospace'; x.fillText('🔑 進度碼 ' + (get('pc') || '（還沒有）'), 40, H - 37);
+    x.fillStyle = '#cbd5e1'; x.font = '700 15px ' + F; x.textAlign = 'right'; x.fillText('老師驗證：pylab/teacher.html →「驗證成績卡」', W - 40, H - 48);
+    x.fillText(new Date().toLocaleString('zh-TW'), W - 40, H - 28);
     cv.toBlob(function (b) {
       var u = URL.createObjectURL(b), a = document.createElement('a');
       a.download = 'Python成績卡-' + ME.cls + '_' + ME.seat + '_' + ME.name + '.png'; a.href = u;

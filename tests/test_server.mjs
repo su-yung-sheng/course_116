@@ -105,6 +105,26 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(n > 0, '📮 每小時最多 60 則（擋灌爆）', '被擋 ' + n + ' 則');
 }
 
+/* 8d. 🔑 pylab 學生版進度碼：伺服器端鎖關、改不了、換人用不了、只增不減 */
+{
+  const c1 = (a, d) => gas.call(a, { t: '11601', ...d }), S = gas.ctx;
+  const me = { cls: '801', seat: '07', name: '林小華' }, w = { cls: '801', seat: '7' };
+  const z = c1('py', { lv: 'P2', mod: 'pylab', who: me, pc: '' });
+  ok(z.err === 'locked' && !!c1('py', { lv: 'P1', mod: 'pylab', who: me, pc: '' }).run, '🔑 沒有進度碼：只能做第 1 關，第 2 關 → locked');
+  ok(c1('py', { lv: 'P1', mod: 'pylab', who: { cls: '801' } }).err === 'bad-who', '🔑 學生版一定要有班級座號');
+  const pc1 = S.plMake('11601', w, [2, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  ok(/^[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(pc1), '🔑 進度碼 12 碼：' + pc1);
+  ok(!!c1('py', { lv: 'P2', mod: 'pylab', who: me, pc: pc1 }).run && c1('py', { lv: 'P3', mod: 'pylab', who: me, pc: pc1 }).err === 'locked', '🔑 P1 2⭐ 的進度碼 → 開 P2、P3 還鎖著');
+  const forged = S.plPack([3, 3, 3, 3, 3, 3, 3, 3, 3, 3]) + pc1.replace(/-/g, '').slice(4);
+  ok(c1('py', { lv: 'P10', mod: 'pylab', who: me, pc: forged }).err === 'bad-code' && c1('pcv', { who: me, pc: forged }).err === 'bad-code', '🔑 自己改前 4 碼（星數）→ 簽章對不上');
+  ok(c1('pcv', { who: { cls: '801', seat: '8' }, pc: pc1 }).err === 'bad-code', '🔑 同學的進度碼拿來用（座號不同）→ 對不上');
+  const v = c1('pcv', { who: { cls: '801', seat: '007', name: '改名了' }, pc: pc1.toLowerCase().replace(/0/g, 'o') });
+  ok(v.ok && v.total === 2 && v.stars[0] === 2 && v.pc === pc1, '🔑 驗證：座號前面的 0、姓名、大小寫、O 和 0 都不影響');
+  const r = c1('py', { lv: 'P1', mod: 'pylab', who: me, pc: pc1 }), g = c1('pyg', { run: r.run, outs: r.tests.map(() => ({ events: [['out', '亂打']] })), feats: {} });
+  ok(g.stars === 0 && g.pstars[0] === 2 && c1('pcv', { who: me, pc: g.pc }).total === 2, '🔑 重做拿比較少星 → 進度碼的星數不會變少');
+  ok(!!c1('py', { lv: 'P10', mod: 'pylab-teacher', who: me }).run && !c1('pyg', { run: c1('py', { lv: 'P10', mod: 'pylab-teacher' }).run, outs: [] }).pc, '🔑 教師版不鎖關，但也不會發進度碼');
+}
+
 /* 9. 📋 一鍵貼上版（全部檔案合成一個）也要能跑，而且和分開的檔案一樣 */
 {
   const one = createGas(fileURLToPath(new URL('../private/伺服器一鍵貼上/一鍵貼上_course116.gs', import.meta.url))), h = JSON.parse(one.ctx.doGet().getContent());

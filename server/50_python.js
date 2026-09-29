@@ -44,6 +44,7 @@ function pyLevel(term, lv) { var T = SV_ANS.py[term]; var L = T && T[lv]; if (!L
 
 SV_ACTIONS.py = function (req) {
   var term = String(req.t), L = pyLevel(term, String(req.lv)), run = { id: svId(16), kind: 'py', term: term, mod: String(req.mod || 'python'), lv: String(req.lv), st: null, t0: Date.now(), who: req.who || null, hearts: 0 };
+  if (run.mod === 'pylab') run.pl = plStart(req, term, run.lv);   // 🐍 pylab 學生版：伺服器端鎖關（53_pylab.js）
   svPut('run:' + run.id, run);
   return { run: run.id, tests: L.tests.map(function (t) { return { name: t.name, hidden: !!t.hidden, inputs: t.inputs || [] }; }) };
 };
@@ -64,6 +65,7 @@ SV_ACTIONS.pyg = function (req) {
   var score = Math.round((results.length ? passed / results.length : 0) * 80 + (reqs.length ? reqs.filter(function (r) { return r.ok; }).length / reqs.length : 1) * 20);
   if (!all) score = Math.min(score, 74);
   var out = { results: results, reqs: reqs, passed: passed, total: results.length, stars: stars, score: score };
+  if (run.pl) plFinish(run, stars, out);
   if (stars > 0) { run.hearts = stars; var rc = svReceipt(run, stars); out.rc = rc.rc; out.ts = rc.ts; svLog(run, stars, passed + '/' + results.length); }
   return out;
 };

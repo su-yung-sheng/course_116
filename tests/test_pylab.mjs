@@ -61,6 +61,7 @@ await browser.close();
   ok(true, '📴 連不上伺服器 → 出現「📋 複製回報內容」，可以用 email／LINE 傳');
   await b2.close();
 }
+let PC = '';
 /* 🎒 學生版 index.html */
 {
   console.log('🎒 學生版');
@@ -80,7 +81,18 @@ await browser.close();
   await p.click('#btn-grade'); await p.waitForSelector('#result .res-star', { timeout: 60000 });
   ok(!!(await p.$('#btn-next')) && (await p.textContent('#btn-next')).includes('下一關已開放') && !(await p.$('.lv[data-i="1"].lock')), 'P1 過關 → 第 2 關開放、出現「下一關」');
   await p.click('#btn-next'); await p.waitForSelector('.lv[data-i="1"].on');
-  ok(await p.evaluate(() => localStorage.getItem('pylab-s801_7-best-P1')) === '3', '成績依學生分開存（pylab-s801_7-）');
+  PC = await p.evaluate(() => localStorage.getItem('pylab-s801_7-pc'));
+  ok(/^[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(PC || '') && (await p.textContent('#pc-code')) === PC, '🔑 過關後拿到伺服器簽的進度碼，顯示在左邊（依學生分開存）', PC);
+  /* 🛡️ F12 改紀錄：改星數沒用、改進度碼會被伺服器擋 */
+  await p.evaluate(() => { localStorage.setItem('pylab-s801_7-best-P5', '3'); });
+  await p.reload(); await p.waitForSelector('.lv');
+  ok((await p.$$('.lv.lock')).length === 8, '🛡️ F12 改 best-P5 = 3 → 關卡鎖不受影響');
+  const forged = await p.evaluate(pc => { const B = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'; let v = 0; for (let i = 0; i < 10; i++) v = v * 4 + 3; let h = ''; for (let k = 0; k < 4; k++) { h = B[v % 32] + h; v = Math.floor(v / 32); } const f = h + pc.replace(/-/g, '').slice(4); localStorage.setItem('pylab-s801_7-pc', f.slice(0, 4) + '-' + f.slice(4, 8) + '-' + f.slice(8)); return f; }, PC);
+  await p.goto(BASE + '/pylab/#P6'); await p.reload(); await p.waitForSelector('.lv[data-i="5"].on');
+  await p.fill('#code', SOL.P6); await p.dispatchEvent('#code', 'input');
+  await p.click('#btn-grade'); await p.waitForSelector('#result .note.bad', { timeout: 60000 });
+  ok((await p.textContent('#result')).includes('進度碼對不上'), '🛡️ F12 改進度碼的星數（假裝 30⭐）→ 畫面雖然開了，送出評分時伺服器擋下來', forged);
+  await p.evaluate(pc => localStorage.setItem('pylab-s801_7-pc', pc), PC); await p.goto(BASE + '/pylab/'); await p.waitForSelector('.lv');
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-card')]);
   await dl.saveAs(SHOTS + 'pylab-card.png');
   ok(dl.suggestedFilename() === 'Python成績卡-801_7_林小華.png', '🧾 成績卡下載（檔名有班級座號姓名）', dl.suggestedFilename());
@@ -89,9 +101,30 @@ await browser.close();
   await p.fill('#in-cls', '801'); await p.fill('#in-seat', '8'); await p.fill('#in-name', '陳同學'); await p.click('#login button');
   await p.waitForSelector('.lv');
   ok((await p.$$('.lv.lock')).length === 9, '換人 → 另一位同學從第 1 關開始（彼此的成績分開）');
+  /* 🧑‍🏫 老師驗證成績卡 */
+  await p.goto(BASE + '/pylab/teacher.html'); await p.click('#verify summary');
+  await p.fill('#vf-cls', '801'); await p.fill('#vf-seat', '7'); await p.fill('#vf-pc', PC.toLowerCase()); await p.click('#vf button');
+  await p.waitForSelector('#vf-out .note');
+  ok((await p.textContent('#vf-out')).includes('進度碼正確') && (await p.textContent('#vf-out')).includes('3 / 30'), '🔍 老師輸入班級座號＋進度碼 → ✅ 正確、3 / 30 ⭐');
+  await p.fill('#vf-seat', '8'); await p.click('#vf button'); await p.waitForSelector('#vf-out .note.bad');
+  ok((await p.textContent('#vf-out')).includes('對不上'), '🔍 座號不對（拿同學的碼）→ ❌ 對不上');
+  await b3.close();
+}
+/* 💻 換電腦：輸入進度碼還原 */
+{
+  const { browser: b4, context: c4 } = await launch();
+  const p = await c4.newPage(); p.on('pageerror', e => errors.push(e.message));
+  await p.goto(BASE + '/pylab/'); await p.waitForSelector('#login');
+  await p.fill('#in-cls', '801'); await p.fill('#in-seat', '7'); await p.fill('#in-name', '林小華'); await p.click('#pc-in-box summary');
+  await p.fill('#in-pc', 'ZZZZ-ZZZZ-ZZZZ'); await p.click('#login button.go');
+  await p.waitForFunction(() => document.getElementById('login-err').textContent.includes('對不上'));
+  ok(true, '💻 進度碼抄錯 → 提醒「對不上」，不會進去');
+  await p.fill('#in-pc', PC); await p.click('#login button.go'); await p.waitForSelector('.lv');
+  ok((await p.$$('.lv.lock')).length === 8 && (await p.textContent('#lv-got')).startsWith('3'), '💻 換電腦輸入進度碼 → 進度還原（3⭐、第 2 關開放）');
   await p.setViewportSize({ width: 390, height: 800 });
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '📱 學生版手機寬度沒有橫向捲動');
-  await b3.close();
+  await p.screenshot({ path: SHOTS + 'pylab-student-m.png', fullPage: true });
+  await b4.close();
 }
 console.log('errors', errors);
 if (bad || errors.length) process.exit(1);
