@@ -20,7 +20,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export function createGas(dir = path.join(ROOT, 'private', 'server')) {
   const single = /\.(gs|js)$/.test(dir);   // 也可以直接給「一鍵貼上」的單一檔案（驗證合併版能跑）
   if (!single && !fs.existsSync(path.join(dir, '90_answers.js'))) throw new Error('找不到 ' + dir + '/90_answers.js —— 先執行 node tools/build.mjs');
-  const cache = new Map(), props = new Map();
+  const cache = new Map(), props = new Map(), books = new Map();
+  function tab(rows) { return { getLastRow: () => rows.length, appendRow: r => { rows.push(r.map(x => (x instanceof Date ? x.toISOString() : x))); } }; }
+  function book(id) { const b = books.get(id); return { getId: () => id, getName: () => b.name,
+    getSheetByName: n => (b.tabs.has(n) ? tab(b.tabs.get(n)) : null), insertSheet: n => { b.tabs.set(n, []); return tab(b.tabs.get(n)); } }; }
   const ctx = {
     console,
     CacheService: { getScriptCache: () => ({
@@ -36,7 +39,10 @@ export function createGas(dir = path.join(ROOT, 'private', 'server')) {
       base64EncodeWebSafe: bytes => Buffer.from(bytes.map(b => b & 255)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_')
     },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: s => ({ setMimeType() { return this; }, getContent: () => s }) },
-    SpreadsheetApp: { openById: () => { throw new Error('SpreadsheetApp 沒有模擬'); } }
+    SpreadsheetApp: {   // 簡單的記憶體試算表（回報功能用）：create／openById／getSheetByName／insertSheet／appendRow
+      create: name => { const id = 'sheet' + (books.size + 1); books.set(id, { name, tabs: new Map() }); return book(id); },
+      openById: id => { if (!books.has(id)) throw new Error('找不到試算表 ' + id); return book(id); }
+    }
   };
   vm.createContext(ctx);
   if (single) vm.runInContext(fs.readFileSync(dir, 'utf8'), ctx, { filename: path.basename(dir) });
@@ -47,6 +53,8 @@ export function createGas(dir = path.join(ROOT, 'private', 'server')) {
     call: (a, data = {}) => JSON.parse(ctx.doPost({ postData: { contents: JSON.stringify({ a, ...data }) } }).getContent()),
     run: id => { const e = cache.get('run:' + id); return e ? JSON.parse(e.v) : null; },
     runs: () => [...cache.keys()].filter(k => k.startsWith('run:')).map(k => JSON.parse(cache.get(k).v)),
-    setRun: run => cache.set('run:' + run.id, { v: JSON.stringify(run), exp: Date.now() + 6 * 3600e3 })
+    setRun: run => cache.set('run:' + run.id, { v: JSON.stringify(run), exp: Date.now() + 6 * 3600e3 }),
+    sheet: (id, name) => { const b = books.get(id || props.get('FEEDBACK_SHEET_ID')); return b ? b.tabs.get(name || '老師回報') || null : null; },   // 測試看回報寫進去沒
+    props
   };
 }

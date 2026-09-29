@@ -119,13 +119,14 @@ function writeJS(file, globals, src) {
     '   公開版只有題目：答案、解說、提示、預期輸出都在驗證伺服器（server/，見 server/README.md）。 */\n' + body + '\n');
 }
 
+let PYLAB = null;   // 🐍 教師試用版（pylab/）用的關卡：和 11601 單元二同一份（只有題目）
 for (const term of ['11601', '11602']) {
   const dir = P('private', term, 'content');
   for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.js')).sort()) {
     const W = load([path.join(dir, f)]), outG = {};
     for (const [k, v] of Object.entries(W)) {
       if (k === 'window') continue;
-      if (k === 'PY_LEVELS') outG[k] = python(term, v);
+      if (k === 'PY_LEVELS') { outG[k] = python(term, v); if (term === '11601') PYLAB = outG[k]; }
       else if (k === 'SHEET_LEVELS') outG[k] = sheet(term, v);
       else if (/_LEVELS$/.test(k)) outG[k] = cards(term, v);
       else outG[k] = v;                     // 沒有答案的資料（例如 MEDIA_STEPS）原樣輸出
@@ -137,6 +138,12 @@ for (const term of ['11601', '11602']) {
   const labSrc = P('private', term, 'lab.js');
   if (fs.existsSync(labSrc)) ANS.labkit[term] = clone(load([labSrc]).LAB_ANSWERS);
   if (fs.existsSync(P(term, 'content', 'lab.js'))) { fs.unlinkSync(P(term, 'content', 'lab.js')); console.log('🗑', term + '/content/lab.js（改問伺服器）'); }
+}
+
+/* 🐍 教師試用版：pylab/levels.js（和學生版同一份題目；測資一樣在伺服器） */
+if (PYLAB && fs.existsSync(P('pylab'))) {
+  writeJS(P('pylab', 'levels.js'), { PY_LEVELS: PYLAB }, 'private/11601/content/python.js（和 11601 單元二同一份）');
+  console.log('✔ pylab/levels.js（教師試用版）');
 }
 
 /* 單元一：快速檢核按鈕 ── 答案在伺服器；HTML 上不留任何答案資料 */

@@ -26,7 +26,7 @@ const A = await import(new URL('../private/tests/answers.mjs', import.meta.url))
 for (const k of ['SOL_11601']) Object.entries(A[k]).forEach(([id, code]) => code.split('\n').map(s => s.trim()).filter(s => s.length > 22 && !/input\(/.test(s)).forEach(s => add(s, 'solution ' + id)));
 // 刻意公開的（頁面上本來就看得到）
 const ALLOW = [['lab why', '11601/5016b.html'],   // 學習目標
-  ['py hint P10', '11601/content/python.js']];     // Scratch 對照表本來就列出 while guess != answer:
+  ['py hint P10', '11601/content/python.js'], ['py hint P10', 'pylab/levels.js']];     // Scratch 對照表本來就列出 while guess != answer:（pylab 是同一份題目）
 let hits = 0;
 for (const [n, why] of N) for (const [p, s] of pub) if (s.includes(n) && !ALLOW.some(([w, f]) => why === w && p === f)) { hits++; console.log('HIT', why, p, JSON.stringify(n).slice(0, 60)); }
 console.log('檢查', N.size, '段明碼，公開檔案中發現', hits, '處');
@@ -34,7 +34,7 @@ console.log('檢查', N.size, '段明碼，公開檔案中發現', hits, '處');
 /* ── 結構檢查 ── */
 const fail = (m, ...x) => { hits++; console.log('✘', m, ...x); };
 const BAD_KEYS = { _LEVELS: ['why', 'a', 'good', 'rules', 'outcomes', 'e', 's'], PY_LEVELS: ['hints', 'checks', 'hx'], SHEET_LEVELS: ['hints', 'ref', 'alt', 'tol', 'tip', 'issues', 'fixed', 'note', 'after', 'ok', 'hx'] };
-for (const [p, src] of pub) if (/^(11601|11602)[/\\]content[/\\]/.test(p)) {
+for (const [p, src] of pub) if (/^(11601|11602)[/\\]content[/\\]/.test(p) || /^pylab[/\\]levels\.js$/.test(p)) {
   const W = load(p);
   for (const [k, v] of Object.entries(W)) if (/_LEVELS$/.test(k)) {
     const bad = new Set(k === 'PY_LEVELS' || k === 'SHEET_LEVELS' ? BAD_KEYS[k] : BAD_KEYS._LEVELS), found = new Set();

@@ -67,3 +67,37 @@ SV_ACTIONS.hint = function (req) {
   var i = +req.i; if (!(i >= 0 && i < L.hints.length)) svFail('no-hint');
   return { hint: L.hints[i], n: L.hints.length };
 };
+
+/* ── 📮 老師回報（pylab 教師試用版）：寫進老師的 Google 試算表 ──────────────
+   fb { t, lv, kind, msg, who, from, code, result, ua }
+   · 試算表：指令碼屬性 FEEDBACK_SHEET_ID；沒有就第一次自動建立一份「course_116 Python 老師回報」
+     （在部署者的雲端硬碟，只有部署者看得到），ID 記回指令碼屬性
+   · 防灌爆：每一欄都有長度上限；整個伺服器每小時最多 60 則（CacheService 計數） */
+var SV_FB_KINDS = { strict: '測資太嚴', loose: '測資太鬆', task: '題目／範例', hint: '提示', error: '錯誤說明', other: '其他' };
+function svFbSheet() {
+  var P = PropertiesService.getScriptProperties(), id = P.getProperty('FEEDBACK_SHEET_ID'), ss = null;
+  if (id) { try { ss = SpreadsheetApp.openById(id); } catch (e) { ss = null; } }
+  if (!ss) { ss = SpreadsheetApp.create('course_116 Python 老師回報'); P.setProperty('FEEDBACK_SHEET_ID', ss.getId()); }
+  var sh = ss.getSheetByName('老師回報') || ss.insertSheet('老師回報');
+  if (sh.getLastRow() === 0) sh.appendRow(['時間', '狀態', '任務', '類別', '說明', '稱呼', '學校／聯絡', '星數', '通過', '沒過的測資', '沒達成的結構要求', '程式碼', '瀏覽器']);
+  return sh;
+}
+SV_ACTIONS.fb = function (req) {
+  function cut(v, n) { return String(v == null ? '' : v).replace(/^[=+\-@]/, "'$&").slice(0, n); }   // 開頭是 = + - @ 的字串加 '，試算表不會當成公式
+  var lv = String(req.lv || ''), L = (SV_ANS.py[String(req.t)] || {})[lv];
+  if (!L) svFail('bad-item');
+  var msg = String(req.msg || '').trim();
+  if (msg.length < 4) svFail('bad-answer');
+  var c = svCache(), key = 'fb:' + Math.floor(Date.now() / 3600000), n = +(c.get(key) || 0);
+  if (n >= 60) svFail('too-many');
+  c.put(key, String(n + 1), 3700);
+  var r = req.result && typeof req.result === 'object' ? req.result : null;
+  svWithLock(function () {
+    svFbSheet().appendRow([new Date(), '待處理', lv + ' ' + L.title, SV_FB_KINDS[req.kind] || '其他', cut(msg, 1000), cut(req.who, 40), cut(req.from, 80),
+      r ? cut(r.stars, 2) : '', r ? cut(r.passed + '/' + r.total, 12) : '', r ? cut((r.fails || []).join('\n'), 1500) : '', r ? cut((r.reqs || []).join('\n'), 500) : '',
+      cut(req.code, 5000), cut(req.ua, 160)]);
+  });
+  return { ok: true };
+};
+/* 在 Apps Script 編輯器裡選這個函式按「執行」：建立（或找到）回報試算表，記錄檔會印出網址 */
+function 建立回報試算表() { var sh = svFbSheet(); Logger.log('📮 老師回報試算表：' + sh.getParent().getUrl()); }

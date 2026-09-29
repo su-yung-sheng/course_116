@@ -94,6 +94,17 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(c1('lkp', { sid: 'S1', v: {} }).err === 'bad-item' && c1('lks', { sid: 'S5' }).err === 'bad-item', '🔬 有檢核的節不能走專題的路、專題節沒有檢核局');
 }
 
+/* 8c. 📮 老師回報（pylab）：寫進試算表、擋亂送、擋灌爆 */
+{
+  const c1 = (a, d) => gas.call(a, { t: '11601', ...d });
+  ok(c1('fb', { lv: 'P1', kind: 'task', msg: '=HYPERLINK("x")題目看不懂', who: '王老師', code: 'print(1)' }).ok, '📮 回報送出 → ok');
+  const rows = gas.sheet(), last = rows[rows.length - 1];
+  ok(rows[0][0] === '時間' && last[2].startsWith('P1') && last[4].startsWith("'="), '📮 自動建立試算表與標題列；開頭是 = 的內容不會變成公式');
+  ok(c1('fb', { lv: 'ZZ', msg: '不存在的關卡' }).err === 'bad-item' && c1('fb', { lv: 'P1', msg: 'a' }).err === 'bad-answer', '📮 不存在的關卡、太短的說明 → 拒絕');
+  let n = 0; for (let i = 0; i < 70; i++) if (c1('fb', { lv: 'P1', msg: '灌爆測試 ' + i }).err === 'too-many') n++;
+  ok(n > 0, '📮 每小時最多 60 則（擋灌爆）', '被擋 ' + n + ' 則');
+}
+
 /* 9. 📋 一鍵貼上版（全部檔案合成一個）也要能跑，而且和分開的檔案一樣 */
 {
   const one = createGas(fileURLToPath(new URL('../private/伺服器一鍵貼上/一鍵貼上_course116.gs', import.meta.url))), h = JSON.parse(one.ctx.doGet().getContent());
