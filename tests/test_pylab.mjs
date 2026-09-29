@@ -46,6 +46,10 @@ await page.reload(); await page.waitForSelector('.lv'); await page.click('#fb su
 ok(await page.inputValue('#fb-who') === '王老師', '📮 稱呼會記住（下次不用再打）');
 await page.screenshot({ path: SHOTS + 'pylab.png', fullPage: true });
 
+/* 📶 連線測速 */
+await page.click('#speed summary'); await page.click('#sp-go'); await page.waitForSelector('#sp-out .note', { timeout: 30000 });
+const sp = await page.textContent('#sp-out');
+ok(sp.includes('第 5 次連線') && sp.includes('平均') && sp.includes('送出評分') && sp.includes('Python 引擎載入'), '📶 連線測速：5 次連線、平均、送出評分預估、引擎載入時間', sp.match(/平均 [\d.]+ 秒/)?.[0]);
 /* 手機寬度不橫向捲動 */
 await page.setViewportSize({ width: 390, height: 800 });
 ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '📱 手機寬度沒有橫向捲動');
@@ -59,6 +63,8 @@ await browser.close();
   await p.click('#fb summary'); await p.fill('#fb-msg', '離線時的回報測試');
   await p.click('#fb-send'); await p.waitForSelector('#fb-copy');
   ok(true, '📴 連不上伺服器 → 出現「📋 複製回報內容」，可以用 email／LINE 傳');
+  await p.click('#speed summary'); await p.click('#sp-go'); await p.waitForSelector('#sp-out .note.bad');
+  ok((await p.textContent('#sp-out')).includes('防火牆'), '📶 連不上時測速會提醒「可能是學校防火牆擋了」');
   await b2.close();
 }
 let PC = '';

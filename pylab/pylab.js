@@ -21,7 +21,7 @@ window.PYLAB = { mount: function (MODE) {
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove('on'); }, ms || 2600);
   }
   /* 只存在這台電腦：最佳星數、草稿、回報者稱呼。學生版每位學生一組（pylab-s{班級}_{座號}-…） */
-  var NS = TEACHER ? 'pylab-' : null, ME = null, SYNCED = false;   // SYNCED：剛登入時已經同步過，不用再同步一次
+  var NS = TEACHER ? 'pylab-' : null, ME = null, SYNCED = false, T0 = Date.now(), ENGINE_MS = null;   // ENGINE_MS：Python 引擎載入花了多久（測速用）   // SYNCED：剛登入時已經同步過，不用再同步一次
   function raw(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   function get(k) { return raw(NS + k); }
   function set(k, v) { raw(NS + k, v); }
@@ -93,7 +93,10 @@ window.PYLAB = { mount: function (MODE) {
       '<form id="pf" class="mt1" novalidate><div class="grid g3"><label class="small bold">老師密碼<input class="input mono" id="pf-key" type="password" maxlength="40" autocomplete="off"></label>' +
       '<label class="small bold">班級（選填，空白＝全部）<input class="input" id="pf-cls" maxlength="8" inputmode="numeric"></label></div>' +
       '<button class="btn go mt1">📊 查看</button></form><div id="pf-out" class="mt1" aria-live="polite"></div>' +
-      '<p class="tiny soft mt1">老師密碼請向出題老師（' + esc(C.AUTHOR || '出題老師') + '）索取。</p></details>' : '') +
+      '<p class="tiny soft mt1">老師密碼請向出題老師（' + esc(C.AUTHOR || '出題老師') + '）索取。</p></details>' +
+      '<details class="card mt1 verify" id="speed"><summary class="bold">📶 連線測速（上課前在電腦教室按一下）</summary>' +
+      '<p class="small mt1">連續問驗證伺服器 5 次，再模擬一次「送出評分」的第一步。第一次比較慢是正常的（伺服器閒置後要先叫醒）。</p>' +
+      '<button class="btn go mt1" id="sp-go" type="button">📶 開始測速</button><div id="sp-out" class="mt1" aria-live="polite"></div></details>' : '') +
     '<div class="py-grid mt2"><aside class="card" style="padding:.8rem"><p class="kicker" style="margin:.2rem .2rem .6rem">任務清單' + (TEACHER ? '' : ' · 2⭐ 開下一關') + '</p>' +
     '<div class="lv-prog"><span>' + (TEACHER ? '我試過的' : '進度') + '</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>' +
     '<nav id="lv-list" class="lv-list" aria-label="關卡"></nav>' +
@@ -110,6 +113,33 @@ window.PYLAB = { mount: function (MODE) {
         '<div class="scroll-x mt1"><table class="t"><tr><th>關卡</th><th>星數</th></tr>' + L.map(function (lv, i) { return '<tr><td>' + (i + 1) + '. ' + esc(lv.title) + '</td><td>' + (r.stars[i] ? starsHTML(r.stars[i]) : '<span class="soft">尚未完成</span>') + '</td></tr>'; }).join('') + '</table></div>';
     }, function (e) {
       out.innerHTML = '<div class="note bad">' + (e.err === 'bad-code' ? '<b>❌ 對不上</b>：進度碼、班級、座號其中有錯（抄錯或被改過）。' : '⚠️ ' + esc(API.msg(e))) + '</div>';
+    });
+  };
+  /* 📶 連線測速：ping × 5（第一次＝冷啟動）＋一次 py（送出評分的第一步：拿測資） */
+  if (TEACHER) document.getElementById('sp-go').onclick = function () {
+    var btn = this, out = document.getElementById('sp-out'), ts = [], n = 5;
+    function sec(ms) { return (ms / 1000).toFixed(2) + ' 秒'; }
+    function lvl(ms) { return ms < 2000 ? '<span class="ok-c">✅ 順暢</span>' : ms < 5000 ? '⚠️ 可以用，稍慢' : '<span class="bad-c">❌ 很慢</span>'; }
+    function one(a, data) { var t = performance.now(); return API.call(a, data).then(function () { return performance.now() - t; }); }
+    function show(extra) {
+      out.innerHTML = '<div class="scroll-x"><table class="t"><tr><th>項目</th><th>時間</th></tr>' +
+        ts.map(function (t, i) { return '<tr><td>第 ' + (i + 1) + ' 次連線' + (i === 0 ? '（可能要叫醒伺服器）' : '') + '</td><td>' + sec(t) + '</td></tr>'; }).join('') + (extra || '') + '</table></div>';
+    }
+    btn.disabled = true; out.innerHTML = '<p class="small">⏳ 測速中…</p>';
+    var chain = Promise.resolve();
+    for (var i = 0; i < n; i++) chain = chain.then(function () { return one('ping', {}).then(function (t) { ts.push(t); show(); }); });
+    chain.then(function () { return one('py', { lv: L[0].id, mod: 'pylab-teacher' }); }).then(function (tp) {
+      var rest = ts.slice(1), avg = rest.reduce(function (a, b) { return a + b; }, 0) / rest.length, worst = Math.max.apply(null, rest);
+      show('<tr><td>送出評分的第一步（拿測資）</td><td>' + sec(tp) + '</td></tr>');
+      out.innerHTML += '<div class="note mt1"><b>平均 ' + sec(avg) + '</b>（第 2～5 次，最慢 ' + sec(worst) + '）' + lvl(avg) +
+        '<br>第一次：' + sec(ts[0]) + (ts[0] > 3000 ? '（伺服器剛被叫醒，正常）' : '') +
+        '<br>學生按一次「✅ 送出評分」要連兩次伺服器，大約 <b>' + sec(tp + avg) + '</b>（另加學生電腦跑程式的時間）' +
+        '<br>Python 引擎載入：' + (ENGINE_MS == null ? '還在載入' : sec(ENGINE_MS) + '（第一次要下載約 10 MB，這一段才是最吃學校網路的）') + '</div>';
+      btn.disabled = false;
+    }, function (e) {
+      btn.disabled = false;
+      out.innerHTML += '<div class="note bad mt1">⚠️ ' + esc(API.msg(e)) + (e && (e.err === 'offline' || e.err === 'timeout') ? '<br>可能是學校防火牆擋了 script.google.com，請資訊組確認。' : '') + '</div>';
+      API.retry();
     });
   };
   if (TEACHER) document.getElementById('pf').onsubmit = function (e) {
@@ -145,7 +175,7 @@ window.PYLAB = { mount: function (MODE) {
   var eng = document.getElementById('engine');
   PYRUN.onStatus(function (s, info) {
     if (s === 'loading') { eng.className = 'engine'; eng.textContent = '⏳ Python 引擎載入中…（第一次約 10 秒）'; }
-    if (s === 'ready') { eng.className = 'engine ok'; eng.textContent = '✅ Python ' + info + ' 就緒'; setBusy(false); }
+    if (s === 'ready') { eng.className = 'engine ok'; eng.textContent = '✅ Python ' + info + ' 就緒'; setBusy(false); if (ENGINE_MS == null) ENGINE_MS = Date.now() - T0; }
     if (s === 'fail') { eng.className = 'engine bad'; eng.textContent = '❌ 引擎載入失敗：請檢查網路後重新整理'; }
   });
   PYRUN.init(C.PYODIDE_URL).catch(function () {});
