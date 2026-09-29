@@ -149,7 +149,7 @@ for (const [file, varName] of [['network', 'NET_LEVELS'], ['data', 'DATA_LEVELS'
 /* ── 🧪 其他實驗站：做錯會說明錯在哪裡 ── */
 {
   const open = async (id, s, q) => { await page.goto(`${BASE}/11602/network.html?w=${q}#${id}`); await page.click(`.stage[data-s="${s}"]`); await page.waitForSelector('#lab[data-lab]'); await page.waitForTimeout(1600); };
-  const fbHas = async (t, msg) => { await page.waitForSelector('#fb .note'); ok((await page.textContent('#fb')).includes(t), msg); await passCool(page); };
+  const fbHas = async (t, msg) => { await page.waitForFunction(t => (document.querySelector('#fb .note') || {}).textContent?.includes(t), t, { timeout: 8000 }).catch(() => {}); ok((await page.textContent('#fb')).includes(t), msg); await passCool(page); };   // 等「這一次」的回饋（上一步的回饋可能還在畫面上）
   await open('N2', 1, 1);   // 長距離用雙絞線
   const spots = JSON.parse(await page.$eval('#lab', e => e.dataset.spots));
   for (let i = 0; i < spots.length; i++) await page.click(`.cp-c[data-i="${i}"][data-c="${spots[i].kind === 'tv' ? 'coax' : 'tp'}"]`);

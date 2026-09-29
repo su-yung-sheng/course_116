@@ -21,7 +21,9 @@ export function lastLab() { const r = lastRun(); if (!r || !r.labs) return null;
 export const stats = { calls: 0 };
 
 export async function launch(opts = {}) {
-  const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
+  // opts.utf8：要檢查中文下載檔名時才開（Linux 沒設 UTF-8 語系時 Chromium 會把檔名改成「download」；Windows／macOS 的 Chrome 不會）
+  const env = opts.utf8 ? { env: { ...process.env, LANG: 'C.UTF-8', LC_ALL: 'C.UTF-8' } } : {};
+  const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME, ...env } : env);
   const context = await browser.newContext({ viewport: opts.viewport || { width: 1280, height: 900 }, deviceScaleFactor: 1 });
   await context.route('**/__gas', route => {   // opts.offline：模擬連不上伺服器（練習模式）
     if (opts.offline) return route.abort('internetdisconnected');

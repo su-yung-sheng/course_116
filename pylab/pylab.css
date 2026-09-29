@@ -9,3 +9,5 @@
 .fb-k{cursor:pointer;font-weight:700}
 .fb-k input{accent-color:var(--unit)}
 .fb-card .input{width:100%;margin:.25rem 0 0}
+.login-card{max-width:40rem;margin:2rem auto}
+.login-card .input{width:100%;margin:.25rem 0 0}

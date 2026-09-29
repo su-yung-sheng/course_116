@@ -40,7 +40,7 @@
 | 設計系統（配色規則、共用元件、頁面骨架） | [docs/04_設計系統.md](docs/04_設計系統.md) |
 | 安全性（答案只在驗證伺服器、練習模式、防使用者腳本／F12 的三層對策） | [docs/05_安全性.md](docs/05_安全性.md) |
 | 🔐 驗證伺服器部署（Google Apps Script） | [server/README.md](server/README.md) |
-| 🐍 Python 教師試用版（給其他老師試玩、回報；和闖關網站分開） | [pylab/README.md](pylab/README.md)　網址：`/pylab/` |
+| 🐍 Python 畢旅籌備處（和闖關網站分開，給其他老師和他們的學生） | [pylab/README.md](pylab/README.md)　學生：`/pylab/`　老師試用、回報：`/pylab/teacher.html` |
 | 108 課綱對照（每一關的學習內容、學習表現代碼） | [docs/06_課綱對照.md](docs/06_課綱對照.md) |
 
 ## ⚠️ 目前是「可運作骨架」（本機版）

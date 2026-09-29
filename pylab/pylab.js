@@ -1,13 +1,14 @@
 /* =====================================================================
-   🐍 Python 教師試用版（pylab）── 給其他老師試玩、回報問題
+   🐍 Python 畢旅籌備處（pylab）── 和闖關網站完全分開的獨立版，兩種模式
    ---------------------------------------------------------------------
-   · 和闖關網站完全分開：不用登入、10 關全開、成績與草稿只存在這台電腦（localStorage，pylab- 開頭）
-   · 評分和學生版一樣：程式在瀏覽器跑，輸出送到驗證伺服器比對（測資、提示都在伺服器，看不到）
-   · 每一關都有「📮 回報問題」：自動附上關卡、程式碼、最近一次評分結果，送到老師的 Google 試算表
+   PYLAB.mount('student')  index.html   學生版：填班級座號姓名、上一關 2⭐ 才開下一關、🧾 成績卡下載
+   PYLAB.mount('teacher')  teacher.html 教師試用版：不用登入、10 關全開、每一關可以 📮 回報問題
+   · 成績與草稿只存在這台電腦的瀏覽器（localStorage，pylab- 開頭；學生版依「班級_座號」分開存）
+   · 評分和闖關網站一樣：程式在瀏覽器跑，輸出送到驗證伺服器比對（測資、提示都在伺服器，看不到）
    需要（依序載入）：config.js、api.js、pyrunner.js、levels.js（PY_LEVELS）
    ===================================================================== */
-(function () {
-  var C = window.CONFIG, L = window.PY_LEVELS || [];
+window.PYLAB = { mount: function (MODE) {
+  var C = window.CONFIG, L = window.PY_LEVELS || [], TEACHER = MODE === 'teacher';
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>'"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]; }); }
   function starsHTML(n) { var s = ''; for (var i = 0; i < 3; i++) s += i < n ? '★' : '<span class="off">★</span>'; return '<span class="stars" aria-label="' + (n || 0) + ' 顆星，共 3 顆">' + s + '</span>'; }
   var toastEl = null, toastTimer = null;
@@ -16,22 +17,55 @@
     toastEl.textContent = msg; toastEl.classList.add('on');
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove('on'); }, ms || 2600);
   }
-  /* 只存在這台電腦：最佳星數、草稿、回報者稱呼 */
-  function get(k) { try { return localStorage.getItem('pylab-' + k); } catch (e) { return null; } }
-  function set(k, v) { try { localStorage.setItem('pylab-' + k, v); } catch (e) { /* 無痕模式也能用 */ } }
+  /* 只存在這台電腦：最佳星數、草稿、回報者稱呼。學生版每位學生一組（pylab-s{班級}_{座號}-…） */
+  var NS = TEACHER ? 'pylab-' : null, ME = null;
+  function raw(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function get(k) { return raw(NS + k); }
+  function set(k, v) { raw(NS + k, v); }
   function best(id) { return +(get('best-' + id) || 0); }
+  function unlocked(i) { return TEACHER || i === 0 || best(L[i - 1].id) >= 2; }
 
   var root = document.getElementById('pylab');
+  if (!TEACHER) return loginGate();
+  build();
+
+  /* ── 學生版：先填班級座號姓名（只存在這台電腦，換人按「換人」） ── */
+  function loginGate() {
+    try { ME = JSON.parse(raw('pylab-me') || 'null'); } catch (e) { ME = null; }
+    if (ME && ME.cls && ME.seat && ME.name) { NS = 'pylab-s' + ME.cls + '_' + ME.seat + '-'; return build(); }
+    root.innerHTML = '<section class="card pop login-card"><div class="tape"></div><p class="kicker">🐍 ' + esc(C.TITLE_STUDENT || C.TITLE) + '</p><h1 class="black" style="font-size:1.4rem">先告訴我你是誰</h1>' +
+      '<p class="small soft mt1">成績只存在這台電腦的瀏覽器。換電腦或清除瀏覽紀錄就會不見，做完記得下載 🧾 成績卡交給老師。</p>' +
+      '<form id="login" class="mt2" novalidate><div class="grid g3"><label class="small bold">班級<input class="input" id="in-cls" maxlength="8" inputmode="numeric" placeholder="例：901" required></label>' +
+      '<label class="small bold">座號<input class="input" id="in-seat" maxlength="3" inputmode="numeric" placeholder="例：5" required></label>' +
+      '<label class="small bold">姓名<input class="input" id="in-name" maxlength="12" placeholder="例：王小明" required></label></div>' +
+      '<p id="login-err" class="small bold mt1" style="color:var(--bad)" aria-live="polite"></p><button class="btn go mt1">開始 ▶</button></form></section>';
+    document.getElementById('login').onsubmit = function (e) {
+      e.preventDefault();
+      var cls = document.getElementById('in-cls').value.trim(), seat = document.getElementById('in-seat').value.trim().replace(/^0+(?=\d)/, ''), name = document.getElementById('in-name').value.trim();
+      if (!/^[0-9A-Za-z一-鿿]{1,8}$/.test(cls) || !/^\d{1,3}$/.test(seat) || !name) { document.getElementById('login-err').textContent = '班級、座號（數字）、姓名都要填'; return; }
+      ME = { cls: cls, seat: seat, name: name }; raw('pylab-me', JSON.stringify(ME));
+      loginGate();
+    };
+    document.getElementById('in-cls').focus();
+  }
+
+  function build() {
   root.innerHTML =
-    '<header class="topbar"><div><p class="kicker">🧑‍🏫 教師試用版 · 10 關全部開放 · 不用登入</p><h1 class="black" style="font-size:1.5rem">' + esc(C.TITLE) + '</h1></div>' +
+    '<header class="topbar"><div><p class="kicker">' + (TEACHER ? '🧑‍🏫 教師試用版 · 10 關全部開放 · 不用登入' : '👤 ' + esc(ME.cls + ' 班 ' + ME.seat + ' 號 ' + ME.name) + ' <button class="btn sm" id="who-x" type="button">換人</button>') + '</p><h1 class="black" style="font-size:1.5rem">' + esc(TEACHER ? C.TITLE : (C.TITLE_STUDENT || C.TITLE)) + '</h1></div>' +
     '<span class="row" style="gap:.5rem">' + (C.REF_URL ? '<a class="btn sm" href="' + C.REF_URL + '" target="_blank" rel="noopener">📚 語法小抄</a>' : '') + '<span id="engine" class="engine">⏳ Python 引擎載入中…</span></span></header>' +
-    '<div class="note small mt1">👋 謝謝老師幫忙試用！這是九年級「進入 Python 的世界」10 個任務，<b>評分方式和學生版一模一樣</b>（測資在伺服器，看不到）。' +
-    '覺得測資太嚴／太鬆、題目看不懂、提示或錯誤說明怪怪的，請按每一關最下面的 <b>📮 回報問題</b>，會自動附上你的程式和評分結果。成績只存在這台電腦，不會影響任何學生。</div>' +
-    '<div class="py-grid mt2"><aside class="card" style="padding:.8rem"><p class="kicker" style="margin:.2rem .2rem .6rem">任務清單</p>' +
-    '<div class="lv-prog"><span>我試過的</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>' +
+    (TEACHER ? '<div class="note small mt1">👋 謝謝老師幫忙試用！這是九年級「進入 Python 的世界」10 個任務，<b>評分方式和學生版一模一樣</b>（測資在伺服器，看不到）。' +
+    '覺得測資太嚴／太鬆、題目看不懂、提示或錯誤說明怪怪的，請按每一關最下面的 <b>📮 回報問題</b>，會自動附上你的程式和評分結果。成績只存在這台電腦，不會影響任何學生。<br>🎒 學生用的版本：<a href="index.html">' + esc(location.href.replace(/teacher\.html.*$/, '')) + '</a>（要填班級座號、2⭐ 才開下一關）</div>' :
+      '<p class="small soft">九年級「進入 Python 的世界」：幫畢旅籌備處寫 10 個小程式。寫完按「✅ 送出評分」，拿到 2⭐ 就開下一關。</p>') +
+    '<div class="py-grid mt2"><aside class="card" style="padding:.8rem"><p class="kicker" style="margin:.2rem .2rem .6rem">任務清單' + (TEACHER ? '' : ' · 2⭐ 開下一關') + '</p>' +
+    '<div class="lv-prog"><span>' + (TEACHER ? '我試過的' : '進度') + '</span><span id="lv-got"></span></div><div class="lv-bar"><i id="lv-bar"></i></div>' +
     '<nav id="lv-list" class="lv-list" aria-label="關卡"></nav>' +
-    '<p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過（學生版要 2⭐ 才開下一關）<br>3⭐ 再加上程式結構要求</p></aside>' +
+    '<p class="tiny soft mt2" style="padding:0 .2rem">1⭐ 至少過一組測資<br>2⭐ 全部測資都過' + (TEACHER ? '（學生版要 2⭐ 才開下一關）' : '') + '<br>3⭐ 再加上程式結構要求</p>' +
+    (TEACHER ? '' : '<button class="btn sm mt1" id="btn-card" type="button" style="width:100%">🧾 下載成績卡</button>') + '</aside>' +
     '<section id="stage" class="stack"></section></div>';
+  if (!TEACHER) {
+    document.getElementById('who-x').onclick = function () { if (confirm('換成另一位同學？（你的成績還會留在這台電腦）')) { raw('pylab-me', ''); location.reload(); } };
+    document.getElementById('btn-card').onclick = scoreCard;
+  }
 
   var cur = null, session = { inputs: [], seed: 116 }, running = false, lastGrade = null;
 
@@ -48,14 +82,19 @@
   function renderList() {
     document.getElementById('lv-list').innerHTML = L.map(function (lv, i) {
       var on = cur && cur.id === lv.id;
-      return '<button class="lv' + (on ? ' on' : '') + (best(lv.id) >= 2 ? ' done' : '') + '" data-i="' + i + '"' + (on ? ' aria-current="step"' : '') + '>' +
-        '<span class="no">' + (i + 1) + '</span><span class="ic">' + lv.icon + '</span><span class="bd"><span class="tt">' + esc(lv.title) + '</span><span class="st">' + starsHTML(best(lv.id)) + '</span></span></button>';
+      var ok = unlocked(i);
+      return '<button class="lv' + (on ? ' on' : '') + (ok ? '' : ' lock') + (best(lv.id) >= 2 ? ' done' : '') + '" data-i="' + i + '"' + (ok ? '' : ' aria-disabled="true"') + (on ? ' aria-current="step"' : '') + '>' +
+        '<span class="no">' + (i + 1) + '</span><span class="ic">' + (ok ? lv.icon : '🔒') + '</span><span class="bd"><span class="tt">' + esc(lv.title) + '</span><span class="st">' + starsHTML(best(lv.id)) + '</span></span></button>';
     }).join('');
     var got = L.reduce(function (a, lv) { return a + best(lv.id); }, 0), max = L.length * 3;
     document.getElementById('lv-got').textContent = got + ' / ' + max + ' ⭐';
     document.getElementById('lv-bar').style.width = Math.round(got / max * 100) + '%';
   }
-  document.getElementById('lv-list').addEventListener('click', function (e) { var b = e.target.closest('.lv'); if (b) open(+b.dataset.i); });
+  document.getElementById('lv-list').addEventListener('click', function (e) {
+    var b = e.target.closest('.lv'); if (!b) return;
+    if (!unlocked(+b.dataset.i)) return toast('先在上一關拿到 2 顆星，這一關才會開放');
+    open(+b.dataset.i);
+  });
 
   /* ── 關卡畫面 ── */
   function open(i) {
@@ -76,8 +115,8 @@
       (lv.sample.inputs.length ? '<p class="tiny soft mt1"><span class="io-in">黃色</span>是使用者打的字</p>' : '') + '</div></div>' +
       '<details class="mt2"><summary class="bold small" style="cursor:pointer">🐱 和 Scratch 積木對照</summary><div class="scroll-x mt1"><table class="t map-t"><tr><th>Scratch 積木</th><th>Python</th></tr>' +
       lv.scratch.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table></div></details>' +
-      '<p class="small mt2">🧪 評分測資：' + lv.tests.length + ' 組（公開 ' + lv.tests.filter(function (t) { return !t.hidden; }).length + ' 組、隱藏 ' + lv.tests.filter(function (t) { return t.hidden; }).length + ' 組）' +
-      (lv.req && lv.req.length ? '　·　3⭐ 結構要求：' + lv.req.map(function (q) { return esc(q.msg); }).join('、') : '') + '</p>' +
+      (!TEACHER ? '' : '<p class="small mt2">🧪 評分測資：' + lv.tests.length + ' 組（公開 ' + lv.tests.filter(function (t) { return !t.hidden; }).length + ' 組、隱藏 ' + lv.tests.filter(function (t) { return t.hidden; }).length + ' 組）' +
+      (lv.req && lv.req.length ? '　·　3⭐ 結構要求：' + lv.req.map(function (q) { return esc(q.msg); }).join('、') : '') + '</p>') +
       '<div class="row mt1"><button class="btn sm" id="btn-hint">💡 提示（0 / ' + (lv.hn || 0) + '）</button></div><div id="hints" class="stack mt1"></div></article>' +
       '<article class="card"><div class="row between"><h3 class="bold">✏️ 程式</h3><span class="tiny soft">Tab 縮排 4 格 · Ctrl＋Enter 試跑</span></div>' +
       '<div class="ed mt1"><div class="gut" id="gut">1</div><textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Python 程式碼"></textarea></div>' +
@@ -87,7 +126,7 @@
       '<article class="card"><div class="row between"><h3 class="bold">🖥️ 執行結果</h3><span id="run-note" class="tiny soft"></span></div>' +
       '<div id="console" class="console mt1" aria-live="polite">按「▶ 試跑」看看程式會做什麼。</div><div id="err" class="mt1"></div></article>' +
       '<article class="card hidden" id="result"></article>' +
-      feedbackHTML(lv);
+      (TEACHER ? feedbackHTML(lv) : '');
 
     var ta = document.getElementById('code');
     ta.value = draft != null ? draft : lv.starter;
@@ -109,7 +148,7 @@
         if (shown >= nHint) hb.disabled = true;
       }, function (e) { asking = false; toast(API.msg(e)); });
     };
-    bindFeedback(lv);
+    if (TEACHER) bindFeedback(lv);
     if (PYRUN.ready()) PYRUN.ready().then(function () { setBusy(false); }, function () {});
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -203,9 +242,11 @@
     setBusy(true);
     var res = document.getElementById('result'); res.classList.remove('hidden');
     res.innerHTML = '<p class="bold">⏳ 評分中…（' + lv.tests.length + ' 組測資）</p>';
-    PYRUN.grade(lv, code, { mod: 'pylab' }).then(function (g) {
+    var before = best(lv.id), idx = L.indexOf(lv);
+    PYRUN.grade(lv, code, { mod: TEACHER ? 'pylab-teacher' : 'pylab', who: ME }).then(function (g) {
       setBusy(false);
       if (!g.offline && g.stars > best(lv.id)) set('best-' + lv.id, g.stars);
+      if (!TEACHER && !g.offline) set('code-' + lv.id, code.slice(0, 4000));
       renderList(); document.getElementById('lv-best').innerHTML = starsHTML(best(lv.id));
       var firstErr = g.tests.filter(function (t) { return t.error; })[0];
       showError(firstErr ? firstErr.error : null, code);
@@ -219,13 +260,19 @@
         return '<tr><td>' + (i + 1) + '. ' + esc(tt.name) + '</td><td>' + inp + '</td><td>' + (t.pass == null ? '<span class="soft">📴 沒有判斷</span>' : t.pass ? '<span class="ok-c">✔ 通過</span>' : '<span class="bad-c">✘</span> <span class="small">' + esc(why) + '</span>') + out + '</td></tr>';
       }).join('');
       var reqs = g.reqs.map(function (r) { return '<li>' + (r.ok ? '<span class="ok-c">✔</span> ' : '<span class="bad-c">✘</span> ') + esc(r.req.msg) + '</li>'; }).join('');
-      res.innerHTML = '<div class="row between"><div><p class="kicker">評分結果（和學生看到的一樣）</p><div class="res-star">' + starsHTML(g.stars) + '</div>' +
+      var N = L[idx + 1], openedNext = !TEACHER && N && before < 2 && best(lv.id) >= 2;
+      res.innerHTML = '<div class="row between"><div><p class="kicker">評分結果' + (TEACHER ? '（和學生看到的一樣）' : '') + '</p><div class="res-star">' + starsHTML(g.stars) + '</div>' +
         '<p class="bold">' + (g.offline ? '📴 連不上驗證伺服器：只跑了公開的範例測資，沒有判斷。' : g.stars === 3 ? '🎉 滿分。' : g.stars === 2 ? '👍 測資全過，差結構要求。' : g.stars === 1 ? '💪 過了一部分。' : '🧐 還沒有任何一組通過。') + '</p></div>' +
         '<div class="center"><div class="black" style="font-size:2rem">' + g.passed + ' / ' + g.total + '</div><div class="tiny soft bold">組測資通過</div></div></div>' +
         '<div class="scroll-x mt2"><table class="t"><tr><th>測資</th><th>輸入</th><th>結果</th></tr>' + rows + '</table></div>' +
         (reqs ? '<h4 class="bold small mt2">🏗️ 程式結構要求（3 星條件）</h4><ul class="small" style="margin:.3rem 0 0;padding-left:1.2rem;list-style:none">' + reqs + '</ul>' : '') +
-        '<p class="small mt2">評分結果和你想的不一樣？👉 <a href="#fb" id="to-fb">📮 回報問題</a>（會自動附上這次的結果）</p>';
-      document.getElementById('to-fb').onclick = function (e) { e.preventDefault(); var f = document.getElementById('fb'); f.open = true; f.scrollIntoView({ behavior: 'smooth' }); document.getElementById('fb-msg').focus(); };
+        (TEACHER ? '<p class="small mt2">評分結果和你想的不一樣？👉 <a href="#fb" id="to-fb">📮 回報問題</a>（會自動附上這次的結果）</p>' :
+          (best(lv.id) >= 2 && N ? '<div class="row mt2"><button class="btn primary" id="btn-next">' + (openedNext ? '🔓 下一關已開放：' : '下一關：') + esc(N.icon + ' ' + N.title) + ' →</button></div>' :
+           best(lv.id) >= 2 && !N ? '<div class="note ok mt2"><b>🏆 你打倒魔王了！</b> 10 關全部完成，記得按左邊的「🧾 下載成績卡」交給老師。</div>' :
+           '<p class="small soft mt2">拿到 2⭐（全部測資通過）就能開下一關。卡住了？按上面的「💡 提示」。</p>'));
+      if (TEACHER) document.getElementById('to-fb').onclick = function (e) { e.preventDefault(); var f = document.getElementById('fb'); f.open = true; f.scrollIntoView({ behavior: 'smooth' }); document.getElementById('fb-msg').focus(); };
+      var nb = document.getElementById('btn-next'); if (nb) nb.onclick = function () { open(idx + 1); };
+      if (openedNext) toast('🔓 下一關開放了：' + N.title);
       res.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, function (e) { setBusy(false); res.innerHTML = '<div class="note bad">⚠️ ' + esc(API.msg(e)) + '</div>'; });
   }
@@ -266,7 +313,37 @@
     };
   }
 
-  /* ── 進場 ── */
-  var want = (location.hash || '').slice(1), hi = L.findIndex(function (lv) { return lv.id === want; });
-  renderList(); open(hi >= 0 ? hi : 0);
-})();
+  /* ── 進場：網址 #P3 直接開那一關（要已經開放）；學生版預設開最新開放的那一關 ── */
+  var want = (location.hash || '').slice(1), hi = L.findIndex(function (lv) { return lv.id === want; }), start = 0;
+  L.forEach(function (lv, i) { if (unlocked(i)) start = i; });
+  if (TEACHER) start = 0;
+  if (hi >= 0 && unlocked(hi)) start = hi;
+  renderList(); open(start);
+  }   // build()
+
+  /* ── 🧾 學生版成績卡（PNG）：姓名、每一關的星星、日期 → 下載交給老師 ── */
+  function scoreCard() {
+    var W = 900, H = 170 + L.length * 44 + 90, cv = document.createElement('canvas'), x = cv.getContext('2d'), F = '"Noto Sans TC","Microsoft JhengHei",sans-serif';
+    cv.width = W; cv.height = H;
+    x.fillStyle = '#f0fdf4'; x.fillRect(0, 0, W, H);
+    x.fillStyle = '#15803d'; x.fillRect(0, 0, W, 96);
+    x.fillStyle = '#fff'; x.font = '900 32px ' + F; x.fillText('🐍 ' + (C.TITLE_STUDENT || C.TITLE), 32, 60);
+    x.fillStyle = '#0f172a'; x.font = '800 26px ' + F; x.fillText(ME.cls + ' 班　' + ME.seat + ' 號　' + ME.name, 32, 140);
+    var total = 0;
+    L.forEach(function (lv, i) {
+      var s = best(lv.id), y = 190 + i * 44; total += s;
+      x.fillStyle = i % 2 ? '#ffffff' : '#dcfce7'; x.fillRect(24, y - 30, W - 48, 42);
+      x.fillStyle = '#0f172a'; x.font = '700 21px ' + F; x.fillText((i + 1) + '. ' + lv.title, 40, y);
+      x.fillStyle = s ? '#b45309' : '#94a3b8'; x.font = '800 22px ' + F; x.fillText(s ? '★'.repeat(s) + '☆'.repeat(3 - s) : '尚未完成', W - 190, y);
+    });
+    x.fillStyle = '#15803d'; x.font = '900 24px ' + F; x.fillText('合計 ' + total + ' / ' + L.length * 3 + ' ⭐', 32, H - 36);
+    x.fillStyle = '#64748b'; x.font = '700 16px ' + F; x.textAlign = 'right'; x.fillText(new Date().toLocaleString('zh-TW'), W - 32, H - 36);
+    cv.toBlob(function (b) {
+      var u = URL.createObjectURL(b), a = document.createElement('a');
+      a.download = 'Python成績卡-' + ME.cls + '_' + ME.seat + '_' + ME.name + '.png'; a.href = u;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
+      toast('🧾 成績卡已下載，交給老師吧！');
+    }, 'image/png');
+  }
+} };

@@ -20,8 +20,11 @@
     var u = url(); if (!u) return Promise.reject({ err: 'offline' });
     var ctl = window.AbortController ? new AbortController() : null, timer = ctl && setTimeout(function () { ctl.abort(); }, ms || 20000);
     return fetch(u, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), redirect: 'follow', signal: ctl ? ctl.signal : undefined, credentials: 'omit' })
-      .then(function (r) { if (!r.ok) throw { err: 'http-' + r.status }; return r.json(); })
-      .catch(function (e) { throw e && e.err ? e : { err: 'offline' }; })
+      .then(function (r) {
+        if (!r.ok) throw { err: 'http-' + r.status };
+        return r.text().then(function (t) { try { return JSON.parse(t); } catch (x) { throw { err: 'not-json' }; } });   // 回來的不是 JSON：多半是 Google 的「需要授權」錯誤頁
+      })
+      .catch(function (e) { throw e && e.err ? e : { err: ctl && ctl.signal.aborted ? 'timeout' : 'offline' }; })
       .then(function (o) { if (timer) clearTimeout(timer); if (o && o.err) throw o; return o; }, function (e) { if (timer) clearTimeout(timer); throw e; });
   }
   /* ⏳ 等伺服器的時候（Apps Script 每次約 1～2 秒）：畫面下方顯示「伺服器判斷中…」，免得學生以為當掉一直按 */
@@ -42,9 +45,9 @@
   function call(a, data, tries) {
     var body = { a: a, t: C.TERM }; for (var k in data || {}) body[k] = data[k];
     wait(1);
-    return post(body).then(function (o) { wait(-1); return o; }, function (e) { wait(-1); throw e; }).catch(function (e) {
+    return post(body, a === 'fb' ? 60000 : 0).then(function (o) { wait(-1); return o; }, function (e) { wait(-1); throw e; }).catch(function (e) {
       if (e.err === 'busy' && (tries || 0) < 3) return new Promise(function (ok) { setTimeout(ok, 400 + Math.random() * 600); }).then(function () { return call(a, data, (tries || 0) + 1); });
-      if (e.err === 'offline') setState(false);
+      if (e.err === 'offline' || e.err === 'timeout') setState(false);
       throw e;
     });
   }
@@ -67,7 +70,9 @@
     busy: '伺服器很忙，等幾秒再按一次。',
     incomplete: '還有題目沒完成喔！',
     'too-many': '這題試太多次了，換下一題吧。',
-    'no-term': '伺服器還沒有這學期的題庫（請老師更新伺服器）。'
+    'no-term': '伺服器還沒有這學期的題庫（請老師更新伺服器）。',
+    timeout: '伺服器太久沒回應，等一下再按一次。',
+    'not-json': '伺服器回傳了錯誤頁（可能需要重新授權：請出題老師在 Apps Script 執行一次「建立回報試算表」）。'
   };
   function msg(e) { var c = e && e.err || 'server'; return MSG[c] || '伺服器回了一個錯誤（' + c + '），請跟老師說。'; }
   window.API = { url: url, call: call, ready: ready, msg: msg, online: null, retry: function () { state = null; } };   // retry：下次 ready() 重新問一次

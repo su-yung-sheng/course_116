@@ -31,6 +31,7 @@ async function playStage() {
     }
     if (await page.$('.qcard')) {
       const a = await cipherAnswer(page);
+      if (a == null && !(await page.$('.gopt, .qcard input'))) { await page.waitForTimeout(300); if (await page.$('.bucket:not(.gopt)')) continue; }   // 分類題的按鈕比卡片晚一點出現
       const sol = a != null ? { kind: 'input', answer: a } : await netSolve(page);
       await netAnswer(page, sol, false);
       await page.waitForSelector('#nx', { timeout: 5000 }).catch(async () => { throw new Error('🎲 ' + await page.textContent('.qcard') + ' → ' + JSON.stringify(sol)); });

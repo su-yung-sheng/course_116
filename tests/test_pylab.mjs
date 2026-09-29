@@ -1,4 +1,4 @@
-// 🐍 Python 教師試用版（pylab/）：和闖關網站分開、10 關全開、評分走伺服器、📮 回報寫進試算表、連不上時可以複製回報
+// 🐍 pylab/（和闖關網站分開）：teacher.html 教師試用版（10 關全開、📮 回報寫進試算表、連不上時可以複製）＋ index.html 學生版（填身分、2⭐ 開下一關、成績卡）
 import { launch, BASE, SHOTS, gas } from './harness.mjs';
 import fs from 'fs'; fs.mkdirSync(SHOTS, { recursive: true });
 import { SOL_11601 as SOL } from '../private/tests/answers.mjs';
@@ -10,8 +10,9 @@ const page = await context.newPage();
 const errors = [];
 page.on('pageerror', e => errors.push(e.message));
 page.on('dialog', d => d.accept());
-await page.goto(BASE + '/pylab/');
+await page.goto(BASE + '/pylab/teacher.html');
 await page.waitForSelector('#engine.ok', { timeout: 60000 });
+console.log('🧑‍🏫 教師試用版');
 
 /* 獨立：不用登入、不載入闖關網站的程式 */
 ok(!(await page.$('#login, .login')) && await page.evaluate(() => !window.STORE && !window.HUB && !window.UI), '不用登入、沒有載入闖關網站的 STORE／HUB／UI');
@@ -54,11 +55,43 @@ await browser.close();
 {
   const { browser: b2, context: c2 } = await launch({ offline: true });
   const p = await c2.newPage();
-  await p.goto(BASE + '/pylab/#P1'); await p.waitForSelector('#fb');
+  await p.goto(BASE + '/pylab/teacher.html#P1'); await p.waitForSelector('#fb');
   await p.click('#fb summary'); await p.fill('#fb-msg', '離線時的回報測試');
   await p.click('#fb-send'); await p.waitForSelector('#fb-copy');
   ok(true, '📴 連不上伺服器 → 出現「📋 複製回報內容」，可以用 email／LINE 傳');
   await b2.close();
+}
+/* 🎒 學生版 index.html */
+{
+  console.log('🎒 學生版');
+  const { browser: b3, context: c3 } = await launch({ utf8: true });
+  const p = await c3.newPage();
+  p.on('pageerror', e => errors.push(e.message)); p.on('dialog', d => d.accept());
+  await p.goto(BASE + '/pylab/'); await p.waitForSelector('#login');
+  ok(!(await p.$('.lv')), '先填班級座號姓名才看得到關卡');
+  await p.click('#login button'); ok((await p.textContent('#login-err')).includes('都要填'), '沒填完 → 提醒');
+  await p.fill('#in-cls', '801'); await p.fill('#in-seat', '07'); await p.fill('#in-name', '林小華'); await p.click('#login button');
+  await p.waitForSelector('#engine.ok', { timeout: 60000 });
+  ok((await p.textContent('.topbar')).includes('801 班 7 號 林小華'), '頁首顯示身分（座號去掉前面的 0）');
+  ok((await p.$$('.lv.lock')).length === 9 && !(await p.$('#fb')) && !(await p.textContent('#stage')).includes('評分測資'), '只開第 1 關、沒有回報區、不顯示測資組數');
+  await p.click('.lv[data-i="1"]', { force: true }); await p.waitForSelector('.toast');
+  ok((await p.$eval('.lv[data-i="0"]', b => b.classList.contains('on'))), '點鎖住的關卡 → 不會打開、跳出提醒：' + (await p.textContent('.toast')).slice(0, 24));
+  await p.fill('#code', SOL.P1); await p.dispatchEvent('#code', 'input');
+  await p.click('#btn-grade'); await p.waitForSelector('#result .res-star', { timeout: 60000 });
+  ok(!!(await p.$('#btn-next')) && (await p.textContent('#btn-next')).includes('下一關已開放') && !(await p.$('.lv[data-i="1"].lock')), 'P1 過關 → 第 2 關開放、出現「下一關」');
+  await p.click('#btn-next'); await p.waitForSelector('.lv[data-i="1"].on');
+  ok(await p.evaluate(() => localStorage.getItem('pylab-s801_7-best-P1')) === '3', '成績依學生分開存（pylab-s801_7-）');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-card')]);
+  await dl.saveAs(SHOTS + 'pylab-card.png');
+  ok(dl.suggestedFilename() === 'Python成績卡-801_7_林小華.png', '🧾 成績卡下載（檔名有班級座號姓名）', dl.suggestedFilename());
+  await p.screenshot({ path: SHOTS + 'pylab-student.png', fullPage: true });
+  await p.click('#who-x'); await p.waitForSelector('#login');
+  await p.fill('#in-cls', '801'); await p.fill('#in-seat', '8'); await p.fill('#in-name', '陳同學'); await p.click('#login button');
+  await p.waitForSelector('.lv');
+  ok((await p.$$('.lv.lock')).length === 9, '換人 → 另一位同學從第 1 關開始（彼此的成績分開）');
+  await p.setViewportSize({ width: 390, height: 800 });
+  ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '📱 學生版手機寬度沒有橫向捲動');
+  await b3.close();
 }
 console.log('errors', errors);
 if (bad || errors.length) process.exit(1);
