@@ -65,6 +65,8 @@ cd private/server && clasp push -f
 |---|---|
 | `SECRET` | 收據、🔑 pylab 進度碼簽章的金鑰。第一次有人過關時自動產生，**不要改**（改了以前的收據、進度碼就驗證不過） |
 | `FEEDBACK_SHEET_ID` | 📮 Python 教師試用版（`pylab/teacher.html`）的回報試算表。**不用自己填**：第一次有人回報時自動建立「course_116 Python 老師回報」並記在這裡。想先找到它：編輯器選函式 `建立回報試算表` → 執行 → 看執行記錄的網址 |
+| `PYLAB_SHEET_ID` | 🐍 pylab 學生進度試算表「course_116 pylab 學生進度」。**不用自己填**，第一次有學生拿到星星時自動建立 |
+| `PYLAB_TEACHER_KEY` | 📊 pylab 老師密碼（teacher.html 看學生進度表）。編輯器選函式 `pylab老師密碼` → 執行 → 執行記錄印出密碼和試算表網址；想換就直接改這個屬性 |
 | `LOG_SHEET_ID` | 填一份 Google 試算表的 ID（網址 `/d/` 和 `/edit` 中間那段），每次過關就記一列到「紀錄」工作表：時間、班級座號姓名、關卡、星、剩幾顆 ❤️、花幾秒。第一次要重新授權（部署 → 管理部署作業 → 新版本） |
 
 ## 四、在自己電腦預覽（不用部署）
@@ -94,7 +96,7 @@ node tools/dev-server.mjs        # → http://localhost:8116/
 | `40`～`44_labs_*.js` | 33 個實驗站：`make(hard) → { pub, sec }`、`check(sec, 學生的操作) → 結果` |
 | `50_python.js` | `py`（拿測資）／`pyg`（送輸出評分） |
 | `51_sheet.js` | `sh`／`shc`（清理）／`shf`（公式） |
-| `53_pylab.js` | 🐍 pylab 學生版的 🔑 進度碼：`py` 開局時檢查上一關 2⭐（伺服器端鎖關）、`pyg` 評完發新的進度碼、`pcv` 驗證進度碼（老師驗成績卡、學生換電腦還原） |
+| `53_pylab.js` | 🐍 pylab 學生版：🔑 進度碼與 ☁️ 雲端存檔。`py` 開局時檢查上一關 2⭐（伺服器端鎖關）、`pyg` 評完存雲端並發新進度碼、`pcv` 驗證進度碼、`pls` 學生登入同步、`plt` 老師看進度表 |
 | `52_misc.js` | 5016B 計星（`lks` 開局、`lk` 預測、`lkf` 結算、`lkp` 專題成果卡）、`dq`（單元一）、`hint`（漸進提示）、`fb`（📮 Python 教師試用版的回報，寫進試算表） |
 | `60_gen_net.js`、`61_gen_cipher.js` | 🎲 出題器（只在伺服器執行） |
 

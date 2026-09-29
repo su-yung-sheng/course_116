@@ -21,7 +21,10 @@ export function createGas(dir = path.join(ROOT, 'private', 'server')) {
   const single = /\.(gs|js)$/.test(dir);   // 也可以直接給「一鍵貼上」的單一檔案（驗證合併版能跑）
   if (!single && !fs.existsSync(path.join(dir, '90_answers.js'))) throw new Error('找不到 ' + dir + '/90_answers.js —— 先執行 node tools/build.mjs');
   const cache = new Map(), props = new Map(), books = new Map();
-  function tab(rows) { return { getLastRow: () => rows.length, appendRow: r => { rows.push(r.map(x => (x instanceof Date ? x.toISOString() : x))); } }; }
+  const cell = x => (x instanceof Date ? x.toISOString() : x);
+  function tab(rows) { return { getLastRow: () => rows.length, appendRow: r => { rows.push(r.map(cell)); },
+    getDataRange: () => ({ getValues: () => rows.map(r => r.slice()) }),
+    getRange: (r, c, n, m) => ({ setValues: vs => { vs.forEach((v, i) => { const row = rows[r - 1 + i] || (rows[r - 1 + i] = []); v.forEach((x, j) => { row[c - 1 + j] = cell(x); }); }); } }) }; }
   function book(id) { const b = books.get(id); return { getId: () => id, getName: () => b.name,
     getSheetByName: n => (b.tabs.has(n) ? tab(b.tabs.get(n)) : null), insertSheet: n => { b.tabs.set(n, []); return tab(b.tabs.get(n)); } }; }
   const ctx = {
@@ -39,7 +42,7 @@ export function createGas(dir = path.join(ROOT, 'private', 'server')) {
       base64EncodeWebSafe: bytes => Buffer.from(bytes.map(b => b & 255)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_')
     },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: s => ({ setMimeType() { return this; }, getContent: () => s }) },
-    SpreadsheetApp: {   // 簡單的記憶體試算表（回報功能用）：create／openById／getSheetByName／insertSheet／appendRow
+    SpreadsheetApp: {   // 簡單的記憶體試算表（回報、pylab 學生進度用）：create／openById／getSheetByName／insertSheet／appendRow／getDataRange／getRange().setValues
       create: name => { const id = 'sheet' + (books.size + 1); books.set(id, { name, tabs: new Map() }); return book(id); },
       openById: id => { if (!books.has(id)) throw new Error('找不到試算表 ' + id); return book(id); }
     }

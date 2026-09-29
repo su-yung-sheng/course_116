@@ -88,11 +88,14 @@ let PC = '';
   await p.reload(); await p.waitForSelector('.lv');
   ok((await p.$$('.lv.lock')).length === 8, '🛡️ F12 改 best-P5 = 3 → 關卡鎖不受影響');
   const forged = await p.evaluate(pc => { const B = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'; let v = 0; for (let i = 0; i < 10; i++) v = v * 4 + 3; let h = ''; for (let k = 0; k < 4; k++) { h = B[v % 32] + h; v = Math.floor(v / 32); } const f = h + pc.replace(/-/g, '').slice(4); localStorage.setItem('pylab-s801_7-pc', f.slice(0, 4) + '-' + f.slice(4, 8) + '-' + f.slice(8)); return f; }, PC);
-  await p.goto(BASE + '/pylab/#P6'); await p.reload(); await p.waitForSelector('.lv[data-i="5"].on');
-  await p.fill('#code', SOL.P6); await p.dispatchEvent('#code', 'input');
+  await p.reload(); await p.waitForFunction(pc => localStorage.getItem('pylab-s801_7-pc') === pc, PC, { timeout: 15000 }).catch(() => {});
+  ok(await p.evaluate(() => localStorage.getItem('pylab-s801_7-pc')) === PC && (await p.$$('.lv.lock')).length === 8, '🛡️ F12 改進度碼的星數（假裝 30⭐）→ 重新整理時伺服器發現對不上，自動換回雲端的進度', forged);
+  /* 就算不重新整理、直接送出評分，伺服器也擋 */
+  await p.evaluate(f => localStorage.setItem('pylab-s801_7-pc', f.slice(0, 4) + '-' + f.slice(4, 8) + '-' + f.slice(8)), forged);
+  await p.fill('#code', SOL.P2); await p.dispatchEvent('#code', 'input');
   await p.click('#btn-grade'); await p.waitForSelector('#result .note.bad', { timeout: 60000 });
-  ok((await p.textContent('#result')).includes('進度碼對不上'), '🛡️ F12 改進度碼的星數（假裝 30⭐）→ 畫面雖然開了，送出評分時伺服器擋下來', forged);
-  await p.evaluate(pc => localStorage.setItem('pylab-s801_7-pc', pc), PC); await p.goto(BASE + '/pylab/'); await p.waitForSelector('.lv');
+  ok((await p.textContent('#result')).includes('進度碼對不上'), '🛡️ 改過的進度碼送出評分 → 伺服器擋下來');
+  await p.evaluate(pc => localStorage.setItem('pylab-s801_7-pc', pc), PC); await p.goto(BASE + '/pylab/'); await p.reload(); await p.waitForSelector('.lv');
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-card')]);
   await dl.saveAs(SHOTS + 'pylab-card.png');
   ok(dl.suggestedFilename() === 'Python成績卡-801_7_林小華.png', '🧾 成績卡下載（檔名有班級座號姓名）', dl.suggestedFilename());
@@ -108,9 +111,20 @@ let PC = '';
   ok((await p.textContent('#vf-out')).includes('進度碼正確') && (await p.textContent('#vf-out')).includes('3 / 30'), '🔍 老師輸入班級座號＋進度碼 → ✅ 正確、3 / 30 ⭐');
   await p.fill('#vf-seat', '8'); await p.click('#vf button'); await p.waitForSelector('#vf-out .note.bad');
   ok((await p.textContent('#vf-out')).includes('對不上'), '🔍 座號不對（拿同學的碼）→ ❌ 對不上');
+  /* 📊 老師看進度表 */
+  await p.click('#prog summary'); await p.fill('#pf-key', 'WRONG'); await p.click('#pf button'); await p.waitForSelector('#pf-out .note');
+  ok((await p.textContent('#pf-out')).includes('還沒設定'), '📊 出題老師還沒產生老師密碼 → 提示');
+  gas.props.set('PYLAB_TEACHER_KEY', 'K7Q2ABCD');
+  await p.click('#pf button'); await p.waitForSelector('#pf-out .note.bad');
+  ok((await p.textContent('#pf-out')).includes('不對'), '📊 老師密碼錯 → 看不到');
+  await p.fill('#pf-key', 'K7Q2ABCD'); await p.fill('#pf-cls', '801'); await p.click('#pf button'); await p.waitForSelector('#pf-out table');
+  const prow = await p.$$eval('#pf-out tr', trs => trs.map(t => t.textContent));
+  ok(prow.some(t => t.includes('林小華') && t.includes('★★★')) && prow.length === 2, '📊 老師密碼對 → 801 班進度表（林小華 P1 ★★★）', prow[1]);
+  const [csv] = await Promise.all([p.waitForEvent('download'), p.click('#pf-csv')]);
+  ok(csv.suggestedFilename() === 'Python進度-801.csv', '📊 下載 CSV', csv.suggestedFilename());
   await b3.close();
 }
-/* 💻 換電腦：輸入進度碼還原 */
+/* 💻 還原卡清掉（新的瀏覽器）：只填班級座號就從雲端拿回進度；進度碼抄錯會提醒 */
 {
   const { browser: b4, context: c4 } = await launch();
   const p = await c4.newPage(); p.on('pageerror', e => errors.push(e.message));
@@ -119,8 +133,8 @@ let PC = '';
   await p.fill('#in-pc', 'ZZZZ-ZZZZ-ZZZZ'); await p.click('#login button.go');
   await p.waitForFunction(() => document.getElementById('login-err').textContent.includes('對不上'));
   ok(true, '💻 進度碼抄錯 → 提醒「對不上」，不會進去');
-  await p.fill('#in-pc', PC); await p.click('#login button.go'); await p.waitForSelector('.lv');
-  ok((await p.$$('.lv.lock')).length === 8 && (await p.textContent('#lv-got')).startsWith('3'), '💻 換電腦輸入進度碼 → 進度還原（3⭐、第 2 關開放）');
+  await p.fill('#in-pc', ''); await p.click('#login button.go'); await p.waitForSelector('.lv');
+  ok((await p.$$('.lv.lock')).length === 8 && (await p.textContent('#lv-got')).startsWith('3') && await p.evaluate(() => localStorage.getItem('pylab-s801_7-pc')) === PC, '💻 電腦重開（瀏覽器是空的）→ 不用進度碼，只填班級座號就接續雲端進度（3⭐、第 2 關開放）');
   await p.setViewportSize({ width: 390, height: 800 });
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '📱 學生版手機寬度沒有橫向捲動');
   await p.screenshot({ path: SHOTS + 'pylab-student-m.png', fullPage: true });

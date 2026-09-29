@@ -125,6 +125,29 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(!!c1('py', { lv: 'P10', mod: 'pylab-teacher', who: me }).run && !c1('pyg', { run: c1('py', { lv: 'P10', mod: 'pylab-teacher' }).run, outs: [] }).pc, '🔑 教師版不鎖關，但也不會發進度碼');
 }
 
+/* 8e. ☁️ pylab 雲端存檔（電腦教室有還原卡）：登入就拿回進度、老師看進度表 */
+{
+  const c1 = (a, d) => gas.call(a, { t: '11601', ...d }), S = gas.ctx, w = { cls: '802', seat: '3' };
+  const a0 = c1('pls', { who: { ...w, name: '王小明' } });
+  ok(a0.ok && a0.total === 0 && !a0.cloud, '☁️ 新同學登入：0⭐、雲端還沒有紀錄');
+  const a1 = c1('pls', { who: { ...w, name: '王小明' }, pc: S.plMake('11601', w, [3, 2, 0, 0, 0, 0, 0, 0, 0, 0]) });
+  const tab = gas.sheet(gas.props.get('PYLAB_SHEET_ID'), '學生進度'), row = tab && tab.find(r => String(r[1]) === '802' && String(r[2]) === '3');
+  ok(a1.total === 5 && a1.saved && row && row[3] === '王小明' && row[4] === 3 && row[5] === 2 && row[14] === 5, '☁️ 輸入舊的進度碼 → 合併存進試算表（班級、座號、姓名、各關星數、合計）');
+  gas.ctx.CacheService.getScriptCache().remove('pl:11601:802_3');   // 模擬快取過期：要從試算表讀
+  const a2 = c1('pls', { who: { cls: '802', seat: '03', name: '王小名' } });
+  ok(a2.cloud && a2.total === 5 && a2.pc === a1.pc, '☁️ 還原卡清掉之後（沒有進度碼）只填班級座號 → 從雲端拿回 5⭐ 和進度碼');
+  ok(!!c1('py', { lv: 'P3', mod: 'pylab', who: w, pc: '' }).run && c1('py', { lv: 'P4', mod: 'pylab', who: w, pc: '' }).err === 'locked', '☁️ 沒帶進度碼也照雲端紀錄鎖關：P3 可以做、P4 還鎖著');
+  ok(tab.find(r => String(r[1]) === '802' && String(r[2]) === '3')[3] === '王小名' && tab.filter(r => String(r[1]) === '802').length === 1, '☁️ 姓名打錯重填 → 同一列、姓名改成最新的（不會多一列）');
+  const r = c1('py', { lv: 'P1', mod: 'pylab', who: w, pc: '' }), g = c1('pyg', { run: r.run, outs: r.tests.map(() => ({ events: [['out', 'x']] })), feats: {} });
+  ok(g.pstars[0] === 3 && tab.find(x => String(x[1]) === '802')[4] === 3, '☁️ 重做拿比較少星 → 雲端紀錄不會變少');
+  ok(c1('plt', { key: 'x' }).err === 'no-key', '📊 還沒產生老師密碼 → no-key');
+  gas.props.set('PYLAB_TEACHER_KEY', 'K7Q2ABCD');
+  ok(c1('plt', { key: 'nope' }).err === 'bad-key', '📊 密碼錯 → 看不到');
+  const t = c1('plt', { key: 'K7Q2ABCD', cls: '802' });
+  ok(t.ok && t.rows.length === 1 && t.rows[0].name === '王小名' && t.rows[0].total === 5 && t.rows[0].stars[1] === 2, '📊 老師密碼對 → 看到 802 班的進度表');
+  ok(c1('plt', { key: 'K7Q2ABCD' }).rows.length >= 2, '📊 不填班級 → 全部班級');
+}
+
 /* 9. 📋 一鍵貼上版（全部檔案合成一個）也要能跑，而且和分開的檔案一樣 */
 {
   const one = createGas(fileURLToPath(new URL('../private/伺服器一鍵貼上/一鍵貼上_course116.gs', import.meta.url))), h = JSON.parse(one.ctx.doGet().getContent());
