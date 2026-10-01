@@ -71,6 +71,27 @@ python.html ──► pyrunner.js ──postMessage──► pyworker.js（Web W
 
 例：`'calls.print<=3'`（不准一行一行寫死）、`'branches>=4'`（if＋elif＋elif＋else）
 
+### steps（三段式挑戰的第 1、2 題，2026-10-01 起）
+
+```js
+steps: [
+  { title: '自己的招呼語', mode: 'demo',          // demo＝看懂再改（有黑框示範）、guided＝引導
+    prompt: '…', demo: 'print("哈囉，旅伴！")', starter: '# …\n',
+    requirements: ['使用 print()', '…'],         // 畫面上的「✅ 完成條件」
+    ref: 'print', rule: 'p1_greeting',            // rule：server/54_pystep.js 裡的檢查規則（不公開）
+    hints: ['…', '…', '…'] },                    // 三層線索（只在伺服器）
+  { … mode: 'guided' … }
+],
+extra: [{ title, prompt, requirements }]          // 延伸挑戰（不計星）
+```
+
+- 寫在 `private/11601/content/python.js` 最後面的「三段式挑戰」區塊（依關卡編號掛到 `PY_LEVELS`）。
+- 檢查（`pyc`）：學生按「✅ 檢查挑戰」→ 瀏覽器從頭執行一次（`input()` 一樣用重播法問學生）→ 程式碼＋執行過程送到伺服器 →
+  ① 和黑框示範一模一樣 → 不過；② 完成條件（`PS_RULES`：先拿掉註解再看程式；1～5、偶數這類題目看實際輸出的數字）；③ 有沒有正常執行、有沒有輸出；④ 情境內容（`PS_CONTENT`：依 `input()` 提示找到學生輸入的值）。
+  通過 → 星數＝第幾題（1 或 2），附簽章收據。
+- 規則與詞庫（地點、活動、明顯不是地點的詞）來自 course115-1（經原作者同意），改寫成在伺服器執行。
+- 測試：`tests/test_pystage.mjs`（20 題參考寫法＋9 種該擋的寫法＋畫面流程）、`tests/test_server.mjs`（8f）。
+
 ## 寫測資的三個原則
 
 1. **至少一組隱藏測資考邊界值** —— 不然寫死答案、`>` 和 `>=` 搞錯都會過

@@ -88,8 +88,15 @@ function python(term, levels) {
   const T = ANS.py[term] = ANS.py[term] || {};
   return levels.map(lv => {
     T[lv.id] = clone(lv);
-    const { hints, tests, ...pub } = lv;
-    return { ...clone(pub), hn: (hints || []).length, tests: tests.map(t => (t.hidden ? { name: t.name, hidden: true } : { name: t.name, inputs: t.inputs || [] })) };
+    const { hints, tests, steps, extra, ...pub } = lv;
+    const o = { ...clone(pub), hn: (hints || []).length, tests: tests.map(t => (t.hidden ? { name: t.name, hidden: true } : { name: t.name, inputs: t.inputs || [] })) };
+    // 三段式挑戰（⭐ 看懂再改、⭐⭐ 引導）：公開題目、黑框示範、完成條件；檢查規則（rule）和線索（hints）只在伺服器
+    if (steps) {
+      steps.forEach((s, i) => { if (!s.rule) throw new Error(lv.id + ' 第 ' + (i + 1) + ' 題沒有檢查規則（rule）'); });
+      o.steps = steps.map(s => ({ ...pickKeys(s, ['title', 'mode', 'prompt', 'demo', 'starter', 'requirements', 'ref']), hn: (s.hints || []).length }));
+    }
+    if (extra && extra.length) o.extra = clone(extra);
+    return o;
   });
 }
 
@@ -126,7 +133,7 @@ for (const term of ['11601', '11602']) {
     const W = load([path.join(dir, f)]), outG = {};
     for (const [k, v] of Object.entries(W)) {
       if (k === 'window') continue;
-      if (k === 'PY_LEVELS') { outG[k] = python(term, v); if (term === '11601') PYLAB = outG[k]; }
+      if (k === 'PY_LEVELS') { outG[k] = python(term, v); if (term === '11601') PYLAB = outG[k].map(({ steps, extra, ...x }) => x); }   // pylab 暫停修改：只用原本的 10 關（不含三段式挑戰）
       else if (k === 'SHEET_LEVELS') outG[k] = sheet(term, v);
       else if (/_LEVELS$/.test(k)) outG[k] = cards(term, v);
       else outG[k] = v;                     // 沒有答案的資料（例如 MEDIA_STEPS）原樣輸出

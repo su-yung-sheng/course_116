@@ -9,7 +9,7 @@ page.on('pageerror', e => errors.push(e.message));
 await page.goto(BASE + '/11601/hub.html');
 await login(page);
 // 先給 P1 2 星，讓 P2 開放
-await page.evaluate(() => STORE.saveLevel('python', 'P1', { stars: 2 }));
+await page.evaluate(() => { STORE.saveLevel('python', 'P1', { stars: 2 }); STORE.saveLevel('python', 'P2', { stars: 2 }); });   // P2 ⭐⭐ → 直接打開第 3 題（測資評分）
 await page.goto(BASE + '/11601/python.html#P2');
 await page.waitForSelector('#engine.ok', { timeout: 60000 });
 await page.waitForSelector('#btn-run:not([disabled])');

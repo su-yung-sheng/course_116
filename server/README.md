@@ -98,6 +98,7 @@ node tools/dev-server.mjs        # → http://localhost:8116/
 | `51_sheet.js` | `sh`／`shc`（清理）／`shf`（公式） |
 | `53_pylab.js` | 🐍 pylab 學生版：🔑 進度碼與 ☁️ 雲端存檔。`py` 開局時檢查上一關 2⭐（伺服器端鎖關）、`pyg` 評完存雲端並發新進度碼、`pcv` 驗證進度碼、`pls` 學生登入同步、`plt` 老師看進度表 |
 | `52_misc.js` | 5016B 計星（`lks` 開局、`lk` 預測、`lkf` 結算、`lkp` 專題成果卡）、`dq`（單元一）、`hint`（漸進提示）、`fb`（📮 Python 教師試用版的回報，寫進試算表） |
+| `54_pystep.js` | 🐍 Python 三段式挑戰（⭐ 看懂再改、⭐⭐ 引導）的檢查 `pyc`：完成條件＋情境內容（課程設計參考 teacheryimei/course115-1，經原作者同意） |
 | `60_gen_net.js`、`61_gen_cipher.js` | 🎲 出題器（只在伺服器執行） |
 
 網頁端的對應：`shared/api.js`（連線）、`shared/cardgame.js`（遊戲引擎）、`shared/*-labs.js`（實驗站畫面）、`shared/pyrunner.js`、`shared/sheet.js`、`shared/labkit.js`、`11601/digital/progress-hook.js`。

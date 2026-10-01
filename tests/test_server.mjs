@@ -148,6 +148,23 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(c1('plt', { key: 'K7Q2ABCD' }).rows.length >= 2, '📊 不填班級 → 全部班級');
 }
 
+/* 8f. 🐍 三段式挑戰 pyc：完成條件在伺服器檢查、情境內容、收據 */
+{
+  const c1 = d => gas.call('pyc', { t: '11601', who: { cls: '901', seat: '3', name: '測' }, ...d });
+  const ev = (outs, talk = []) => [...talk.flatMap(([p, v]) => [['prompt', p], ['in', v]]), ...outs.map(o => ['out', o + '\n'])];
+  const g = c1({ lv: 'P2', st: 0, code: "city = input('最想去的城市？')\nprint(city)", events: ev(['花蓮'], [['最想去的城市？', '花蓮']]) });
+  const secret = gas.ctx.PropertiesService.getScriptProperties().getProperty('SECRET');
+  const sig = crypto.createHmac('sha256', secret).update(['11601', '901', '3', '測', 'python', 'P2', 1, g.ts].join('|')).digest('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  ok(g.ok && g.stars === 1 && g.rc === sig, '🐍 pyc 第 1 題過關 → 1⭐＋簽章收據');
+  ok(c1({ lv: 'P2', st: 0, code: "city = input('最想去的城市？')\nprint(city)", events: ev(['香蕉'], [['最想去的城市？', '香蕉']]) }).kind === 'content', '🐍 pyc 情境內容不合理 → content');
+  ok(c1({ lv: 'P2', st: 0, code: "city = input('最想去的城市？')", events: ev([], [['最想去的城市？', '花蓮']]) }).kind === 'code', '🐍 pyc 少了完成條件 → code');
+  ok(c1({ lv: 'P2', st: 0, code: "city = input('最想去的城市？')\nprint(city)", events: [] }).kind === 'run', '🐍 pyc 沒有執行結果 → run');
+  ok(c1({ lv: 'P2', st: 2, code: 'x' }).err === 'no-level' && c1({ lv: 'P99', st: 0, code: 'x' }).err === 'no-level', '🐍 pyc 不存在的題目 → 拒絕');
+  const pub = fs.readFileSync(new URL('../11601/content/python.js', import.meta.url), 'utf8');
+  ok(pub.includes('"steps"') && !pub.includes('"rule"') && !pub.includes('先保留 print() 的外形'), '🐍 公開題目有三段式挑戰，但沒有檢查規則和線索');
+  ok(gas.call('hint', { t: '11601', kind: 'py', lv: 'P1', st: 0, i: 0 }).hint.includes('print()'), '🐍 第 1 題的線索從伺服器拿');
+}
+
 /* 9. 📋 一鍵貼上版（全部檔案合成一個）也要能跑，而且和分開的檔案一樣 */
 {
   const one = createGas(fileURLToPath(new URL('../private/伺服器一鍵貼上/一鍵貼上_course116.gs', import.meta.url))), h = JSON.parse(one.ctx.doGet().getContent());

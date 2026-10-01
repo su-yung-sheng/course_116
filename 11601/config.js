@@ -75,7 +75,7 @@ window.CONFIG = {
         { id: 'd3', mod: 'digital', levels: ['x3', 'u3'], maxStars: 6, color: '#0d9488', bg: '#f0fdfa', icon: '🎵', title: '1-3 音訊數位化', ds: '聲波、取樣頻率、量化位元', href: '3.html' },
         { id: 'd4', mod: 'digital', levels: ['x4', 'u4'], maxStars: 6, color: '#e11d48', bg: '#fff1f2', icon: '🖼️', title: '1-4 影像數位化', ds: '像素、解析度、色彩與壓縮', href: '4.html' }
       ] },
-    { id: 'python', no: '二', title: '進入 Python 的世界', sub: '畢旅籌備處・10 個任務', icon: '🐍', color: 'u2',
+    { id: 'python', no: '二', title: '進入 Python 的世界', sub: '畢旅籌備處・10 關 × 3 題', icon: '🐍', color: 'u2',
       href: 'python.html', maxStars: 30, levels: ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'], sequential: true,
       desc: '在瀏覽器裡直接寫 Python，送出後用測資自動評分。拿到 2 星才開下一關。', chapter: '第 2 章' },
     { id: 'platform', no: '三', title: '系統平臺大冒險', sub: '8 關 · 三星三階：基礎 → 操作 → 挑戰🧪', icon: '🖥️', color: 'u3',

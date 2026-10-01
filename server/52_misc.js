@@ -63,6 +63,7 @@ SV_ACTIONS.dq = function (req) {
 /* 漸進提示：按一次給一則（Python、試算表） */
 SV_ACTIONS.hint = function (req) {
   var src = req.kind === 'sheet' ? SV_ANS.sheet : SV_ANS.py, T = src[String(req.t)] || {}, L = T[String(req.lv)];
+  if (L && req.kind === 'py' && req.st != null && req.st !== '') L = L.steps && L.steps[+req.st];   // 🐍 三段式挑戰的線索（第 1、2 題）
   if (!L || !L.hints) svFail('no-hint');
   var i = +req.i; if (!(i >= 0 && i < L.hints.length)) svFail('no-hint');
   return { hint: L.hints[i], n: L.hints.length };

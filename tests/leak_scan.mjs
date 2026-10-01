@@ -10,7 +10,7 @@ const N = new Map(); const add = (n, why) => { n = String(n); if (n.length >= 6)
 for (const t of ['11601', '11602']) Object.values(load(`private/${t}/lab.js`).LAB_ANSWERS).flat().forEach(x => add(x.why.slice(0, 16), 'lab why'));
 Object.values(JSON.parse(fs.readFileSync('private/11601/digital/review.json'))).flat().forEach(x => x.hint && add(x.hint.slice(0, 14), 'review hint'));
 load('private/11602/content/sheet.js').SHEET_LEVELS.forEach(l => { l.targets.forEach(t => { add(t.ref, 'sheet ref'); t.tip && add(t.tip.slice(0, 14), 'sheet tip'); }); (l.hints || []).forEach(h => add(h.slice(0, 18), 'sheet hint')); if (l.clean) add(l.clean.note.slice(0, 16), 'sheet clean note'); });
-for (const t of ['11601']) load(`private/${t}/content/python.js`).PY_LEVELS.forEach(l => { (l.hints || []).forEach(h => add(h.slice(0, 18), 'py hint ' + l.id)); l.tests.forEach(t => t.hidden && t.why && add(t.why, 'hidden why ' + l.id)); });
+for (const t of ['11601']) load(`private/${t}/content/python.js`).PY_LEVELS.forEach(l => { (l.hints || []).forEach(h => add(h.slice(0, 18), 'py hint ' + l.id)); l.tests.forEach(t => t.hidden && t.why && add(t.why, 'hidden why ' + l.id)); (l.steps || []).forEach((s, i) => (s.hints || []).forEach(h => add(h.slice(0, 18), 'py step hint ' + l.id + '-' + (i + 1)))); });
 // 互動遊戲（所有 *_LEVELS）：答對後的解說、組合題的過關說明
 for (const [t, f] of [['11601', 'platform'], ['11602', 'media'], ['11602', 'network'], ['11602', 'data']]) {
   const W = load(`private/${t}/content/${f}.js`);
@@ -33,7 +33,7 @@ console.log('檢查', N.size, '段明碼，公開檔案中發現', hits, '處');
 
 /* ── 結構檢查 ── */
 const fail = (m, ...x) => { hits++; console.log('✘', m, ...x); };
-const BAD_KEYS = { _LEVELS: ['why', 'a', 'good', 'rules', 'outcomes', 'e', 's'], PY_LEVELS: ['hints', 'checks', 'hx'], SHEET_LEVELS: ['hints', 'ref', 'alt', 'tol', 'tip', 'issues', 'fixed', 'note', 'after', 'ok', 'hx'] };
+const BAD_KEYS = { _LEVELS: ['why', 'a', 'good', 'rules', 'outcomes', 'e', 's'], PY_LEVELS: ['hints', 'checks', 'hx', 'rule'], SHEET_LEVELS: ['hints', 'ref', 'alt', 'tol', 'tip', 'issues', 'fixed', 'note', 'after', 'ok', 'hx'] };
 for (const [p, src] of pub) if (/^(11601|11602)[/\\]content[/\\]/.test(p) || /^pylab[/\\]levels\.js$/.test(p)) {
   const W = load(p);
   for (const [k, v] of Object.entries(W)) if (/_LEVELS$/.test(k)) {

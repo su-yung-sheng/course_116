@@ -47,3 +47,15 @@
   .ecode mark.del{background:#fecaca;color:#991b1b;border-radius:.2rem;padding:0 .1rem;font-weight:900}
   .ecode mark.add{background:#86efac;color:#14532d;border-radius:.2rem;padding:0 .1rem;font-weight:900}
   .ecode .caret{color:#dc2626;font-weight:900}
+/* 三段式挑戰：⭐ 看懂再改 → ⭐⭐ 引導 → ⭐⭐⭐ 自己完成 */
+.stg-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.stg{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;text-align:left;border:2px solid var(--line);background:#fff;border-radius:.8rem;padding:.5rem .7rem;cursor:pointer;font:inherit;color:var(--ink)}
+.stg .stg-s{font-size:.78rem;font-weight:800;color:var(--ink-soft)}.stg .stg-t{font-weight:800;font-size:.95rem}
+.stg.on{border-color:var(--brand);background:#eff6ff}.stg.done .stg-s{color:var(--ok)}.stg.lock{opacity:.6;cursor:not-allowed}
+.stg:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.demo-box{border:2px dashed #475569}
+.req-list{margin:0;padding-left:1.2rem}.req-list li{margin:.15rem 0}
+@media (max-width:640px){.stg-tabs{grid-template-columns:1fr}}
+/* 🌐 變數英文小幫手 */
+.varhelp{position:fixed;right:1rem;bottom:1rem;width:min(26rem,calc(100% - 2rem));max-height:80vh;overflow:auto;z-index:60;box-shadow:0 12px 32px rgba(15,23,42,.25)}
+.varhelp .input{width:100%;margin-top:.2rem}.vh-rules{background:var(--soft,#f8fafc);border-radius:.6rem;padding:.5rem .6rem}

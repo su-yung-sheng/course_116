@@ -41,8 +41,14 @@ ok((await page.textContent('#fb')).includes('不判斷'), '試算表：只看公
 await page.goto(BASE + '/11601/python.html'); await page.waitForSelector('#engine.ok', { timeout: 60000 });
 await page.fill('#code', "name = input('名字：')\nprint('哈囉', name)");
 await page.dispatchEvent('#code', 'input');
+await page.click('#btn-check'); await page.waitForSelector('#stdin'); await page.fill('#stdin', '小明'); await page.press('#stdin', 'Enter');
+await page.waitForSelector('#result .note.bad', { timeout: 30000 });
+ok((await page.textContent('#result')).includes('練習模式') && (await page.textContent('#result')).includes('沒有記星'), 'Python 第 1 題：檢查挑戰 → 連不上伺服器，說明沒有記星');
+await page.evaluate(() => { STORE.saveLevel('python', 'P1', { stars: 2 }); });
+await page.goto(BASE + '/11601/python.html#P1'); await page.reload(); await page.waitForSelector('#btn-grade:not([disabled])', { timeout: 60000 });
+await page.fill('#code', "print('Hello')"); await page.dispatchEvent('#code', 'input');
 await page.click('#btn-grade'); await page.waitForSelector('#result .kicker');
-ok((await page.textContent('#result')).includes('練習模式'), 'Python：送出評分 → 只跑公開範例、不記星');
+ok((await page.textContent('#result')).includes('練習模式'), 'Python 第 3 題：送出評分 → 只跑公開範例、不記星');
 
 console.log('errors', errors);
 await browser.close();

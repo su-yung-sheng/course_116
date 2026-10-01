@@ -36,6 +36,36 @@ window.PY_LEVELS = [
     "name": "顯示兩行文字",
     "inputs": []
    }
+  ],
+  "steps": [
+   {
+    "title": "自己的招呼語",
+    "mode": "demo",
+    "prompt": "先看黑框學會 print() 的寫法，再自己寫一句不同的招呼語。",
+    "demo": "print(\"哈囉，旅伴！\")",
+    "starter": "# 看懂黑框後，在下面自己寫\n",
+    "requirements": [
+     "使用 print()",
+     "招呼語要有內容",
+     "不能和黑框示範完全相同"
+    ],
+    "ref": "print",
+    "hn": 3
+   },
+   {
+    "title": "旅行出發畫面",
+    "mode": "guided",
+    "prompt": "讓 Python 顯示兩行：第一行是「你想去的地方」，第二行是「你想做的事情」。兩行內容要不同。",
+    "demo": "",
+    "starter": "# 第一行：想去的地方\n# 第二行：想做的事情\n",
+    "requirements": [
+     "使用 2 次 print()",
+     "顯示 2 行有內容的文字",
+     "兩行文字不能完全相同"
+    ],
+    "ref": "print",
+    "hn": 3
+   }
   ]
  },
  {
@@ -98,6 +128,47 @@ window.PY_LEVELS = [
    {
     "name": "隱藏測資",
     "hidden": true
+   }
+  ],
+  "steps": [
+   {
+    "title": "問一個問題並記住",
+    "mode": "demo",
+    "prompt": "黑框示範詢問食物。你的任務改成：詢問「最想去的城市」，把回答存進變數，再顯示那個變數。",
+    "demo": "food = input(\"你喜歡什麼食物？\")\nprint(food)",
+    "starter": "# 改成詢問最想去的城市\n",
+    "requirements": [
+     "使用 input() 詢問 1 次",
+     "把回答存進變數",
+     "使用 print() 顯示該變數"
+    ],
+    "ref": "input",
+    "hn": 3
+   },
+   {
+    "title": "迷你旅行報名表",
+    "mode": "guided",
+    "prompt": "詢問「目的地、天數、最期待的活動」三項資料，分別記住，最後至少用一個 print() 把三項資料一起顯示。",
+    "demo": "",
+    "starter": "# 自己設計三個變數完成報名表\n",
+    "requirements": [
+     "使用 input() 詢問 3 次",
+     "使用 3 個不同變數保存回答",
+     "輸出時使用到這 3 個變數"
+    ],
+    "ref": "variable",
+    "hn": 3
+   }
+  ],
+  "extra": [
+   {
+    "title": "兩份資料：姓名與班級",
+    "prompt": "詢問「姓名」和「班級」兩項資料，分別存進兩個不同變數，最後把兩項資料都顯示出來。",
+    "requirements": [
+     "使用 input() 詢問 2 次",
+     "使用 2 個不同變數保存回答",
+     "最後顯示兩項資料"
+    ]
    }
   ]
  },
@@ -174,6 +245,48 @@ window.PY_LEVELS = [
     "name": "隱藏測資",
     "hidden": true
    }
+  ],
+  "steps": [
+   {
+    "title": "票價總額",
+    "mode": "demo",
+    "prompt": "黑框示範兩個整數相加。你的任務是詢問「單張票價」和「張數」，用乘法算出總額並顯示。",
+    "demo": "a = int(input(\"第一個整數：\"))\nb = int(input(\"第二個整數：\"))\nprint(a + b)",
+    "starter": "# 單張票價 × 張數\n",
+    "requirements": [
+     "兩次輸入都用 int() 轉成整數",
+     "使用乘法 *",
+     "顯示計算結果"
+    ],
+    "ref": "int",
+    "hn": 3
+   },
+   {
+    "title": "旅行預算",
+    "mode": "guided",
+    "prompt": "詢問「總預算、交通費、餐費」，算出扣掉交通費和餐費後還剩多少錢。",
+    "demo": "",
+    "starter": "# 剩餘預算 = 總預算 - 交通費 - 餐費\n",
+    "requirements": [
+     "使用 3 次 int(input())",
+     "使用減法 - 計算",
+     "顯示剩餘預算"
+    ],
+    "ref": "operator",
+    "hn": 3
+   }
+  ],
+  "extra": [
+   {
+    "title": "平均分配：每人多少、剩多少",
+    "prompt": "詢問「點心總數」和「人數」，算出每人可以拿幾個，以及最後剩幾個。",
+    "requirements": [
+     "使用 2 次 int(input())",
+     "使用 // 算每人幾個",
+     "使用 % 算剩幾個",
+     "把兩個結果都顯示"
+    ]
+   }
   ]
  },
  {
@@ -236,6 +349,38 @@ window.PY_LEVELS = [
    {
     "name": "隱藏測資",
     "hidden": true
+   }
+  ],
+  "steps": [
+   {
+    "title": "正方形面積",
+    "mode": "demo",
+    "prompt": "黑框示範小數乘法。你的任務是詢問正方形邊長（可有小數），用 ** 2 算面積，再用 round(..., 2) 顯示到小數第 2 位。",
+    "demo": "length = float(input(\"長度：\"))\nprint(round(length * 2, 2))",
+    "starter": "# 面積 = 邊長 ** 2\n",
+    "requirements": [
+     "使用 float(input())",
+     "使用 ** 2",
+     "使用 round(..., 2)",
+     "顯示結果"
+    ],
+    "ref": "round",
+    "hn": 3
+   },
+   {
+    "title": "平均速度",
+    "mode": "guided",
+    "prompt": "詢問「距離（公里）」和「時間（小時）」，計算平均速度＝距離 ÷ 時間，最後四捨五入到小數第 1 位。",
+    "demo": "",
+    "starter": "# 平均速度 = 距離 / 時間\n",
+    "requirements": [
+     "兩次輸入都使用 float()",
+     "使用除法 /",
+     "使用 round(..., 1)",
+     "顯示平均速度"
+    ],
+    "ref": "round",
+    "hn": 3
    }
   ]
  },
@@ -300,6 +445,50 @@ window.PY_LEVELS = [
    {
     "name": "隱藏測資",
     "hidden": true
+   }
+  ],
+  "steps": [
+   {
+    "title": "是否達標",
+    "mode": "demo",
+    "prompt": "黑框示範溫度判斷。你的任務是詢問一個分數：60 分以上顯示「通過」，否則顯示「再挑戰」。",
+    "demo": "temp = 30\nif temp >= 28:\n    print(\"很熱\")\nelse:\n    print(\"還好\")",
+    "starter": "# 60 分以上通過，否則再挑戰\n",
+    "requirements": [
+     "使用 int(input()) 取得分數",
+     "使用 if 和 else",
+     "條件中比較 60",
+     "兩個分支都要有輸出"
+    ],
+    "ref": "if",
+    "hn": 3
+   },
+   {
+    "title": "要不要帶傘",
+    "mode": "guided",
+    "prompt": "詢問降雨機率（0～100）。如果大於等於 50，顯示「帶傘」；否則顯示「不用帶傘」。",
+    "demo": "",
+    "starter": "# 以 50 為分界\n",
+    "requirements": [
+     "使用 int(input())",
+     "使用 if / else",
+     "使用 >= 50 的比較",
+     "兩個分支都輸出"
+    ],
+    "ref": "if",
+    "hn": 3
+   }
+  ],
+  "extra": [
+   {
+    "title": "自訂門檻",
+    "prompt": "自己選一個「數字門檻」情境，例如剩餘電量、作業完成數等。程式要詢問一個整數，並用 if / else 顯示兩種不同結果。",
+    "requirements": [
+     "使用 int(input())",
+     "使用 if / else",
+     "至少使用一個比較運算",
+     "兩個分支的輸出文字要不同"
+    ]
    }
   ]
  },
@@ -383,6 +572,38 @@ window.PY_LEVELS = [
     "name": "隱藏測資",
     "hidden": true
    }
+  ],
+  "steps": [
+   {
+    "title": "三種結果",
+    "mode": "demo",
+    "prompt": "黑框示範三段分數分類。你的任務是詢問年齡：未滿 6 顯示「幼童」、未滿 18 顯示「學生」、其餘顯示「成人」。",
+    "demo": "score=75\nif score>=90:\n    print(\"A\")\nelif score>=60:\n    print(\"B\")\nelse:\n    print(\"C\")",
+    "starter": "# 三種年齡分類\n",
+    "requirements": [
+     "使用 int(input())",
+     "使用 if、至少 1 個 elif、else",
+     "使用 6 和 18 作為分界",
+     "三個分支都要有輸出"
+    ],
+    "ref": "elif",
+    "hn": 3
+   },
+   {
+    "title": "四級天氣提醒",
+    "mode": "guided",
+    "prompt": "詢問氣溫：低於 15 顯示「偏冷」、低於 25 顯示「舒適」、低於 32 顯示「偏熱」、其餘顯示「炎熱」。",
+    "demo": "",
+    "starter": "# 需要四種結果\n",
+    "requirements": [
+     "使用 int(input())",
+     "使用 if、至少 2 個 elif、else",
+     "條件中使用 15、25、32",
+     "四個分支都有輸出"
+    ],
+    "ref": "elif",
+    "hn": 3
+   }
   ]
  },
  {
@@ -461,6 +682,38 @@ window.PY_LEVELS = [
     "name": "隱藏測資",
     "hidden": true
    }
+  ],
+  "steps": [
+   {
+    "title": "兩個都要：and",
+    "mode": "demo",
+    "prompt": "黑框示範 and。你的任務是詢問「作業是否完成（1/0）」和「用品是否帶齊（1/0）」，兩者都等於 1 才顯示「可以出發」，否則顯示「先完成準備」。",
+    "demo": "sunny=True\nfree=True\nif sunny and free:\n    print(\"去公園\")\nelse:\n    print(\"留在家\")",
+    "starter": "# 兩個條件都成立才可以出發\n",
+    "requirements": [
+     "取得 2 個整數輸入",
+     "使用 and",
+     "使用 if / else",
+     "兩個條件都要參與判斷"
+    ],
+    "ref": "logic",
+    "hn": 3
+   },
+   {
+    "title": "其中一個即可：or",
+    "mode": "guided",
+    "prompt": "詢問「有學生證（1/0）」和「有活動證（1/0）」。只要其中一個等於 1 就顯示「可以入場」，兩個都沒有才顯示「無法入場」。",
+    "demo": "",
+    "starter": "# 其中一個成立即可\n",
+    "requirements": [
+     "取得 2 個整數輸入",
+     "使用 or",
+     "使用 if / else",
+     "兩個條件都要參與判斷"
+    ],
+    "ref": "logic",
+    "hn": 3
+   }
   ]
  },
  {
@@ -529,6 +782,48 @@ window.PY_LEVELS = [
     "name": "隱藏測資",
     "hidden": true
    }
+  ],
+  "steps": [
+   {
+    "title": "range：顯示 1～5",
+    "mode": "demo",
+    "prompt": "黑框示範 range(3)。你的任務用 for + range() 顯示 1、2、3、4、5。",
+    "demo": "for i in range(3):\n    print(i)",
+    "starter": "# 顯示 1 到 5\n",
+    "requirements": [
+     "使用 for",
+     "使用 range()",
+     "輸出 1～5 的數字"
+    ],
+    "ref": "for",
+    "hn": 3
+   },
+   {
+    "title": "偶數 2～10",
+    "mode": "guided",
+    "prompt": "用 for + range() 顯示 2、4、6、8、10。不要在程式中寫 5 個 print()。",
+    "demo": "",
+    "starter": "# 用 range() 的步進完成\n",
+    "requirements": [
+     "使用 for + range()",
+     "range() 的步進為 2",
+     "不能使用 5 個獨立 print()"
+    ],
+    "ref": "for",
+    "hn": 3
+   }
+  ],
+  "extra": [
+   {
+    "title": "發車倒數：5～1",
+    "prompt": "用 for + range() 依序顯示 5、4、3、2、1，最後再顯示一次「出發！」。",
+    "requirements": [
+     "使用 for + range()",
+     "range() 使用負的步進",
+     "倒數 5 到 1",
+     "迴圈結束後顯示「出發！」"
+    ]
+   }
   ]
  },
  {
@@ -591,6 +886,50 @@ window.PY_LEVELS = [
    {
     "name": "隱藏測資",
     "hidden": true
+   }
+  ],
+  "steps": [
+   {
+    "title": "while：數到 5",
+    "mode": "demo",
+    "prompt": "黑框示範數到 3。你的任務改成依序顯示 1、2、3、4、5，而且要用 while。",
+    "demo": "count=1\nwhile count<=3:\n    print(count)\n    count=count+1",
+    "starter": "# 改成數到 5\n",
+    "requirements": [
+     "使用 while",
+     "計數從 1 開始",
+     "條件讓迴圈做到 5",
+     "每次迴圈更新計數變數"
+    ],
+    "ref": "while",
+    "hn": 3
+   },
+   {
+    "title": "密碼鎖：答對才停止",
+    "mode": "guided",
+    "prompt": "先設定一個你自己決定的四位數密碼。使用 while 重複詢問密碼；輸入不正確時繼續問，正確後才顯示「解鎖！」。",
+    "demo": "",
+    "starter": "# 設定答案，再用 while 重複詢問\n",
+    "requirements": [
+     "先設定一個四位數整數答案",
+     "使用 while",
+     "迴圈中使用 int(input())",
+     "正確後在迴圈外顯示「解鎖！」"
+    ],
+    "ref": "while",
+    "hn": 3
+   }
+  ],
+  "extra": [
+   {
+    "title": "密碼高低提示",
+    "prompt": "延續密碼鎖：密碼猜錯時，用 if / elif 顯示「太大」或「太小」；猜中後離開 while 並顯示「解鎖！」。",
+    "requirements": [
+     "使用 while",
+     "迴圈中使用 if 與 elif",
+     "至少比較 > 和 <",
+     "答對後離開迴圈並顯示解鎖訊息"
+    ]
    }
   ]
  },
@@ -661,6 +1000,51 @@ window.PY_LEVELS = [
    {
     "name": "隱藏測資",
     "hidden": true
+   }
+  ],
+  "steps": [
+   {
+    "title": "隨機數：1～10",
+    "mode": "demo",
+    "prompt": "黑框示範骰子 1～6。你的任務改成產生 1～10 的隨機整數並顯示。",
+    "demo": "import random\ndice = random.randint(1, 6)\nprint(dice)",
+    "starter": "# 產生 1 到 10 的隨機整數\n",
+    "requirements": [
+     "import random",
+     "使用 random.randint()",
+     "範圍是 1 到 10",
+     "顯示產生的數字"
+    ],
+    "ref": "random",
+    "hn": 3
+   },
+   {
+    "title": "猜數字：太大／太小",
+    "mode": "guided",
+    "prompt": "讓電腦隨機選 1～20 的答案。玩家一直猜到正確為止；太大顯示「太大」，太小顯示「太小」。",
+    "demo": "",
+    "starter": "# random + while + if / elif\n",
+    "requirements": [
+     "隨機答案範圍 1～20",
+     "使用 while 重複輸入",
+     "使用 if / elif 提示太大或太小",
+     "猜中後能結束迴圈"
+    ],
+    "ref": "random",
+    "hn": 3
+   }
+  ],
+  "extra": [
+   {
+    "title": "完整猜數字遊戲",
+    "prompt": "完成 1～100 猜數字遊戲。除了太大／太小提示，還要用一個變數記錄猜了幾次，答對時顯示總次數。",
+    "requirements": [
+     "隨機答案範圍 1～100",
+     "使用 while",
+     "使用 if / elif 做大小提示",
+     "使用一個計次變數，每猜一次增加 1",
+     "答對後顯示猜測次數"
+    ]
    }
   ]
  }
