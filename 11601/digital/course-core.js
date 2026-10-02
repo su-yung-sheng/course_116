@@ -95,10 +95,49 @@
     });
   }
 
+  /* 🔍 觀察任務：先看圖判斷，再展開解說（形成性提問，不計星；全部答對或按「直接看解說」就展開）
+     <div data-obs="解說區塊的 id"> 裡每一題是 [data-obs-q]，正解按鈕加 data-ok，回饋寫在 data-right／data-wrong */
+  function initObservations() {
+    document.querySelectorAll('[data-obs]').forEach(box => {
+      if (box.dataset.obsReady) return; box.dataset.obsReady = '1';
+      const qs = [...box.querySelectorAll('[data-obs-q]')], score = box.querySelector('[data-obs-score]');
+      const explain = document.getElementById(box.dataset.obs), skip = box.querySelector('[data-obs-skip]');
+      const reveal = all => {
+        if (!explain || !explain.hidden) return;
+        explain.hidden = false; explain.classList.add('obs-open');
+        if (skip) skip.hidden = true;
+        const done = box.querySelector('[data-obs-done]'); if (done && all) done.hidden = false;
+      };
+      const update = () => {
+        const n = qs.filter(q => q.dataset.done).length;
+        if (score) score.textContent = `${n} / ${qs.length}`;
+        if (n === qs.length) reveal(true);
+      };
+      qs.forEach(q => {
+        const fb = q.querySelector('[data-obs-fb]');
+        q.querySelectorAll('.pick').forEach(btn => btn.addEventListener('click', () => {
+          if (q.dataset.done) return;
+          if (btn.hasAttribute('data-ok')) {
+            q.dataset.done = '1'; btn.classList.add('right');
+            q.querySelectorAll('.pick').forEach(b => { b.disabled = b !== btn; b.classList.remove('wrong'); });
+            fb.className = 'note ok small mt1'; fb.textContent = '✅ ' + q.dataset.right;
+            update();
+          } else {
+            btn.classList.remove('wrong'); void btn.offsetWidth; btn.classList.add('wrong');
+            fb.className = 'note bad small mt1'; fb.textContent = '🤔 ' + q.dataset.wrong;
+          }
+        }));
+      });
+      if (skip) skip.addEventListener('click', () => { reveal(false); explain.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
+      update();
+    });
+  }
+
   function initializeCourseCore() {
     const config = getCourseData();
     const unitId = document.body.dataset.unit;
     const unit = config.units?.[unitId];
+    initObservations();
     if (!unit) {
       mountCourseMap(config);
       mountLearningPath(config);
@@ -111,5 +150,5 @@
 
   if (document.body) initializeCourseCore();
   else document.addEventListener('DOMContentLoaded', initializeCourseCore);
-  window.CourseCore = { initializeCourseCore, mountNavigation, mountGoals, mountCourseMap, mountLearningPath, mountEndOfUnit };
+  window.CourseCore = { initializeCourseCore, initObservations, mountNavigation, mountGoals, mountCourseMap, mountLearningPath, mountEndOfUnit };
 })();

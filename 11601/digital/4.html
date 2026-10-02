@@ -115,15 +115,40 @@
                     <div class="bg-white border border-slate-200 shadow-sm p-6 md:p-8 rounded-3xl">
                         <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="text-rose-500">🔍</span> 視覺解構：什麼是解析度？</h3>
                         <p class="text-sm text-slate-600 mb-6 leading-relaxed">
-                            <strong class="text-slate-800">視覺觀察：</strong>請觀察下方三種不同解析度的「小男孩跳躍圖」。由左至右，描述它們在視覺上的第一印象差異（從模糊到精細）。<br>
-                            你有沒有發現最左邊的圖有一種<strong class="text-rose-600">「一格一格的鋸齒感」</strong>？<br><br>
-                            <strong class="text-slate-800">定義像素與取樣：</strong>這種鋸齒感就是<strong class="text-rose-600">「像素化」</strong>現象。這告訴我們，數位影像並不是一幅連續的畫，而是被<strong class="text-rose-600">「切割成數個小方格」</strong>拼湊而成的。這個將連續畫面切割成方格的過程，我們稱為<strong class="text-rose-600">「取樣」</strong>，而每一個方格，就是構成數位影像的基本單位——<strong class="text-rose-600">像素 (Pixel)</strong>。<br>
-                            <span class="text-rose-600 font-bold mt-2 inline-block">💡 連結原理：影像越細膩，代表構成畫面的「格子（像素）」數量越多！</span>
+                            <strong class="text-slate-800">視覺觀察：</strong>下面是同一張「小男孩跳躍圖」的三種解析度。先仔細看，完成下方的 <strong class="text-rose-600">🔍 觀察任務</strong>，再看解說。
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-low" class="w-full aspect-square bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">低解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">明顯鋸齒，像素方塊極大</p></div></div>
                             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-mid" class="w-full aspect-square bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">中解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">輪廓漸清晰，邊緣仍可見方塊</p></div></div>
                         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><img id="res-img-high" src="images/unit4-1.webp" alt="高解析度的小男孩跳躍圖（原圖）" class="w-full h-auto max-h-80 bg-white rounded-xl shadow-inner border border-slate-200 object-contain" crossorigin="anonymous"><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-500 text-white rounded-full text-xs font-bold uppercase tracking-widest">高解析度 (原圖)</span><p class="text-[11px] text-slate-500 mt-2 font-medium">細膩平滑，幾乎看不出像素點</p></div></div>
+                        </div>
+                        <div class="obs" data-obs="res-explain" aria-labelledby="obs-res-title">
+                            <div class="obs-head"><p class="obs-kicker" id="obs-res-title">🔍 觀察任務：先判斷，再看解說</p><span class="chip" data-obs-score aria-live="polite">0 / 3</span></div>
+                            <div class="obs-list">
+                                <div class="obs-q" data-obs-q data-right="低解析度只有 12×12＝144 格，每一格很大，斜線和圓弧只能用方塊硬拼，所以鋸齒最明顯。" data-wrong="再看一次手臂、腳的邊緣：哪一張看得出一格一格的方塊？">
+                                    <p class="obs-qt">1. 哪一張的邊緣「一格一格的鋸齒」最明顯？</p>
+                                    <div class="obs-opts"><button type="button" class="pick" data-ok>低解析度</button><button type="button" class="pick">中解析度</button><button type="button" class="pick">高解析度</button></div>
+                                    <p class="note small mt1" data-obs-fb aria-live="polite"></p>
+                                </div>
+                                <div class="obs-q" data-obs-q data-right="放大只是把每一格畫得更大，格子數量沒有變。拍攝（取樣）時沒記錄到的細節，事後補不回來。" data-wrong="想一想：放大時，電腦知道原本格子「裡面」長什麼樣子嗎？">
+                                    <p class="obs-qt">2. 把低解析度那張放大到跟投影幕一樣大，能看清楚男孩的表情嗎？</p>
+                                    <div class="obs-opts"><button type="button" class="pick">能，放大就會變清楚</button><button type="button" class="pick" data-ok>不能，只會看到更大的方塊</button></div>
+                                    <p class="note small mt1" data-obs-fb aria-live="polite"></p>
+                                </div>
+                                <div class="obs-q" data-obs-q data-right="三張是同一張圖，差別在切成多少格：12×12、32×32 和原圖。格子（像素）越多，畫面越細緻。" data-wrong="三張畫的是同一個男孩、顏色也差不多。再比比看：每張圖是用多大的格子拼成的？">
+                                    <p class="obs-qt">3. 三張圖最主要的差別是什麼？</p>
+                                    <div class="obs-opts"><button type="button" class="pick">顏色的種類</button><button type="button" class="pick" data-ok>格子（像素）的數量</button><button type="button" class="pick">畫的內容</button></div>
+                                    <p class="note small mt1" data-obs-fb aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <div class="obs-foot"><p class="small bold" data-obs-done hidden>🎉 觀察任務完成！解說已經在下面展開。</p><button type="button" class="btn sm" data-obs-skip>👀 直接看解說</button></div>
+                        </div>
+                        <div id="res-explain" class="obs-explain note" hidden>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                <strong class="text-slate-800">📖 解說：</strong>最左邊的圖有一種<strong class="text-rose-600">「一格一格的鋸齒感」</strong>。<br><br>
+                                <strong class="text-slate-800">定義像素與取樣：</strong>這種鋸齒感就是<strong class="text-rose-600">「像素化」</strong>現象。這告訴我們，數位影像並不是一幅連續的畫，而是被<strong class="text-rose-600">「切割成數個小方格」</strong>拼湊而成的。這個將連續畫面切割成方格的過程，我們稱為<strong class="text-rose-600">「取樣」</strong>，而每一個方格，就是構成數位影像的基本單位——<strong class="text-rose-600">像素 (Pixel)</strong>。<br>
+                                <span class="text-rose-600 font-bold mt-2 inline-block">💡 連結原理：影像越細膩，代表構成畫面的「格子（像素）」數量越多！</span>
+                            </p>
                         </div>
                     </div>
                     

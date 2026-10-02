@@ -43,6 +43,15 @@ await page.goto(BASE + '/11601/digital/3.html'); await page.waitForSelector('#la
 await page.evaluate(() => { for (const id of ['range-sampling', 'range-quantize']) for (const v of ['min', 'max']) { const el = document.getElementById(id); el.value = el[v]; el.dispatchEvent(new Event('input')); } });
 lok(await labStars(3) === 1, '1-3 取樣、量化都拉到最少和最多 → 1⭐');
 await page.goto(BASE + '/11601/digital/4.html'); await page.waitForSelector('#lab-tasks .labtask');
+/* 🔍 1-4 認識解析度：觀察任務先判斷、再展開解說 */
+{
+  const hid = () => page.$eval('#res-explain', e => e.hidden), qs = await page.$$('[data-obs-q]');
+  lok(qs.length === 3 && await hid(), '1-4 觀察任務：3 題，解說一開始收起來');
+  await (await qs[1].$('.pick:not([data-ok])')).click();
+  lok((await (await qs[1].$('[data-obs-fb]')).textContent()).includes('🤔') && await hid(), '1-4 觀察任務：答錯給提示、可以再選，解說還不展開');
+  for (const q of qs) await (await q.$('.pick[data-ok]')).click();
+  lok(!(await hid()) && (await page.textContent('[data-obs-score]')).trim() === '3 / 3', '1-4 觀察任務：3 題都答對 → 展開解說');
+}
 await page.click('#sub-image-compress'); await page.waitForTimeout(400);
 await page.click('#btn-comp-color');   // 切到這一步時會自動顯示原圖（raw）
 lok(await labStars(4) === 0, '1-4 壓縮只試了兩種，還沒完成');

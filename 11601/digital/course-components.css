@@ -47,3 +47,20 @@
 .labtasks .labtask{display:flex;gap:.5rem;align-items:flex-start;background:#fff;border:2px solid var(--line);border-left:6px solid var(--unit);border-radius:.8rem;padding:.6rem .7rem;font-size:.9rem;font-weight:700}
 .labtasks .labtask.done{border-color:var(--ok);background:var(--ok-bg)}
 .labtasks .ck{flex:0 0 auto}
+
+/* 116：🔍 觀察任務（先判斷，再展開解說） */
+.obs{margin-top:1.4rem;border:2px dashed var(--unit-line);background:var(--unit-soft);border-radius:1rem;padding:1rem 1.1rem}
+.obs-head{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap}
+.obs-kicker{font-weight:900;color:var(--ink);font-size:1rem}
+.obs-list{display:grid;gap:.8rem;margin-top:.8rem}
+.obs-q{background:#fff;border:1px solid var(--line);border-radius:.8rem;padding:.75rem .85rem}
+.obs-qt{font-weight:800;font-size:.95rem;color:var(--ink)}
+.obs-opts{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+.obs-opts .pick{flex:1 1 9rem;text-align:center;padding:.55rem .6rem;font-size:.9rem}
+.obs-opts .pick:disabled{opacity:.55;cursor:default}
+.obs-q .note:empty{display:none}
+.obs-foot{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}
+.obs-explain{margin-top:1.2rem}
+.obs-open{animation:obs-in .35s ease-out}
+@keyframes obs-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.obs-open{animation:none}}
