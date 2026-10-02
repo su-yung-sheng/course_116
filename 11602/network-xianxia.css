@@ -1,0 +1,145 @@
+/* =====================================================================
+   🌐 網路世界 ·「☁️ 科技修仙篇」頁面風格（只有 network.html 載入，<body class="xianxia">）
+   ---------------------------------------------------------------------
+   · 背景：雲霧繚繞的青綠山水（遠山、雲氣用漸層畫，不另外載圖片）
+   · 卡片：宣紙＋墨線滾邊；紙膠帶換成朱紅印章；標題、故事文字用文楷（LXGW WenKai TC），題目和實驗站維持黑體
+   · 每一重有自己的色調（#app[data-ch]、.lvcard[data-ch]）：翠玉、靈泉、苔青、青銅、紫符、金丹、劍紅、天藍、霧藍、燈籠紅
+   · RPG 操作和異世界篇同一套（cardgame.js），這裡只換外觀：選項＝墨玉玉簡、對手＝雷劫、HP＝劫雲
+   · 對比都 ≥ 4.5（tests/test_a11y.mjs）；尊重「減少動態效果」設定
+   ===================================================================== */
+body.xianxia{
+  --xuan:#fbf8f0; --xuan-2:#f3ecdc; --ink-d:#1c2a27; --jade:#0f766e; --seal:#b91c1c;
+  --card:var(--xuan); --soft:#f6f1e4; --line:#ddd3bd;
+  --unit:#0f766e; --unit-soft:#e8f5f2; --unit-bg:#d9efea; --unit-line:#99d5c9;
+  --acc:#0f766e; --acc-soft:#e8f5f2;
+  background-color:#e7efe9;
+  background-image:
+    radial-gradient(40rem 9rem at 15% 92%,rgba(255,255,255,.85),transparent 70%),
+    radial-gradient(36rem 8rem at 80% 86%,rgba(255,255,255,.8),transparent 70%),
+    radial-gradient(30rem 7rem at 50% 30%,rgba(255,255,255,.55),transparent 70%),
+    radial-gradient(26rem 22rem at 8% 100%,rgba(15,118,110,.28),transparent 70%),
+    radial-gradient(30rem 26rem at 92% 100%,rgba(30,64,60,.30),transparent 70%),
+    radial-gradient(22rem 18rem at 70% 104%,rgba(15,118,110,.22),transparent 70%),
+    radial-gradient(50rem 24rem at 50% -8%,rgba(250,204,21,.16),transparent 70%),
+    linear-gradient(180deg,#f3f1e7 0%,#e5efe9 55%,#cfe3dc 100%);
+  background-attachment:fixed;min-height:100vh;
+}
+html:has(body.xianxia){background:#e7efe9}
+.xianxia .topbar .kicker{color:#7c2d12}
+.xianxia .topbar .title{color:var(--ink-d);font-family:'LXGW WenKai TC','Noto Serif TC',serif;font-weight:700;letter-spacing:.04em}
+.xianxia .topbar .title::after{background:linear-gradient(90deg,var(--seal),var(--jade));width:4.5rem}
+.xianxia .back{background:var(--ink-d);color:#fef3c7}
+.xianxia .who{background:var(--xuan);border-color:#c8b88f;color:var(--ink-d)}
+
+/* 卡片＝宣紙：墨線雙框，紙膠帶換成朱紅印章 */
+.xianxia .card{background:linear-gradient(180deg,var(--xuan),var(--xuan-2));border:1px solid #cdbf9e;
+  box-shadow:inset 0 0 0 4px var(--xuan),inset 0 0 0 5px rgba(28,42,39,.28),0 10px 28px rgba(30,64,60,.18)}
+.xianxia .tape{width:1.3rem;height:1.3rem;top:-.6rem;border-radius:.25rem;transform:translateX(-50%) rotate(-6deg);
+  background:var(--seal);box-shadow:0 0 0 2px var(--xuan),inset 0 0 0 2px rgba(255,255,255,.55)}
+.xianxia h2,.xianxia h3.black,.xianxia .black{font-family:'LXGW WenKai TC','Noto Serif TC',serif}
+.xianxia .kicker{color:#57534e}
+.xianxia .note{background:var(--acc-soft);border-left-color:var(--acc)}
+.xianxia .note.ok{background:#ecfdf5;border-left-color:var(--ok)}
+.xianxia .note.bad{background:#fef2f2;border-left-color:var(--bad)}
+.xianxia .note.warn{background:#fffbeb;border-left-color:var(--warn)}
+.xianxia .note.learn{background:#fff;border:1px solid var(--line);border-left:4px solid var(--acc)}
+/* 一般按鈕＝宣紙；primary（下一張…）＝墨色＋金字（⚠️ 不能只改 .btn 的底色，primary 的字是白的） */
+.xianxia .btn:not(.primary):not(.go){background:#fffdf8;border-color:#cdbf9e;color:var(--ink)}
+.xianxia .btn.primary{background:var(--ink-d);border-color:var(--ink-d);color:#fde68a}
+.xianxia .btn.primary:hover{background:#0f3b36;color:#fff}
+.xianxia .btn.go{background:var(--acc);border-color:var(--acc);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.xianxia .btn.go:hover{filter:brightness(.92)}
+/* 選項＝墨玉玉簡：移上去或用方向鍵選到時出現 ◈ 游標 */
+.xianxia .pick{position:relative;background:#12332e;border:2px solid #5eead4;color:#f0fdfa;box-shadow:inset 0 0 0 2px #1d4d46;border-radius:.6rem}
+.xianxia .pick .soft,.xianxia .pick .tiny{color:#ccfbf1}
+.xianxia .pick:hover:not([disabled]),.xianxia .pick:focus-visible{background:#1d4d46;border-color:#fcd34d;outline:none;box-shadow:0 0 0 3px rgba(252,211,77,.55)}
+.xianxia .pick:hover:not([disabled])::before,.xianxia .pick:focus-visible::before{content:'◈';position:absolute;left:.3rem;top:50%;transform:translateY(-50%);color:#fcd34d;font-size:.8rem;animation:xx-blink 1s steps(2) infinite}
+.xianxia .pick.on{border-color:#fcd34d;background:#134e4a}
+.xianxia .pick.right{background:#065f46;border-color:#6ee7b7;color:#fff}
+.xianxia .pick.wrong{background:#7f1d1d;border-color:#fca5a5;color:#fff}
+.xianxia .pick[disabled]:not(.right):not(.wrong){opacity:.55}
+.xianxia .qcard{background:#fffdf8;border:3px double var(--acc);box-shadow:0 0 0 4px var(--acc-soft)}
+.xianxia .chip{background:#fffdf8;border-color:#ddd3bd}
+
+/* 每一重的色調（深色字都在淺底上，對比 ≥ 4.5） */
+.xianxia [data-ch="N1"]{--acc:#0f766e;--acc-soft:#e8f5f2}   /* 🏯 護山大陣：翠玉 */
+.xianxia [data-ch="N2"]{--acc:#0e7490;--acc-soft:#e6f4f7}   /* 🌊 靈脈谷：靈泉 */
+.xianxia [data-ch="N3"]{--acc:#4d7c0f;--acc-soft:#f0f6e4}   /* 📨 傳訊峰：苔青 */
+.xianxia [data-ch="N4"]{--acc:#92400e;--acc-soft:#fbefe2}   /* 🚪 門牌司：青銅 */
+.xianxia [data-ch="N5"]{--acc:#6d28d9;--acc-soft:#f3eefe}   /* 🔣 新符堂：紫符 */
+.xianxia [data-ch="N6"]{--acc:#a16207;--acc-soft:#fdf5dc}   /* 📚 名錄閣：金丹 */
+.xianxia [data-ch="N7"]{--acc:#be123c;--acc-soft:#fdecef}   /* 🗡️ 傳書殿：劍紅 */
+.xianxia [data-ch="N8"]{--acc:#1d4ed8;--acc-soft:#eaf0fd}   /* 🗼 傳音塔：天藍 */
+.xianxia [data-ch="N9"]{--acc:#0369a1;--acc-soft:#e6f2fa}   /* 💨 吐納池：霧藍 */
+.xianxia [data-ch="N10"]{--acc:#9a3412;--acc-soft:#fcede4}  /* 🏮 坊市：燈籠紅 */
+
+/* 修行地圖：關卡卡片＝宗門任務帖 */
+.xianxia .lvcard{border-top:6px solid var(--acc);text-align:left}
+.xianxia .lvcard .story-ch{color:var(--acc)}
+.xianxia .lvcard:hover{transform:translateY(-4px);box-shadow:inset 0 0 0 4px var(--xuan),inset 0 0 0 5px rgba(28,42,39,.28),0 16px 30px rgba(30,64,60,.28)}
+.xianxia .lvcard.locked{filter:grayscale(.8);opacity:.78;background:linear-gradient(180deg,#eceae3,#dfddd4)}
+.xianxia .lvcard.locked .story-ch{color:#57534e}
+
+/* 三階任務卡 */
+.xianxia .stage{background:#fffdf8;border-color:#ddd3bd;border-top-color:var(--acc)}
+.xianxia .stage.next{border-color:var(--acc);background:var(--acc-soft)}
+.xianxia .stage .st-q{color:var(--acc)}
+.xianxia .stage.done{border-color:var(--ok);border-top-color:var(--ok)}
+
+/* 故事元件 */
+.xianxia .story-head{background:linear-gradient(180deg,#f2f8f5,var(--xuan))}
+.xianxia .story-ch{color:var(--acc)}
+.xianxia .story-talk{background:#fffdf8;border:2px solid var(--acc);box-shadow:0 0 0 4px var(--acc-soft)}
+.xianxia .story-lines p{font-family:'LXGW WenKai TC','Noto Serif TC',serif;font-size:1.06rem}
+.xianxia .story-say{background:var(--acc-soft);border-color:var(--acc)}
+.xianxia .story-say p{color:#1c1917;font-family:'LXGW WenKai TC','Noto Serif TC',serif}
+.xianxia .story-ava{animation:xx-float 3s ease-in-out infinite}
+.xianxia .story-real{background:#fff;border-color:var(--acc);color:#1c1917}
+.xianxia .story-real .bold:first-child{color:var(--acc)}
+.xianxia .story-real.story-end{background:#fffbeb;border-color:#a16207;color:#422006}
+.xianxia .story-skill{box-shadow:0 0 0 3px #99f6e4,0 0 22px rgba(15,118,110,.35)}
+.xianxia .story-cards{grid-template-columns:repeat(5,minmax(0,1fr))}
+.xianxia .story-card{background:#fffdf8}
+.xianxia .story-card.on{border-color:var(--jade);background:#e8f5f2;color:#134e4a;box-shadow:0 0 12px rgba(15,118,110,.35)}
+.xianxia .end-star .stars{font-size:1.8rem;text-shadow:0 0 12px rgba(245,158,11,.55)}
+/* 境界進度：練氣 → 築基 → 金丹 → 元嬰 → 渡劫 → 飛升 */
+.story-realms{display:flex;flex-wrap:wrap;gap:.35rem;list-style:none;margin:0;padding:0;counter-reset:rl}
+.story-realms li{flex:1 1 4.2rem;text-align:center;font-weight:800;font-size:.9rem;padding:.35rem .3rem;border-radius:.5rem;border:2px solid #ddd3bd;background:#fffdf8;color:#57534e;position:relative}
+.story-realms li.done{border-color:var(--jade);background:#e8f5f2;color:#134e4a}
+.story-realms li.done::after{content:' ✓'}
+.story-realms li.now{border-color:var(--seal);background:#fef2f2;color:#991b1b;box-shadow:0 0 0 3px rgba(185,28,28,.15)}
+.xianxia .story-realms li{font-family:'LXGW WenKai TC','Noto Serif TC',serif;font-size:1rem}
+
+/* ⚡ 渡劫 HUD：雷劫與劫雲條 */
+.xianxia .rpg-hud{position:relative}
+.xianxia .rpg-foe{flex-basis:100%;position:relative;display:flex;align-items:center;gap:.7rem;background:#1f2937;color:#fff;border:2px solid #a5b4fc;border-radius:.8rem;padding:.5rem .8rem;
+  background-image:radial-gradient(18rem 4rem at 80% 0,rgba(129,140,248,.35),transparent 70%)}
+.xianxia .rpg-foe-ic{font-size:2.2rem;line-height:1;filter:drop-shadow(0 0 8px rgba(165,180,252,.85))}
+.xianxia .rpg-foe-bd{flex:1;min-width:0}.xianxia .rpg-foe-bd .tiny{color:#fde68a}
+.xianxia .rpg-hp{height:.6rem;background:#111827;border-radius:999px;overflow:hidden;margin-top:.3rem;border:1px solid #4338ca}
+.xianxia .rpg-hp>i{display:block;height:100%;background:linear-gradient(90deg,#818cf8,#c084fc);transition:width .4s}
+.xianxia .rpg-keys{color:#c7d2fe;white-space:nowrap}
+@media (max-width:640px){.xianxia .rpg-keys{display:none}}
+.rpg-sr{position:absolute;left:-9999px}
+.xianxia .rpg-dmg{position:absolute;right:1rem;top:-.4rem;font-weight:900;font-size:1.05rem;pointer-events:none;animation:xx-dmg .9s ease-out forwards;z-index:3;white-space:nowrap}
+.xianxia .rpg-dmg.hit{color:#fde68a;text-shadow:0 2px 0 #134e4a}
+.xianxia .rpg-dmg.ouch{color:#4338ca;text-shadow:0 1px 0 #fff;top:auto;bottom:-1.4rem}
+.xianxia .rpg-shake .rpg-foe-ic{animation:xx-shake .35s}
+.xianxia #app.rpg-flash>.card{box-shadow:inset 0 0 0 4px var(--xuan),inset 0 0 0 6px #818cf8,0 0 30px rgba(129,140,248,.7)}
+/* 進場：「⚡ ○○ 降臨！」 */
+.rpg-enc{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;align-items:center;gap:.2rem;
+  background:#1f2937;color:#fff;border:3px solid #a5b4fc;border-radius:1rem;padding:.9rem 1.6rem;box-shadow:0 18px 50px rgba(17,24,39,.5);animation:xx-enc 1.7s ease forwards;pointer-events:none;text-align:center}
+.rpg-enc b{font-size:1.25rem;color:#fde68a;font-family:'LXGW WenKai TC','Noto Serif TC',serif}.rpg-enc .tiny{color:#c7d2fe}.rpg-enc-ic{font-size:3rem}
+/* 過關、地圖 */
+.xianxia .rpg-win{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5rem;font-weight:900;font-size:1.15rem;color:#134e4a;background:#ecfdf5;border:2px solid #0f766e;border-radius:999px;padding:.3rem 1rem;font-family:'LXGW WenKai TC','Noto Serif TC',serif}
+.xianxia .rpg-exp{font-size:.85rem;color:#7c2d12}
+.xianxia .rpg-here{margin-left:.4rem;background:var(--seal);color:#fff;border-radius:999px;padding:0 .45rem;font-size:.72rem;animation:xx-float 2s ease-in-out infinite}
+/* 對話：一句一句出現 */
+.xianxia .story-lines p.rpg-wait{display:none}
+@keyframes xx-blink{50%{opacity:0}}
+@keyframes xx-dmg{0%{opacity:0;transform:translateY(6px) scale(.8)}20%{opacity:1;transform:translateY(0) scale(1.15)}100%{opacity:0;transform:translateY(-22px)}}
+@keyframes xx-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px) rotate(-6deg)}75%{transform:translateX(6px) rotate(6deg)}}
+@keyframes xx-enc{0%{opacity:0;transform:translate(-50%,-10px) scale(.9)}15%{opacity:1;transform:translate(-50%,0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-8px)}}
+@keyframes xx-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.xianxia .story-ava,.xianxia .rpg-here,.xianxia .rpg-shake .rpg-foe-ic,.xianxia .pick::before{animation:none}.xianxia .lvcard:hover{transform:none}.rpg-enc{animation:none}.xianxia .rpg-dmg{animation:none}}
+@media print{body.xianxia{background:#fff}}

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>網路世界 · 116-2</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@700&family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/theme.css">
 <script src="config.js"></script>
 <script src="../shared/k12.js"></script>
@@ -14,17 +14,19 @@
 <script src="../shared/cardgame.js"></script>
 <script src="../shared/net-labs.js"></script>
 <script src="content/network.js"></script>
+<script src="network-story.js"></script>
 <link rel="stylesheet" href="../shared/cardgame.css">
 <link rel="stylesheet" href="../shared/net-labs.css">
+<link rel="stylesheet" href="network-xianxia.css">
 </head>
-<body>
+<body class="xianxia">
 <main class="wrap">
   <header id="topbar"></header>
   <div id="app"></div>
 </main>
 <script>
-UI.topbar('#topbar', { title: '🌐 網路世界', kicker: '單元五 · 3下 第 2 章' });
-CARDGAME.mount({ app: '#app', levels: NET_LEVELS, mod: 'network' });
+UI.topbar('#topbar', { title: '🌐 網路世界', kicker: '單元五 · 3下 第 2 章 · ☁️ 科技修仙篇' });
+CARDGAME.mount({ app: '#app', levels: NET_LEVELS, mod: 'network', story: window.NET_STORY, headline: '拜入天網宗：先讀功法玉簡（概念小卡），再渡雷劫證明你懂了' });
 </script>
 </body>
 </html>

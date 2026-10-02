@@ -36,10 +36,10 @@ await page.reload(); await page.waitForSelector('.story-head');
 ok((await page.textContent('.story-head')).includes('傳說鑑定師') && (await page.textContent('.story-head')).includes('尾聲'), '集滿 8 張 → 稱號「👑 傳說鑑定師」，可以重看尾聲');
 await page.screenshot({ path: SHOTS + 'pf-story-all.png', fullPage: true });
 /* 其他單元沒有故事外框 */
-await page.goto(BASE + '/11602/network.html'); await page.waitForSelector('.lvcard');
-ok(!(await page.$('.story-head')) && !(await page.$('.story-ch')), '網路世界（同一個引擎）沒有故事外框');
+await page.goto(BASE + '/11602/data.html'); await page.waitForSelector('.lvcard');
+ok(!(await page.$('.story-head')) && !(await page.$('.story-ch')), '資料偵探（同一個引擎）沒有故事外框');
 await page.click('.lvcard[data-i="0"]'); await page.waitForSelector('.stage'); await page.click('.stage[data-s="0"]'); await page.waitForSelector('.hud');
-ok(!(await page.$('.rpg-foe')) && !(await page.$('.rpg-enc')) && (await page.textContent('#quit')).includes('離開'), '網路世界的作答畫面沒有 RPG 戰鬥介面');
+ok(!(await page.$('.rpg-foe')) && !(await page.$('.rpg-enc')) && (await page.textContent('#quit')).includes('離開'), '資料偵探的作答畫面沒有 RPG 戰鬥介面');
 /* ⚔️ RPG 戰鬥：遭遇、魔物 HP、方向鍵＋Enter 操作、命中特效、「下一張」看得見 */
 await page.goto(BASE + '/11601/platform.html#G1'); await page.reload(); await page.waitForSelector('.stage');
 await page.click('.stage[data-s="0"]'); await page.waitForSelector('.rpg-enc');

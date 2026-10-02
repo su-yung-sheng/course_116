@@ -45,6 +45,23 @@ CARDGAME.mount = function (opts) {
   /* ── 📖 故事外框（opts.story） ── */
   var SY = opts.story || null;
   function chap(lv) { return SY && SY.chapters[lv.id] || null; }
+  /* 故事用語：每個故事可以在 story.terms 換掉（例如修仙篇：撤退 → 遁走、技能卡 → 功法）；沒寫的用預設（異世界轉生篇） */
+  var TERMS = { series: '🌀 異世界轉生篇', cards: '🎴 技能卡', card: '張技能卡', cardsHow: '每章三階全過就拿到一張', got: '🎴 獲得技能卡', titleWord: '稱號',
+    here: '📍 你在這裡', locked: '🌫️', quest: '📜 委託', quit: '🏃 撤退', quitAsk: '要撤退嗎？這場戰鬥的進度不會保留。', peek: '📖 魔導書（小卡）',
+    meet: '⚔️ {name} 出現了！', hit: '💥 命中！', combo: '💥 {n} 連擊！', ouch: '🛡️ -1 ❤️', liveHit: '{name} 受到攻擊', liveOuch: '你受到 1 點傷害',
+    win: '🏆 擊敗了 {name}！', exp: '獲得經驗值 +{n}', lose: '你倒下了……（{name} 還在）', spring: '回復之泉',
+    real: '🔙 回到現實：課本裡的說法', epi: '📕 尾聲' };
+  function T(k, o) {
+    var t = (SY && SY.terms && SY.terms[k] != null) ? SY.terms[k] : TERMS[k];
+    return String(t).replace(/\{(\w+)\}/g, function (_, x) { return o && o[x] != null ? o[x] : ''; });
+  }
+  /* 境界進度（story.realms＋每章 chapters[id].realm）：目前修到哪一層 */
+  function realmBar(here) {
+    if (!SY.realms) return '';
+    var cur = here < 0 ? SY.realms.length - 1 : SY.realms.indexOf(chap(L[here]).realm);
+    return '<ol class="story-realms mt2" aria-label="境界進度">' + SY.realms.map(function (r, k) {
+      return '<li class="' + (k < cur ? 'done' : k === cur ? 'now' : '') + '"' + (k === cur ? ' aria-current="step"' : '') + '>' + esc(r) + '</li>'; }).join('') + '</ol>';
+  }
   function pref(k, v) { try { if (v === undefined) return localStorage.getItem('story-' + MOD + '-' + k); localStorage.setItem('story-' + MOD + '-' + k, v); } catch (e) { return null; } }
   function talk(lines, open, key) {   // 嚮導的對話框（<details>：可以收起來，記住這位使用者的選擇）
     var g = SY.guide;
@@ -70,17 +87,17 @@ CARDGAME.mount = function (opts) {
     setTimeout(function () {
       var box = document.getElementById('rpg-foe'), hud = document.querySelector('.hud'); if (!box || !hud) return;
       var n = document.createElement('span'); n.className = 'rpg-dmg ' + (ok ? 'hit' : 'ouch'); n.setAttribute('aria-hidden', 'true');
-      n.textContent = ok ? (G.combo >= 3 ? '💥 ' + G.combo + ' 連擊！' : '💥 命中！') : (G.practice ? '再想想' : '🛡️ -1 ❤️');
+      n.textContent = ok ? (G.combo >= 3 ? T('combo', { n: G.combo }) : T('hit')) : (G.practice ? '再想想' : T('ouch'));
       (ok ? box : hud).appendChild(n);
       (ok ? box : app).classList.add(ok ? 'rpg-shake' : 'rpg-flash');
       setTimeout(function () { n.remove(); box.classList.remove('rpg-shake'); app.classList.remove('rpg-flash'); }, 900);
-      var live = document.getElementById('rpg-live'); if (live) live.textContent = ok ? foe(G.lv).name + ' 受到攻擊' : '你受到 1 點傷害';
+      var live = document.getElementById('rpg-live'); if (live) live.textContent = ok ? T('liveHit', { name: foe(G.lv).name }) : T('liveOuch');
     }, 30);
   }
   function encounter(lv) {   // 進場：「⚔️ ○○ 出現了！」（不擋操作，1.6 秒後消失）
     var f = foe(lv); if (!f) return;
     var o = document.createElement('div'); o.className = 'rpg-enc'; o.setAttribute('role', 'status');
-    o.innerHTML = '<span class="rpg-enc-ic" aria-hidden="true">' + f.icon + '</span><b>⚔️ ' + esc(f.name) + ' 出現了！</b><span class="tiny">' + esc(f.desc) + '</span>';
+    o.innerHTML = '<span class="rpg-enc-ic" aria-hidden="true">' + f.icon + '</span><b>' + esc(T('meet', { name: f.name })) + '</b><span class="tiny">' + esc(f.desc) + '</span>';
     document.body.appendChild(o); setTimeout(function () { o.remove(); }, 1700);
   }
   /* ⌨️ 方向鍵在選項之間移動（Enter／空白鍵決定）；在輸入框、實驗站裡不攔截 */
@@ -97,8 +114,8 @@ CARDGAME.mount = function (opts) {
   function skills() { return L.filter(function (lv) { return chap(lv) && best(lv.id) >= 3; }); }
   function realCard(lv) {
     var c = chap(lv);
-    return '<div class="story-real mt2" style="text-align:left"><p class="bold">🔙 回到現實：課本裡的說法</p><p class="mt1">' + c.real + '</p></div>' +
-      '<div class="story-skill mt2"><span class="story-skill-ic" aria-hidden="true">' + c.skill.icon + '</span><div style="text-align:left"><p class="tiny soft bold">獲得技能卡</p><p class="black">' + esc(c.skill.name) + '</p><p class="tiny">' + esc(c.skill.desc) + '</p></div></div>';
+    return '<div class="story-real mt2" style="text-align:left"><p class="bold">' + esc(T('real')) + '</p><p class="mt1">' + c.real + '</p></div>' +
+      '<div class="story-skill mt2"><span class="story-skill-ic" aria-hidden="true">' + c.skill.icon + '</span><div style="text-align:left"><p class="tiny soft bold">' + esc(T('got')) + '</p><p class="black">' + esc(c.skill.name) + '</p><p class="tiny">' + esc(c.skill.desc) + '</p></div></div>';
   }
   function norm(s) { return String(s).replace(/[！-～]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/\s+/g, '').toUpperCase(); }
 
@@ -126,11 +143,11 @@ CARDGAME.mount = function (opts) {
     var got = SY ? skills() : [], all = SY && got.length === L.length;
     var here = SY ? L.findIndex(function (lv, i) { return open(i) && best(lv.id) < 3; }) : -1;   // 📍 下一個還沒全破的章
     app.innerHTML =
-      (SY ? '<section class="card pop story-head"><div class="tape"></div><p class="kicker">🌀 異世界轉生篇 · ' + esc(SY.world) + '</p>' +
+      (SY ? '<section class="card pop story-head"><div class="tape"></div><p class="kicker">' + esc(T('series')) + ' · ' + esc(SY.world) + '</p>' + realmBar(here) +
         talk(SY.prologue, pref('pro') == null ? total === 0 : pref('pro') === '1', 'pro') +
-        '<p class="small bold mt2">🎴 技能卡 ' + got.length + ' / ' + L.length + '（每章三階全過就拿到一張）' + (all ? '　' + SY.title.icon + ' 稱號：<span class="story-title">' + esc(SY.title.name) + '</span>' : '') + '</p>' +
+        '<p class="small bold mt2">' + esc(T('cards')) + ' ' + got.length + ' / ' + L.length + '（' + esc(T('cardsHow')) + '）' + (all ? '　' + SY.title.icon + ' ' + esc(T('titleWord')) + '：<span class="story-title">' + esc(SY.title.name) + '</span>' : '') + '</p>' +
         '<div class="story-cards mt1">' + L.map(function (lv) { var c = chap(lv), on = best(lv.id) >= 3; return c ? '<span class="story-card' + (on ? ' on' : '') + '" title="' + esc(c.ch + '：' + c.skill.name + '（' + c.skill.desc + '）') + '"><span class="sc-ic" aria-hidden="true">' + (on ? c.skill.icon : '❔') + '</span><span class="sc-name">' + esc(on ? c.skill.name : '？？？') + '</span><span class="tiny">' + esc(c.ch) + '</span></span>' : ''; }).join('') + '</div>' +
-        (best(L[L.length - 1].id) >= 3 ? '<details class="mt2"><summary class="bold small" style="cursor:pointer">📕 尾聲（重看）</summary><div class="story-lines mt1">' + SY.epilogue.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div></details>' : '') +
+        (best(L[L.length - 1].id) >= 3 ? '<details class="mt2"><summary class="bold small" style="cursor:pointer">' + esc(T('epi')) + '（重看）</summary><div class="story-lines mt1">' + SY.epilogue.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div></details>' : '') +
         '</section>' : '') +
       '<section class="card pop' + (SY ? ' mt2' : '') + '"><div class="tape"></div><div class="row between"><div>' +
       '<p class="kicker">' + L.length + ' 個互動體驗關卡 · ' + (opts.sequential ? '依序開放（上一關 2⭐ 開下一關）' : '自由挑戰順序') + '</p><h2 class="black" style="font-size:1.35rem">' + esc(opts.headline || '先讀「概念小卡」，再用遊戲證明你懂了') + '</h2>' +
@@ -138,11 +155,11 @@ CARDGAME.mount = function (opts) {
       '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star-ink)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
       '<div id="net-state"></div>' +
       '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
-        if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true">' + (chap(lv) ? '<p class="tiny bold story-ch">🌫️ ' + esc(chap(lv).ch) + '・？？？</p>' : '') + '<div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
+        if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true">' + (chap(lv) ? '<p class="tiny bold story-ch">' + T('locked') + ' ' + esc(chap(lv).ch) + '・？？？</p>' : '') + '<div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">上一關拿到 2 顆星就會開放</p></button>';
         var c = chap(lv);
         return '<button class="card lvcard pop" data-i="' + i + '"' + (c ? ' data-ch="' + lv.id + '"' : '') + ' style="animation-delay:' + (i * 40) + 'ms">' +
-          (c ? '<p class="tiny bold story-ch">' + c.bg + ' ' + esc(c.ch + '・' + c.place) + (i === here ? '<span class="rpg-here">📍 你在這裡</span>' : '') + '</p>' : '') +
+          (c ? '<p class="tiny bold story-ch">' + c.bg + ' ' + esc(c.ch + '・' + c.place) + (i === here ? '<span class="rpg-here">' + esc(T('here')) + '</span>' : '') + '</p>' : '') +
           '<div class="row between"><span style="font-size:2rem">' + lv.icon + '</span>' + UI.stars(best(lv.id)) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3>' +
           '<p class="tiny soft bold mt1">' + esc(lv.book) + '</p></button>';
@@ -197,7 +214,7 @@ CARDGAME.mount = function (opts) {
       var ok = stageOpen(lv, s), done = b > s, nx = ok && !done && (s === 0 || b >= s);
       return '<button class="stage' + (done ? ' done' : '') + (nx ? ' next' : '') + '" data-s="' + s + '"' + (ok ? '' : ' disabled') + '>' +
         '<span class="st-stars">' + '⭐'.repeat(s + 1) + '</span><span class="st-n">' + (ok ? STAGE[s].ic : '🔒') + ' 第 ' + (s + 1) + ' 階　' + STAGE[s].n + '</span>' +
-        (chap(lv) ? '<span class="st-q">📜 委託：' + UI.esc(chap(lv).quests[s]) + '</span>' : '') +
+        (chap(lv) ? '<span class="st-q">' + esc(T('quest')) + '：' + UI.esc(chap(lv).quests[s]) + '</span>' : '') +
         '<span class="st-d">' + UI.esc(st.goal || STAGE[s].d) + '</span>' +
         '<span class="st-s">' + (done ? '✅ 已通過' : ok ? '▶ 開始' : '過了第 ' + s + ' 階才開放') + '</span></button>';
     }).join('') + '</div>';
@@ -244,19 +261,19 @@ CARDGAME.mount = function (opts) {
     var lv = G.lv;
     G.qt = Date.now();   // 這一題開始的時間（答太快的判斷用）
     var f = SY && !G.offline ? foe(lv) : null, hp = f ? Math.max(0, G.qtotal - (G.hits || 0)) : 0;
-    return '<div class="hud' + (f ? ' rpg-hud' : '') + '"><button class="btn sm" id="quit">' + (f ? '🏃 撤退' : '✕ 離開') + '</button>' +
+    return '<div class="hud' + (f ? ' rpg-hud' : '') + '"><button class="btn sm" id="quit">' + (f ? esc(T('quit')) : '✕ 離開') + '</button>' +
       '<b>' + lv.icon + ' ' + esc(lv.title) + '</b>' +
       (G.offline ? '<span class="chip">📴 練習模式 · 不判斷、不記星</span>' : '') +
       (G.practice ? '<span class="chip repair-chip">🩹 修復站 · 不扣心</span>' : (G.st != null ? '<span class="chip stage-chip">' + '⭐'.repeat(G.st + 1) + ' ' + STAGE[G.st].n + '</span>' : '') +
       '<span class="chip qprog" title="這一關的進度"><span class="qbar"><i style="width:' + Math.round((G.base + (G.qk || 0)) / Math.max(1, G.qtotal) * 100) + '%"></i></span>' + (G.base + (G.qk || 0)) + ' / ' + G.qtotal + ' 題</span>') +
-      '<button class="btn sm" id="peek" type="button">' + (f ? '📖 魔導書（小卡）' : '📖 小卡') + '</button>' +
+      '<button class="btn sm" id="peek" type="button">' + (f ? esc(T('peek')) : '📖 小卡') + '</button>' +
       '<span style="margin-left:auto" class="combo">' + (G.combo >= 2 ? '🔥 連對 ' + G.combo : '') + '</span>' + (G.practice || G.offline ? '' : UI.hearts(G.hearts, HEARTS)) +
       (f ? '<div class="rpg-foe" id="rpg-foe"><span class="rpg-foe-ic" aria-hidden="true">' + f.icon + '</span><div class="rpg-foe-bd"><div class="row between"><b>' + esc(f.name) + '</b><span class="tiny bold">HP ' + hp + ' / ' + G.qtotal + '</span></div>' +
         '<div class="rpg-hp" role="progressbar" aria-label="' + esc(f.name) + ' 的 HP" aria-valuemin="0" aria-valuemax="' + G.qtotal + '" aria-valuenow="' + hp + '"><i style="width:' + Math.round(hp / Math.max(1, G.qtotal) * 100) + '%"></i></div></div>' +
         '<span class="tiny rpg-keys">⌨️ 方向鍵選擇・Enter 決定</span><span class="rpg-sr" id="rpg-live" aria-live="polite"></span></div>' : '') + '</div>';
   }
   function bindQuit() {
-    var q = document.getElementById('quit'); if (q) q.onclick = function () { if (confirm(SY ? '要撤退嗎？這場戰鬥的進度不會保留。' : '離開這一關？這次的進度不會保留。')) menu(); };
+    var q = document.getElementById('quit'); if (q) q.onclick = function () { if (confirm(SY ? T('quitAsk') : '離開這一關？這次的進度不會保留。')) menu(); };
     var p = document.getElementById('peek'); if (p) p.onclick = peek;
   }
   /* 📖 小卡：不離開關卡，直接看概念小卡 */
@@ -770,29 +787,29 @@ CARDGAME.mount = function (opts) {
     var r = STORE.saveLevel(MOD, lv.id, { stars: stars, rc: res.rc, ts: res.ts, score: Math.round(G.right / Math.max(1, G.total) * 100) });
     var fo = foe(lv);
     app.innerHTML = '<section class="card pop center"><div class="tape"></div><p class="kicker">第 ' + (s + 1) + ' 階 · ' + STAGE[s].n + ' 通過！</p>' +
-      (fo ? '<p class="rpg-win mt1"><span aria-hidden="true">' + fo.icon + '</span> 🏆 擊敗了 ' + esc(fo.name) + '！<span class="rpg-exp">獲得經驗值 +' + (G.right * 10) + '</span></p>' : '') +
+      (fo ? '<p class="rpg-win mt1"><span aria-hidden="true">' + fo.icon + '</span> ' + esc(T('win', { name: fo.name })) + '<span class="rpg-exp">' + esc(T('exp', { n: G.right * 10 })) + '</span></p>' : '') +
       '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
       '<div class="end-star mt1">' + UI.stars(stars) + '</div>' +
       '<p class="bold">答對 ' + G.right + ' / ' + G.total + ' · 剩 ' + G.hearts + ' 顆 ❤️</p>' +
       (r.improved ? '<p class="note ok small mt2" style="display:inline-block">⭐ 新紀錄已儲存！</p>' : '<p class="small soft mt1">最佳紀錄：' + UI.stars(best(lv.id)) + '</p>') +
       (chap(lv) ? '<div class="story-say mt2"><span class="story-ava" aria-hidden="true">' + SY.guide.icon + '</span><p>' + chap(lv).win[s] + '</p></div>' +
-        (!more ? realCard(lv) + (i === L.length - 1 ? '<div class="story-real story-end mt2" style="text-align:left"><p class="bold">📕 尾聲</p>' + SY.epilogue.map(function (t) { return '<p class="mt1">' + t + '</p>'; }).join('') + '</div>' : '') +
-          (skills().length === L.length ? '<p class="note ok mt2"><b>' + SY.title.icon + ' 集滿 ' + L.length + ' 張技能卡！獲得稱號「' + esc(SY.title.name) + '」</b></p>' : '') : '') : '') +
+        (!more ? realCard(lv) + (i === L.length - 1 ? '<div class="story-real story-end mt2" style="text-align:left"><p class="bold">' + esc(T('epi')) + '</p>' + SY.epilogue.map(function (t) { return '<p class="mt1">' + t + '</p>'; }).join('') + '</div>' : '') +
+          (skills().length === L.length ? '<p class="note ok mt2"><b>' + SY.title.icon + ' 集滿 ' + L.length + ' ' + esc(T('card')) + '！獲得' + esc(T('titleWord')) + '「' + esc(SY.title.name) + '」</b></p>' : '') : '') : '') +
       (more ? '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="up">挑戰第 ' + (s + 2) + ' 階：' + STAGE[s + 1].ic + ' ' + STAGE[s + 1].n + ' ▶</button><button class="btn" id="again">🔁 這一階再玩一次</button></div>'
         : '<p class="note ok small mt2" style="display:inline-block">🏆 三階全部通過！想刷新紀錄或練習，可以再挑戰一次（題目會不一樣）。</p><div class="row mt2" style="justify-content:center"><button class="btn" id="again">🔁 再挑戰一次</button></div>') +
       '<nav id="end-pager"></nav></section>';
     document.getElementById('again').onclick = function () { start(i, s); };
     var up = document.getElementById('up'); if (up) { up.onclick = function () { start(i, s + 1); }; up.focus(); }
     endPager(i);
-    if (r.improved) UI.toast(chap(lv) && !more ? '🎴 獲得技能卡：' + chap(lv).skill.icon + ' ' + chap(lv).skill.name : '⭐ ' + lv.title + '：' + '★'.repeat(stars));
+    if (r.improved) UI.toast(chap(lv) && !more ? T('got') + '：' + chap(lv).skill.icon + ' ' + chap(lv).skill.name : '⭐ ' + lv.title + '：' + '★'.repeat(stars));
   }
 
   /* 🩹 修復站：❤️ 用完後，針對卡住的那一回合先練習（不扣心、先給提示），才能重新挑戰 */
   function gameOver() {
     var i = G.i, s = G.st, focus = G.deadR != null ? G.deadR : G.r, rd = G.rounds[focus];
     var canDrill = rd && (rd.type === 'gen' || rd.type === 'sort' || rd.type === 'lab');
-    app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">' + (foe(G.lv) ? '你倒下了……（' + esc(foe(G.lv).name) + ' 還在）' : (s != null ? '第 ' + (s + 1) + ' 階的' : '') + '愛心用完了') + '</h2>' +
-      '<p class="soft mt1">先到 <b>🩹 修復站</b>' + (SY ? '（回復之泉）' : '') + ' 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
+    app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">' + (foe(G.lv) ? esc(T('lose', { name: foe(G.lv).name })) : (s != null ? '第 ' + (s + 1) + ' 階的' : '') + '愛心用完了') + '</h2>' +
+      '<p class="soft mt1">先到 <b>🩹 修復站</b>' + (SY ? '（' + esc(T('spring')) + '）' : '') + ' 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
       (chap(G.lv) ? '<div class="story-say mt2" style="text-align:left"><span class="story-ava" aria-hidden="true">' + SY.guide.icon + '</span><p>' + chap(G.lv).lose + '</p></div>' : '') +
       '<div class="note mt2" style="text-align:left">🩹 卡住的回合：<b>' + esc(rd ? (rd.prompt || rd.title || '這一回合') : '這一回合') + '</b><br>' +
       (canDrill ? (rd.type === 'lab' ? '在實驗站再做 1 次：不扣心、先給提示。' : '練 2 題：不扣心、題目上方先給提示，答完看解說。') : '先把概念小卡讀一遍（看著畫面 10 秒）。') + '</div>' +
