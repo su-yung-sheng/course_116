@@ -1,5 +1,5 @@
 // 🌀 系統平臺「異世界轉生篇」故事外框：只換外框，題目、判斷、計星不變
-import { launch, login, BASE, SHOTS } from './harness.mjs';
+import { launch, login, BASE, SHOTS, priv } from './harness.mjs';
 import fs from 'fs'; import vm from 'vm'; fs.mkdirSync(SHOTS, { recursive: true });
 let bad = 0;
 const ok = (c, ...m) => { if (!c) bad++; console.log(c ? '  ✔' : '  ✘', ...m); };
@@ -38,8 +38,33 @@ await page.screenshot({ path: SHOTS + 'pf-story-all.png', fullPage: true });
 /* 其他單元沒有故事外框 */
 await page.goto(BASE + '/11602/network.html'); await page.waitForSelector('.lvcard');
 ok(!(await page.$('.story-head')) && !(await page.$('.story-ch')), '網路世界（同一個引擎）沒有故事外框');
+await page.click('.lvcard[data-i="0"]'); await page.waitForSelector('.stage'); await page.click('.stage[data-s="0"]'); await page.waitForSelector('.hud');
+ok(!(await page.$('.rpg-foe')) && !(await page.$('.rpg-enc')) && (await page.textContent('#quit')).includes('離開'), '網路世界的作答畫面沒有 RPG 戰鬥介面');
+/* ⚔️ RPG 戰鬥：遭遇、魔物 HP、方向鍵＋Enter 操作、命中特效、「下一張」看得見 */
+await page.goto(BASE + '/11601/platform.html#G1'); await page.reload(); await page.waitForSelector('.stage');
+await page.click('.stage[data-s="0"]'); await page.waitForSelector('.rpg-enc');
+ok((await page.textContent('.rpg-enc')).includes('混亂迷霧 出現了'), '進入戰鬥：遭遇橫幅「混亂迷霧 出現了！」');
+const hud = await page.textContent('.hud');
+ok(hud.includes('撤退') && hud.includes('魔導書') && /HP\s*8\s*\/\s*8/.test(hud), '戰鬥 HUD：🏃 撤退、📖 魔導書、魔物 HP 8 / 8');
+await page.waitForTimeout(1900);
+await page.keyboard.press('ArrowRight');
+ok(await page.evaluate(() => document.activeElement && document.activeElement.classList.contains('pick')), '⌨️ 方向鍵 → 游標移到選項');
+/* 用方向鍵把游標移到正解（正解從 private 讀），Enter 決定 → 命中、魔物 HP -1 */
+const rd = priv('11601/content/platform.js').PF_LEVELS.find(l => l.id === 'G1').stages[0].rounds[0];
+const q1 = (await page.textContent('.qcard .txt')).trim(), it = rd.items.find(x => x.t === q1);
+for (let k = 0; k < 8 && (await page.evaluate(() => document.activeElement.dataset.b)) !== it.a; k++) await page.keyboard.press('ArrowRight');
+await page.keyboard.press('Enter');
+ok(!!(await page.waitForSelector('.rpg-dmg.hit', { timeout: 1500 }).catch(() => null)) && (await page.textContent('#rpg-live')).includes('受到攻擊'), 'Enter 決定 → 命中特效＋螢幕報讀「受到攻擊」');
+await page.waitForSelector('#nx');
+ok(/HP\s*7\s*\/\s*8/.test(await page.textContent('#rpg-foe')), '答對 → 魔物 HP 8 → 7');
+const nx = await page.$eval('#nx', b => { const s = getComputedStyle(b); return [s.color, s.backgroundColor]; });
+ok(nx[0] !== nx[1] && !/255, 25[0-5], 2[34]\d/.test(nx[1]), '「下一張 →」不用滑過去就看得見（深底金字）', nx.join(' on '));
+await page.screenshot({ path: SHOTS + 'pf-rpg-battle.png' });
 await page.setViewportSize({ width: 390, height: 844 });
 await page.goto(BASE + '/11601/platform.html#G3'); await page.reload(); await page.waitForSelector('.stage');
 ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '📱 手機寬度沒有橫向捲動');
+await page.click('.stage[data-s="0"]'); await page.waitForSelector('#rpg-foe'); await page.waitForTimeout(1900);
+ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '📱 手機戰鬥畫面沒有橫向捲動');
+await page.screenshot({ path: SHOTS + 'pf-rpg-mobile.png' });
 console.log('errors', errors); await browser.close();
 if (bad || errors.length) process.exit(1);

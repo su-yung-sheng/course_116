@@ -48,11 +48,23 @@ html:has(body.isekai){background:#1e1b4b}
 .isekai .note.bad{background:#fef2f2;border-left-color:var(--bad)}
 .isekai .note.warn{background:#fffbeb;border-left-color:var(--warn)}
 .isekai .note.learn{background:#fff;border:1px solid var(--line);border-left:4px solid var(--acc)}
-.isekai .btn{background:#fffdf7;border-color:#d6c29a}
+/* 一般按鈕＝羊皮紙；primary（下一張、下一題…）＝深夜藍＋金字。
+   ⚠️ 不能只寫 .isekai .btn 改背景：.btn.primary 的字是白色，會變成「白字白底，滑過去才看得到」 */
+.isekai .btn:not(.primary):not(.go){background:#fffdf7;border-color:#d6c29a;color:var(--ink)}
+.isekai .btn.primary{background:#1e1b4b;border-color:#1e1b4b;color:#fde68a}
+.isekai .btn.primary:hover{background:#312e81;color:#fff}
 .isekai .btn.go{background:var(--acc);border-color:var(--acc);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18)}
 .isekai .btn.go:hover{filter:brightness(.92)}
-.isekai .pick{background:#fffdf7;border-color:#e4d5b7}
-.isekai .pick.on{border-color:var(--acc);background:var(--acc-soft)}
+/* ⚔️ RPG 指令選單：選項是深色指令框，移上去或用方向鍵選到時出現 ▶ 游標 */
+.isekai .pick{position:relative;background:#1e1b4b;border:2px solid #a78bfa;color:#fff;box-shadow:inset 0 0 0 2px #312e81;border-radius:.6rem}
+.isekai .pick .soft,.isekai .pick .tiny{color:#ddd6fe}
+.isekai .pick:hover:not([disabled]),.isekai .pick:focus-visible{background:#312e81;border-color:#fde68a;outline:none;box-shadow:0 0 0 3px rgba(253,230,138,.55)}
+.isekai .pick:hover:not([disabled])::before,.isekai .pick:focus-visible::before{content:'▶';position:absolute;left:.3rem;top:50%;transform:translateY(-50%);color:#fde68a;font-size:.8rem;animation:isk-blink 1s steps(2) infinite}
+.isekai .pick.on{border-color:#fde68a;background:#4c1d95}
+.isekai .pick.right{background:#065f46;border-color:#6ee7b7;color:#fff}
+.isekai .pick.wrong{background:#7f1d1d;border-color:#fca5a5;color:#fff}
+.isekai .pick[disabled]:not(.right):not(.wrong){opacity:.55}
+.isekai .qcard{background:#fffdf7;border:3px double var(--acc);box-shadow:0 0 0 4px var(--acc-soft)}
 .isekai .chip{background:#fffdf7;border-color:#e4d5b7}
 
 /* 每一章的色調（深色字都在淺底上，對比 ≥ 4.5） */
@@ -94,6 +106,36 @@ html:has(body.isekai){background:#1e1b4b}
 .isekai .story-card.on{box-shadow:0 0 12px rgba(202,138,4,.55)}
 .isekai .end-star .stars{font-size:1.8rem;text-shadow:0 0 12px rgba(245,158,11,.55)}
 
+/* ⚔️ 戰鬥 HUD：對手與 HP 條 */
+.isekai .rpg-hud{position:relative}
+.isekai .rpg-foe{flex-basis:100%;position:relative;display:flex;align-items:center;gap:.7rem;background:#1e1b4b;color:#fff;border:2px solid #a78bfa;border-radius:.8rem;padding:.5rem .8rem}
+.isekai .rpg-foe-ic{font-size:2.2rem;line-height:1;filter:drop-shadow(0 0 8px rgba(167,139,250,.8))}
+.isekai .rpg-foe-bd{flex:1;min-width:0}.isekai .rpg-foe-bd .tiny{color:#fde68a}
+.isekai .rpg-hp{height:.6rem;background:#450a0a;border-radius:999px;overflow:hidden;margin-top:.3rem;border:1px solid #7f1d1d}
+.isekai .rpg-hp>i{display:block;height:100%;background:linear-gradient(90deg,#ef4444,#f59e0b);transition:width .4s}
+.isekai .rpg-keys{color:#c4b5fd;white-space:nowrap}
+@media (max-width:640px){.isekai .rpg-keys{display:none}}
+.rpg-sr{position:absolute;left:-9999px}
+.isekai .rpg-dmg{position:absolute;right:1rem;top:-.4rem;font-weight:900;font-size:1.05rem;pointer-events:none;animation:isk-dmg .9s ease-out forwards;z-index:3;white-space:nowrap}
+.isekai .rpg-dmg.hit{color:#fde68a;text-shadow:0 2px 0 #7c2d12}
+.isekai .rpg-dmg.ouch{color:#b91c1c;text-shadow:0 1px 0 #fff;top:auto;bottom:-1.4rem}
+.isekai .rpg-shake .rpg-foe-ic{animation:isk-shake .35s}
+.isekai #app.rpg-flash>.card{box-shadow:inset 0 0 0 4px var(--parch),inset 0 0 0 6px #ef4444,0 0 28px rgba(239,68,68,.55)}
+/* 進場：「⚔️ ○○ 出現了！」 */
+.rpg-enc{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;align-items:center;gap:.2rem;
+  background:#1e1b4b;color:#fff;border:3px solid #fde68a;border-radius:1rem;padding:.9rem 1.6rem;box-shadow:0 18px 50px rgba(0,0,0,.5);animation:isk-enc 1.7s ease forwards;pointer-events:none;text-align:center}
+.rpg-enc b{font-size:1.25rem;color:#fde68a}.rpg-enc .tiny{color:#ddd6fe}.rpg-enc-ic{font-size:3rem}
+/* 勝利、地圖 */
+.isekai .rpg-win{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5rem;font-weight:900;font-size:1.15rem;color:#3b0764;background:#fef3c7;border:2px solid #b45309;border-radius:999px;padding:.3rem 1rem}
+.isekai .rpg-exp{font-size:.85rem;color:#7c2d12}
+.isekai .rpg-here{margin-left:.4rem;background:#b91c1c;color:#fff;border-radius:999px;padding:0 .45rem;font-size:.72rem;animation:isk-float 2s ease-in-out infinite}
+/* 對話：一句一句出現 */
+.isekai .story-lines p.rpg-wait{display:none}
+.isekai .story-lines p:not(.rpg-wait):last-of-type::after{content:''}
+@keyframes isk-blink{50%{opacity:0}}
+@keyframes isk-dmg{0%{opacity:0;transform:translateY(6px) scale(.8)}20%{opacity:1;transform:translateY(0) scale(1.15)}100%{opacity:0;transform:translateY(-22px)}}
+@keyframes isk-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px) rotate(-6deg)}75%{transform:translateX(6px) rotate(6deg)}}
+@keyframes isk-enc{0%{opacity:0;transform:translate(-50%,-10px) scale(.9)}15%{opacity:1;transform:translate(-50%,0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-8px)}}
 @keyframes isk-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@media (prefers-reduced-motion:reduce){.isekai .story-ava{animation:none}.isekai .lvcard:hover{transform:none}}
+@media (prefers-reduced-motion:reduce){.isekai .story-ava,.isekai .rpg-here,.isekai .rpg-shake .rpg-foe-ic,.isekai .pick::before{animation:none}.isekai .lvcard:hover{transform:none}.rpg-enc{animation:none}.isekai .rpg-dmg{animation:none}}
 @media print{body.isekai{background:#fff}}
