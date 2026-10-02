@@ -118,14 +118,14 @@
                             <strong class="text-slate-800">視覺觀察：</strong>下面是同一張「小男孩跳躍圖」的三種解析度。先仔細看，完成下方的 <strong class="text-rose-600">🔍 觀察任務</strong>，再看解說。
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-low" class="w-full aspect-square bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">低解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">明顯鋸齒，像素方塊極大</p></div></div>
-                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-mid" class="w-full aspect-square bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">中解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">輪廓漸清晰，邊緣仍可見方塊</p></div></div>
-                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><img id="res-img-high" src="images/unit4-1.webp" alt="高解析度的小男孩跳躍圖（原圖）" class="w-full h-auto max-h-80 bg-white rounded-xl shadow-inner border border-slate-200 object-contain" crossorigin="anonymous"><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-500 text-white rounded-full text-xs font-bold uppercase tracking-widest">高解析度 (原圖)</span><p class="text-[11px] text-slate-500 mt-2 font-medium">細膩平滑，幾乎看不出像素點</p></div></div>
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-low" role="img" aria-label="低解析度的小男孩跳躍圖" class="w-full h-auto bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">低解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">明顯鋸齒，像素方塊極大</p><p class="text-[11px] text-slate-500 font-bold" id="res-size-low"></p></div></div>
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><canvas id="res-canvas-mid" role="img" aria-label="中解析度的小男孩跳躍圖" class="w-full h-auto bg-white rounded-xl shadow-inner border border-slate-200 pixelated-canvas"></canvas><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold uppercase tracking-widest">中解析度</span><p class="text-[11px] text-slate-500 mt-2 font-medium">輪廓漸清晰，邊緣仍可見方塊</p><p class="text-[11px] text-slate-500 font-bold" id="res-size-mid"></p></div></div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center shadow-sm"><img id="res-img-high" src="images/unit4-1.webp" alt="高解析度的小男孩跳躍圖（原圖）" class="w-full h-auto max-h-80 bg-white rounded-xl shadow-inner border border-slate-200 object-contain" crossorigin="anonymous"><div class="mt-4 text-center"><span class="px-3 py-1 bg-rose-500 text-white rounded-full text-xs font-bold uppercase tracking-widest">高解析度 (原圖)</span><p class="text-[11px] text-slate-500 mt-2 font-medium">細膩平滑，幾乎看不出像素點</p><p class="text-[11px] text-slate-500 font-bold" id="res-size-high"></p></div></div>
                         </div>
                         <div class="obs" data-obs="res-explain" aria-labelledby="obs-res-title">
                             <div class="obs-head"><p class="obs-kicker" id="obs-res-title">🔍 觀察任務：先判斷，再看解說</p><span class="chip" data-obs-score aria-live="polite">0 / 3</span></div>
                             <div class="obs-list">
-                                <div class="obs-q" data-obs-q data-right="低解析度只有 12×12＝144 格，每一格很大，斜線和圓弧只能用方塊硬拼，所以鋸齒最明顯。" data-wrong="再看一次手臂、腳的邊緣：哪一張看得出一格一格的方塊？">
+                                <div class="obs-q" data-obs-q data-right="低解析度寬只有 32 格（32×14＝448 個像素），每一格很大，斜線和圓弧只能用方塊硬拼，所以鋸齒最明顯。" data-wrong="再看一次手臂、腳的邊緣：哪一張看得出一格一格的方塊？">
                                     <p class="obs-qt">1. 哪一張的邊緣「一格一格的鋸齒」最明顯？</p>
                                     <div class="obs-opts"><button type="button" class="pick" data-ok>低解析度</button><button type="button" class="pick">中解析度</button><button type="button" class="pick">高解析度</button></div>
                                     <p class="note small mt1" data-obs-fb aria-live="polite"></p>
@@ -135,7 +135,7 @@
                                     <div class="obs-opts"><button type="button" class="pick">能，放大就會變清楚</button><button type="button" class="pick" data-ok>不能，只會看到更大的方塊</button></div>
                                     <p class="note small mt1" data-obs-fb aria-live="polite"></p>
                                 </div>
-                                <div class="obs-q" data-obs-q data-right="三張是同一張圖，差別在切成多少格：12×12、32×32 和原圖。格子（像素）越多，畫面越細緻。" data-wrong="三張畫的是同一個男孩、顏色也差不多。再比比看：每張圖是用多大的格子拼成的？">
+                                <div class="obs-q" data-obs-q data-right="三張是同一張圖，差別在切成多少格：32×14、64×28 和原圖的 1600×698。格子（像素）越多，畫面越細緻。" data-wrong="三張畫的是同一個男孩、顏色也差不多。再比比看：每張圖是用多大的格子拼成的？">
                                     <p class="obs-qt">3. 三張圖最主要的差別是什麼？</p>
                                     <div class="obs-opts"><button type="button" class="pick">顏色的種類</button><button type="button" class="pick" data-ok>格子（像素）的數量</button><button type="button" class="pick">畫的內容</button></div>
                                     <p class="note small mt1" data-obs-fb aria-live="polite"></p>
@@ -828,23 +828,28 @@
 
             if (!img.complete || img.naturalWidth === 0) return;
 
-            const drawToCanvas = (canvas, scale) => {
+            // 照原圖的長寬比取樣（原圖是橫的：三個男孩並排），不要硬塞成正方形
+            const ratio = img.naturalHeight / img.naturalWidth;
+            const label = (id, w, h) => { const el = document.getElementById(id); if (el) el.textContent = `寬 ${w} × 高 ${h} ＝ ${(w * h).toLocaleString()} 個像素`; };
+            const drawToCanvas = (canvas, cols, id) => {
+                const rows = Math.max(1, Math.round(cols * ratio)), k = Math.ceil(800 / cols);   // 每格放大成 k×k 的方塊
                 const ctx = canvas.getContext('2d');
-                canvas.width = 300;
-                canvas.height = 300;
-                ctx.imageSmoothingEnabled = false;
-                
+                canvas.width = cols * k;
+                canvas.height = rows * k;
                 const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = scale;
-                tempCanvas.height = scale;
+                tempCanvas.width = cols;
+                tempCanvas.height = rows;
                 const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.drawImage(img, 0, 0, scale, scale);
-                
-                ctx.drawImage(tempCanvas, 0, 0, scale, scale, 0, 0, 300, 300);
+                tempCtx.fillStyle = '#fff'; tempCtx.fillRect(0, 0, cols, rows);
+                tempCtx.drawImage(img, 0, 0, cols, rows);
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(tempCanvas, 0, 0, cols, rows, 0, 0, canvas.width, canvas.height);
+                label(id, cols, rows);
             };
 
-            drawToCanvas(canvasLow, 12);  
-            drawToCanvas(canvasMid, 32);  
+            drawToCanvas(canvasLow, 32, 'res-size-low');
+            drawToCanvas(canvasMid, 64, 'res-size-mid');
+            label('res-size-high', img.naturalWidth, img.naturalHeight);
         }
 
         // ==========================================
