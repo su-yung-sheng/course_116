@@ -233,7 +233,7 @@ CARDGAME.mount = function (opts) {
   function offlineSize(rd) {
     if (rd.type === 'sort') return Math.min(rd.pick || rd.items.length, rd.items.length);
     if (rd.type === 'order' || rd.type === 'type') return rd.items.length;
-    if (rd.type === 'build') return rd.customers.length;
+    if (rd.type === 'build') return Math.min(rd.pick || rd.customers.length, rd.customers.length);
     return rd.n || 1;
   }
   /* 題號是「整個關卡（這一階）」連續算的：第 1～10 題，不會每一回合又從 1 開始 */
@@ -403,7 +403,8 @@ CARDGAME.mount = function (opts) {
 
   /* sort：一張一張出卡（送出的是「第幾張卡」和「選的類別」，伺服器對答案） */
   function playSort(rd) {
-    var all = rd.ordered ? range(rd.items.length) : shuffle(range(rd.items.length)), need = G.sizes[G.r], items = all.slice(0, need), used = items.slice();
+    // ordered＋group：每 group 張是一個有先後順序的故事 → 故事之間隨機抽、隨機排，故事裡面照順序
+    var all = rd.ordered ? (rd.group ? shuffle(range(Math.ceil(rd.items.length / rd.group))).reduce(function (a, g) { return a.concat(range(rd.items.length).slice(g * rd.group, (g + 1) * rd.group)); }, []) : range(rd.items.length)) : shuffle(range(rd.items.length)), need = G.sizes[G.r], items = all.slice(0, need), used = items.slice();
     var k = 0;
     function card() {
       var idx = items[k], it = rd.items[idx];
@@ -457,9 +458,11 @@ CARDGAME.mount = function (opts) {
   /* order：依序點選（送出「第幾個位置」和「點的是哪一個」） */
   function playOrder(rd) {
     var shown = shuffle(rd.items), got = 0, n = rd.items.length;
+    // variants：同一組項目、不同的排法（由快到慢／由慢到快…），每次隨機抽一種；伺服器記住這一局抽到哪一種
+    var vi = rd.variants ? Math.floor(Math.random() * rd.variants.length) : null, V = vi == null ? rd : rd.variants[vi];
     G.qk = 0;
     app.innerHTML = '<section class="card">' + hud() +
-      '<p class="bold mt2">🔢 ' + esc(rd.prompt) + ' <span class="small soft">' + cnt(0) + '</span></p><p class="tiny soft">' + esc(rd.hint || '依序點選：先點排第一的。') + '</p>' +
+      '<p class="bold mt2">🔢 ' + esc(V.prompt) + ' <span class="small soft">' + cnt(0) + '</span></p><p class="tiny soft">' + esc(V.hint || '依序點選：先點排第一的。') + '</p>' +
       '<div class="order-grid mt2">' + shown.map(function (x) {
         return '<button class="pick order-btn" data-t="' + esc(x.t) + '"><div style="font-size:2rem">' + x.icon + '</div><div>' + esc(x.t) + '</div></button>';
       }).join('') + '</div><div class="fb mt2" id="fb" aria-live="polite"></div></section>';
@@ -470,7 +473,7 @@ CARDGAME.mount = function (opts) {
         if (busy || btn.classList.contains('right')) return;
         var fb = document.getElementById('fb');
         if (G.offline) { mark(btn); if (got === n) offlineNote(fb, true, nextRound); return; }
-        call('ans', { r: G.r, i: got, v: btn.dataset.t }).then(function (r) {
+        call('ans', vi == null ? { r: G.r, i: got, v: btn.dataset.t } : { r: G.r, i: got, v: btn.dataset.t, set: vi }).then(function (r) {
           var alive = hit(r);
           refreshHud(); fb = document.getElementById('fb');
           if (r.ok) {
@@ -492,9 +495,10 @@ CARDGAME.mount = function (opts) {
 
   /* build：挑零件組出符合需求的東西（客人的規則在伺服器，送出的是選了哪些零件） */
   function playBuild(rd) {
-    var c = 0;
+    // 客人隨機抽 need 位、隨機排（伺服器只檢查「答對了幾位不同的客人」）
+    var c = 0, need = G.sizes[G.r], who = shuffle(range(rd.customers.length)).slice(0, need);
     function customer() {
-      var cu = rd.customers[c], chosen = {};
+      var ci = who[c], cu = rd.customers[ci], chosen = {};
       G.qk = c;
       app.innerHTML = '<section class="card">' + hud() +
         '<p class="small soft bold mt2">' + esc(rd.title || '接單組裝') + cnt(c) + '</p>' +
@@ -522,20 +526,20 @@ CARDGAME.mount = function (opts) {
           drawTotal();
         };
       });
-      function nextCu() { c++; if (c < rd.customers.length) customer(); else nextRound(); }
+      function nextCu() { c++; if (c < need) customer(); else nextRound(); }
       document.getElementById('submit').onclick = function () {
         var fb = document.getElementById('fb');
         if (busy) return;
         var missing = rd.slots.filter(function (s) { return !chosen[s.id]; });
         if (missing.length) { fb.innerHTML = '<div class="note warn">還沒選：' + missing.map(function (s) { return esc(s.label); }).join('、') + '</div>'; return; }
         var key = rd.slots.map(function (s) { return chosen[s.id].id; }).join('|');
-        if (G.offline) { app.querySelectorAll('.opt,#submit').forEach(function (x) { x.disabled = true; }); return offlineNote(fb, c + 1 >= rd.customers.length, nextCu); }
-        call('ans', { r: G.r, i: c, v: key }).then(function (r) {
+        if (G.offline) { app.querySelectorAll('.opt,#submit').forEach(function (x) { x.disabled = true; }); return offlineNote(fb, c + 1 >= need, nextCu); }
+        call('ans', { r: G.r, i: ci, v: key }).then(function (r) {
           var alive = hit(r);
           refreshHud(); fb = document.getElementById('fb');
           if (r.ok) {
             app.querySelectorAll('.opt,#submit').forEach(function (x) { x.disabled = true; });
-            fb.innerHTML = '<div class="note ok pop"><b>✅ 客人很滿意！</b> ' + esc(r.good || '') + '</div><div class="row mt2"><button class="btn primary" id="nx">' + (c + 1 < rd.customers.length ? '下一位客人 →' : '完成這回合 →') + '</button></div>';
+            fb.innerHTML = '<div class="note ok pop"><b>✅ 客人很滿意！</b> ' + esc(r.good || '') + '</div><div class="row mt2"><button class="btn primary" id="nx">' + (c + 1 < need ? '下一位客人 →' : '完成這回合 →') + '</button></div>';
             var nx = document.getElementById('nx'); nx.focus(); nx.onclick = nextCu;
           } else {
             if (!alive) return outOfHearts(fb, '.opt,#submit');

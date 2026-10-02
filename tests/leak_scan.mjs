@@ -18,6 +18,7 @@ for (const [t, f] of [['11601', 'platform'], ['11602', 'media'], ['11602', 'netw
     (rd.items || []).forEach(it => it.why && add(it.why.slice(0, 16), 'card why ' + lv.id));
     (rd.customers || []).forEach(cu => cu.good && add(cu.good.slice(0, 16), 'card good ' + lv.id));
     if (rd.type === 'order' && rd.why) add(rd.why.slice(0, 16), 'order why ' + lv.id);
+    (rd.variants || []).forEach(v => v.why && add(v.why.slice(0, 16), 'order why ' + lv.id));
     if (rd.type === 'type') rd.items.forEach(it => it.a.forEach(a => a.length >= 8 && add(a, 'type answer ' + lv.id)));   // 短的英文單字（SCHOOL…）到處都有，不算
   }));
 }

@@ -50,7 +50,13 @@ function pubRounds(term, lvId, st, list) {
     const src = term + '/' + lvId + '/' + (st == null ? '-' : st) + '/' + ri;
     if (rd.type === 'sort') {
       rd.items.forEach(it => { if (!rd.buckets.some(b => b.id === it.a)) throw new Error(lvId + ' 答案不在選項裡：' + it.t); });
-      return { type: 'sort', src, prompt: rd.prompt, pick: rd.pick, ordered: rd.ordered, buckets: rd.buckets, items: rd.items.map(it => pickKeys(it, ['t', 'icon', 'scene'])) };
+      if (rd.group && (!rd.ordered || rd.items.length % rd.group || (rd.pick || rd.items.length) % rd.group)) throw new Error(lvId + ' group 要搭配 ordered，題數和 pick 都要是 group 的倍數');
+      return { type: 'sort', src, prompt: rd.prompt, pick: rd.pick, ordered: rd.ordered, group: rd.group, buckets: rd.buckets, items: rd.items.map(it => pickKeys(it, ['t', 'icon', 'scene'])) };
+    }
+    if (rd.type === 'order' && rd.variants) {   // 同一組項目、不同排法：公開的只有題目文字和打亂的項目
+      const key = v => v.items.map(x => x.t).sort().join('|');
+      if (rd.variants.some(v => key(v) !== key(rd.variants[0]))) throw new Error(lvId + ' order 的每一種排法都要用同一組項目');
+      return { type: 'order', src, variants: rd.variants.map(v => pickKeys(v, ['prompt', 'hint'])), items: seededShuffle(rd.variants[0].items, src).map(x => pickKeys(x, ['t', 'icon'])) };
     }
     if (rd.type === 'order') return { type: 'order', src, prompt: rd.prompt, hint: rd.hint, items: seededShuffle(rd.items, src).map(x => pickKeys(x, ['t', 'icon'])) };
     if (rd.type === 'build') {
@@ -65,7 +71,7 @@ function pubRounds(term, lvId, st, list) {
       });
       return { type: 'build', src, title: rd.title, base: rd.base,
         slots: rd.slots.map(sl => ({ id: sl.id, label: sl.label, options: sl.options.map(o => pickKeys(o, ['id', 'label', 'price'])) })),
-        customers: rd.customers.map(cu => ({ who: cu.who, need: cu.need })) };
+        pick: rd.pick, customers: rd.customers.map(cu => ({ who: cu.who, need: cu.need })) };
     }
     if (rd.type === 'type') return { type: 'type', src, prompt: rd.prompt, tool: rd.tool, shuffle: rd.shuffle, items: rd.items.map(it => pickKeys(it, ['t', 'sub', 'icon', 'ph', 'hint', 'toolShift'])) };
     if (rd.type === 'lab' || rd.type === 'gen') return { ...clone(rd), src };   // 情境、題目都由伺服器產生（參數原樣帶過去）

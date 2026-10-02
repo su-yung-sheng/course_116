@@ -33,8 +33,8 @@ function svResolve(run, r) {
 /* 每一回合要答對幾題 */
 function svNeed(rd) {
   if (rd.type === 'sort') return rd.pick || rd.items.length;
-  if (rd.type === 'order') return rd.items.length;
-  if (rd.type === 'build') return rd.customers.length;
+  if (rd.type === 'order') return (rd.variants ? rd.variants[0] : rd).items.length;
+  if (rd.type === 'build') return Math.min(rd.pick || rd.customers.length, rd.customers.length);
   if (rd.type === 'type') return rd.items.length;
   if (rd.type === 'gen') { if (rd.n) return rd.n; CARDGAME.rand = svSeeded(1); try { return CARDGAME.gens[rd.gen](rd).length; } finally { CARDGAME.rand = null; } }
   if (rd.type === 'lab') return rd.n || 1;
@@ -88,8 +88,14 @@ SV_ACTIONS.ans = function (req) {
       var it = rd.items[i]; if (!it) svFail('bad-item');
       res = it.a === String(v) ? { ok: true, why: it.why } : { ok: false };
     } else if (rd.type === 'order') {
-      var pos = run.ord[r] || 0; if (i !== pos) svFail('bad-item');
-      if (rd.items[pos].t === String(v)) { run.ord[r] = pos + 1; res = { ok: true, pos: pos + 1, why: pos + 1 === rd.items.length ? rd.why : undefined }; }
+      var pos = run.ord[r] || 0, O = rd; if (i !== pos) svFail('bad-item');
+      if (rd.variants) {                // 同一組項目、不同排法：第一次作答時鎖定這一局是哪一種，之後不能換
+        run.oset = run.oset || {};
+        if (run.oset[r] == null) { if (!rd.variants[+req.set]) svFail('bad-set'); run.oset[r] = +req.set; }
+        else if (+req.set !== run.oset[r]) svFail('bad-set');
+        O = rd.variants[run.oset[r]];
+      }
+      if (O.items[pos].t === String(v)) { run.ord[r] = pos + 1; res = { ok: true, pos: pos + 1, why: pos + 1 === O.items.length ? O.why : undefined }; }
       else res = { ok: false };
     } else if (rd.type === 'build') {
       var cu = rd.customers[i]; if (!cu) svFail('bad-item');
@@ -99,7 +105,7 @@ SV_ACTIONS.ans = function (req) {
       var nv = svNorm(v);
       res = ti.a.some(function (a) { return svNorm(a) === nv; }) ? { ok: true, why: ti.why } : { ok: false };
     } else svFail('bad-round');
-    if (res.ok && (rd.type !== 'order' || res.pos === rd.items.length)) got[rd.type === 'order' ? 0 : i] = 1;
+    if (res.ok && (rd.type !== 'order' || res.pos === svNeed(rd))) got[rd.type === 'order' ? 0 : i] = 1;
     svHit(run, res.ok); svSave(run);
     res.hearts = run.hearts; if (run.dead) res.dead = true;
     return res;
@@ -226,7 +232,7 @@ SV_ACTIONS.fin = function (req) {
       var rd = svResolve(run, r), need = svNeed(rd), have = 0;
       if (rd.type === 'gen') { for (var q in run.gq) if (run.gq[q].r === r && run.gq[q].ok) have++; }
       else if (rd.type === 'lab') { for (var l in run.labs) if (run.labs[l].r === r && run.labs[l].ok) have++; }
-      else if (rd.type === 'order') have = run.ord[r] === rd.items.length ? need : 0;
+      else if (rd.type === 'order') have = run.ord[r] === need ? need : 0;
       else have = Object.keys(run.got[r] || {}).length;
       if (have < need) svFail('incomplete');
     }

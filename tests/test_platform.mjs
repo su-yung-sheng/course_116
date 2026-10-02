@@ -34,10 +34,14 @@ async function playSealed(rd, wrong) {
       await page.click('#nx');
     }
   } else if (rd.type === 'order') {
-    for (const [k, it] of rd.items.entries()) { await page.click(`.order-btn[data-t="${it.t}"]`); await page.waitForFunction(n => document.querySelectorAll('.order-btn.right').length >= n, k + 1); }
+    await page.waitForSelector('.order-btn:not(.right)');
+    const app = await page.textContent('#app'), V = rd.variants ? rd.variants.find(v => app.includes(v.prompt)) : rd;   // 🎲 抽到哪一種排法
+    for (const [k, it] of V.items.entries()) { await page.click(`.order-btn[data-t="${it.t}"]`); await page.waitForFunction(n => document.querySelectorAll('.order-btn.right').length >= n, k + 1); }
     await page.click('#nx');
   } else if (rd.type === 'build') {
-    for (const cu of rd.customers) {
+    for (let k = 0; k < Math.min(rd.pick || rd.customers.length, rd.customers.length); k++) {
+      await page.waitForSelector('#submit:not([disabled])');
+      const app = await page.textContent('#app'), cu = rd.customers.find(c => app.includes(c.who));   // 🎲 客人隨機抽
       const pick = await page.evaluate(([rd, cu]) => {   // 找一組合格的：暴力搜尋
         const combos = [[]];
         for (const s of rd.slots) { const nxt = []; for (const c of combos) for (const o of s.options) nxt.push([...c, [s.id, o]]); combos.length = 0; combos.push(...nxt); }
@@ -87,7 +91,7 @@ ok(await page.evaluate(() => STORE.moduleStars('platform')) === 24, '八關全�
 
 /* ── 🧪 實驗站：錯誤操作會被擋下（扣心但保留畫面），截圖 ── */
 const open = async (id, s, q = 1) => { await page.goto(`${BASE}/11601/platform.html?t=${id}${s}${q}#${id}`); await page.click(`.stage[data-s="${s}"]`); await page.waitForSelector('#lab > div'); await page.waitForTimeout(1600); };
-const fbHas = async t => { await page.waitForSelector('#fb .note', { timeout: 8000 }).catch(() => {}); return (await page.textContent('#fb')).includes(t); };   // 伺服器判斷：等回覆
+const fbHas = async t => { await page.waitForFunction(t => { const f = document.querySelector('#fb'); return f && f.textContent.includes(t); }, t, { timeout: 8000 }).catch(() => {}); return (await page.textContent('#fb')).includes(t); };   // 伺服器判斷：等回覆（上一則訊息可能還在，要等到新的出現）
 const heartsLeft = () => page.$$eval('.hud .heart.full, .hud .h-on', e => e.length).catch(() => -1);
 
 await open('G2', 1);

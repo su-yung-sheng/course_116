@@ -26,9 +26,9 @@ function stage(rounds) {
     if (rd.type === 'sort') {
       const n = rd.pick || rd.items.length, k = rd.buckets.length;
       for (let i = 0; i < n; i++) { if (k <= 3) { while (r(k) !== 0) if (bad()) return false; } else { e += r(k); if (e >= 3) return false; } }
-    } else if (rd.type === 'order') { for (let m = rd.items.length; m > 1; m--) { e += r(m); if (e >= 3) return false; } }
+    } else if (rd.type === 'order') { for (let m = (rd.variants ? rd.variants[0] : rd).items.length; m > 1; m--) { e += r(m); if (e >= 3) return false; } }
     else if (rd.type === 'build') {   // 每位客人：從所有組合裡猜到合格的一組（猜錯扣心）
-      for (const cu of rd.customers) { const p = buildP(rd, cu); while (Math.random() > p) if (bad()) return false; }
+      for (const cu of rd.customers.slice(0, rd.pick || rd.customers.length)) { const p = buildP(rd, cu); while (Math.random() > p) if (bad()) return false; }
     }
     else if (rd.type === 'gen') {
       const g = GEN[rd.gen]; if (!g) throw new Error('guess_sim 不認得出題器 ' + rd.gen + '：請加進 GEN');

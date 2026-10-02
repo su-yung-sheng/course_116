@@ -174,5 +174,21 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(one.call('fin', { t: '11602', run: s1.run }).stars === 1, '📋 一鍵貼上版：可以過關拿星');
 }
 
+/* 10. 🎲 排序題「不同排法」：第一次作答鎖定排法，中途換排法不行；客人隨機抽 pick 位 */
+{
+  const PF = priv('11601/content/platform.js').PF_LEVELS, g3 = PF.find(l => l.id === 'G3').stages[0].rounds, pc = (a, d) => gas.call(a, { t: '11601', ...d });
+  const s = pc('start', { lv: 'G3', st: 0 }), V1 = g3[0].variants[1];
+  ok(s.sizes[0] === 4 && s.sizes[1] === 4, 'G3：排序題每回合 4 題', s.sizes.join(','));
+  ok(pc('ans', { run: s.run, r: 0, i: 0, v: V1.items[0].t }).err === 'bad-set', '排序題沒說是哪一種排法 → bad-set');
+  ok(pc('ans', { run: s.run, r: 0, i: 0, v: V1.items[0].t, set: 1 }).ok === true, '排法 1：第 1 個答對');
+  ok(pc('ans', { run: s.run, r: 0, i: 1, v: g3[0].variants[0].items[1].t, set: 0 }).err === 'bad-set', '中途換成排法 0 → bad-set');
+  for (let i = 1; i < 4; i++) pc('ans', { run: s.run, r: 0, i, v: V1.items[i].t, set: 1 });
+  ok(gas.runs().find(x => x.id === s.run).ord[0] === 4, '照排法 1 排完 → 這一回合完成');
+  const g4 = PF.find(l => l.id === 'G4').stages[0].rounds, s4 = pc('start', { lv: 'G4', st: 0 });
+  ok(s4.sizes[1] === 3 && g4[1].customers.length === 6, 'G4：6 位客人抽 3 位', s4.sizes.join(','));
+  const g2 = PF.find(l => l.id === 'G2').stages[0].rounds[0], s2 = pc('start', { lv: 'G2', st: 0 });
+  ok(s2.sizes[0] === 10 && g2.items.length === 20 && g2.group === 5, 'G2：4 個任務抽 2 個（10 題）');
+}
+
 console.log(bad ? '✘ ' + bad + ' 項沒過' : '✔ 伺服器驗證全部通過');
 process.exit(bad ? 1 : 0);
