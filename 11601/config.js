@@ -78,7 +78,7 @@ window.CONFIG = {
     { id: 'python', no: '二', title: '進入 Python 的世界', sub: '畢旅籌備處・10 關 × 3 題', icon: '🐍', color: 'u2',
       href: 'python.html', maxStars: 30, levels: ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'], sequential: true,
       desc: '在瀏覽器裡直接寫 Python，送出後用測資自動評分。拿到 2 星才開下一關。', chapter: '第 2 章' },
-    { id: 'platform', no: '三', title: '系統平臺大冒險', sub: '8 關 · 三星三階：基礎 → 操作 → 挑戰🧪', icon: '🖥️', color: 'u3',
+    { id: 'platform', no: '三', title: '系統平臺大冒險', sub: '🌀 異世界轉生篇・8 章 · 三星三階🧪', icon: '🖥️', color: 'u3',
       href: 'platform.html', maxStars: 24, levels: ['G1','G2','G3','G4','G5','G6','G7','G8'],
       desc: '組電腦、當作業系統總管、開電腦急診室、經營雲端披薩店。', chapter: '第 3 章' },
     { id: 'arduino', no: '＋', title: '5016B 專題：AIoT 智慧教室守護站', sub: '五節 · 每節 3⭐（預測錯越少星越多）', icon: '💡', color: 'u4',

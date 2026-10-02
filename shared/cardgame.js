@@ -16,6 +16,9 @@
      gen    🎲 伺服器隨機出題（每位學生、每一次都不一樣）；題型 it.kind：input／choice／order／slots／bits
      lab    🧪 視覺化實驗站（CARDGAME.labs[名稱](el, api)）：伺服器產生情境、判斷結果
    opts.sequential：上一關 ≥ 2⭐ 才開下一關（HUB.openAll() 備課模式可暫時全開）
+   opts.story：故事外框（例如 11601/platform-story.js 的 PF_STORY）── 只換外框，題目、判斷、計星都不變
+     開場序章、關卡變成「章」、每章開場對話（可收起）、每階委託與過關台詞、愛心用完的提醒、
+     三階全過 →「🔙 回到現實」＋技能卡，集滿全部技能卡 → 稱號；終章三階全過 → 尾聲
    關卡有 custom:true（例如總複習）→ 用回合上的 src／gen／lab 組一局（伺服器會檢查每一項都是真的）
 
    兩種計星方式：
@@ -37,6 +40,25 @@ CARDGAME.mount = function (opts) {
   function range(n) { var o = []; for (var i = 0; i < n; i++) o.push(i); return o; }
   function best(id) { var r = STORE.level(MOD, id); return r ? (r.stars || 0) : 0; }
   function open(i) { return !opts.sequential || i === 0 || best(L[i - 1].id) >= 2 || !!(window.HUB && HUB.openAll && HUB.openAll()); }
+  /* ── 📖 故事外框（opts.story） ── */
+  var SY = opts.story || null;
+  function chap(lv) { return SY && SY.chapters[lv.id] || null; }
+  function pref(k, v) { try { if (v === undefined) return localStorage.getItem('story-' + MOD + '-' + k); localStorage.setItem('story-' + MOD + '-' + k, v); } catch (e) { return null; } }
+  function talk(lines, open, key) {   // 嚮導的對話框（<details>：可以收起來，記住這位使用者的選擇）
+    var g = SY.guide;
+    return '<details class="story-talk mt2"' + (open ? ' open' : '') + (key ? ' data-k="' + key + '"' : '') + '><summary><span class="story-ava" aria-hidden="true">' + g.icon + '</span><b>' + esc(g.name) + '說</b><span class="tiny soft">（點一下收起／展開）</span></summary>' +
+      '<div class="story-lines">' + lines.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div></details>';
+  }
+  function bindTalk() {
+    // 只記「使用者自己按的」：瀏覽器在插入 <details open> 時也會觸發 toggle，所以聽 summary 的 click
+    app.querySelectorAll('.story-talk[data-k]').forEach(function (d) { d.querySelector('summary').addEventListener('click', function () { pref(d.dataset.k, d.open ? '0' : '1'); }); });
+  }
+  function skills() { return L.filter(function (lv) { return chap(lv) && best(lv.id) >= 3; }); }
+  function realCard(lv) {
+    var c = chap(lv);
+    return '<div class="story-real mt2" style="text-align:left"><p class="bold">🔙 回到現實：課本裡的說法</p><p class="mt1">' + c.real + '</p></div>' +
+      '<div class="story-skill mt2"><span class="story-skill-ic" aria-hidden="true">' + c.skill.icon + '</span><div style="text-align:left"><p class="tiny soft bold">獲得技能卡</p><p class="black">' + esc(c.skill.name) + '</p><p class="tiny">' + esc(c.skill.desc) + '</p></div></div>';
+  }
   function norm(s) { return String(s).replace(/[！-～]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/\s+/g, '').toUpperCase(); }
 
   /* ── 呼叫伺服器（同一時間只送一個；失敗時顯示原因） ── */
@@ -60,21 +82,31 @@ CARDGAME.mount = function (opts) {
     G = null;
     var cb = document.getElementById('cool-box'); if (cb) cb.remove(); app.inert = false;
     var total = L.reduce(function (s, lv) { return s + best(lv.id); }, 0);
+    var got = SY ? skills() : [], all = SY && got.length === L.length;
     app.innerHTML =
-      '<section class="card pop"><div class="tape"></div><div class="row between"><div>' +
+      (SY ? '<section class="card pop story-head"><div class="tape"></div><p class="kicker">🌀 異世界轉生篇 · ' + esc(SY.world) + '</p>' +
+        talk(SY.prologue, pref('pro') == null ? total === 0 : pref('pro') === '1', 'pro') +
+        '<p class="small bold mt2">🎴 技能卡 ' + got.length + ' / ' + L.length + '（每章三階全過就拿到一張）' + (all ? '　' + SY.title.icon + ' 稱號：<span class="story-title">' + esc(SY.title.name) + '</span>' : '') + '</p>' +
+        '<div class="story-cards mt1">' + L.map(function (lv) { var c = chap(lv), on = best(lv.id) >= 3; return c ? '<span class="story-card' + (on ? ' on' : '') + '" title="' + esc(c.ch + '：' + c.skill.name + '（' + c.skill.desc + '）') + '"><span aria-hidden="true">' + (on ? c.skill.icon : '❔') + '</span><span class="tiny">' + esc(on ? c.skill.name : c.ch) + '</span></span>' : ''; }).join('') + '</div>' +
+        (best(L[L.length - 1].id) >= 3 ? '<details class="mt2"><summary class="bold small" style="cursor:pointer">📕 尾聲（重看）</summary><div class="story-lines mt1">' + SY.epilogue.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div></details>' : '') +
+        '</section>' : '') +
+      '<section class="card pop' + (SY ? ' mt2' : '') + '"><div class="tape"></div><div class="row between"><div>' +
       '<p class="kicker">' + L.length + ' 個互動體驗關卡 · ' + (opts.sequential ? '依序開放（上一關 2⭐ 開下一關）' : '自由挑戰順序') + '</p><h2 class="black" style="font-size:1.35rem">' + esc(opts.headline || '先讀「概念小卡」，再用遊戲證明你懂了') + '</h2>' +
       '<p class="small soft mt1">' + (L.some(function (lv) { return lv.stages; }) ? '每關三階：📘 基礎 ⭐ → 🛠️ 操作 ⭐⭐ → 🏆 挑戰 ⭐⭐⭐。過了第幾階就拿幾顆星；🎲 題目每次都不一樣。' : '每關 3 顆 ❤️，答錯扣一顆；過關時剩幾顆 ❤️ 就拿幾顆 ⭐。可以一直重玩刷新紀錄。') + '</p></div>' +
       '<div class="center"><div class="black" style="font-size:1.8rem;color:var(--star-ink)">' + total + ' / ' + (L.length * 3) + '</div><div class="tiny soft bold">⭐ 總星數</div></div></div></section>' +
       '<div id="net-state"></div>' +
       '<section class="grid ' + UI.gridCols(L.length) + ' mt3">' + L.map(function (lv, i) {
-        if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true"><div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
+        if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true">' + (chap(lv) ? '<p class="tiny bold story-ch">🌫️ ' + esc(chap(lv).ch) + '・？？？</p>' : '') + '<div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">上一關拿到 2 顆星就會開放</p></button>';
+        var c = chap(lv);
         return '<button class="card lvcard pop" data-i="' + i + '" style="animation-delay:' + (i * 40) + 'ms">' +
+          (c ? '<p class="tiny bold story-ch">' + c.bg + ' ' + esc(c.ch + '・' + c.place) + '</p>' : '') +
           '<div class="row between"><span style="font-size:2rem">' + lv.icon + '</span>' + UI.stars(best(lv.id)) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3>' +
           '<p class="tiny soft bold mt1">' + esc(lv.book) + '</p></button>';
       }).join('') + '</section>';
     app.querySelectorAll('.lvcard:not(.locked)').forEach(function (b) { b.onclick = function () { learn(+b.dataset.i); }; });
+    if (SY) bindTalk();
     netState();
   }
   function netState() {   // 連不上伺服器時，在選單上方說明「練習模式」
@@ -90,14 +122,17 @@ CARDGAME.mount = function (opts) {
     try { history.replaceState(null, '', '#' + lv.id); } catch (e) {}
     app.innerHTML =
       '<section class="card pop"><div class="tape"></div>' +
+      (chap(lv) ? '<p class="kicker story-ch">' + chap(lv).bg + ' ' + esc(chap(lv).ch + '・' + chap(lv).place) + '</p>' : '') +
       '<p class="kicker">第 ' + (i + 1) + ' 關 · ' + esc(lv.book) + '</p>' +
       '<h2 class="black" style="font-size:1.6rem">' + lv.icon + ' ' + esc(lv.title) + '</h2>' +
       (window.K12 ? K12.chips(lv.id) : '') +
+      (chap(lv) ? talk(chap(lv).intro, pref('ch') !== '0', 'ch') : '') +
       '<div class="note mt2 learn"><b>📖 概念小卡</b><div class="mt1">' + lv.learn + '</div></div>' +
       (lv.stages ? stageCards(lv) +
         '<div class="row mt2"><button class="btn" id="back">← 關卡選單</button></div></section>'
       : '<p class="small soft mt2">共 ' + lv.rounds.length + ' 回合 · 最佳紀錄 ' + UI.stars(best(lv.id)) + '</p>' +
       '<div class="row mt2"><button class="btn go big" id="go">開始挑戰 ▶</button><button class="btn" id="back">← 關卡選單</button></div></section>');
+    if (SY) bindTalk();
     if (lv.stages) {
       app.querySelectorAll('.stage:not([disabled])').forEach(function (b) { b.onclick = function () { start(i, +b.dataset.s); }; });
       var go = app.querySelector('.stage.next') || app.querySelector('.stage:not([disabled])');
@@ -120,6 +155,7 @@ CARDGAME.mount = function (opts) {
       var ok = stageOpen(lv, s), done = b > s, nx = ok && !done && (s === 0 || b >= s);
       return '<button class="stage' + (done ? ' done' : '') + (nx ? ' next' : '') + '" data-s="' + s + '"' + (ok ? '' : ' disabled') + '>' +
         '<span class="st-stars">' + '⭐'.repeat(s + 1) + '</span><span class="st-n">' + (ok ? STAGE[s].ic : '🔒') + ' 第 ' + (s + 1) + ' 階　' + STAGE[s].n + '</span>' +
+        (chap(lv) ? '<span class="st-q">📜 委託：' + UI.esc(chap(lv).quests[s]) + '</span>' : '') +
         '<span class="st-d">' + UI.esc(st.goal || STAGE[s].d) + '</span>' +
         '<span class="st-s">' + (done ? '✅ 已通過' : ok ? '▶ 開始' : '過了第 ' + s + ' 階才開放') + '</span></button>';
     }).join('') + '</div>';
@@ -685,13 +721,16 @@ CARDGAME.mount = function (opts) {
       '<div class="end-star mt1">' + UI.stars(stars) + '</div>' +
       '<p class="bold">答對 ' + G.right + ' / ' + G.total + ' · 剩 ' + G.hearts + ' 顆 ❤️</p>' +
       (r.improved ? '<p class="note ok small mt2" style="display:inline-block">⭐ 新紀錄已儲存！</p>' : '<p class="small soft mt1">最佳紀錄：' + UI.stars(best(lv.id)) + '</p>') +
+      (chap(lv) ? '<div class="story-say mt2"><span class="story-ava" aria-hidden="true">' + SY.guide.icon + '</span><p>' + chap(lv).win[s] + '</p></div>' +
+        (!more ? realCard(lv) + (i === L.length - 1 ? '<div class="story-real story-end mt2" style="text-align:left"><p class="bold">📕 尾聲</p>' + SY.epilogue.map(function (t) { return '<p class="mt1">' + t + '</p>'; }).join('') + '</div>' : '') +
+          (skills().length === L.length ? '<p class="note ok mt2"><b>' + SY.title.icon + ' 集滿 ' + L.length + ' 張技能卡！獲得稱號「' + esc(SY.title.name) + '」</b></p>' : '') : '') : '') +
       (more ? '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="up">挑戰第 ' + (s + 2) + ' 階：' + STAGE[s + 1].ic + ' ' + STAGE[s + 1].n + ' ▶</button><button class="btn" id="again">🔁 這一階再玩一次</button></div>'
         : '<p class="note ok small mt2" style="display:inline-block">🏆 三階全部通過！想刷新紀錄或練習，可以再挑戰一次（題目會不一樣）。</p><div class="row mt2" style="justify-content:center"><button class="btn" id="again">🔁 再挑戰一次</button></div>') +
       '<nav id="end-pager"></nav></section>';
     document.getElementById('again').onclick = function () { start(i, s); };
     var up = document.getElementById('up'); if (up) { up.onclick = function () { start(i, s + 1); }; up.focus(); }
     endPager(i);
-    if (r.improved) UI.toast('⭐ ' + lv.title + '：' + '★'.repeat(stars));
+    if (r.improved) UI.toast(chap(lv) && !more ? '🎴 獲得技能卡：' + chap(lv).skill.icon + ' ' + chap(lv).skill.name : '⭐ ' + lv.title + '：' + '★'.repeat(stars));
   }
 
   /* 🩹 修復站：❤️ 用完後，針對卡住的那一回合先練習（不扣心、先給提示），才能重新挑戰 */
@@ -699,7 +738,8 @@ CARDGAME.mount = function (opts) {
     var i = G.i, s = G.st, focus = G.deadR != null ? G.deadR : G.r, rd = G.rounds[focus];
     var canDrill = rd && (rd.type === 'gen' || rd.type === 'sort' || rd.type === 'lab');
     app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">' + (s != null ? '第 ' + (s + 1) + ' 階的' : '') + '愛心用完了</h2>' +
-      '<p class="soft mt1">先到 <b>🩹 修復站</b> 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
+      '<p class="soft mt1">先到 <b>🩹 修復站</b>' + (SY ? '（回復之泉）' : '') + ' 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
+      (chap(G.lv) ? '<div class="story-say mt2" style="text-align:left"><span class="story-ava" aria-hidden="true">' + SY.guide.icon + '</span><p>' + chap(G.lv).lose + '</p></div>' : '') +
       '<div class="note mt2" style="text-align:left">🩹 卡住的回合：<b>' + esc(rd ? (rd.prompt || rd.title || '這一回合') : '這一回合') + '</b><br>' +
       (canDrill ? (rd.type === 'lab' ? '在實驗站再做 1 次：不扣心、先給提示。' : '練 2 題：不扣心、題目上方先給提示，答完看解說。') : '先把概念小卡讀一遍（看著畫面 10 秒）。') + '</div>' +
       '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="repair-go">🩹 進入修復站</button></div></section>';

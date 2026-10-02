@@ -13,6 +13,7 @@
 <script src="../shared/api.js"></script>
 <script src="../shared/cardgame.js"></script>
 <script src="content/platform.js"></script>
+<script src="platform-story.js"></script>
 <script src="../shared/pf-labs.js"></script>
 <link rel="stylesheet" href="../shared/cardgame.css">
 <link rel="stylesheet" href="../shared/pf-labs.css">
@@ -23,8 +24,8 @@
   <div id="app"></div>
 </main>
 <script>
-UI.topbar('#topbar', { title: '🖥️ 系統平臺大冒險', kicker: '單元三 · 3上 第 3 章' });
-CARDGAME.mount({ app: '#app', levels: PF_LEVELS, mod: 'platform' });
+UI.topbar('#topbar', { title: '🖥️ 系統平臺大冒險', kicker: '單元三 · 3上 第 3 章 · 🌀 異世界轉生篇' });
+CARDGAME.mount({ app: '#app', levels: PF_LEVELS, mod: 'platform', story: window.PF_STORY, headline: '轉生到矽之大陸：先讀概念小卡，再用委託證明你懂了' });
 </script>
 </body>
 </html>

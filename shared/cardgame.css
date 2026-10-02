@@ -58,3 +58,22 @@
 .cool-n{font-size:3rem;line-height:1;color:var(--unit)}
 .repair-chip{background:var(--ok-bg);color:var(--ok);border-color:transparent}
 .qprog{display:inline-flex;align-items:center;gap:.35rem}.qbar{display:inline-block;width:3.2rem;height:.4rem;background:rgba(15,23,42,.1);border-radius:999px;overflow:hidden}.qbar>i{display:block;height:100%;background:var(--unit)}
+/* 🌀 故事外框（opts.story，例如系統平臺「異世界轉生篇」） */
+.story-head{background:linear-gradient(135deg,#eef2ff,#faf5ff)}
+.story-ch{color:#5b21b6;letter-spacing:.02em}
+.story-talk{background:#fff;border:2px solid #c4b5fd;border-radius:1rem;padding:.6rem .9rem}
+.story-talk summary{cursor:pointer;display:flex;align-items:center;gap:.5rem;list-style:none}
+.story-talk summary::-webkit-details-marker{display:none}
+.story-ava{font-size:1.6rem;line-height:1;flex-shrink:0}
+.story-lines p{margin:.45rem 0 0;line-height:1.75;color:var(--ink)}
+.story-say{display:flex;gap:.6rem;align-items:flex-start;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:1rem;padding:.6rem .8rem;text-align:left}
+.story-say p{margin:0;line-height:1.7;color:#3b0764;font-weight:700}
+.story-real{background:#ecfeff;border:2px dashed #0e7490;border-radius:1rem;padding:.7rem .9rem;color:#164e63}
+.story-real.story-end{background:#fefce8;border-color:#a16207;color:#422006}
+.story-skill{display:inline-flex;gap:.7rem;align-items:center;background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #b45309;border-radius:1rem;padding:.6rem 1rem;color:#422006}
+.story-skill-ic{font-size:2.2rem}
+.story-cards{display:flex;flex-wrap:wrap;gap:.4rem}
+.story-card{display:inline-flex;flex-direction:column;align-items:center;min-width:4.2rem;padding:.35rem .4rem;border-radius:.7rem;border:2px dashed #94a3b8;background:#fff;color:var(--ink-soft);font-size:1.3rem}
+.story-card.on{border:2px solid #b45309;background:#fef3c7;color:#422006}
+.story-title{color:#7c2d12;background:#fde68a;border-radius:.4rem;padding:0 .35rem}
+.stage .st-q{font-size:.8rem;font-weight:800;color:#5b21b6}
