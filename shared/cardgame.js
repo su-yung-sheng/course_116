@@ -129,7 +129,7 @@ CARDGAME.mount = function (opts) {
       (SY ? '<section class="card pop story-head"><div class="tape"></div><p class="kicker">🌀 異世界轉生篇 · ' + esc(SY.world) + '</p>' +
         talk(SY.prologue, pref('pro') == null ? total === 0 : pref('pro') === '1', 'pro') +
         '<p class="small bold mt2">🎴 技能卡 ' + got.length + ' / ' + L.length + '（每章三階全過就拿到一張）' + (all ? '　' + SY.title.icon + ' 稱號：<span class="story-title">' + esc(SY.title.name) + '</span>' : '') + '</p>' +
-        '<div class="story-cards mt1">' + L.map(function (lv) { var c = chap(lv), on = best(lv.id) >= 3; return c ? '<span class="story-card' + (on ? ' on' : '') + '" title="' + esc(c.ch + '：' + c.skill.name + '（' + c.skill.desc + '）') + '"><span aria-hidden="true">' + (on ? c.skill.icon : '❔') + '</span><span class="tiny">' + esc(on ? c.skill.name : c.ch) + '</span></span>' : ''; }).join('') + '</div>' +
+        '<div class="story-cards mt1">' + L.map(function (lv) { var c = chap(lv), on = best(lv.id) >= 3; return c ? '<span class="story-card' + (on ? ' on' : '') + '" title="' + esc(c.ch + '：' + c.skill.name + '（' + c.skill.desc + '）') + '"><span class="sc-ic" aria-hidden="true">' + (on ? c.skill.icon : '❔') + '</span><span class="sc-name">' + esc(on ? c.skill.name : '？？？') + '</span><span class="tiny">' + esc(c.ch) + '</span></span>' : ''; }).join('') + '</div>' +
         (best(L[L.length - 1].id) >= 3 ? '<details class="mt2"><summary class="bold small" style="cursor:pointer">📕 尾聲（重看）</summary><div class="story-lines mt1">' + SY.epilogue.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div></details>' : '') +
         '</section>' : '') +
       '<section class="card pop' + (SY ? ' mt2' : '') + '"><div class="tape"></div><div class="row between"><div>' +
