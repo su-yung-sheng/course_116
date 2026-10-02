@@ -1,0 +1,99 @@
+/* =====================================================================
+   🌀 系統平臺大冒險 ·「異世界轉生篇」頁面風格（只有 platform.html 載入，<body class="isekai">）
+   ---------------------------------------------------------------------
+   · 背景：矽之大陸的暮光夜空（星點、遠方的光環）；卡片：羊皮紙＋金色滾邊的冒險手冊
+   · 標題、故事文字用明體（Noto Serif TC）；題目、選項、實驗站維持原本的黑體，投影一樣清楚
+   · 每一章有自己的色調（#app[data-ch]、.lvcard[data-ch]）：鑑定所紫、王城金、寶庫琥珀、鍛造屋炭紅、
+     公會木褐、治療院青、天空之城天藍、魔像工坊鋼藍
+   · 對比都 ≥ 4.5（tests/test_a11y.mjs）；尊重「減少動態效果」設定
+   ===================================================================== */
+body.isekai{
+  --paper-bg:#1e1b4b;
+  --parch:#fdf8ee; --parch-2:#f6ecd7; --gold:#a16207; --gold-2:#ca8a04; --rune:#5b21b6;
+  --card:var(--parch); --soft:#f8f1e3; --line:#e4d5b7;
+  --unit:#6d28d9; --unit-soft:#f3eefe; --unit-bg:#ede9fe; --unit-line:#ddd6fe;
+  --acc:#6d28d9; --acc-soft:#f3eefe;
+  background-color:#1e1b4b;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%,rgba(255,255,255,.8),transparent 60%),
+    radial-gradient(1px 1px at 28% 72%,rgba(255,255,255,.65),transparent 60%),
+    radial-gradient(1.5px 1.5px at 47% 33%,rgba(253,230,138,.85),transparent 60%),
+    radial-gradient(1px 1px at 63% 12%,rgba(255,255,255,.7),transparent 60%),
+    radial-gradient(1.5px 1.5px at 78% 58%,rgba(255,255,255,.75),transparent 60%),
+    radial-gradient(1px 1px at 91% 26%,rgba(253,230,138,.8),transparent 60%),
+    radial-gradient(1px 1px at 8% 88%,rgba(255,255,255,.6),transparent 60%),
+    radial-gradient(1.5px 1.5px at 55% 92%,rgba(255,255,255,.6),transparent 60%),
+    radial-gradient(60rem 30rem at 85% -10%,rgba(167,139,250,.35),transparent 70%),
+    radial-gradient(50rem 28rem at -10% 110%,rgba(45,212,191,.18),transparent 70%),
+    linear-gradient(180deg,#1e1b4b 0%,#312e81 55%,#4c1d95 100%);
+  background-size:auto;background-attachment:fixed;min-height:100vh;
+}
+html:has(body.isekai){background:#1e1b4b}
+/* 頁首：在夜空上要用亮色字 */
+.isekai .topbar .kicker{color:#fde68a}
+.isekai .topbar .title{color:#fff;font-family:'Noto Serif TC',serif;font-weight:900;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+.isekai .topbar .title::after{background:linear-gradient(90deg,#fde68a,#a78bfa);width:4.5rem}
+.isekai .back{background:#fde68a;color:#3b0764}
+.isekai .who{background:var(--parch);border-color:#fde68a;color:#3b0764}
+
+/* 卡片＝羊皮紙冒險手冊：金色雙線滾邊，紙膠帶換成符文寶石 */
+.isekai .card{background:linear-gradient(180deg,var(--parch),var(--parch-2));border:1px solid #d6c29a;
+  box-shadow:inset 0 0 0 4px var(--parch),inset 0 0 0 5px rgba(161,98,7,.35),0 10px 30px rgba(15,10,40,.35)}
+.isekai .tape{width:1.1rem;height:1.1rem;top:-.55rem;border-radius:.2rem;transform:translateX(-50%) rotate(45deg);
+  background:linear-gradient(135deg,#fde68a,var(--acc));box-shadow:0 0 0 3px var(--parch),0 0 12px rgba(167,139,250,.8)}
+.isekai h2,.isekai h3.black,.isekai .black{font-family:'Noto Serif TC',serif}
+.isekai .kicker{color:#57534e}
+.isekai .note{background:var(--acc-soft);border-left-color:var(--acc)}
+.isekai .note.ok{background:#ecfdf5;border-left-color:var(--ok)}
+.isekai .note.bad{background:#fef2f2;border-left-color:var(--bad)}
+.isekai .note.warn{background:#fffbeb;border-left-color:var(--warn)}
+.isekai .note.learn{background:#fff;border:1px solid var(--line);border-left:4px solid var(--acc)}
+.isekai .btn{background:#fffdf7;border-color:#d6c29a}
+.isekai .btn.go{background:var(--acc);border-color:var(--acc);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.isekai .btn.go:hover{filter:brightness(.92)}
+.isekai .pick{background:#fffdf7;border-color:#e4d5b7}
+.isekai .pick.on{border-color:var(--acc);background:var(--acc-soft)}
+.isekai .chip{background:#fffdf7;border-color:#e4d5b7}
+
+/* 每一章的色調（深色字都在淺底上，對比 ≥ 4.5） */
+.isekai [data-ch="G1"]{--acc:#6d28d9;--acc-soft:#f3eefe}   /* 🏛️ 轉生鑑定所：魔法紫 */
+.isekai [data-ch="G2"]{--acc:#a16207;--acc-soft:#fef6dc}   /* 🏰 王城：王冠金 */
+.isekai [data-ch="G3"]{--acc:#b45309;--acc-soft:#fff3e0}   /* 🎒 寶庫：琥珀 */
+.isekai [data-ch="G4"]{--acc:#b91c1c;--acc-soft:#fdeceb}   /* ⚒️ 鍛造屋：爐火紅 */
+.isekai [data-ch="G5"]{--acc:#7c4a1e;--acc-soft:#f6ebdf}   /* 📜 公會：木褐 */
+.isekai [data-ch="G6"]{--acc:#0f766e;--acc-soft:#e6f6f3}   /* 🏥 治療院：聖泉青 */
+.isekai [data-ch="G7"]{--acc:#0369a1;--acc-soft:#e6f2fa}   /* ☁️ 天空之城：天藍 */
+.isekai [data-ch="G8"]{--acc:#334155;--acc-soft:#eef1f6}   /* 🤖 魔像工坊：鋼鐵 */
+
+/* 冒險地圖：關卡卡片＝委託單 */
+.isekai .lvcard{border-top:6px solid var(--acc);text-align:left}
+.isekai .lvcard .story-ch{color:var(--acc)}
+.isekai .lvcard:hover{transform:translateY(-4px) rotate(-.3deg);box-shadow:inset 0 0 0 4px var(--parch),inset 0 0 0 5px rgba(161,98,7,.35),0 16px 34px rgba(15,10,40,.45)}
+.isekai .lvcard.locked{filter:grayscale(.7) blur(.2px);opacity:.75;background:linear-gradient(180deg,#e7e2f3,#d9d3ea)}
+.isekai .lvcard.locked .story-ch{color:#57534e}
+
+/* 三階委託卡 */
+.isekai .stage{background:#fffdf7;border-color:#e4d5b7;border-top-color:var(--acc)}
+.isekai .stage.next{border-color:var(--acc);background:var(--acc-soft)}
+.isekai .stage .st-q{color:var(--acc)}
+.isekai .stage.done{border-color:var(--ok);border-top-color:var(--ok)}
+
+/* 故事元件換成手冊風 */
+.isekai .story-head{background:linear-gradient(180deg,#fbf5ff,var(--parch))}
+.isekai .story-ch{color:var(--acc)}
+.isekai .story-talk{background:#fffdf7;border:2px solid var(--acc);box-shadow:0 0 0 4px var(--acc-soft)}
+.isekai .story-lines p{font-family:'Noto Serif TC',serif;font-size:1.02rem}
+.isekai .story-say{background:var(--acc-soft);border-color:var(--acc)}
+.isekai .story-say p{color:#1c1917;font-family:'Noto Serif TC',serif}
+.isekai .story-ava{animation:isk-float 3s ease-in-out infinite}
+.isekai .story-real{background:#fff;border-color:var(--acc);color:#1c1917}
+.isekai .story-real .bold:first-child{color:var(--acc)}
+.isekai .story-real.story-end{background:#fffbeb;border-color:#a16207;color:#422006}
+.isekai .story-skill{box-shadow:0 0 0 3px #fde68a,0 0 22px rgba(202,138,4,.45)}
+.isekai .story-card{background:#fffdf7}
+.isekai .story-card.on{box-shadow:0 0 12px rgba(202,138,4,.55)}
+.isekai .end-star .stars{font-size:1.8rem;text-shadow:0 0 12px rgba(245,158,11,.55)}
+
+@keyframes isk-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.isekai .story-ava{animation:none}.isekai .lvcard:hover{transform:none}}
+@media print{body.isekai{background:#fff}}

@@ -79,7 +79,7 @@ CARDGAME.mount = function (opts) {
 
   /* ── 關卡選單 ─────────────────────────────── */
   function menu() {
-    G = null;
+    G = null; if (SY) delete app.dataset.ch;   // 頁面風格：每一章有自己的色調（11601/platform-isekai.css 用 [data-ch]）
     var cb = document.getElementById('cool-box'); if (cb) cb.remove(); app.inert = false;
     var total = L.reduce(function (s, lv) { return s + best(lv.id); }, 0);
     var got = SY ? skills() : [], all = SY && got.length === L.length;
@@ -99,7 +99,7 @@ CARDGAME.mount = function (opts) {
         if (!open(i)) return '<button class="card lvcard locked" data-i="' + i + '" disabled aria-disabled="true">' + (chap(lv) ? '<p class="tiny bold story-ch">🌫️ ' + esc(chap(lv).ch) + '・？？？</p>' : '') + '<div class="row between"><span style="font-size:2rem">🔒</span>' + UI.stars(0) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3><p class="tiny soft bold mt1">上一關拿到 2 顆星就會開放</p></button>';
         var c = chap(lv);
-        return '<button class="card lvcard pop" data-i="' + i + '" style="animation-delay:' + (i * 40) + 'ms">' +
+        return '<button class="card lvcard pop" data-i="' + i + '"' + (c ? ' data-ch="' + lv.id + '"' : '') + ' style="animation-delay:' + (i * 40) + 'ms">' +
           (c ? '<p class="tiny bold story-ch">' + c.bg + ' ' + esc(c.ch + '・' + c.place) + '</p>' : '') +
           '<div class="row between"><span style="font-size:2rem">' + lv.icon + '</span>' + UI.stars(best(lv.id)) + '</div>' +
           '<h3 class="black mt1">第 ' + (i + 1) + ' 關　' + esc(lv.title) + '</h3>' +
@@ -118,7 +118,7 @@ CARDGAME.mount = function (opts) {
 
   /* ── 概念小卡 ─────────────────────────────── */
   function learn(i) {
-    var lv = L[i];
+    var lv = L[i]; if (SY) app.dataset.ch = lv.id;
     try { history.replaceState(null, '', '#' + lv.id); } catch (e) {}
     app.innerHTML =
       '<section class="card pop"><div class="tape"></div>' +
@@ -165,6 +165,7 @@ CARDGAME.mount = function (opts) {
   /* focus：修復站要練的回合（第幾回合）；沒有就是正式挑戰 */
   function start(i, s, focus) {
     var lv = L[i], st = lv.stages ? (s || 0) : null, all = lv.stages ? lv.stages[st].rounds : lv.rounds, practice = focus != null;
+    if (SY) app.dataset.ch = lv.id;
     G = { i: i, lv: lv, st: st, rounds: practice ? [all[focus]] : all, r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0, practice: practice };
     var g = G;
     app.innerHTML = '<section class="card center"><p class="soft bold">⏳ 準備題目中…</p></section>';
