@@ -68,6 +68,7 @@
         return '<span class="wk-i' + (ok ? ' ok' : '') + '">' + (ok ? '✅' : '⬜') + ' ' + esc(id) + (r && r.stars ? ' <small>' + '⭐'.repeat(r.stars) + '</small>' : '') + '</span>';
       }).join('') + '</div>' +
       '<div class="bar mt1"><i style="width:' + pct + '%"></i></div>' +
+      '<p class="tiny soft mt1">每關拿到 ⭐ 就算完成本週任務；⭐⭐、⭐⭐⭐ 是進階挑戰，有時間再往上拚。</p>' +
       (cur.href && w.todo.length ? '<p class="small mt1"><a class="bold" href="' + esc(cur.href) + '">前往本週任務 →</a></p>' : '') + '</section>';
   }
 
