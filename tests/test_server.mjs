@@ -190,5 +190,23 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(s2.sizes[0] === 10 && g2.items.length === 20 && g2.group === 5, 'G2：4 個任務抽 2 個（10 題）');
 }
 
+/* 11. 單元一快速檢核：一課一局，伺服器記錯幾次、發星（附收據）；舊版網頁的 dq 只回對錯 */
+{
+  const RV = JSON.parse(fs.readFileSync(new URL('../private/11601/digital/review.json', import.meta.url))), dc = (a, d) => gas.call(a, { t: '11601', ...d });
+  const rv = RV['1'], good = rv.filter(x => x.ok), bad = rv.filter(x => !x.ok);
+  const old = dc('dq', { u: '1', q: bad[0].q, v: bad[0].label });
+  ok(old.ok === false && !!old.hint && !('stars' in old), '舊版 dq（沒有 run）：只回對錯和提示，不發星');
+  const s = dc('dqs', { u: '1', who: { cls: '901', seat: '01', name: '測' } });
+  ok(s.run && s.n === 3, '開局：快速檢核 3 題', s.n);
+  ok(dc('dqf', { run: s.run }).err === 'incomplete', '沒答完就結算 → incomplete');
+  dc('dq', { run: s.run, q: bad[0].q, v: bad[0].label });
+  for (const g of good) dc('dq', { run: s.run, q: g.q, v: g.label });
+  const again = rv.find(x => !x.ok && x.q === good[0].q); if (again) dc('dq', { run: s.run, q: again.q, v: again.label });   // 這題已經答對，再按錯的不再記錯
+  const f = dc('dqf', { run: s.run });
+  ok(f.stars === 2 && f.wrong === 1 && !!f.rc, '錯 1 次 → 2⭐、附收據（答對之後再按錯的不算）', JSON.stringify({ stars: f.stars, wrong: f.wrong }));
+  ok(dc('dqf', { run: s.run }).err === 'done', '同一局不能結算第二次');
+  ok(dc('dq', { run: s.run, q: good[0].q, v: good[0].label }).err === 'done', '已結算的局不能再作答');
+}
+
 console.log(bad ? '✘ ' + bad + ' 項沒過' : '✔ 伺服器驗證全部通過');
 process.exit(bad ? 1 : 0);

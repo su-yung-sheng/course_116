@@ -9,7 +9,8 @@
    ⚠️ 實驗任務只挑「算得出來」的操作（二進位、摩斯、RGB 解碼、動手調參數），
       不挑選擇題 —— 選擇題的答案寫在原本的頁面程式裡，F12 看得到，不拿來計星。
    ⚠️ 快速檢核的對錯原本寫在按鈕的 onclick 裡（F12 一看就知道），
-      現在按鈕只剩 answerReview(題號, this)：由這支把「按了哪一顆」送到驗證伺服器判斷（API.call('dq')）。
+      現在按鈕只剩 answerReview(題號, this)：由這支把「按了哪一顆」送到驗證伺服器判斷（dqs → dq → dqf），
+      星星也由伺服器照「錯幾次」發、附收據（2026-10-03 起）。
    ===================================================================== */
 (function () {
   /* 116：頁首、課程小卡、登入框都用全站樣式（theme.css + ui.js + unit.js），和其他單元長得一樣。 */
@@ -23,14 +24,25 @@
   if (unit) hookReview();
   var names = { '1': '1-1 二進位原理', '2': '1-2 文字數位化', '3': '1-3 音訊數位化', '4': '1-4 影像數位化' };
 
-  /* 快速檢核：對錯與提示都在驗證伺服器（來源 private/11601/digital/review.json）
-     送出「第幾題、按鈕上的字」，伺服器回答對不對、錯的話提示是什麼。 */
+  /* 快速檢核：對錯、錯幾次、星星都在驗證伺服器（來源 private/11601/digital/review.json）
+     一課一局（和 5016B 同一套）：第一次作答時開局（dqs）→ 每按一次送「第幾題、按鈕上的字」（dq）
+     → 三題都答對才結算（dqf）：伺服器照「錯幾次」發星、附收據，網頁只負責存起來。 */
   function hookReview() {
-    var wrong = 0, saved = false, right = {};
+    var saved = false, right = {}, total = 3, run = null, opening = null;
+    function openRun() {
+      if (!opening) opening = API.call('dqs', { u: unit, who: STORE.me() }).then(function (r) { run = r.run; total = r.n || 3; return run; }, function (e) { opening = null; throw e; });
+      return opening;
+    }
+    function reset() {   // 局過期（放超過 6 小時）：重來一次
+      run = null; opening = null; right = {}; saved = false;
+      document.querySelectorAll('.review-btn').forEach(function (b) { b.classList.remove('right', 'wrong'); });
+      var sc = document.getElementById('review-score'); if (sc) sc.innerText = '0 / ' + total;
+    }
     window.answerReview = function (q, btn) {
-      if (!btn || btn.dataset.busy) return;
+      if (!btn || btn.dataset.busy || right[q]) return;   // 這題已經答對：不再送（伺服器也不會再記錯）
       btn.dataset.busy = '1';
-      API.call('dq', { u: unit, q: q, v: btn.textContent.replace(/\s+/g, '') }).then(function (r) {
+      var v = btn.textContent.replace(/\s+/g, '');
+      openRun().then(function (id) { return API.call('dq', { run: id, q: q, v: v }); }).then(function (r) {
         delete btn.dataset.busy;
         var fb = document.getElementById('review-feedback'), sc = document.getElementById('review-score');
         if (r.ok) {
@@ -38,26 +50,33 @@
           btn.classList.remove('wrong'); btn.classList.add('right');   // 全站選項樣式：答對綠框
           if (fb) fb.innerText = '✅ 第 ' + q + ' 題答對了！';
         } else {
-          wrong++; btn.classList.add('wrong');   // 答錯紅框（不公布正解，看提示再想）
+          btn.classList.add('wrong');   // 答錯紅框（不公布正解，看提示再想）
           if (fb) fb.innerText = '💡 ' + r.hint;
         }
         var n = Object.keys(right).length;
-        if (sc) sc.innerText = n + ' / 3';
-        if (n >= 3) {
+        if (sc) sc.innerText = n + ' / ' + total;
+        if (n >= total) {
           var badge = document.getElementById('review-badge'); if (badge) badge.classList.remove('hidden');
-          if (!saved && STORE.me()) {
-            saved = true;
-            var stars = wrong === 0 ? 3 : (wrong === 1 ? 2 : 1);
-            var res = STORE.saveLevel('digital', 'u' + unit, { stars: stars, score: Math.max(0, 100 - wrong * 20) });
-            var best = res.record ? res.record.stars : stars;
-            UI.toast('🏅 ' + names[unit] + '：這次 ' + '★'.repeat(stars) + (res.improved ? '（新紀錄！）' : '（最佳 ' + '★'.repeat(best) + '）'), 3500);
-          }
+          finish();
         }
       }, function (e) {
         delete btn.dataset.busy;
+        if (e && (e.err === 'run-expired' || e.err === 'done')) reset();
         var fb = document.getElementById('review-feedback'); if (fb) fb.innerText = '📴 ' + API.msg(e);
       });
     };
+    function finish() {
+      if (saved) return; saved = true;
+      API.call('dqf', { run: run }).then(function (res) {
+        if (!STORE.me()) return;
+        var rec = STORE.saveLevel('digital', 'u' + unit, { stars: res.stars, rc: res.rc, ts: res.ts, score: Math.max(0, 100 - res.wrong * 20) });
+        var best = rec.record ? rec.record.stars : res.stars;
+        UI.toast('🏅 ' + names[unit] + '：這次 ' + '★'.repeat(res.stars) + (rec.improved ? '（新紀錄！）' : '（最佳 ' + '★'.repeat(best) + '）'), 3500);
+      }, function (e) {
+        saved = false;
+        var fb = document.getElementById('review-feedback'); if (fb) fb.innerText = '📴 星星沒有存到：' + API.msg(e);
+      });
+    }
   }
 
 

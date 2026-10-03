@@ -24,7 +24,11 @@ for (const u of ['1', '2']) {
   for (let i = 0; i < btns.length; i++) if (isOk(i)) await btns[i].click();
   await page.waitForFunction(() => document.getElementById('review-score').innerText.startsWith('3'));
   await page.waitForTimeout(300);
-  console.log('unit', u, 'badge visible:', await page.isVisible('#review-badge'), 'rec:', JSON.stringify(await page.evaluate(k => STORE.level('digital', 'u' + k), u)));
+  await page.waitForFunction(k => !!(STORE.level('digital', 'u' + k) || {}).rc, u, { timeout: 8000 }).catch(() => {});
+  const rec = await page.evaluate(k => STORE.level('digital', 'u' + k), u);
+  console.log('unit', u, 'badge visible:', await page.isVisible('#review-badge'), 'rec:', JSON.stringify(rec));
+  const want = u === '1' ? 2 : 3, okRec = rec && rec.stars === want && !!rec.rc && !!rec.ts;
+  console.log((okRec ? '  ✔ ' : '  ✘ ') + `1-${u} 快速檢核：伺服器發 ${want}⭐、附收據`); if (!okRec) process.exitCode = 1;
 }
 /* ── 🧪 實驗任務：每課三項，完成一項 1⭐（x1～x4） ── */
 const labStars = u => page.evaluate(k => (STORE.level('digital', 'x' + k) || {}).stars || 0, u);

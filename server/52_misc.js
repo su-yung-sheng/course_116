@@ -1,5 +1,5 @@
 /* =====================================================================
-   其他：5016B 專題（計星）、單元一快速檢核、漸進提示
+   其他：5016B 專題（計星）、單元一快速檢核（計星）、漸進提示
    ===================================================================== */
 /* ── 5016B 專題：一節一局，看「預測錯幾次」給星 ──────────────
    lks { t, sid, who }      → 開這一節的局（run），回傳有幾題檢核
@@ -53,12 +53,44 @@ SV_ACTIONS.lkp = function (req) {
   svLog(run, 3, '專題成果卡');
   return { ok: true, stars: 3, rc: rc.rc, ts: rc.ts };
 };
-/* 單元一：{ u, q, v } → v 是學生按的按鈕上的字 */
-SV_ACTIONS.dq = function (req) {
-  var list = SV_ANS.digital[String(req.u)] || [], v = String(req.v || '').replace(/\s+/g, '');
-  var b = list.filter(function (x) { return String(x.q) === String(req.q) && x.label.replace(/\s+/g, '') === v; })[0];
+/* 單元一快速檢核（和 5016B 同一套：一課一局，伺服器記錯幾次、發星）
+   dqs { t, u, who }      → 開這一課的局，回傳有幾題
+   dq  { run, q, v }      → v 是學生按的按鈕上的字；對了記下這題，錯了記一次（這題已經答對就不再記錯）
+   dqf { run }            → 每一題都答對了才結算：一次都沒錯 3⭐、錯 1 次 2⭐、錯 2 次以上 1⭐（附收據）
+   ⚠️ 舊版網頁（沒有 run）送 dq { u, q, v } 仍然只回對錯，不發星 */
+function dqList(u) { return SV_ANS.digital[String(u)] || []; }
+function dqCount(u) { var seen = {}; dqList(u).forEach(function (x) { seen[x.q] = 1; }); return Object.keys(seen).length; }
+function dqPick(u, q, v) {
+  v = String(v || '').replace(/\s+/g, '');
+  var b = dqList(u).filter(function (x) { return String(x.q) === String(q) && x.label.replace(/\s+/g, '') === v; })[0];
   if (!b) svFail('bad-item');
-  return b.ok ? { ok: true } : { ok: false, hint: b.hint };
+  return b;
+}
+SV_ACTIONS.dqs = function (req) {
+  var u = String(req.u), n = dqCount(u); if (!n) svFail('bad-item');
+  var run = { id: svId(16), kind: 'dq', term: String(req.t), mod: 'digital', lv: 'u' + u, u: u, st: null, hearts: 0, wrong: 0, got: {}, t0: Date.now(), who: req.who || null };
+  svSave(run);
+  return { run: run.id, n: n };
+};
+SV_ACTIONS.dq = function (req) {
+  if (!req.run) { var b0 = dqPick(req.u, req.q, req.v); return b0.ok ? { ok: true } : { ok: false, hint: b0.hint }; }
+  return svWithLock(function () {
+    var run = svRun(req.run); if (run.kind !== 'dq') svFail('bad-run'); if (run.done) svFail('done');
+    var b = dqPick(run.u, req.q, req.v), q = String(req.q);
+    if (b.ok) run.got[q] = 1; else if (!run.got[q]) run.wrong++;
+    svSave(run);
+    return b.ok ? { ok: true, wrong: run.wrong } : { ok: false, hint: b.hint, wrong: run.wrong };
+  });
+};
+SV_ACTIONS.dqf = function (req) {
+  return svWithLock(function () {
+    var run = svRun(req.run); if (run.kind !== 'dq') svFail('bad-run'); if (run.done) svFail('done');
+    if (Object.keys(run.got).length < dqCount(run.u)) svFail('incomplete');
+    run.done = true; svSave(run);
+    var stars = lkStars(run.wrong), rc = svReceipt(run, stars);
+    svLog(run, stars, '快速檢核錯 ' + run.wrong + ' 次');
+    return { ok: true, stars: stars, wrong: run.wrong, rc: rc.rc, ts: rc.ts };
+  });
 };
 /* 漸進提示：按一次給一則（Python、試算表） */
 SV_ACTIONS.hint = function (req) {
