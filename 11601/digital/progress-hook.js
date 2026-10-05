@@ -81,12 +81,22 @@
 
 
   /* ================================================================
-     🧪 實驗任務：每一課三項，完成一項 1★（進度存在 digital 模組的 x1～x4）
-     做法：把頁面原本的函式包一層（跑完原本的，再檢查有沒有達成），或聽滑桿的 input 事件。
+     🧪 實驗任務 → 🔐 認證挑戰（2026-10-05 起）：每一課三項，每通過一項 1⭐（進度存在 digital 模組的 x1～x4）
+     · 頁面上的互動實驗照舊給學生玩：這裡偵測到「玩過了」只標 🧭，不給星
+     · 星星要按「🔐 認證」：驗證伺服器當場出題（server/55_xtask.js，🎲 每次不同）、判斷、發收據
+       每局 3 顆 ❤️；選擇題答錯會換一題；全對 → 這一項的收據＋這一課的收據（伺服器逐一驗過其他任務的收據才算進總星數）
+     · 舊的「網頁自己發的星星」沒有收據：有收據的成績會取代它（shared/store.js）
      頁面的狀態變數（currentLevel、bonanzaScore…）是原本程式的全域變數，直接讀。
      ================================================================ */
   function V(name) { try { return (0, eval)(name); } catch (e) { return undefined; } }   // 讀頁面程式的全域 let 變數
   function $(id) { return document.getElementById(id); }
+  /* 認證挑戰的名稱（題數要和 private/11601/digital/xtask.json 一致） */
+  var CERT = {
+    bits: '💡 位元燈泡：十進位換成二進位（3 題）', bonanza: '💎 BINARY BONANZA：從 4 個二進位挑出正確的（4 題）', quiz: '🔁 雙向換算：二進位 ↔ 十進位（4 題）',
+    listen: '📻 收報員：把摩斯電碼解成單字（2 題）', send: '📡 發報員：把單字發報成摩斯電碼（2 題）', codec: '🔤 編碼實驗室：ASCII、Big-5、Unicode（3 題）',
+    wave: '🎚️ 聲音三要素：響度、音調、音色（4 題）', digit: '📉 取樣與量化（3 題）', format: '💾 格式與容量：WAV、MP3、MIDI（3 題）',
+    explorer: '🔍 像素探險家：像素與色彩位元（3 題）', decode: '🎨 色彩解碼：RGB 的 0 和 1（3 題）', compress: '🗜️ 壓縮實驗室：顏色、尺寸與格式（3 題）'
+  };
   var LAB = {
     '1': [
       { k: 'bits', t: '🔦 位元燈泡：拼出 3 個不同的目標數字', mem: {},
@@ -126,24 +136,111 @@
 
   function hookLab() {
     var tasks = LAB[unit]; if (!tasks) return;
-    var ID = 'x' + unit, rec = STORE.level('digital', ID) || {}, got = Object.assign({}, (rec.extra || {}).tasks || {});
-    // 任務卡：放在課程小卡下面（捲動時課程小卡會固定在上方，任務卡跟著內容走）
+    var ID = 'x' + unit, rec = STORE.level('digital', ID) || {}, ex = rec.extra || {};
+    var xr = Object.assign({}, ex.xr || {}), seen = Object.assign({}, ex.explored || {});
     var nav = $('ucards'), anchor = nav && (nav.closest('.ucards-ph') || nav);
     var box = document.createElement('section'); box.className = 'card labtasks'; box.id = 'lab-tasks'; box.setAttribute('aria-label', '本課實驗任務');
     if (anchor) anchor.insertAdjacentElement('afterend', box);
+    var G = null;   // 進行中的認證：{ t, run, qs, i, hearts }
+    function n() { return tasks.filter(function (t) { return xr[t.k]; }).length; }
     function draw() {
-      var n = tasks.filter(function (t) { return got[t.k]; }).length;
-      box.innerHTML = '<div class="row between"><div><p class="kicker">🧪 本課實驗任務 · 每完成一項 1⭐</p><h2 class="bold" style="font-size:1.05rem">動手玩下面的實驗，完成這三項任務</h2></div>' +
-        '<span class="chip" id="lab-stars">' + n + ' / 3 ⭐</span></div><div class="grid g3 mt1">' +
-        tasks.map(function (t) { return '<div class="labtask' + (got[t.k] ? ' done' : '') + '" data-k="' + t.k + '"><span class="ck">' + (got[t.k] ? '✅' : '⬜') + '</span><span>' + UI.esc(t.t) + '</span></div>'; }).join('') +
-        '</div><p class="tiny soft mt1">再加上最後的「快速檢核」（最多 3⭐），這一課最多 6⭐。</p>';
+      box.innerHTML = '<div class="row between"><div><p class="kicker">🧪 本課實驗任務 · 每通過一項認證 1⭐</p><h2 class="bold" style="font-size:1.05rem">先玩下面的實驗，再按「🔐 認證」證明你懂了</h2></div>' +
+        '<span class="chip" id="lab-stars">' + n() + ' / 3 ⭐</span></div><div class="grid g3 mt1">' +
+        tasks.map(function (t) {
+          var ok = !!xr[t.k];
+          return '<div class="labtask' + (ok ? ' done' : '') + '" data-k="' + t.k + '"><span class="ck">' + (ok ? '✅' : '⬜') + '</span><div class="lt-bd"><p class="bold">' + UI.esc(CERT[t.k] || t.t) + '</p>' +
+            '<p class="tiny soft mt1">怎麼玩：' + UI.esc(t.t.replace(/^\S+\s*[^：]*：/, '')) + (seen[t.k] ? ' <span class="lt-seen">🧭 玩過了</span>' : '') + '</p>' +
+            (ok ? '<p class="tiny bold mt1 lt-ok">已認證 ⭐</p>' : '<button type="button" class="btn sm mt1 lt-go" data-k="' + t.k + '">🔐 認證</button>') + '</div></div>';
+        }).join('') + '</div><div id="xt-panel" class="xt-panel" aria-live="polite"></div>' +
+        '<p class="tiny soft mt1">認證題目由伺服器當場出（每次都不一樣），每局 3 顆 ❤️。再加上最後的「快速檢核」（最多 3⭐），這一課最多 6⭐。</p>';
+      box.querySelectorAll('.lt-go').forEach(function (b) { b.onclick = function () { start(tasks.filter(function (t) { return t.k === b.dataset.k; })[0]); }; });
     }
-    function finish(t) {
-      if (got[t.k]) return;
-      got[t.k] = 1;
-      var n = tasks.filter(function (x) { return got[x.k]; }).length;
-      STORE.saveLevel('digital', ID, { stars: n, extra: { tasks: got } });
-      draw(); UI.toast('🧪 實驗任務完成：' + t.t.split('：')[0] + '（' + n + ' / 3 ⭐）', 3000);
+    function panel(html) { var p = $('xt-panel'); if (p) p.innerHTML = html; return p; }
+    function start(t) {
+      if (!STORE.me()) return UI.toast('請先登入（班級、座號）再認證。', 3000);
+      panel('<div class="note mt2">⏳ 正在向伺服器拿題目…</div>');
+      API.call('xs', { u: unit, k: t.k, who: STORE.me() }).then(function (r) {
+        G = { t: t, run: r.run, qs: r.qs, i: 0, hearts: r.hearts }; ask();
+      }, function (e) { panel('<div class="note bad mt2">📴 ' + UI.esc(API.msg(e)) + '</div>'); });
+    }
+    function head() {
+      return '<div class="row between xt-head"><p class="bold">🔐 ' + UI.esc(CERT[G.t.k]) + '</p><span class="row" style="gap:.5rem"><span class="chip">第 ' + (G.i + 1) + ' / ' + G.qs.length + ' 題</span>' + UI.hearts(G.hearts, 3) + '</span></div>';
+    }
+    function ask() {
+      var q = G.qs[G.i];
+      var body = q.kind === 'choice'
+        ? '<div class="xt-opts mt1">' + q.options.map(function (o) { return '<button type="button" class="pick xt-opt' + (q.mono ? ' mono' : '') + '" data-v="' + UI.esc(o.id) + '">' + UI.esc(o.label) + '</button>'; }).join('') + '</div>'
+        : '<form class="row mt1 xt-form" style="gap:.5rem;flex-wrap:wrap"><label class="sr-only" for="xt-in">你的答案</label><input id="xt-in" class="xt-in' + (q.mono ? ' mono' : '') + '" autocomplete="off" placeholder="' + UI.esc(q.ph || '') + '"><button class="btn primary" type="submit">送出</button></form>';
+      panel('<div class="xt-box mt2">' + head() + '<div class="xt-q mt1"><span class="xt-ic" aria-hidden="true">' + (q.icon || '❓') + '</span><div><p class="xt-t' + (q.mono ? ' mono' : '') + '">' + UI.esc(q.t) + '</p><p class="small soft">' + UI.esc(q.sub || '') + '</p>' +
+        (q.morse ? '<button type="button" class="btn sm mt1" id="xt-play">▶ 播放這段電碼</button>' : '') + '</div></div>' + body + '<div id="xt-fb" class="mt1"></div>' +
+        '<div class="row mt1"><button type="button" class="btn sm" id="xt-quit">✕ 先不認證</button></div></div>');
+      $('xt-quit').onclick = function () { G = null; panel(''); };
+      if ($('xt-play')) $('xt-play').onclick = function () { playMorse(q.t); };
+      if (q.kind === 'choice') box.querySelectorAll('.xt-opt').forEach(function (b) { b.onclick = function () { send(b.dataset.v, b); }; });
+      else { var f = box.querySelector('.xt-form'), inp = $('xt-in'); inp.focus(); f.onsubmit = function (e) { e.preventDefault(); if (inp.value.trim()) send(inp.value, null); }; }
+    }
+    var busy = false;
+    function send(v, btn) {
+      if (busy || !G) return; busy = true;
+      var q = G.qs[G.i];
+      API.call('xq', { run: G.run, i: q.i, v: v }).then(function (r) {
+        busy = false; G.hearts = r.hearts;
+        var fb = $('xt-fb');
+        if (r.ok) {
+          if (btn) btn.classList.add('right');
+          box.querySelectorAll('.xt-opt, .xt-form input, .xt-form button').forEach(function (x) { x.disabled = true; });
+          var last = G.i + 1 >= G.qs.length;
+          fb.innerHTML = '<div class="note ok"><b>✅ 答對了！</b> ' + UI.esc(r.why || '') + '</div><div class="row mt1"><button type="button" class="btn primary" id="xt-next">' + (last ? '完成認證 🔐' : '下一題 →') + '</button></div>';
+          var nx = $('xt-next'); nx.focus(); nx.onclick = last ? finish : function () { G.i++; ask(); };
+          return;
+        }
+        if (r.dead) {
+          panel('<div class="xt-box mt2">' + head() + '<div class="note bad mt1"><b>💔 ❤️ 用完了</b>，這一局結束。' + UI.esc(r.hint ? '提示：' + r.hint : '') + '<br>回去再玩一下上面的實驗，再挑戰一次（題目會換一組）。</div>' +
+            '<div class="row mt1"><button type="button" class="btn primary" id="xt-again">🔁 重新認證</button><button type="button" class="btn" id="xt-quit2">先不認證</button></div></div>');
+          var t = G.t; G = null; $('xt-again').onclick = function () { start(t); }; $('xt-quit2').onclick = function () { panel(''); };
+          return;
+        }
+        if (r.swap) {   // 選擇題答錯：換一題
+          G.qs[G.i] = r.swap; ask();
+          $('xt-fb').innerHTML = '<div class="note bad">❌ 不對喔，換一題。' + UI.esc(r.hint ? '提示：' + r.hint : '') + '</div>';
+          return;
+        }
+        if (btn) { btn.classList.add('wrong'); btn.disabled = true; }
+        var h = box.querySelector('.xt-head'); if (h) h.outerHTML = head();
+        fb.innerHTML = '<div class="note bad">❌ 再想想。' + UI.esc(r.hint ? '提示：' + r.hint : '') + '</div>';
+        var inp = $('xt-in'); if (inp) { inp.select(); inp.focus(); }
+      }, function (e) {
+        busy = false; var fb = $('xt-fb'); if (fb) fb.innerHTML = '<div class="note bad">📴 ' + UI.esc(API.msg(e)) + '</div>';
+      });
+    }
+    function finish() {
+      var prev = Object.keys(xr).map(function (k) { return { k: k, rc: xr[k].rc, ts: xr[k].ts }; });
+      API.call('xf', { run: G.run, prev: prev }).then(function (r) {
+        xr[r.task.k] = { rc: r.task.rc, ts: r.task.ts };
+        var saved = STORE.saveLevel('digital', ID, { stars: r.stars, rc: r.rc, ts: r.ts, extra: { xr: xr } });
+        var t = G.t; G = null; draw();
+        UI.toast('🔐 認證通過：' + (CERT[t.k] || '').split('（')[0] + '（' + n() + ' / 3 ⭐）', 3000);
+        return saved;
+      }, function (e) { var fb = $('xt-fb'); if (fb) fb.innerHTML = '<div class="note bad">📴 星星沒有存到：' + UI.esc(API.msg(e)) + '</div>'; });
+    }
+    /* ▶ 摩斯電碼播放（點 0.1 秒、劃 0.3 秒） */
+    var actx = null;
+    function playMorse(code) {
+      try {
+        actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume();
+        var t0 = actx.currentTime + 0.05, u = 0.1;
+        String(code).split('').forEach(function (c) {
+          if (c === '.' || c === '-') { var o = actx.createOscillator(), g = actx.createGain(), d = c === '.' ? u : 3 * u;
+            o.frequency.value = 650; o.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(0.2, t0); o.start(t0); o.stop(t0 + d); t0 += d + u; }
+          else t0 += 2 * u;
+        });
+      } catch (e) {}
+    }
+    /* 玩過頁面上的實驗 → 標 🧭（不給星） */
+    function explored(t) {
+      if (seen[t.k]) return; seen[t.k] = 1;
+      STORE.saveLevel('digital', ID, { extra: { explored: seen } });
+      if (!G) draw();
     }
     tasks.forEach(function (t) {
       var m = t.mem || {};
@@ -151,14 +248,14 @@
         var orig = window[name]; if (typeof orig !== 'function') return;
         window[name] = function () {
           var args = arguments, r = orig.apply(this, args);
-          function chk() { try { if (t.fn[name](m, args)) finish(t); } catch (e) {} }
+          function chk() { try { if (t.fn[name](m, args)) explored(t); } catch (e) {} }
           if (r && typeof r.then === 'function') r.then(chk, chk); else chk();
           return r;
         };
       });
       Object.keys(t.input || {}).forEach(function (id) {
         var el = $(id); if (!el) return;
-        el.addEventListener('input', function () { try { if (t.input[id](m, null, el)) finish(t); } catch (e) {} });
+        el.addEventListener('input', function () { try { if (t.input[id](m, null, el)) explored(t); } catch (e) {} });
       });
     });
     draw();

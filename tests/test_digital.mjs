@@ -1,4 +1,4 @@
-import { launch, login, BASE, SHOTS } from './harness.mjs';
+import { launch, login, BASE, SHOTS, gas, lastRun } from './harness.mjs';
 import fs from 'fs';
 const REVIEW = JSON.parse(fs.readFileSync(new URL('../private/11601/digital/review.json', import.meta.url))); fs.mkdirSync(SHOTS, { recursive: true });
 const { browser, context } = await launch();
@@ -30,22 +30,45 @@ for (const u of ['1', '2']) {
   const want = u === '1' ? 2 : 3, okRec = rec && rec.stars === want && !!rec.rc && !!rec.ts;
   console.log((okRec ? '  ✔ ' : '  ✘ ') + `1-${u} 快速檢核：伺服器發 ${want}⭐、附收據`); if (!okRec) process.exitCode = 1;
 }
-/* ── 🧪 實驗任務：每課三項，完成一項 1⭐（x1～x4） ── */
-const labStars = u => page.evaluate(k => (STORE.level('digital', 'x' + k) || {}).stars || 0, u);
+/* ── 🧪 實驗任務 → 🔐 認證挑戰：玩實驗只標 🧭；星星要通過伺服器出的認證題（x1～x4，附收據） ── */
+const labRec = u => page.evaluate(k => STORE.level('digital', 'x' + k) || {}, u);
+const labStars = async u => (await labRec(u)).stars || 0;
 let lfail = 0; const lok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) lfail++; };
+const cur = () => { const r = lastRun(); return { r, i: r.slots.findIndex((_, k) => !r.got[k]) }; };
+async function certify(k, wrongFirst) {
+  await page.click(`.lt-go[data-k="${k}"]`); await page.waitForSelector('.xt-box');
+  for (let guard = 0; guard < 12; guard++) {
+    const { r, i } = cur(); if (i < 0) break;
+    const it = gas.ctx.xItem(r, i);
+    if (wrongFirst && guard === 0) {
+      if (it.kind === 'choice') await page.click(`.xt-opt:not([data-v="${it.ans}"])`);
+      else { await page.fill('#xt-in', '99999'); await page.press('#xt-in', 'Enter'); }
+      await page.waitForFunction(() => /❌/.test(document.getElementById('xt-fb').textContent));
+      continue;
+    }
+    if (it.kind === 'choice') await page.click(`.xt-opt[data-v="${it.ans}"]`);
+    else { await page.fill('#xt-in', it.ans); await page.press('#xt-in', 'Enter'); }
+    await page.waitForSelector('#xt-next'); await page.click('#xt-next');
+    await page.waitForTimeout(150);
+  }
+  await page.waitForFunction(() => !document.querySelector('.xt-box'), null, { timeout: 8000 }).catch(() => {});
+}
 await page.goto(BASE + '/11601/digital/1.html'); await page.waitForSelector('#lab-tasks .labtask');
-lok((await page.$$('#lab-tasks .labtask')).length === 3, '1-1 顯示三項實驗任務');
+lok((await page.$$('#lab-tasks .labtask')).length === 3 && (await page.$$('#lab-tasks .lt-go')).length === 3, '1-1 顯示三項實驗任務，各有「🔐 認證」');
 await page.evaluate(() => { for (let k = 0; k < 3; k++) { resetBits(); const t = gameLevels[currentLevel]; [16, 8, 4, 2, 1].forEach(v => { const i = bitValues.indexOf(v); if ((t & v) && bitStates[i] === 0) toggleBit(i, v); }); nextLevel(); } });
 await page.waitForTimeout(200);
-lok(await labStars(1) === 1 && (await page.textContent('#lab-stars')).startsWith('1'), '1-1 位元燈泡拼出 3 個目標數字 → 1⭐');
+lok(await labStars(1) === 0 && !!(await page.$('.labtask[data-k="bits"] .lt-seen')), '1-1 玩位元燈泡只標 🧭 玩過了，不給星');
+await certify('bonanza', true);
+const b1 = await labRec(1);
+lok(b1.stars === 1 && !!b1.rc && !!(b1.extra.xr || {}).bonanza, '1-1 BONANZA 認證（答錯一次換題）→ 1⭐、附收據', JSON.stringify({ stars: b1.stars }));
 await page.goto(BASE + '/11601/digital/2.html'); await page.waitForSelector('#lab-tasks .labtask');
-await page.fill('#cipher-input-text', 'ABC'); await page.evaluate(() => runMultiCodec());
-lok(await labStars(2) === 0, '1-2 只輸入英文，編碼任務還沒完成');
-await page.fill('#cipher-input-text', 'Hi 你好'); await page.evaluate(() => runMultiCodec());
-lok(await labStars(2) === 1, '1-2 中英混合比較三種編碼 → 1⭐');
+await certify('send', true);
+lok(await labStars(2) === 1, '1-2 發報員認證（摩斯電碼；輸入錯一次扣 ❤️ 可以再答）→ 1⭐');
 await page.goto(BASE + '/11601/digital/3.html'); await page.waitForSelector('#lab-tasks .labtask');
 await page.evaluate(() => { for (const id of ['range-sampling', 'range-quantize']) for (const v of ['min', 'max']) { const el = document.getElementById(id); el.value = el[v]; el.dispatchEvent(new Event('input')); } });
-lok(await labStars(3) === 1, '1-3 取樣、量化都拉到最少和最多 → 1⭐');
+lok(!!(await page.$('.labtask[data-k="digit"] .lt-seen')) && await labStars(3) === 0, '1-3 取樣、量化都拉到最少和最多 → 🧭，還沒有星');
+await certify('digit');
+lok(await labStars(3) === 1, '1-3 取樣與量化認證 → 1⭐');
 await page.goto(BASE + '/11601/digital/4.html'); await page.waitForSelector('#lab-tasks .labtask');
 /* 🔍 1-4 認識解析度：觀察任務先判斷、再展開解說 */
 {
@@ -56,11 +79,19 @@ await page.goto(BASE + '/11601/digital/4.html'); await page.waitForSelector('#la
   for (const q of qs) await (await q.$('.pick[data-ok]')).click();
   lok(!(await hid()) && (await page.textContent('[data-obs-score]')).trim() === '3 / 3', '1-4 觀察任務：3 題都答對 → 展開解說');
 }
-await page.click('#sub-image-compress'); await page.waitForTimeout(400);
-await page.click('#btn-comp-color');   // 切到這一步時會自動顯示原圖（raw）
-lok(await labStars(4) === 0, '1-4 壓縮只試了兩種，還沒完成');
-await page.click('#btn-comp-size');
-lok(await labStars(4) === 1, '1-4 三種壓縮都試過 → 1⭐');
+await page.evaluate(() => scrollTo(0, 0));
+await certify('decode');
+lok(await labStars(4) === 1, '1-4 色彩解碼認證 → 1⭐');
+/* 第二項認證：伺服器驗過第一項的收據，這一課變 2⭐ */
+await certify('compress');
+const r4 = await labRec(4);
+lok(r4.stars === 2 && !!r4.rc && Object.keys(r4.extra.xr || {}).length === 2, '1-4 第二項認證 → 這一課 2⭐（伺服器驗過前一項的收據）');
+/* 舊的「網頁自己發的星星」沒有收據 → 被有收據的成績取代；沒收據的新高分不能沿用舊收據 */
+{
+  const t = await page.evaluate(() => { STORE.saveLevel('zztest', 't', { stars: 3 }); const a = STORE.saveLevel('zztest', 't', { stars: 1, rc: 'r1', ts: 1 }).record;
+    const b = STORE.saveLevel('zztest', 't', { stars: 2 }).record; return [a.stars, a.rc, b.stars, b.rc || null]; });
+  lok(t[0] === 1 && t[1] === 'r1' && t[2] === 2 && t[3] === null, '進度：有收據的成績取代沒收據的舊星；沒收據的新高分不沿用舊收據', JSON.stringify(t));
+}
 await page.screenshot({ path: SHOTS + 'digital-lab.png' });
 if (lfail) process.exitCode = 1;
 
@@ -68,7 +99,7 @@ await page.goto(BASE + '/11601/digital/index.html');
 await page.waitForSelector('#ucards .ucard');
 const prog = await page.$$eval('#ucards .ucard .pg', e => e.map(x => x.textContent.replace(/\s+/g, '')));
 console.log('unit cards:', prog);
-if (!(prog[0].includes('3/6') && prog[1].includes('4/6') && prog[2].includes('1/6') && prog[3].includes('1/6'))) { console.log('✘ 課程小卡進度不對'); process.exitCode = 1; }
+if (!(prog[0].includes('3/6') && prog[1].includes('4/6') && prog[2].includes('1/6') && prog[3].includes('2/6'))) { console.log('✘ 課程小卡進度不對'); process.exitCode = 1; }
 console.log('topbar back:', await page.getAttribute('#topbar .back', 'href'), 'unit color:', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--unit').trim()));
 await page.screenshot({ path: SHOTS + 'digital-index.png' });
 await page.goto(BASE + '/11601/hub.html');

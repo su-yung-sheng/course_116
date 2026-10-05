@@ -9,6 +9,8 @@ const load = f => { const c = { window: {} }; vm.createContext(c); vm.runInConte
 const N = new Map(); const add = (n, why) => { n = String(n); if (n.length >= 6) N.set(n, why); };
 for (const t of ['11601', '11602']) Object.values(load(`private/${t}/lab.js`).LAB_ANSWERS).flat().forEach(x => add(x.why.slice(0, 16), 'lab why'));
 Object.values(JSON.parse(fs.readFileSync('private/11601/digital/review.json'))).flat().forEach(x => x.hint && add(x.hint.slice(0, 14), 'review hint'));
+// 單元一 🔐 認證挑戰的觀察題：題目、解說、提示、正解只在伺服器
+Object.values(JSON.parse(fs.readFileSync('private/11601/digital/xtask.json')).obs).flat().forEach(q => { add(q.t.slice(0, 14), 'xtask obs'); add(q.why.slice(0, 14), 'xtask why'); q.o[0].length >= 6 && add(q.o[0], 'xtask answer'); });
 load('private/11602/content/sheet.js').SHEET_LEVELS.forEach(l => { l.targets.forEach(t => { add(t.ref, 'sheet ref'); t.tip && add(t.tip.slice(0, 14), 'sheet tip'); }); (l.hints || []).forEach(h => add(h.slice(0, 18), 'sheet hint')); if (l.clean) add(l.clean.note.slice(0, 16), 'sheet clean note'); });
 for (const t of ['11601']) load(`private/${t}/content/python.js`).PY_LEVELS.forEach(l => { (l.hints || []).forEach(h => add(h.slice(0, 18), 'py hint ' + l.id)); l.tests.forEach(t => t.hidden && t.why && add(t.why, 'hidden why ' + l.id)); (l.steps || []).forEach((s, i) => (s.hints || []).forEach(h => add(h.slice(0, 18), 'py step hint ' + l.id + '-' + (i + 1)))); });
 // 互動遊戲（所有 *_LEVELS）：答對後的解說、組合題的過關說明

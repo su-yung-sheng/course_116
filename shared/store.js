@@ -86,7 +86,8 @@
       next.tries = (old.tries || 0) + 1;
       next.lastAt = Date.now();
       var improved = false;
-      if ((rec.stars || 0) > (old.stars || 0)) { next.stars = rec.stars; next.at = Date.now(); improved = true; if (rec.rc) { next.rc = rec.rc; next.ts = rec.ts; } }   // rc：伺服器簽發的收據（老師可以驗證這顆星是真的）
+      if (rec.rc && !old.rc && (old.stars || 0) > (rec.stars || 0)) { next.stars = rec.stars || 0; next.rc = rec.rc; next.ts = rec.ts; next.at = Date.now(); }   // 有收據的成績取代網頁自己算、沒有收據的舊成績
+      else if ((rec.stars || 0) > (old.stars || 0)) { next.stars = rec.stars; next.at = Date.now(); improved = true; if (rec.rc) { next.rc = rec.rc; next.ts = rec.ts; } else { delete next.rc; delete next.ts; } }   // 沒有收據的新成績：舊收據對不上新星數，拿掉   // rc：伺服器簽發的收據（老師可以驗證這顆星是真的）
       else if (rec.rc && (rec.stars || 0) === (old.stars || 0) && !old.rc) { next.rc = rec.rc; next.ts = rec.ts; }
       if (rec.score != null && (old.score == null || rec.score > old.score)) next.score = rec.score;
       if (rec.done && !old.done) { next.done = true; next.at = next.at || Date.now(); improved = true; }

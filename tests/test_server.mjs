@@ -208,5 +208,46 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(dc('dq', { run: s.run, q: good[0].q, v: good[0].label }).err === 'done', '已結算的局不能再作答');
 }
 
+/* 12. 單元一 🔐 認證挑戰：每一項用正解都過得了（多種子）、亂猜很難過、收據要驗章才算進總星數 */
+{
+  const XT = JSON.parse(fs.readFileSync(new URL('../private/11601/digital/xtask.json', import.meta.url))), xc = (a, d) => gas.call(a, { t: '11601', ...d });
+  const who = { cls: '901', seat: '02', name: '認證' }, runOf = id => gas.runs().find(r => r.id === id);
+  let allOk = true, leak = false, worst = 0, worstK = '';
+  for (const [u, ts] of Object.entries(XT.tasks)) for (const k of Object.keys(ts)) {
+    for (let rep = 0; rep < 25; rep++) {
+      const s = xc('xs', { u, k, who }); if (!s.run) { allOk = false; break; }
+      if (JSON.stringify(s.qs).includes('"ans"') || JSON.stringify(s.qs).includes('check')) leak = true;
+      for (const q of s.qs) { const it = gas.ctx.xItem(runOf(s.run), q.i); const r = xc('xq', { run: s.run, i: q.i, v: it.ans }); if (!r.ok) { allOk = false; console.log('  ✘ 正解被判錯', u, k, it.t, it.ans); } }
+      if (!xc('xf', { run: s.run }).task) allOk = false;
+    }
+    /* 亂猜：選擇題隨便點、輸入題亂填 → 過關機率 */
+    let pass = 0; const N = 300;
+    for (let rep = 0; rep < N; rep++) {
+      const s = xc('xs', { u, k, who }); let qs = s.qs, dead = false;
+      for (let j = 0; j < qs.length && !dead; j++) {
+        for (let tries = 0; tries < 10; tries++) {
+          const q = qs[j], v = q.kind === 'choice' ? q.options[Math.floor(Math.random() * q.options.length)].id : String(Math.floor(Math.random() * 300));
+          const r = xc('xq', { run: s.run, i: q.i, v });
+          if (r.ok) break; if (r.dead) { dead = true; break; } if (r.swap) qs[j] = r.swap;
+        }
+      }
+      if (!dead && xc('xf', { run: s.run }).task) pass++;
+    }
+    if (pass / N > worst) { worst = pass / N; worstK = u + '.' + k; }
+  }
+  ok(allOk, '認證挑戰：12 項 × 25 次，正解都判對、都能結算');
+  ok(!leak, '認證題目送到網頁時沒有答案、沒有檢查規則');
+  ok(worst <= 0.05, '亂猜最容易過的一項 ≤ 5%', worstK, (worst * 100).toFixed(1) + '%');
+  /* 收據：第二項認證時送上第一項的收據 → 2⭐；假收據、別人的收據不算 */
+  const done1 = (() => { const s = xc('xs', { u: '4', k: 'decode', who }); s.qs.forEach(q => xc('xq', { run: s.run, i: q.i, v: gas.ctx.xItem(runOf(s.run), q.i).ans })); return xc('xf', { run: s.run }); })();
+  const fin2 = prev => { const s = xc('xs', { u: '4', k: 'compress', who }); s.qs.forEach(q => xc('xq', { run: s.run, i: q.i, v: gas.ctx.xItem(runOf(s.run), q.i).ans })); return xc('xf', { run: s.run, prev }); };
+  ok(fin2([done1.task]).stars === 2, '第二項認證＋第一項的真收據 → 這一課 2⭐');
+  ok(fin2([{ ...done1.task, rc: 'fake' }]).stars === 1, '假收據 → 不算，只有 1⭐');
+  const other = (() => { const s = xc('xs', { u: '4', k: 'explorer', who: { cls: '901', seat: '03', name: '別人' } }); s.qs.forEach(q => xc('xq', { run: s.run, i: q.i, v: gas.ctx.xItem(runOf(s.run), q.i).ans })); return xc('xf', { run: s.run }); })();
+  ok(fin2([other.task]).stars === 1, '別人的收據 → 不算');
+  const sd = xc('xs', { u: '1', k: 'bits', who });
+  ok(xc('xf', { run: sd.run }).err === 'incomplete', '沒答完就結算 → incomplete');
+}
+
 console.log(bad ? '✘ ' + bad + ' 項沒過' : '✔ 伺服器驗證全部通過');
 process.exit(bad ? 1 : 0);

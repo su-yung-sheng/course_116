@@ -40,7 +40,7 @@ function seededShuffle(arr, seed) {        // 依序點的題目：公開版打�
   return a;
 }
 
-const ANS = { built: new Date().toISOString().slice(0, 16).replace('T', ' '), cards: {}, py: {}, sheet: {}, labkit: {}, digital: {} };
+const ANS = { built: new Date().toISOString().slice(0, 16).replace('T', ' '), cards: {}, py: {}, sheet: {}, labkit: {}, digital: {}, xtask: {} };
 let stat = { levels: 0, rounds: 0 };
 
 /* ── 互動遊戲（sort／order／build／type／gen／lab） ── */
@@ -175,6 +175,17 @@ if (fs.existsSync(REV)) {
     fs.writeFileSync(file, html);
   }
   console.log('✔ 11601/digital/1～4.html 快速檢核');
+}
+/* 單元一：🔐 實驗任務認證挑戰 ── 任務設定和觀察題（題目＋正解）只進伺服器 */
+const XT = P('private', '11601', 'digital', 'xtask.json');
+if (fs.existsSync(XT)) {
+  const X = JSON.parse(fs.readFileSync(XT, 'utf8')); delete X._說明;
+  for (const [u, ts] of Object.entries(X.tasks)) for (const [k, parts] of Object.entries(ts)) for (const [kind, name, n] of parts) {
+    if (kind === 'obs' && !(X.obs[name] && X.obs[name].length >= n + 2)) throw new Error('單元一認證 ' + u + '.' + k + '：觀察題庫 ' + name + ' 至少要 ' + (n + 2) + ' 題（含備用）');
+    if (kind === 'obs') X.obs[name].forEach(q => { if (!q.o || q.o.length < 3 || new Set(q.o).size !== q.o.length) throw new Error('觀察題 ' + name + '：選項要 ≥ 3 個且不重複：' + q.t); });
+  }
+  ANS.xtask = X;
+  console.log('✔ 單元一認證挑戰：' + Object.values(X.tasks).reduce((a, t) => a + Object.keys(t).length, 0) + ' 項、觀察題 ' + Object.values(X.obs).reduce((a, l) => a + l.length, 0) + ' 題');
 }
 
 /* ── 驗證伺服器整包：private/server/（貼到 Google Apps Script，或用 clasp push） ── */
