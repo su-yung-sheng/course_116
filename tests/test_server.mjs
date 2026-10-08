@@ -31,6 +31,17 @@ call('ans', { run: s.run, r: 0, i: 0, v: wrong }); r = call('ans', { run: s.run,
 ok(r.dead === true && r.hearts === 0, '答錯 3 次 → ❤️ 用完');
 ok(call('ans', { run: s.run, r: 0, i: 1, v: 'x' }).err === 'dead' && call('fin', { run: s.run }).err === 'dead', '❤️ 用完之後：不能再答、不能結算');
 
+/* 3b. 💔 倒下之後：沒做完修復站就不能再開正式的一局（重新整理也一樣）；修復站做完才可以 */
+{
+  const W1 = { cls: '901', seat: '01', name: '測' };
+  const g1 = call('start', { lv: lv.id, st: 0, who: W1 });
+  ok(g1.err === 'need-repair' && g1.r === 0 && g1.n === 1, '倒下後直接重開 → need-repair（告訴網頁卡在第幾回合、第幾次倒下）', JSON.stringify(g1));
+  const p = call('start', { lv: lv.id, st: 0, who: W1, practice: true, focus: 0 });
+  ok(!!p.run, '修復站（practice）可以開');
+  for (let i = 0; i < p.sizes[0]; i++) call('ans', { run: p.run, r: 0, i, v: r0.items[i].a });
+  ok(call('fin', { run: p.run }).practice === true && !!call('start', { lv: lv.id, st: 0, who: W1 }).run, '修復站做完 → 可以重新挑戰');
+}
+
 /* 4. 正常過關 → 星數＝第幾階，收據簽章對得上；同一局不能結算兩次 */
 s = call('start', { lv: lv.id, st: 0, who: { cls: '901', seat: '01', name: '測' } });
 rounds.forEach((rd, ri) => { const need = s.sizes[ri]; for (let i = 0; i < need; i++) call('ans', { run: s.run, r: ri, i, v: rd.items[i].a }); });
@@ -247,6 +258,31 @@ ok(gas.call('pyg', { run: py.run, outs: [] }).err === 'bad-answer', '🐍 少送
   ok(fin2([other.task]).stars === 1, '別人的收據 → 不算');
   const sd = xc('xs', { u: '1', k: 'bits', who });
   ok(xc('xf', { run: sd.run }).err === 'incomplete', '沒答完就結算 → incomplete');
+}
+
+/* 13. 💔 連續倒下 3 次 → 修復完還要休息 3 分鐘；讀概念小卡版的修復要真的過 10 秒；過關後歸零、記進過關紀錄 */
+{
+  const W = { cls: '902', seat: '33', name: '倒下' }, key = gas.ctx.svDownKey('11602', W, '', lv.id, 0);
+  const die = () => { const s = call('start', { lv: lv.id, st: 0, who: W }); let r; for (let k = 0; k < 3; k++) r = call('ans', { run: s.run, r: 0, i: 0, v: wrong }); return r; };
+  const repair = () => { const p = call('start', { lv: lv.id, st: 0, who: W, practice: true, focus: 0 }); for (let i = 0; i < p.sizes[0]; i++) call('ans', { run: p.run, r: 0, i, v: r0.items[i].a }); call('fin', { run: p.run }); };
+  let d = die(); ok(d.dead && d.down === 1 && d.wait === 0, '第 1 次倒下：down＝1、不用休息');
+  repair(); d = die(); repair(); d = die();
+  ok(d.down === 3 && d.wait > 170 && d.wait <= 180, '連續第 3 次倒下 → 要休息約 3 分鐘', d.wait);
+  repair();
+  const w = call('start', { lv: lv.id, st: 0, who: W });
+  ok(w.err === 'wait' && w.sec > 0 && w.n === 3, '修復完、還沒休息夠 → wait（還要幾秒）', JSON.stringify(w));
+  const f = gas.ctx.svGet(key); f.until = Date.now() - 1; gas.ctx.svPut(key, f);
+  const s = call('start', { lv: lv.id, st: 0, who: W }); ok(!!s.run, '休息夠了 → 可以挑戰');
+  rounds.forEach((rd, ri) => { for (let i = 0; i < s.sizes[ri]; i++) call('ans', { run: s.run, r: ri, i, v: rd.items[i].a }); });
+  ok(call('fin', { run: s.run }).stars === 1 && gas.ctx.svGet(key).n === 0, '過關 → 連續倒下次數歸零');
+  /* 讀概念小卡版的修復（rpr） */
+  die();
+  ok(call('rpr', { mod: '', lv: lv.id, st: 0, who: W }).err === 'too-fast', '倒下後馬上說「讀完了」→ too-fast');
+  const g = gas.ctx.svGet(key); g.at = Date.now() - 11000; gas.ctx.svPut(key, g);
+  ok(call('rpr', { mod: '', lv: lv.id, st: 0, who: W }).ok && !!call('start', { lv: lv.id, st: 0, who: W }).run, '過了 10 秒再說讀完 → 修復完成、可以挑戰');
+  /* 修復站、沒登入的都不記 */
+  const anon = call('start', { lv: lv.id, st: 0 }); for (let k = 0; k < 3; k++) call('ans', { run: anon.run, r: 0, i: 0, v: wrong });
+  ok(!!call('start', { lv: lv.id, st: 0 }).run, '沒登入（沒有班級座號）不記倒下');
 }
 
 console.log(bad ? '✘ ' + bad + ' 項沒過' : '✔ 伺服器驗證全部通過');

@@ -1,5 +1,5 @@
 // ☁️ 網路世界「科技修仙篇」：只換外框與用語，題目、判斷、計星不變；境界進度、雷劫戰鬥、用語都換成修仙版
-import { launch, login, BASE, SHOTS, priv } from './harness.mjs';
+import { launch, login, BASE, SHOTS, priv, gas } from './harness.mjs';
 import fs from 'fs'; import vm from 'vm'; fs.mkdirSync(SHOTS, { recursive: true });
 let bad = 0;
 const ok = (c, ...m) => { if (!c) bad++; console.log(c ? '  ✔' : '  ✘', ...m); };
@@ -51,6 +51,27 @@ await page.goto(BASE + '/11602/network.html'); await page.reload(); await page.w
 const h2 = await page.textContent('.story-head');
 ok(h2.includes('道號') && h2.includes('天網真人') && h2.includes('📕 飛升（重看）') && await page.$eval('.story-realms li.now', e => e.textContent) === '飛升', '十部功法齊 → 境界「飛升」、道號「☁️ 天網真人」、可以重看飛升');
 await page.screenshot({ path: SHOTS + 'net-xx-all.png', fullPage: true });
+/* 💔 倒下後沒修復：重新整理也要先進修復站；修復完還在休息 → 倒數畫面 */
+{
+  const who = await page.evaluate(() => STORE.me()), key = gas.ctx.svDownKey('11602', who, 'network', 'N2', 0);
+  gas.ctx.svPut(key, { n: 1, need: true, r: 0, at: Date.now() - 20000 });
+  await page.goto(BASE + '/11602/network.html#N2'); await page.reload(); await page.waitForSelector('.stage');
+  await page.click('.stage[data-s="0"]'); await page.waitForSelector('#repair-go');
+  ok((await page.textContent('#app')).includes('還沒去修復站') && !(await page.$('.rpg-enc')), '倒下後重新整理再挑戰 → 直接到修復站（不出現遭遇橫幅）');
+  await page.click('#repair-go'); await page.waitForSelector('.repair-chip');
+  const rd2 = NET.find(l => l.id === 'N2').stages[0].rounds[0];
+  for (let k = 0; k < 2; k++) {
+    await page.waitForSelector('.qcard .txt'); const t2 = (await page.textContent('.qcard .txt')).trim(), it2 = rd2.items.find(x => x.t === t2);
+    await page.click(`.bucket[data-b="${it2.a}"]`); await page.waitForSelector('#nx'); await page.click('#nx');
+  }
+  await page.waitForSelector('#retry');
+  ok(gas.ctx.svGet(key).need === false, '修復站做完 → 伺服器記下已修復');
+  const f = gas.ctx.svGet(key); f.n = 3; f.until = Date.now() + 120000; gas.ctx.svPut(key, f);
+  await page.click('#retry'); await page.waitForSelector('#rest-n');
+  ok((await page.textContent('#app')).includes('連續倒下 3 次') && await page.$eval('#rest-go', b => b.disabled), '連續倒下 3 次、還在休息 → 倒數畫面，「重新挑戰」先不能按');
+  await page.screenshot({ path: SHOTS + 'net-xx-rest.png' });
+  gas.ctx.svPut(key, { n: 0 });
+}
 /* 系統平臺的異世界篇用語不受影響 */
 await page.goto(BASE + '/11601/platform.html'); await page.waitForSelector('.story-head');
 ok((await page.textContent('.story-head')).includes('異世界轉生篇') && (await page.textContent('.story-head')).includes('🎴 技能卡') && !(await page.$('.story-realms')), '系統平臺仍是異世界轉生篇（技能卡、沒有境界條）');

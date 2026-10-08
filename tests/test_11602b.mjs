@@ -32,7 +32,9 @@ async function playRound(rd) {
     const hit = rd.items.find(x => x.t === txt);
     await page.fill('#ans', hit.a[0]); await page.press('#ans', 'Enter'); await page.click('#nx');
   }
-  else if (rd.type === 'build') for (const cu of rd.customers) {
+  else if (rd.type === 'build') for (let k = 0; k < Math.min(rd.pick || rd.customers.length, rd.customers.length); k++) {
+    await page.waitForSelector('#submit:not([disabled])');
+    const app = await page.textContent('body'), cu = rd.customers.find(c => app.includes(c.who));   // 客人出場順序是隨機的
     for (const r of cu.rules) await page.click(`.opt[data-s="${r.pick}"][data-o="${r.is}"]`);
     for (const sl of rd.slots) if (!cu.rules.some(r => r.pick === sl.id)) await page.click(`.opt[data-s="${sl.id}"]`);
     await page.click('#submit'); await page.click('#nx');

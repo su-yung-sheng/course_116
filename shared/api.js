@@ -65,7 +65,10 @@
     busy: '伺服器很忙，等幾秒再按一次。',
     incomplete: '還有題目沒完成喔！',
     'too-many': '這題試太多次了，換下一題吧。',
-    'no-term': '伺服器還沒有這學期的題庫（請老師更新伺服器）。'
+    'no-term': '伺服器還沒有這學期的題庫（請老師更新伺服器）。',
+    'need-repair': '要先完成 🩹 修復站，才能重新挑戰。',
+    wait: '連續倒下好幾次了，休息一下再挑戰。',
+    'too-fast': '再多看一下概念小卡（至少 10 秒）。'
   };
   function msg(e) { var c = e && e.err || 'server'; return MSG[c] || '伺服器回了一個錯誤（' + c + '），請跟老師說。'; }
   window.API = { url: url, call: call, ready: ready, msg: msg, online: null, retry: function () { state = null; } };   // retry：下次 ready() 重新問一次

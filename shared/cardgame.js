@@ -224,13 +224,14 @@ CARDGAME.mount = function (opts) {
   /* focus：修復站要練的回合（第幾回合）；沒有就是正式挑戰 */
   function start(i, s, focus) {
     var lv = L[i], st = lv.stages ? (s || 0) : null, all = lv.stages ? lv.stages[st].rounds : lv.rounds, practice = focus != null;
-    if (SY) { app.dataset.ch = lv.id; if (!practice) encounter(lv); }
+    if (SY) app.dataset.ch = lv.id;
+    function meet() { if (SY && !practice) encounter(lv); }   // 進場橫幅：伺服器答應開局之後才出現（還沒修復、要休息時不出現）
     G = { i: i, lv: lv, st: st, rounds: practice ? [all[focus]] : all, r: 0, hearts: HEARTS, right: 0, total: 0, combo: 0, maxCombo: 0, practice: practice };
     var g = G;
     app.innerHTML = '<section class="card center"><p class="soft bold">⏳ 準備題目中…</p></section>';
     API.ready().then(function (on) {
       if (G !== g) return;
-      if (!on) { g.offline = true; g.sizes = g.rounds.map(offlineSize); count(); return round(); }
+      if (!on) { g.offline = true; g.sizes = g.rounds.map(offlineSize); count(); meet(); return round(); }
       var req = { mod: MOD, lv: lv.id, st: st, who: STORE.me(), practice: practice };
       if (lv.custom) req.comp = g.rounds.map(function (rd) {
         return rd.src ? { src: rd.src, pick: practice ? 2 : rd.pick } : rd.type === 'gen' ? { gen: rd.gen, hard: !!rd.hard, tool: rd.tool || null } : { lab: rd.lab, hard: !!rd.hard };
@@ -238,10 +239,12 @@ CARDGAME.mount = function (opts) {
       else if (practice) req.focus = focus;
       call('start', req).then(function (res) {
         if (G !== g) return;
-        g.run = res.run; g.hearts = res.hearts; g.sizes = res.sizes; count(); round();
+        g.run = res.run; g.hearts = res.hearts; g.sizes = res.sizes; count(); meet(); round();
       }, function (e) {
         if (G !== g) return;
-        if (e.err === 'offline') { g.offline = true; g.sizes = g.rounds.map(offlineSize); count(); return round(); }
+        if (e.err === 'offline') { g.offline = true; g.sizes = g.rounds.map(offlineSize); count(); meet(); return round(); }
+        if (e.err === 'need-repair') { g.deadR = e.r || 0; g.down = e.n || 0; g.wait = 0; g.again = true; return gameOver(); }   // 上一局倒下還沒修復（重新整理也一樣）
+        if (e.err === 'wait') return rest(i, s, e.sec || 60, e.n || 0);
         app.innerHTML = '<section class="card"><div id="fb"></div><div class="row mt2"><button class="btn" id="back">← 回到概念小卡</button></div></section>';
         trouble(e); document.getElementById('back').onclick = function () { learn(i); };
       });
@@ -345,6 +348,7 @@ CARDGAME.mount = function (opts) {
   function hit(res) {
     var ok = !!res.ok, fast = Date.now() - (G.qt || 0) < 1500;
     if (res.hearts != null) G.hearts = res.hearts;
+    if (res.dead) { G.down = res.down || 0; G.wait = res.wait || 0; }   // 伺服器記下「連續倒下第幾次」、要休息幾秒
     if (G.practice) { fx(ok); return true; }   // 修復站不扣心
     G.total++;
     if (ok) { G.right++; G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo); G.streak = 0; if (!res.partial) G.hits = (G.hits || 0) + 1; }
@@ -811,6 +815,8 @@ CARDGAME.mount = function (opts) {
     app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">💔</p><h2 class="black">' + (foe(G.lv) ? esc(T('lose', { name: foe(G.lv).name })) : (s != null ? '第 ' + (s + 1) + ' 階的' : '') + '愛心用完了') + '</h2>' +
       '<p class="soft mt1">先到 <b>🩹 修復站</b>' + (SY ? '（' + esc(T('spring')) + '）' : '') + ' 把卡住的地方補起來，再重新挑戰（題目會換一組；已經拿到的星星不會不見）。</p>' +
       (chap(G.lv) ? '<div class="story-say mt2" style="text-align:left"><span class="story-ava" aria-hidden="true">' + SY.guide.icon + '</span><p>' + chap(G.lv).lose + '</p></div>' : '') +
+      (G.again ? '<p class="note warn mt2" style="text-align:left">上一次倒下之後還沒去修復站，要先修復才能重新挑戰。</p>' : '') +
+      (G.down >= 2 ? '<p class="small bold mt1">這一階已經連續倒下 ' + G.down + ' 次' + (G.wait ? '：修復完還要休息 ' + Math.ceil(G.wait / 60) + ' 分鐘，先把概念小卡讀熟。' : '（連續 3 次要休息 3 分鐘）。') + '</p>' : '') +
       '<div class="note mt2" style="text-align:left">🩹 卡住的回合：<b>' + esc(rd ? (rd.prompt || rd.title || '這一回合') : '這一回合') + '</b><br>' +
       (canDrill ? (rd.type === 'lab' ? '在實驗站再做 1 次：不扣心、先給提示。' : '練 2 題：不扣心、題目上方先給提示，答完看解說。') : '先把概念小卡讀一遍（看著畫面 10 秒）。') + '</div>' +
       '<div class="row mt3" style="justify-content:center"><button class="btn go big" id="repair-go">🩹 進入修復站</button></div></section>';
@@ -833,9 +839,30 @@ CARDGAME.mount = function (opts) {
       left--; n.textContent = Math.max(0, left);
       if (left <= 0) {
         clearInterval(tm); window.removeEventListener('blur', onBlur); window.removeEventListener('focus', onFocus); document.removeEventListener('visibilitychange', onVis);
-        var b = document.getElementById('read-ok'); b.disabled = false; b.focus(); b.onclick = repairDone;
+        var b = document.getElementById('read-ok'); b.disabled = false; b.focus();
+        b.onclick = function () {   // 讀完概念小卡也算修復：告訴伺服器（伺服器會檢查真的過了 10 秒）
+          API.call('rpr', { mod: MOD, lv: lv.id, st: G.st, who: STORE.me() }).then(repairDone, function (e) { if (e && e.err === 'offline') repairDone(); else { var m = document.getElementById('read-msg'); if (m) m.textContent = '⚠️ ' + API.msg(e); } });
+        };
       }
     }, 1000);
+  }
+  /* ⏳ 連續倒下太多次：休息一下才能再挑戰（秒數由伺服器決定，重新整理也一樣） */
+  function rest(i, s, sec, n) {
+    var lv = L[i], left = sec;
+    app.innerHTML = '<section class="card pop center"><p style="font-size:3rem">⏳</p><h2 class="black">休息一下再挑戰</h2>' +
+      '<p class="soft mt1">這一階已經連續倒下 ' + n + ' 次。先回去把概念小卡讀熟，倒數完再來（題目會換一組）。</p>' +
+      '<div class="cool-n black mt2" id="rest-n" aria-live="polite"></div>' +
+      '<div class="row mt3" style="justify-content:center"><button class="btn" id="rest-read">📖 回到概念小卡</button><button class="btn go" id="rest-go" disabled>重新挑戰</button></div></section>';
+    var el = document.getElementById('rest-n');
+    function show() { el.textContent = Math.floor(left / 60) + ' 分 ' + ('0' + left % 60).slice(-2) + ' 秒'; }
+    show();
+    var tm = setInterval(function () {
+      if (!document.getElementById('rest-n')) { clearInterval(tm); return; }
+      left--; show();
+      if (left <= 0) { clearInterval(tm); el.textContent = '可以再挑戰了！'; var go = document.getElementById('rest-go'); go.disabled = false; go.focus(); }
+    }, 1000);
+    document.getElementById('rest-read').onclick = function () { clearInterval(tm); learn(i); };
+    document.getElementById('rest-go').onclick = function () { clearInterval(tm); start(i, s); };
   }
   function repairDone() {
     var i = G.i, s = G.st;

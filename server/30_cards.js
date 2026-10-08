@@ -43,10 +43,34 @@ function svNeed(rd) {
 
 function svRun(id) { var r = svGet('run:' + id); if (!r) svFail('run-expired'); return r; }
 function svSave(run) { svPut('run:' + run.id, run); }
-function svHit(run, ok) {
+function svHit(run, ok, r) {
   if (ok || run.practice || run.free) return;
-  run.hearts--; if (run.hearts <= 0) run.dead = true;
+  run.hearts--; if (run.hearts <= 0) { run.dead = true; svDown(run, r); }
 }
+/* ── 💔 倒下紀錄（每個學生 × 每一關 × 每一階，存 6 小時）：
+   ❤️ 用完 → 要先做完 🩹 修復站才能再開正式的一局（重新整理也一樣）；
+   連續倒下 SV_WAIT_AFTER 次以上 → 修復完還要等 SV_WAIT_SEC 秒；過關時把「之前倒下幾次」寫進過關紀錄，然後歸零。
+   只管關卡的正式挑戰：修復站、課堂挑戰、總複習（comp）、沒登入的不記。 */
+var SV_WAIT_AFTER = 3, SV_WAIT_SEC = 180, SV_READ_SEC = 10;
+function svDownKey(term, who, mod, lv, st) {
+  var w = who || {}; if (!w.cls || !w.seat) return null;
+  return 'down:' + [term, w.cls, w.seat, mod, lv, st == null ? '-' : st].join('|');
+}
+function svDownKeyOf(run) { return run.practice || run.free || run.comp || !run.rounds ? null : svDownKey(run.term, run.who, run.mod, run.lv, run.st); }
+function svDown(run, r) {
+  var key = svDownKeyOf(run); if (!key) return;
+  var f = svGet(key) || { n: 0 }, now = Date.now();
+  f.n++; f.need = true; f.r = r == null ? 0 : +r; f.at = now;
+  if (f.n >= SV_WAIT_AFTER) f.until = now + SV_WAIT_SEC * 1000;
+  svPut(key, f);
+  run.down = { n: f.n, wait: f.until && f.until > now ? Math.ceil((f.until - now) / 1000) : 0 };
+}
+function svDownGate(key) {   // 開正式的一局之前檢查：還沒修復 → need-repair；還在休息 → wait
+  var f = key && svGet(key); if (!f) return;
+  if (f.need) svFail('need-repair', { r: f.r || 0, n: f.n });
+  if (f.until && f.until > Date.now()) svFail('wait', { sec: Math.ceil((f.until - Date.now()) / 1000), n: f.n });
+}
+function svRepaired(key) { var f = key && svGet(key); if (f && f.need) { f.need = false; svPut(key, f); } }
 function svAlive(run) { if (run.dead) svFail('dead'); if (run.done) svFail('done'); }
 
 SV_ACTIONS.start = function (req) {
@@ -73,6 +97,8 @@ SV_ACTIONS.start = function (req) {
       run.rounds = [ref];
     }
   }
+  if (req.comp) run.comp = true;
+  if (!run.practice && !run.free && !run.comp) svDownGate(svDownKey(run.term, run.who, run.mod, run.lv, run.st));
   var sizes = run.rounds.map(function (ref, r) { return svNeed(svResolve(run, r)); });
   svSave(run);
   return { run: run.id, hearts: run.hearts, sizes: sizes };
@@ -106,8 +132,8 @@ SV_ACTIONS.ans = function (req) {
       res = ti.a.some(function (a) { return svNorm(a) === nv; }) ? { ok: true, why: ti.why } : { ok: false };
     } else svFail('bad-round');
     if (res.ok && (rd.type !== 'order' || res.pos === svNeed(rd))) got[rd.type === 'order' ? 0 : i] = 1;
-    svHit(run, res.ok); svSave(run);
-    res.hearts = run.hearts; if (run.dead) res.dead = true;
+    svHit(run, res.ok, r); svSave(run);
+    res.hearts = run.hearts; if (run.dead) res.dead = true; if (run.down) { res.down = run.down.n; res.wait = run.down.wait; }
     return res;
   });
 };
@@ -175,7 +201,7 @@ SV_ACTIONS.gq = function (req) {
       var ok2 = !!it.follow.check(String(req.f));
       if (ok2) { g.ok = true; res = { ok: true, why: typeof it.why === 'function' ? it.why(g.v) : it.why }; }
       else { g.fol = false; res = { ok: false, swap: true }; }
-      svHit(run, ok2);
+      svHit(run, ok2, g.r);
     } else {
       if (g.fol) svFail('need-follow');
       var ok = !!it.check(v);
@@ -186,10 +212,10 @@ SV_ACTIONS.gq = function (req) {
         var h = g.tries >= 2 && it.hint2 ? it.hint2 : it.hint;
         res = { ok: false, hint: typeof h === 'function' ? h(v) : h, deep: g.tries >= 2 && !!it.hint2 };
       }
-      svHit(run, ok);
+      svHit(run, ok, g.r);
     }
     svSave(run);
-    res.hearts = run.hearts; if (run.dead) res.dead = true;
+    res.hearts = run.hearts; if (run.dead) res.dead = true; if (run.down) { res.down = run.down.n; res.wait = run.down.wait; }
     return res;
   });
 };
@@ -217,11 +243,19 @@ SV_ACTIONS.lq = function (req) {
     if (res.ok && !res.partial) x.ok = true;
     if (!res.ok) { x.tries++; if (x.tries >= 2 && res.hint2) res.hint = res.hint2, res.deep = true; delete res.hint2; }
     else delete res.hint2;
-    svHit(run, res.ok);
+    svHit(run, res.ok, x.r);
     svSave(run);
-    res.hearts = run.hearts; if (run.dead) res.dead = true;
+    res.hearts = run.hearts; if (run.dead) res.dead = true; if (run.down) { res.down = run.down.n; res.wait = run.down.wait; }
     return res;
   });
+};
+
+/* ── 🩹 修復站（讀概念小卡版）：倒下超過 SV_READ_SEC 秒之後才算讀完 ── */
+SV_ACTIONS.rpr = function (req) {
+  var key = svDownKey(String(req.t || ''), req.who, String(req.mod || ''), String(req.lv || ''), req.st == null || req.st === '' ? null : +req.st), f = key && svGet(key);
+  if (!f || !f.need) return { ok: true };
+  if (Date.now() - (f.at || 0) < SV_READ_SEC * 1000) svFail('too-fast');
+  svRepaired(key); return { ok: true };
 };
 
 /* ── 結算：每一回合都做完才給星 ── */
@@ -237,9 +271,11 @@ SV_ACTIONS.fin = function (req) {
       if (have < need) svFail('incomplete');
     }
     run.done = true; svSave(run);
+    if (run.practice) svRepaired(svDownKey(run.term, run.who, run.mod, run.lv, run.st));   // 🩹 修復站做完：可以重新挑戰
     if (run.practice || run.free) return { ok: true, practice: true };
-    var stars = run.st != null ? run.st + 1 : run.hearts, rc = svReceipt(run, stars);
-    svLog(run, stars);
+    var stars = run.st != null ? run.st + 1 : run.hearts, rc = svReceipt(run, stars), dk = svDownKeyOf(run), down = dk && svGet(dk);
+    svLog(run, stars, down && down.n ? '之前倒下 ' + down.n + ' 次' : '');
+    if (down) svPut(dk, { n: 0 });   // 過關：連續倒下的次數歸零
     return { ok: true, stars: stars, hearts: run.hearts, rc: rc.rc, ts: rc.ts };
   });
 };

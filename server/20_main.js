@@ -2,7 +2,7 @@
 /* 用瀏覽器打開網址（GET）＝健康檢查：檔案有沒有漏貼、順序對不對、答案檔有沒有更新 */
 function doGet() { return svOut(svHealth()); }
 function svHealth() {
-  var want = ['start', 'ans', 'gen', 'gq', 'lab', 'lq', 'fin', 'py', 'pyg', 'sh', 'shc', 'shf', 'lks', 'lk', 'lkf', 'lkp', 'dq', 'hint', 'fb', 'pcv', 'pls', 'plt', 'pyc'];
+  var want = ['start', 'ans', 'gen', 'gq', 'lab', 'lq', 'fin', 'py', 'pyg', 'sh', 'shc', 'shf', 'lks', 'lk', 'lkf', 'lkp', 'dq', 'hint', 'fb', 'pcv', 'pls', 'plt', 'pyc', 'rpr', 'dqs', 'dqf', 'xs', 'xq', 'xf'];
   var miss = want.filter(function (a) { return !SV_ACTIONS[a]; });
   var ans = typeof SV_ANS !== 'undefined' ? SV_ANS : null;
   return { ok: !miss.length && !!ans && typeof SHEET !== 'undefined', service: 'course_116 驗證伺服器', v: SV.VERSION,
@@ -15,11 +15,13 @@ function doPost(e) {
   try { return svOut(svRoute(req)); }
   catch (x) {
     var m = String(x && x.message || x);
-    return svOut({ err: m === 'busy' ? 'busy' : /^E:/.test(m) ? m.slice(2) : 'server', msg: /^E:/.test(m) ? undefined : m });
+    var out = { err: m === 'busy' ? 'busy' : /^E:/.test(m) ? m.slice(2) : 'server', msg: /^E:/.test(m) ? undefined : m };
+    if (x && x.svData) for (var k in x.svData) if (k !== 'err') out[k] = x.svData[k];
+    return svOut(out);
   }
 }
 function svOut(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
-function svFail(code) { throw new Error('E:' + code); }
+function svFail(code, data) { var e = new Error('E:' + code); if (data) e.svData = data; throw e; }   // data：跟錯誤一起回給網頁的資料（例如還要等幾秒）
 
 var SV_ACTIONS = {};   // 各模組把自己的動作登記在這裡：SV_ACTIONS['名稱'] = function (req) { … }
 function svRoute(req) {
