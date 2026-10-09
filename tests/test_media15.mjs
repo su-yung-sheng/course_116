@@ -60,6 +60,12 @@ await page.click('#w4-sv'); await page.waitForSelector('#w5-len');
 ok((await page.textContent('#body')).includes('2～3 秒'), 'W5 剪輯檢核換成每鏡 2～3 秒');
 await page.fill('#w5-len', '30'); await page.fill('#w5-peer', '8 號');
 for (let i = 0; i < 3; i++) await page.check(`input[name=pq${i}][value="0"]`);
+for (let i = 0; i < 6; i++) await page.check(`input[name=sf${i}][value="0"]`);
+await page.selectOption('#w5-by', { index: 1 });   // 今天沒辦法用 AI → 老師或同學代評
+await page.fill('#w5-rev', '老師代評：6 項都做到，結尾可以再停久一點');
+for (let i = 0; i < 6; i++) await page.check(`input[name=av${i}][value="0"]`);
+await page.selectOption('#w5-end', { index: 1 });
+ok(!(await page.isVisible('#w5-rule')) && (await page.$$('#w5-cmp tr.diff')).length === 0, 'W5：代評時不顯示 AI 指令；三方一致不用寫理由');
 await page.fill('#w5-what', '三題都是，不用改');
 await page.check('input[name=w5-ai][value="6"]');   // 沒有使用 AI
 for (const cb of await page.$$('input[data-cl="edit"]')) await cb.check();

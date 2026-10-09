@@ -174,18 +174,28 @@ ok(await page.evaluate(() => !!(STORE.level('media', 'W4') || {}).done), 'W4 配
 await page.fill('#w5-len', '30');
 await page.fill('#w5-peer', '12 號');
 for (let i = 0; i < 3; i++) await page.check(`input[name=pq${i}][value="${i === 2 ? 1 : 0}"]`);
+for (let i = 0; i < 6; i++) await page.check(`input[name=sf${i}][value="0"]`);   // 自評：6 項都 ✓
+const rule5 = await page.textContent('#w5-rule'), card5 = await page.textContent('#w5-p');
+ok(/R6：/.test(rule5) && rule5.includes('不要幫他重寫') && rule5.includes('結論：通過'), 'W5 評審助教的指令：6 項規準、不能代寫、固定回覆格式');
+ok(card5.includes('記得最後那一句標語嗎？有一點') && card5.includes('R1✓'), 'W5 評審卡帶入自評和同儕試看');
+await page.fill('#w5-rev', 'R1：✓ — 開場有特寫\nR2：✓ — 有兩鏡\nR3：✓ — 時段對\nR4：？ — 看不到影片，請同學自己確認\nR5：✓ — 有對拍\nR6：✗ — 標語只停 1 秒\n結論：再修改');
+ok(await page.$eval('input[name=av5][value="2"]', e => e.checked) && await page.$eval('input[name=av3][value="3"]', e => e.checked) && await page.$eval('#w5-end', e => e.selectedIndex) === 2, 'W5 貼上助教回覆 → 自動帶入每一項和結論');
+ok((await page.$$('#w5-cmp tr.diff')).length === 2, 'W5 三方比對：助教 ✗、看不出來、同儕「有一點」的項目標成要判斷（2 項）');
 await page.check('input[name=w5-fix][value="2"]');
 await page.fill('#w5-what', '結尾標語停久一點，字放大');
 ok(await page.$eval('input[name=w5-ai][value="1"]', e => e.checked) && await page.$eval('input[name=w5-ai][value="2"]', e => e.checked), 'W5 AI 使用聲明依前面紀錄預先勾好（文案、鏡頭）');
-ok((await page.textContent('#w5-p')).includes('記得最後那一句標語嗎？有一點'), 'W5 修改建議提示詞帶入試看回饋');
 await page.check('input[name=w5-ai][value="6"]');
 await page.click('#w5-make');
 const err5 = await page.textContent('#w5-err');
-ok(err5.includes('AI 使用聲明') && err5.includes('剪輯檢核'), 'W5 擋下：剪輯檢核未完成、「沒有使用 AI」和其他項目互斥');
-await page.uncheck('input[name=w5-ai][value="6"]');
+ok(err5.includes('AI 使用聲明') && err5.includes('剪輯檢核') && err5.includes('寫理由（還有 2 項）'), 'W5 擋下：剪輯檢核、不一致沒寫理由、請了 AI 評審卻勾「沒有使用 AI」');
+await page.uncheck('input[name=w5-ai][value="6"]'); await page.check('input[name=w5-ai][value="4"]');
+await page.check('input[name=mj5][value="2"]'); await page.fill('#w5-why5', '真的只停 1 秒，要改');
+await page.check('input[name=mj3][value="0"]'); await page.fill('#w5-why3', '我用三腳架拍，畫面很穩');
 for (const cb of await page.$$('input[data-cl="edit"]')) await cb.check();
 await page.click('#w5-make');
 await page.waitForSelector('#card-canvas');
+const w5 = await page.evaluate(() => STORE.level('media', 'W5').extra);
+ok(w5.by === 0 && w5.aiV[5] === 2 && w5.mine[5] === 2 && w5.mine[3] === 0 && w5.why[3].includes('三腳架') && w5.end === 1, 'W5 紀錄：助教判定、我的判斷和理由、結論都存下來');
 await page.screenshot({ path: SHOTS + 'media-W5.png', fullPage: true });
 ok(await page.evaluate(() => STORE.moduleDone('media')) === 15, 'media 模組 15 / 15 完成');
 

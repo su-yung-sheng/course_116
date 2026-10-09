@@ -595,76 +595,170 @@
     };
   }
 
-  /* ── 步驟 5 剪輯：剪輯檢核 → 同儕試看 → 修正 → AI 使用聲明 → 作品說明卡 ── */
+  /* ── 步驟 5 剪輯：剪輯檢核 → 🧑‍⚖️ 自評 → 同儕試看 → 🤖 AI 評審助教 → ⚖️ 三方比對、我來判斷 → 修正 → AI 使用聲明 → 作品說明卡 ──
+     評審助教（2026-10-10）：網站依「評分規準」寫好助教的指令和評審卡，學生貼到學校的 AI 工具（可以附上影片），
+     把助教的回覆貼回來；自評、同儕、助教三方不一致的項目，由學生自己判斷並寫理由 —— AI 給意見，學生做決定。
+     沒辦法用 AI 時（網路、帳號），改請老師或另一位同學照同一份規準代評。 */
   var PEER = ['前三秒，你想看下去嗎？', '看完，你知道它的特色是什麼嗎？', '你記得最後那一句標語嗎？'];
   var ANS = ['是', '有一點', '不是'];
   var FIX = ['刪去重複的畫面', '縮短文字', '加強結尾', '調整字幕或音量'];
-  var AIUSE = ['找主角點子或特色', '文案發想與檢查', '鏡頭建議', '配樂建議', '修改建議', '畫面或影片生成', '沒有使用 AI'], NO_AI = 6, GEN_AI = 5;
+  var AIUSE = ['找主角點子或特色', '文案發想與檢查', '鏡頭建議', '配樂建議', '修改建議或評審', '畫面或影片生成', '沒有使用 AI'], NO_AI = 6, GEN_AI = 5;
+  var MARK = ['✓', '△', '✗', '？'], MARK_T = ['做到了', '部分做到', '還沒做到', '看不出來'];
+  var PEER_R = [0, 1, 5];   // 同儕三題對應到哪一項規準（開場、特色、標語）
+  var RUB_SHORT = ['開場', '核心特色', '三句話的時段', '畫面品質', '配樂對拍', '收尾標語與長度'];
+  function rubric(VV, w1, w4) {   // 評分規準：和剪輯檢核、三句文案的時段一致（15 秒版自動換）
+    return [
+      '開場（' + VV.at.open + '）：畫面或開場句抓得住注意',
+      '核心特色「' + (coreFeat(w1) || '＿＿') + '」看得出來，至少拍了 2 個鏡頭',
+      '三句話放在對的時段（開場 ' + VV.at.open + '、特色 ' + VV.at.feat + '、收尾 ' + VV.at.end + '），字幕清楚、沒有錯字',
+      '畫面穩定、光線清楚，主角看得清楚',
+      '配樂和畫面對拍' + (w4 && w4.beat != null ? '（第 ' + w4.beat + ' 秒轉折）' : '') + '，結尾淡出，音量不蓋過字幕或旁白',
+      '收尾標語停留至少 2 秒，影片長度 ' + VV.len.join('～') + ' 秒'];
+  }
   function usedAI() {                 // 依前面每一步的紀錄，預先勾好 AI 使用聲明（學生可以再調整）
-    var w1 = extra('W1'), w2 = extra('W2'), u = [];
+    var w1 = extra('W1'), w2 = extra('W2'), w5 = extra('W5'), u = [];
     if (w1.ai) u.push(0);
     if (w2.tool && !/沒有/.test(w2.tool)) u.push(1);
     if (extra('W3').aiText) u.push(2);
     if (extra('W4').aiText || extra('W4').src === 'AI 生成音樂') u.push(3);
-    if (extra('W5').aiText) u.push(4);
+    if (w5.aiText || (w5.by === 0 && w5.rev)) u.push(4);
     return u;
   }
   function editStep(body, s) {
     var ex = extra('W5'), w1 = extra('W1'), w2 = extra('W2'), w4 = extra('W4'), me = STORE.me() || {}, st = ex.checks || [], VV = V(), CHK = s.checks.map(vtext), cl = checkList('edit', CHK, st);
+    var R = rubric(VV, w1, w4), L2 = w2.lines || {};
     function checks(name, list, on) { return list.map(function (t, i) { return '<label class="chk"><input type="checkbox" name="' + name + '" value="' + i + '"' + ((on || []).indexOf(i) >= 0 ? ' checked' : '') + '><span>' + esc(t) + '</span></label>'; }).join(''); }
+    function marks(name, i, on, withQ) {
+      return (withQ ? [0, 1, 2, 3] : [0, 1, 2]).map(function (k) { return '<label class="mk"><input type="radio" name="' + name + i + '" value="' + k + '"' + (on === k ? ' checked' : '') + ' aria-label="第 ' + (i + 1) + ' 項 ' + MARK_T[k] + '"><span>' + MARK[k] + '</span></label>'; }).join('');
+    }
     body.innerHTML = '<p class="bold">① 剪輯</p><div class="grid g3 mt1">' +
       '<label class="field">剪輯軟體' + sel('w5-app', ['Shotcut', '剪映', 'iMovie', '其他'], ex.app || 'Shotcut') + '</label>' +
       '<label class="field">影片長度（秒）<input class="input" type="number" id="w5-len" min="1" max="120" value="' + esc(ex.len || '') + '" placeholder="' + VV.sec + '"></label>' +
       '<label class="field">畫面比例' + sel('w5-ratio', ['16:9 橫式', '9:16 直式'], ex.ratio || '16:9 橫式') + '</label></div>' +
       '<div class="mt1">' + cl.html + '</div>' +
-      '<p class="bold mt3">② 同儕試看：請一位同學看完回答</p>' +
+      '<p class="bold mt3">② 🧑‍⚖️ 自評：照評分規準看自己的影片</p><p class="tiny soft">✓ 做到了　△ 部分做到　✗ 還沒做到。這 6 項也是老師評分、AI 評審助教用的同一份規準。</p>' +
+      '<div class="scroll-x"><table class="t rub mt1" id="w5-self"><tr><th>評分規準</th><th>我的自評</th></tr>' +
+      R.map(function (r, i) { return '<tr><td>' + (i + 1) + '. ' + esc(r) + '</td><td class="mks">' + marks('sf', i, (ex.self || [])[i]) + '</td></tr>'; }).join('') + '</table></div>' +
+      '<p class="bold mt3">③ 同儕試看：請一位同學看完回答</p>' +
       '<label class="field">試看的同學（座號或名字）<input class="input" id="w5-peer" maxlength="12" value="' + esc(ex.peer || '') + '"></label>' +
       '<div class="scroll-x"><table class="t rub mt1"><tr><th>問題</th>' + ANS.map(function (a) { return '<th>' + a + '</th>'; }).join('') + '</tr>' +
       PEER.map(function (q, i) { return '<tr><td>' + esc(q) + '</td>' + ANS.map(function (a, k) { return '<td><input type="radio" name="pq' + i + '" value="' + k + '"' + ((ex.pa || [])[i] === k ? ' checked' : '') + ' aria-label="' + esc(q) + ' ' + a + '"></td>'; }).join('') + '</tr>'; }).join('') +
       '</table></div>' +
-      '<p class="bold mt3">③ 依回答修正（不必靠複雜特效）</p><div class="stack mt1">' + checks('w5-fix', FIX, ex.fix) + '</div>' +
-      promptBox('w5-p', '🤖 請 AI 依回饋給修改建議（先填好上面的試看結果）') + aiRec('w5', ex) +
-      '<label class="field mt2">我改了什麼？（三題都「是」的話，寫為什麼不用改）<input class="input" id="w5-what" maxlength="40" value="' + esc(ex.what || '') + '"></label>' +
-      '<p class="bold mt3">④ AI 使用聲明：這支廣告哪些地方用了 AI？</p><p class="tiny soft">已依你前面的紀錄先勾好，請確認。誠實標示是「好好用 AI」的最後一步。</p><div class="stack mt1">' + checks('w5-ai', AIUSE, ex.ai || usedAI()) + '</div><div id="w5-aiw" class="mt1"></div>' +
+      '<p class="bold mt3">④ 🤖 AI 評審助教：請 AI 照同一份規準看你的作品</p>' +
+      '<div class="note small mt1">網站幫你寫好兩段：<b>助教的指令</b>（它只能照規準評、不能幫你重寫）和 <b>評審卡</b>（你的作品資料和自評）。到 ' + esc(AIT.name || 'AI 工具') + ' 開新對話，先貼指令，再貼評審卡；能上傳影片就一起附上。<br>' +
+      '⚠️ 影片裡有人臉、名牌、校名，就<b>不要</b>上傳影片，只貼評審卡。AI 會看錯，最後由你判斷。</div>' +
+      '<label class="field mt2">這次是誰評審' + sel('w5-by', ['AI 評審助教', '老師或同學代評（今天沒辦法用 AI）'], ex.by === 1 ? '老師或同學代評（今天沒辦法用 AI）' : 'AI 評審助教') + '</label>' +
+      '<div id="w5-aibox">' + promptBox('w5-rule', '🧾 助教的指令（新對話的第一則）') +
+      '<label class="field mt2">影片有沒有給助教看' + sel('w5-vid', ['有，影片也上傳了（沒有人臉、名牌）', '沒有，只貼評審卡'], ex.vid === 1 ? '沒有，只貼評審卡' : '有，影片也上傳了（沒有人臉、名牌）') + '</label>' +
+      promptBox('w5-p', '🎬 評審卡（第二則）') + '</div>' +
+      '<label class="field mt2" id="w5-revl">貼上助教的回覆<textarea class="input" id="w5-rev" rows="5" maxlength="2000" placeholder="R1：✓ — …（貼上之後，下面的表格會自動帶入）">' + esc(ex.rev || '') + '</textarea></label>' +
+      '<p class="bold mt3">⑤ ⚖️ 三方比對：不一樣的地方，由我判斷</p>' +
+      '<p class="tiny soft">助教那一欄會照它的回覆自動帶入，請核對；同儕只回答了其中 3 項。三方不一樣（或助教看不出來）的項目，選出你的判斷並寫理由 —— 你可以不同意 AI。</p>' +
+      '<div class="scroll-x"><table class="t rub mt1" id="w5-cmp"></table></div>' +
+      '<label class="field mt2">評審結論' + sel('w5-end', ['（還沒選）', '通過：沒有 ✗', '再修改：還有 ✗'], ['（還沒選）', '通過：沒有 ✗', '再修改：還有 ✗'][ex.end == null ? 0 : ex.end + 1]) + '</label>' +
+      '<p class="bold mt3">⑥ 依評審修正（不必靠複雜特效）</p><div class="stack mt1">' + checks('w5-fix', FIX, ex.fix) + '</div>' +
+      '<label class="field mt2">我改了什麼？（全部做到的話，寫為什麼不用改）<input class="input" id="w5-what" maxlength="40" value="' + esc(ex.what || '') + '"></label>' +
+      '<p class="bold mt3">⑦ AI 使用聲明：這支廣告哪些地方用了 AI？</p><p class="tiny soft">已依你前面的紀錄先勾好，請確認。誠實標示是「好好用 AI」的最後一步。</p><div class="stack mt1">' + checks('w5-ai', AIUSE, ex.ai || usedAI()) + '</div><div id="w5-aiw" class="mt1"></div>' +
       '<div class="row mt2"><button class="btn go" id="w5-make">🎨 產生作品說明卡</button></div><p id="w5-err" class="small bold mt1" style="color:var(--bad)"></p><div id="w5-out" class="center mt2"></div>';
     cl.wire(body, function () {});
-    function pw() {
-      var pa = PEER.map(function (q, i) { var r = document.querySelector('input[name=pq' + i + ']:checked'); return q + (r ? ANS[+r.value] : '＿＿'); });
-      document.getElementById('w5-p').textContent = '我拍了一支 ' + VV.short + '廣告，主角是' + (w1.obj || '＿＿') + '，三句話是「' + ((w2.lines || {}).open || '') + '」「' + ((w2.lines || {}).feat || '') + '」「' + ((w2.lines || {}).end || '') +
-        '」。同學看完的回饋：' + pa.join('；') + '。請給我 3 個修改建議，只能用剪輯做到（調整順序、長度、字幕、音量），不需要特效。';
+    function radio(name) { var r = document.querySelector('input[name="' + name + '"]:checked'); return r ? +r.value : -1; }
+    function selfV() { return R.map(function (_, i) { return radio('sf' + i); }); }
+    function peerV() { return PEER.map(function (_, i) { return radio('pq' + i); }); }
+    function peerFor(i) { var k = PEER_R.indexOf(i); return k < 0 ? -1 : peerV()[k]; }
+    var aiV = (ex.aiV || []).slice(), mine = (ex.mine || []).slice(), why = (ex.why || []).slice();
+    function byAI() { return document.getElementById('w5-by').selectedIndex === 0; }
+    function parseRev() {   // 從助教的回覆抓出每一項的 ✓△✗？（抓不到的保留原本選的）
+      var t = val('w5-rev');
+      R.forEach(function (_, i) {
+        var m = t.match(new RegExp('R\\s*' + (i + 1) + '\\s*[：:]\\s*([✓✔△✗✘xX？?])'));
+        if (m) aiV[i] = /[✓✔]/.test(m[1]) ? 0 : m[1] === '△' ? 1 : /[✗✘xX]/.test(m[1]) ? 2 : 3;
+      });
+      var e = t.match(/結論\s*[：:]\s*(通過|再修改)/), es = document.getElementById('w5-end');
+      if (e && es.selectedIndex === 0) es.selectedIndex = e[1] === '通過' ? 1 : 2;
     }
-    body.querySelectorAll('input[name^=pq]').forEach(function (r) { r.addEventListener('change', pw); });
-    pw(); wireCopy(body);
+    function differs(i) {
+      var sv = selfV()[i], pv = peerFor(i), av = aiV[i];
+      var vals = [sv, av].concat(pv >= 0 ? [pv] : []).filter(function (x) { return x != null && x >= 0; });
+      return av === 3 || vals.some(function (x) { return x !== vals[0]; });
+    }
+    function drawCmp() {
+      var who = byAI() ? '🤖 助教' : '🧑‍🏫 代評';
+      document.getElementById('w5-cmp').innerHTML = '<tr><th>項目</th><th>我</th><th>同儕</th><th>' + who + '</th><th>⚖️ 我的判斷與理由</th></tr>' +
+        R.map(function (r, i) {
+          var sv = selfV()[i], pv = peerFor(i), d = differs(i), m = mine[i] != null ? mine[i] : sv;
+          return '<tr' + (d ? ' class="diff"' : '') + '><td>' + (i + 1) + '. ' + RUB_SHORT[i] + '</td><td class="c">' + (sv >= 0 ? MARK[sv] : '—') + '</td><td class="c">' + (pv >= 0 ? MARK[pv] : '') + '</td>' +
+            '<td class="mks">' + marks('av', i, aiV[i], true) + '</td>' +
+            '<td>' + (d ? '<div class="mks">' + marks('mj', i, m) + '</div><input class="input mt1" id="w5-why' + i + '" maxlength="30" value="' + esc(why[i] || '') + '" placeholder="為什麼？（例：第 2 秒字太小，助教說得對）">' : '<span class="tiny soft">一致 ' + (sv >= 0 ? MARK[sv] : '') + '</span>') + '</td></tr>';
+        }).join('');
+      document.querySelectorAll('#w5-cmp input[name^=av]').forEach(function (r) { r.onchange = function () { aiV[+r.name.slice(2)] = +r.value; keep(); drawCmp(); }; });
+      document.querySelectorAll('#w5-cmp input[name^=mj]').forEach(function (r) { r.onchange = function () { mine[+r.name.slice(2)] = +r.value; }; });
+      document.querySelectorAll('#w5-cmp input[id^=w5-why]').forEach(function (inp) { inp.oninput = function () { why[+inp.id.slice(6)] = inp.value; }; });
+    }
+    function keep() { document.querySelectorAll('#w5-cmp input[id^=w5-why]').forEach(function (inp) { why[+inp.id.slice(6)] = inp.value; }); }
+    function pw() {
+      var sv = selfV(), pa = peerV();
+      document.getElementById('w5-rule').textContent = '你是「' + VV.short + '廣告評審助教」，幫一位國中生檢查他自己拍的廣告。請只照下面 6 項規準評，不要打分數，不要幫他重寫文案或重剪影片。\n' +
+        R.map(function (r, i) { return 'R' + (i + 1) + '：' + r; }).join('\n') +
+        '\n回覆格式：每一項一行「R1：✓ — 理由」，符號只用 ✓（做到了）、△（部分做到）、✗（還沒做到）；理由 20 字以內，盡量說出第幾秒。' +
+        '\n如果你沒有看到影片、只拿到文字資料，看不出來的項目寫「？ — 看不到影片，請同學自己確認」，不要猜。' +
+        '\n最後一行只寫「結論：通過」（沒有 ✗）或「結論：再修改」（有 ✗）。';
+      document.getElementById('w5-p').textContent = '【評審卡】' + VV.short + '廣告　主角：' + (w1.obj || '＿＿') + '　核心特色：' + (coreFeat(w1) || '＿＿') +
+        '\n三句話：開場「' + (L2.open || '') + '」（' + VV.at.open + '）／特色「' + (L2.feat || '') + '」（' + VV.at.feat + '）／收尾「' + (L2.end || '') + '」（' + VV.at.end + '）' +
+        '\n影片：' + (val('w5-len') || '＿') + ' 秒、' + val('w5-ratio') + '、' + (extra('W3').shots || []).length + ' 個鏡頭；配樂「' + (w4.name || '') + '」' + (w4.beat != null ? '，第 ' + w4.beat + ' 秒轉折' : '') +
+        '\n' + (document.getElementById('w5-vid').selectedIndex === 0 ? '影片已經附上。' : '沒有附影片，只有文字資料。') +
+        '\n我的自評：' + R.map(function (_, i) { return 'R' + (i + 1) + (sv[i] >= 0 ? MARK[sv[i]] : '？'); }).join(' ') +
+        '\n同學試看：' + PEER.map(function (q, i) { return q + (pa[i] >= 0 ? ANS[pa[i]] : '＿＿'); }).join('；');
+    }
+    function by() {
+      var ai = byAI();
+      document.getElementById('w5-aibox').style.display = ai ? '' : 'none';
+      document.getElementById('w5-revl').firstChild.textContent = ai ? '貼上助教的回覆' : '代評的老師或同學是誰？照 6 項規準說了什麼（重點記下來）';
+      drawCmp();
+    }
+    body.querySelectorAll('input[name^=pq], input[name^=sf]').forEach(function (r) { r.addEventListener('change', function () { pw(); keep(); drawCmp(); }); });
+    ['w5-len', 'w5-ratio', 'w5-vid'].forEach(function (id) { document.getElementById(id).addEventListener('change', pw); });
+    document.getElementById('w5-rev').addEventListener('input', function () { keep(); parseRev(); drawCmp(); });
+    document.getElementById('w5-by').onchange = by;
+    pw(); wireCopy(body); by();
     function picked(name) { return Array.from(document.querySelectorAll('input[name=' + name + ']:checked')).map(function (c) { return +c.value; }); }
     function aiWarn() {
       var a = picked('w5-ai'), t = [];
       if (a.indexOf(NO_AI) >= 0 && a.length > 1) t.push('勾了「沒有使用 AI」，就不能再勾其他項目。');
+      if (a.indexOf(NO_AI) >= 0 && byAI() && val('w5-rev')) t.push('你請了 AI 評審助教，聲明要勾「修改建議或評審」。');
       if (a.indexOf(GEN_AI) >= 0) t.push('這次的作業要自己實拍；AI 生成的畫面要在作品裡清楚標示，並先和老師討論。');
       document.getElementById('w5-aiw').innerHTML = t.length ? '<div class="note warn small">' + t.map(esc).join('<br>') + '</div>' : '';
-      return !(a.indexOf(NO_AI) >= 0 && a.length > 1);
+      return !(a.indexOf(NO_AI) >= 0 && (a.length > 1 || (byAI() && val('w5-rev'))));
     }
     body.querySelectorAll('input[name=w5-ai]').forEach(function (c) { c.onchange = aiWarn; });
     aiWarn();
     document.getElementById('w5-make').onclick = function () {
-      var v = { app: val('w5-app'), len: +val('w5-len') || 0, ratio: val('w5-ratio'), checks: st, peer: val('w5-peer'),
-        pa: PEER.map(function (_, i) { var r = document.querySelector('input[name=pq' + i + ']:checked'); return r ? +r.value : -1; }),
-        fix: picked('w5-fix'), what: val('w5-what'), ai: picked('w5-ai'), ver: VV.sec }, miss = [];
-      Object.assign(v, aiVals('w5')); aiMiss('w5', miss);
+      keep();
+      var endI = document.getElementById('w5-end').selectedIndex;
+      var v = { app: val('w5-app'), len: +val('w5-len') || 0, ratio: val('w5-ratio'), checks: st, peer: val('w5-peer'), pa: peerV(),
+        self: selfV(), by: byAI() ? 0 : 1, vid: document.getElementById('w5-vid').selectedIndex, rev: val('w5-rev').slice(0, 2000), aiV: R.map(function (_, i) { return aiV[i] != null ? aiV[i] : -1; }),
+        mine: R.map(function (_, i) { return differs(i) ? (mine[i] != null ? mine[i] : selfV()[i]) : selfV()[i]; }), why: R.map(function (_, i) { return differs(i) ? String(why[i] || '').trim() : ''; }),
+        end: endI > 0 ? endI - 1 : null, fix: picked('w5-fix'), what: val('w5-what'), ai: picked('w5-ai'), ver: VV.sec }, miss = [];
       if (v.len < VV.len[0] || v.len > VV.len[1]) miss.push('影片長度約 ' + VV.short + '（' + VV.len.join('～') + ' 秒）');
       if (!allChecked(CHK, st)) miss.push('剪輯檢核（還有 ' + left(CHK, st) + ' 項）');
+      if (v.self.some(function (x) { return x < 0; })) miss.push('6 項自評');
       if (!v.peer) miss.push('試看的同學');
       if (v.pa.some(function (x) { return x < 0; })) miss.push('三題試看都要回答');
+      if (len(v.rev) < 12) miss.push(v.by === 0 ? '貼上 AI 評審助教的回覆' : '代評的人說了什麼');
+      if (v.aiV.some(function (x) { return x < 0; })) miss.push((v.by === 0 ? '助教' : '代評') + '那一欄（6 項）');
+      if (v.end == null) miss.push('評審結論');
+      var noWhy = v.why.filter(function (w, i) { return differs(i) && len(w) < 4; }).length;
+      if (noWhy) miss.push('不一致的項目要寫理由（還有 ' + noWhy + ' 項）');
       if (len(v.what) < 4) miss.push('我改了什麼');
       if (!v.ai.length) miss.push('AI 使用聲明（沒用也要勾「沒有使用 AI」）');
       if (!aiWarn()) miss.push('AI 使用聲明（看上面的提醒）');
       if (!done('W2')) miss.push('先完成步驟 2 的三句文案');
       document.getElementById('w5-err').textContent = miss.length ? '還差：' + miss.join('、') : '';
       if (miss.length) { save('W5', v, false); return; }
-      var L = w2.lines || {}, yes = v.pa.filter(function (x) { return x === 0; }).length, n = (extra('W3').shots || []).length;
+      var L = w2.lines || {}, ok = v.mine.filter(function (x) { return x === 0; }).length, dis = v.why.filter(Boolean).length, n = (extra('W3').shots || []).length;
       var decl = v.ai.indexOf(NO_AI) >= 0 ? '沒有使用 AI' : 'AI 協助：' + v.ai.map(function (i) { return AIUSE[i]; }).join('、') + '（文案經我修改）';
       LABKIT.showCard(document.getElementById('w5-out'), LABKIT.drawCard({
         title: L.end, banner: VV.short + '廣告 · 主角：' + (w1.obj || ''), me: me,
-        rule: v.app + ' · ' + v.len + ' 秒 · ' + v.ratio + ' · ' + n + ' 個鏡頭 · 試看 ' + yes + '/3 是',
+        rule: v.app + ' · ' + v.len + ' 秒 · ' + n + ' 個鏡頭 · 評審 ✓ ' + ok + '/6（' + (v.by === 0 ? 'AI 助教' : '代評') + '，' + dis + ' 項由我判斷）',
         boxes: [['主角', w1.obj || ''], ['核心特色', coreFeat(w1)], ['配樂', w4.name || ''], ['長度', v.len + ' 秒']],
         lines: [('開場：' + (L.open || '')).slice(0, 34), ('特色：' + (L.feat || '')).slice(0, 34), decl.slice(0, 34)] }), me);
       var a = document.querySelector('#w5-out a'); if (a) a.download = '廣告說明卡-' + me.cls + '_' + me.seat + '_' + me.name + '.png';

@@ -53,3 +53,11 @@
   #print-area{position:absolute;left:0;top:0;width:100%}
   #print-area input,#print-area textarea,#print-area select{border:0;padding:0;resize:none}
 }
+/* W5 🧑‍⚖️ 自評／🤖 AI 評審助教／⚖️ 三方比對（2026-10-10） */
+.rub .mks{white-space:nowrap}
+.rub .mk{display:inline-flex;align-items:center;gap:.15rem;margin:0 .25rem;cursor:pointer;font-weight:800}
+.rub .mk input{width:1.05rem;height:1.05rem}
+.rub td.c{font-weight:900;font-size:1.05rem}
+.rub tr.diff td{background:#fff7ed}
+.rub tr.diff td:first-child{box-shadow:inset 4px 0 0 #ea580c}
+@media (max-width:640px){.rub .mks{white-space:normal}.rub .mk{margin:.1rem .2rem}}
