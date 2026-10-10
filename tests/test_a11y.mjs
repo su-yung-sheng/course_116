@@ -5,11 +5,14 @@ const AXE = fs.readFileSync(new URL('./node_modules/axe-core/axe.min.js', import
 const { browser, context } = await launch();
 const p = await context.newPage();
 await p.goto(BASE + '/11601/hub.html'); await login(p);
+await p.evaluate(() => localStorage.setItem('aia-profile', localStorage.getItem('c116-profile')));   // 🤖 aiassistant 自己的登入（和闖關網站分開存）
 const pages = process.argv.slice(2).length ? process.argv.slice(2) : ['index.html?stay', '11601/hub.html', '11601/digital/index.html', '11601/digital/1.html', '11601/digital/2.html', '11601/digital/3.html', '11601/digital/4.html', '11601/python.html#P1', '11601/pyref.html', '11601/platform.html', '11601/platform.html#G3', '11601/5016b.html',
   '11602/hub.html', '11602/media.html', '11602/media.html#W3', '11602/media.html#ai', '11602/network.html', '11602/network.html#N4', '11602/unit6.html', '11602/data.html', '11602/sheet.html#T2', '11602/sheetref.html', '11602/cipher.html', '11602/5016b.html',
   // 🧪 實驗站（@階）：先把前面記成通過再打開
   '11602/data.html#D1@2', '11602/data.html#D2@2', '11602/data.html#D3@2', '11602/media.html#M1@1', '11602/media.html#M2@1', '11602/media.html#M3@2', '11602/media.html#M4@2',
   '11602/media.html#A1@2', '11602/media.html#A2@2', '11602/media.html#A3@2', '11602/media.html#A4@2', '11602/media.html#A5@2', '11602/media.html#A6@2', '11602/cipher.html#K1', '11602/challenge.html', '11602/review.html',
+  // 🤖 AI 助教工坊（aiassistant/，自成一套）
+  'aiassistant/index.html#L1', 'aiassistant/index.html#L2', 'aiassistant/index.html#L3', 'aiassistant/index.html#L5', 'aiassistant/index.html#L6',
   // 🐍 pylab：教師試用版、學生版（登入畫面、登入後）
   'pylab/teacher.html#P1', 'pylab/index.html', 'pylab/index.html#me'];
 const agg = {}; let total = 0; const other = {};
