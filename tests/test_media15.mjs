@@ -75,7 +75,7 @@ await page.fill('#w5-len', '15'); await page.click('#w5-make'); await page.waitF
 ok(await page.evaluate(() => (STORE.level('media', 'W5') || {}).extra.ver === 15 && STORE.level('media', 'W5').done), 'W5：15 秒版完成（紀錄裡有 ver）');
 
 /* 換回 30 秒：鏡頭的時段對應到五段，條件回到 8～12 個 */
-await page.click('[data-ver="30"]'); await page.click('.wsteps .step[data-i="2"]'); await page.waitForSelector('.shotrow');
+await page.click('[data-ver="30"]'); await page.click('.wsteps .step[data-i="3"]'); await page.waitForSelector('.shotrow');
 const segs = await page.$$eval('select[data-k="seg"]', s => s.map(x => +x.value));
 ok((await page.$$('.tl > div')).length === 5 && JSON.stringify(segs) === '[0,2,2,2,4]', '換回 30 秒：五個時段，鏡頭對應過去', segs.join(','));
 await page.click('#sv');

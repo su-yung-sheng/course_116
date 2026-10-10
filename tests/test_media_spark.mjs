@@ -54,7 +54,7 @@ const m = await page.textContent('#msg');
 ok(m.includes('鏡頭清單 OK'), 'W3：每一鏡都改成自己的 → 鏡頭清單通過（食譜排的時段、秒數、特色都符合 30 秒版條件）', m.replace(/\s+/g, ' ').slice(0, 80));
 
 /* 15 秒版的食譜也要符合條件 */
-await page.click('[data-ver="15"]'); await page.click('.wsteps .step[data-i="2"]'); await page.waitForSelector('#w3-rc'); await page.click('#w3-rc summary');
+await page.click('[data-ver="15"]'); await page.click('.wsteps .step[data-i="3"]'); await page.waitForSelector('#w3-rc'); await page.click('#w3-rc summary');
 await page.click('#w3-recipe');
 ok((await page.$$('.shotrow')).length === 5, 'W3：15 秒版產生 5 個鏡頭草稿');
 for (let i = 0; i < 5; i++) await page.fill(`input[data-k="what"][data-i="${i}"]`, '我自己的鏡頭 ' + (i + 1));

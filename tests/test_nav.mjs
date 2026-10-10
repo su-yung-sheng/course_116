@@ -34,7 +34,7 @@ ok((await page.$$('#image-steps .ucard')).length === 4 && await page.$eval('#sub
 let sp = await page.$$eval('#image-step-pager .pg-btn', bs => bs.map(b => b.className + '|' + b.textContent));
 ok(sp.length === 1 && sp[0].includes('next') && sp[0].includes('2. 🧭 像素探險家'), '1-4 第一步結尾只有「下一步」', sp.join(' / '));
 await page.click('#image-step-pager .next');
-ok(await page.$eval('#sub-image-explorer', b => b.classList.contains('on')) && !(await page.$eval('#image-sub-explorer', d => d.classList.contains('section-hidden'))), '按「下一步」切到第 2 步');
+ok(await page.$eval('#sub-image-explorer', b => b.classList.contains('on')) && !(await page.$eval('#image-sub-explorer', d => d.classList.contains('section-hidden'))), '按「下一步」切到 W1');
 await page.click('#sub-image-compress');
 sp = await page.$$eval('#image-step-pager .pg-btn', bs => bs.map(b => b.textContent));
 ok(sp[0].includes('3. 🎨') && sp[1].includes('快速檢核'), '第 4 步：上一步＝第 3 步、下一步＝快速檢核', sp.join(' / '));
@@ -48,19 +48,19 @@ for (const [f, want] of [['data', ['P:unit6.html', 'N:sheet.html']], ['sheet', [
   ok(JSON.stringify(p) === JSON.stringify(want), `單元六 ${f} 結尾的上一課／下一課`, p.join(' '));
 }
 
-/* ── 單元四（媒體）：四個部分的上一部分／下一部分、工作站五步小卡、固定小卡 ── */
+/* ── 單元四（媒體）：四個部分的上一部分／下一部分、工作站 W0～W5 小卡、固定小卡 ── */
 await page.goto(BASE + '/11602/media.html'); await page.waitForSelector('#games .lvcard');
 ok((await pager()).length === 1 && (await pager())[0].includes('看示範'), '概念闖關結尾：下一部分＝看示範');
 await page.click('#tab-pager .next'); await page.waitForSelector('.move');
 ok((await pager()).some(x => x.includes('概念闖關')) && (await pager()).some(x => x.includes('AI 前導關')), '看示範結尾：上一部分／下一部分');
 { const s = await stuckAfterScroll('#ucards'); ok(s.stuck && s.pos === 'fixed', '媒體頁捲動後四張小卡固定在上方'); }
 await page.click('#ucards .mtab[data-t="studio"]'); await page.waitForSelector('.wsteps .ucard.step'); await page.waitForTimeout(900);
-ok((await page.$$('.wsteps .ucard.step')).length === 5, '工作站五個步驟是課程小卡');
+ok((await page.$$('.wsteps .ucard.step')).length === 6, '工作站 W0～W5 六個步驟是課程小卡');
 ok(await page.evaluate(() => { const ph = document.querySelector('#ucards').closest('.ucards-ph'); return ph.getBoundingClientRect().top >= -2; }), '切換部分後捲回小卡');
 let wp = await page.$$eval('#w-pager .pg-btn', bs => bs.map(b => b.className + '|' + b.textContent));
-ok(wp.length === 1 && wp[0].includes('next') && wp[0].includes('2.'), '工作站第 1 步結尾：下一步', wp.join(' / '));
+ok(wp.length === 1 && wp[0].includes('next') && wp[0].includes('1. 🎯'), '工作站 W0 結尾：下一步 1. 決定主題', wp.join(' / '));
 await page.click('#w-pager .next');
-ok(await page.$eval('.wsteps .ucard.step[data-i="1"]', b => b.classList.contains('on')), '按「下一步」切到第 2 步');
+ok(await page.$eval('.wsteps .ucard.step[data-i="1"]', b => b.classList.contains('on')), '按「下一步」切到 W1');
 const tp = await pager();
 ok(tp.some(x => x.startsWith('N:hub.html')), '廣告工作站（最後一部分）結尾接回闖關地圖');
 

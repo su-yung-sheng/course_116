@@ -23,7 +23,7 @@ window.CONFIG = {
     M1: ['資D-IV-1', '運t-IV-1'], M2: ['資D-IV-1', '資D-IV-3'], M3: ['資T-IV-2', '運c-IV-3'], M4: ['資H-IV-2', '資H-IV-5', '運a-IV-2'],
     A1: ['資H-IV-6', '運t-IV-1'], A2: ['資D-IV-3', '資H-IV-4', '運a-IV-2'], A3: ['資A-IV-1', '運t-IV-4'], A4: ['資H-IV-4', '資H-IV-6'],
     A5: ['資H-IV-4', '運p-IV-1', '運a-IV-1'], A6: ['資H-IV-1', '資H-IV-5', '運a-IV-2'],
-    W1: ['資T-IV-2', '運p-IV-1'], W2: ['資T-IV-2', '運p-IV-1'], W3: ['資T-IV-2', '運c-IV-3'], W4: ['資T-IV-2', '資H-IV-2'], W5: ['資T-IV-2', '資H-IV-2', '運c-IV-3'],
+    W0: ['資H-IV-1', '資H-IV-5', '運a-IV-2'], W1: ['資T-IV-2', '運p-IV-1'], W2: ['資T-IV-2', '運p-IV-1'], W3: ['資T-IV-2', '運c-IV-3'], W4: ['資T-IV-2', '資H-IV-2'], W5: ['資T-IV-2', '資H-IV-2', '運c-IV-3'],
     N1: ['資S-IV-3', '運t-IV-1'], N2: ['資S-IV-3'], N3: ['資S-IV-3', '運t-IV-1'], N4: ['資S-IV-3', '資D-IV-2'], N5: ['資S-IV-3', '資D-IV-2'],
     N6: ['資S-IV-4'], N7: ['資S-IV-4', '運p-IV-2'], N8: ['資S-IV-3'], N9: ['資S-IV-3', '運t-IV-4'], N10: ['資D-IV-2', '資H-IV-6'],
     D1: ['資D-IV-3', '資T-IV-1'], D2: ['資D-IV-3', '運t-IV-4'], D3: ['資D-IV-3'], D4: ['資H-IV-3', '資A-IV-1'],
@@ -38,7 +38,7 @@ window.CONFIG = {
     { w: 1, t: '單元四 概念闖關：畫質、格式、時間軸、後製與著作權（＋看示範）', levels: ['M1', 'M2', 'M3', 'M4'], href: 'media.html' },
     { w: 2, t: 'AI 前導關：AI 是什麼、機器真的能學習嗎', levels: ['A1', 'A2'], href: 'media.html#ai' },
     { w: 3, t: 'AI 前導關：演算法、生成式 AI 怎麼寫句子', levels: ['A3', 'A4'], href: 'media.html#ai' },
-    { w: 4, t: 'AI 前導關：好好問、用心查；AI 倫理', levels: ['A5', 'A6'], href: 'media.html#ai' },
+    { w: 4, t: 'AI 前導關：好好問、用心查；AI 倫理 → 建立我的廣告助教', levels: ['A5', 'A6', 'W0'], href: 'media.html#ai' },
     { w: 5, t: '廣告工作站 第 1 節：決定主題、三句文案', levels: ['W1', 'W2'], href: 'media.html#W1' },
     { w: 6, t: '廣告工作站 第 2 節：拍攝重點＋實拍', levels: ['W3'], href: 'media.html#W3' },
     { w: 7, t: '廣告工作站 第 3 節：配樂', levels: ['W4'], href: 'media.html#W4' },
@@ -72,7 +72,7 @@ window.CONFIG = {
      maxStars 是進度條的分母，一定要和這門課真的能拿到的星數一致。 */
   MODULES: [
     { id: 'media', no: '四', title: '多媒體專題：30 秒廣告', sub: '4 個概念關卡＋6 個 AI 素養關卡＋好好用 AI 廣告工作站', icon: '🎬', color: 'u1',
-      href: 'media.html', maxStars: 30, levels: ['M1', 'M2', 'M3', 'M4', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'W1', 'W2', 'W3', 'W4', 'W5'],
+      href: 'media.html', maxStars: 30, levels: ['M1', 'M2', 'M3', 'M4', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'W0', 'W1', 'W2', 'W3', 'W4', 'W5'],
       desc: '學會「好好用 AI」：和 AI 一起發想主角、寫三句文案、規劃鏡頭和配樂，最後自己實拍剪輯一支 30 秒廣告，讓平凡物品變主角。', chapter: '第 1 章' },
     { id: 'network', no: '五', title: '網路世界', sub: '☁️ 科技修仙篇・10 重 · 三星三階🎲', icon: '🌐', color: 'u2',
       href: 'network.html', maxStars: 30, levels: ['N1', 'N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N9', 'N10'],

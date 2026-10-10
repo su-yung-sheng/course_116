@@ -88,9 +88,36 @@ ok((await page.$$('#games .lvcard')).length === 4 && !(await page.$('#ai-games .
 await page.click('.mtab[data-t="ai"]'); await page.waitForSelector('#ai-games .lvcard');
 await page.screenshot({ path: SHOTS + 'media-ai.png', fullPage: true });
 
-/* ── 多媒體：30 秒廣告工作站（決定主題 → 三句文案 → 拍攝重點 → 配樂 → 剪輯） ── */
+/* ── 多媒體：30 秒廣告工作站（W0 我的廣告助教 → 決定主題 → 三句文案 → 拍攝重點 → 配樂 → 剪輯與評審） ── */
 await page.click('#tab-pager .next');
+await page.waitForSelector('#w0-name');
+ok((await page.$$('.wsteps .step')).length === 6 && (await page.textContent('.wsteps .step[data-i="0"] .no')) === '0' && (await page.textContent('.wsteps .step[data-i="1"] .no')) === '1', '工作站 W0～W5：第一次打開停在 0. 我的廣告助教');
+ok((await page.textContent('#panel .chip')).includes('A6'), 'W0 建議時間：接在 A6 之後');
+await page.fill('#w0-r0', '先自己想一個再問 AI'); await page.fill('#w0-r1', '不把同學的臉給 AI'); await page.fill('#w0-r2', '用了 AI 要寫出來');
+await page.fill('#w0-name', '小剪'); await page.selectOption('#w0-where', { index: 1 });
+const ins0 = await page.textContent('#w0-ins');
+ok(ins0.includes('你是「小剪」') && ins0.includes('2. 不把同學的臉給 AI') && ins0.includes('評審卡（W5）') && ins0.includes('結論：通過') && ins0.includes('不替我做作業'), 'W0 指令：名字、我的 3 條規則、固定守則、每種卡片（含評審卡格式）');
+ok((await page.textContent('#w0-how')).includes('新對話') && (await page.textContent('#w0-t0')).startsWith('【考試卡・給小剪】'), 'W0：選「同一個對話」說明跟著換；考題卡寫給小剪');
+await page.fill('#w0-hi', '我是小剪，我會幫你守住三條規則：先自己想、不給臉、要標示。');
+await page.fill('#w0-a0', '我給你三個方向：1. 問句開場 2. 反差 3. 聲音。你挑一個自己寫。');
+await page.fill('#w0-a1', '好的林小安，星光國中九年三班的你可以這樣拍：…');
+await page.check('input[name=w0-j0][value="0"]'); await page.check('input[name=w0-j1][value="1"]');
+await page.waitForSelector('#w0-add');
+await page.click('#w0-sv');
+ok((await page.textContent('#w0-msg')).includes('改版') && !(await page.evaluate(() => (STORE.level('media', 'W0') || {}).done)), 'W0 個資題不合格 → 不算完成，要改版');
+await page.click('#w0-ver');
+ok((await page.textContent('#w0-msg')).includes('補充規則'), 'W0 改版要先寫補充規則');
+await page.fill('#w0-add', '我給個資時，先叫我刪掉，不可以重複');
+await page.click('#w0-ver'); await page.waitForSelector('#w0-name');
+ok((await page.textContent('#w0-ins')).includes('（第 2 版）') && (await page.textContent('#w0-ins')).includes('不可以重複') && !(await page.inputValue('#w0-a1')) && (await page.textContent('#body')).includes('改版紀錄（1）'), 'W0 改版 → 第 2 版指令加上補充規則、考試重來、留下改版紀錄');
+await page.fill('#w0-a0', '我給你三個方向：1. 問句開場 2. 反差 3. 聲音。你挑一個自己寫。');
+await page.fill('#w0-a1', '先等一下！姓名、學校、電話是個資，請刪掉；同學的臉也不要上傳。');
+await page.check('input[name=w0-j0][value="0"]'); await page.check('input[name=w0-j1][value="0"]');
+await page.click('#w0-sv');
+const w0 = await page.evaluate(() => STORE.level('media', 'W0'));
+ok(w0.done && w0.extra.v === 2 && w0.extra.hist.length === 1 && w0.extra.hist[0].j[1] === 1 && w0.extra.name === '小剪', 'W0 完成：第 2 版通過，紀錄版本與改版歷程');
 await page.waitForSelector('#w1-obj');
+ok((await page.textContent('#w1-idea')).startsWith('【點子卡・給小剪】') && (await page.textContent('#panel')).includes('送給「小剪」的卡片'), 'W1 之後的提示詞＝送給同一位助教的卡片');
 await page.fill('#w1-obj', '塑膠椅');
 await page.click('#w1-sv');
 ok((await page.textContent('#w1-msg')).includes('還差'), 'W1 沒填完會提醒');
@@ -178,6 +205,7 @@ for (let i = 0; i < 6; i++) await page.check(`input[name=sf${i}][value="0"]`);  
 const rule5 = await page.textContent('#w5-rule'), card5 = await page.textContent('#w5-p');
 ok(/R6：/.test(rule5) && rule5.includes('不要幫他重寫') && rule5.includes('結論：通過'), 'W5 評審助教的指令：6 項規準、不能代寫、固定回覆格式');
 ok(card5.includes('記得最後那一句標語嗎？有一點') && card5.includes('R1✓'), 'W5 評審卡帶入自評和同儕試看');
+ok(card5.startsWith('【評審卡・給小剪】') && !(await page.$eval('#w5-ruled', d => d.open)) && (await page.textContent('#panel')).includes('請「小剪」照同一份規準'), 'W5：評審交給自己的助教，規準指令收成備用');
 await page.fill('#w5-rev', 'R1：✓ — 開場有特寫\nR2：✓ — 有兩鏡\nR3：✓ — 時段對\nR4：？ — 看不到影片，請同學自己確認\nR5：✓ — 有對拍\nR6：✗ — 標語只停 1 秒\n結論：再修改');
 ok(await page.$eval('input[name=av5][value="2"]', e => e.checked) && await page.$eval('input[name=av3][value="3"]', e => e.checked) && await page.$eval('#w5-end', e => e.selectedIndex) === 2, 'W5 貼上助教回覆 → 自動帶入每一項和結論');
 ok((await page.$$('#w5-cmp tr.diff')).length === 2, 'W5 三方比對：助教 ✗、看不出來、同儕「有一點」的項目標成要判斷（2 項）');
@@ -197,7 +225,7 @@ await page.waitForSelector('#card-canvas');
 const w5 = await page.evaluate(() => STORE.level('media', 'W5').extra);
 ok(w5.by === 0 && w5.aiV[5] === 2 && w5.mine[5] === 2 && w5.mine[3] === 0 && w5.why[3].includes('三腳架') && w5.end === 1, 'W5 紀錄：助教判定、我的判斷和理由、結論都存下來');
 await page.screenshot({ path: SHOTS + 'media-W5.png', fullPage: true });
-ok(await page.evaluate(() => STORE.moduleDone('media')) === 15, 'media 模組 15 / 15 完成');
+ok(await page.evaluate(() => STORE.moduleDone('media')) === 16, 'media 模組 16 / 16 完成（含 W0）');
 
 /* ── 5016B 守護站 2.0 ─────────────────────── */
 await page.goto(BASE + '/11602/5016b.html');
